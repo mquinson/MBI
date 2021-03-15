@@ -119,9 +119,9 @@ def print_result(top_left_x, top_left_y, i, j, row):
     job_id = row[8]
 
     if DEBUG:
-        link = "https://gitlab.com/Mwapl/benchmarking-mpi/-/jobs/{}/artifacts/raw/Benchmarks/{}_{}.txt".format(job_id,name,id)
+        link = "https://gitlab.com/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/-/jobs/{}/artifacts/raw/Benchmarks/{}_{}.txt".format(job_id,name,id)
     else:
-        link = "https://gitlab.com/Mwapl/benchmarking-mpi/-/tree/master/Benchmarks/microbenchs/{}.c".format(name)
+        link = "https://gitlab.com/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/-/tree/master/Benchmarks/microbenchs/{}.c".format(name)
     
     r = Hyperlink(link)
     
