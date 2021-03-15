@@ -1,0 +1,79 @@
+/* This file is part of MUST (Marmot Umpire Scalable Tool)
+ *
+ * Copyright (C)
+ *  2010-2016 ZIH, Technische Universitaet Dresden, Federal Republic of Germany
+ *  2010-2018 Lawrence Livermore National Laboratories, United States of America
+ *  2013-2018 RWTH Aachen University, Federal Republic of Germany
+ *
+ * See the LICENSE file in the package base directory for details
+ */
+
+/**
+ * @file MustTypes.h
+ *       @see MustTypes.
+ *
+ *  @date 20.05.2011
+ *  @author Joachim Protze
+ */
+
+#include <stdint.h>
+
+#ifndef MUSTTYPES_H
+#define MUSTTYPES_H
+
+/**
+  * Type used for logical timestamps.
+  */
+typedef unsigned long MustLTimeStamp;
+
+/**
+ * Datatype used for MPI communicator handles.
+ */
+// TODO: think about negative values (especially for lb!) 
+//           <-/-> MPI-2.2, 2.5.6 !!!
+
+typedef @AINT_TYPE@ MustAddressType;
+//typedef long MustAddressType;
+//typedef int64_t MustLBType;
+
+/**
+ * Datatype used for MPI request handles.
+ */
+typedef @REQUEST_F_TYPE@ MustRequestType;
+
+/**
+ * Datatype used for MPI datatype handles.
+ */
+typedef @DATATYPE_F_TYPE@ MustDatatypeType;
+
+/**
+ * Datatype used for MPI operation handles.
+ */
+typedef @OP_F_TYPE@ MustOpType;
+
+/**
+ * Datatype used for MPI key-value handles.
+ */
+typedef @KEYVAL_TYPE@ MustKeyvalType;
+
+/**
+ * Datatype used for MPI communicator handles.
+ */
+typedef @COMM_F_TYPE@ MustCommType;
+
+/**
+ * Datatype used to represent MPI group handles.
+ */
+typedef @GROUP_F_TYPE@ MustGroupType;
+
+/**
+ * Datatype used to represent MPI error handles.
+ */
+typedef @ERRHANDLER_F_TYPE@ MustErrType;
+
+/**
+ * Datatype used to represent MPI error handles.
+ */
+typedef @ERRHANDLER_F_TYPE@ MustRemoteIdType;
+
+#endif /*MUSTTYPES_H*/

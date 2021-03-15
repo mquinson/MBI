@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+
+<!--
+  This file is part of MUST (Marmot Umpire Scalable Tool)
+
+  Copyright (C)
+    2010-2016 ZIH, Technische Universitaet Dresden, Federal Republic of Germany
+    2010-2018 Lawrence Livermore National Laboratories, United States of America
+    2013-2018 RWTH Aachen University, Federal Republic of Germany
+
+  See the LICENSE file in the package base directory for details
+-->
+
+<!DOCTYPE layout-specification SYSTEM "@MUST_SPECIFICATION_DTD_PATH@/layout-specification.dtd">
+<layout-specification>
+	<levels>
+		<level order="0" size="${numProcsL0}" place-name="mpi_app">
+			<analyses>
+			    <analysis name="DatatypePredefs" group="MUST_Resource"/>
+			    <analysis name="CommPredefs" group="MUST_Resource"/>
+			    <analysis name="FinalizeNotify" group="MUST_Base"/>
+			    <analysis name="DCollectiveInitNotify" group="MUST_DistributedDeadlock"/>
+				${level0ModString}
+			</analyses>
+		</level>
+		<level order="1" size="${numProcsL1}" place-name="mpi_place">
+			<analyses>
+				${level1ModString}
+			</analyses>
+		</level>
+		<level order="2" size="1" place-name="mpi_place">
+			<analyses>
+				${level2ModString}	
+			</analyses>
+		</level></levels>
+	<communications>
+		<default>
+			<comm-strategy name="CStratSimpleUp">
+				<settings></settings>
+			</comm-strategy>
+			<comm-protocol name="CProtMpiSplited">
+				<settings></settings>
+			</comm-protocol>
+		</default>
+		<connection top-level="1" bottom-level="0"></connection>
+		<connection top-level="2" bottom-level="1"></connection>
+		<connection top-level="1" bottom-level="1">
+			<comm-strategy name="CStratIsendIntra">
+				<settings></settings>
+			</comm-strategy>
+			<comm-protocol name="CProtMpiSplited">
+				<settings></settings>
+			</comm-protocol></connection>
+	</communications>
+</layout-specification>

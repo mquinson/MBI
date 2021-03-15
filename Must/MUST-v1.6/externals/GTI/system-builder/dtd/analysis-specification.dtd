@@ -1,0 +1,283 @@
+<!--
+  This file is part of GTI (Generic Tool Infrastructure)
+
+  Copyright (C)
+    2008-2019 ZIH, Technische Universitaet Dresden, Federal Republic of Germany
+    2008-2019 Lawrence Livermore National Laboratories, United States of America
+    2013-2019 RWTH Aachen University, Federal Republic of Germany
+
+  See the LICENSE file in the package base directory for details
+-->
+
+<!--Root node for an api-specification.
+    "path-to-libs": Path to directory in which the modules for this analysis group reside.
+    "include-path": Path to directory in which the interfaces for this analysis group reside.
+    "group-name": Name of this analysis group.-->
+<!ELEMENT analysis-specification (analyses,operations)>
+<!ATTLIST analysis-specification
+   path-to-libs CDATA #REQUIRED
+   include-path CDATA #REQUIRED
+   group-name CDATA #REQUIRED
+>
+
+<!-- List of all analyses in this specification. -->
+<!ELEMENT analyses (analysis)*>
+
+
+<!-- A single analysis.
+	"name": Name of this analysis module
+	"sub-group": A sub group name, only for presentation purposes, no semantic consequences; 
+	             usage for analysis grouping (e.g. "resource checks") [optional]
+	"local-integrity": valid values are "yes" and "no" (without the quotes), "no" is the assumed 
+	                   default if the attribute is not specififed. If set to "yes", the analysis
+	                   is an integrity check, which has the following properties:
+	                      - Is executed before any other operation or analysis (either first in pre or first in post phase),
+	                         except for operations that are used as input to the integrity
+	                      - Is always executed directly in the wrapper
+	                      - Must not be global or process global
+	                   [optional]
+	"reduction": valid values are "yes" and "no" (without the quotes), "no" is the assumed default if
+	                   the attribute is not specified. If set to "yes" this analysis is a reduction, which has the 
+	                   following consequences:
+	                    - It may create a reduced representation record that contains information for ALL the api calls to which it is mapped 
+	                      (except for its wrapp-everywhere call)
+	                    - The originial record(s) that were used by the reduction will be replaced with the
+	                       reduced record
+	                    -~  This can only be done if all analyses that run on places that would receive the original
+	                         record specify that they support this reduction
+	                    -~ If there is an analysis not supporting the
+                             reduced record, the weaver will not forward the reduced record as long as this analysis still needs any of the records in the instance
+	                    -~ This decision will be made for each forwarding of the reduction (there is one forwarding for level connected to the level in question,
+	                         so level 1 may forward the reduced record to level 2 while forwarding the original records to level 3, becaus some analysis on level
+	                         3 won't accept the reduced record)
+	                    - A reduction must not use two successive records from the same application process
+	                    - A reduction uses a  wrapp-everywhere call to create the reduced record
+	                    -~ If the reduction is a filter in fact, it may also not have such a function
+	                    -~ This call is called by the reduction itself to create the reduced record
+	                    -~ Analyses that support the reduction should be mapped to this call too
+	                    -~ You may want to put a comment into the analysis description of a reduction to name the wrapp-everywhere call that creates the reduced record
+	                    -~ Beware: if you map a reduction to a second wrapp-everywhere call (one that does not creates the reduced record), it will still not be executed in wrappers
+	                    -~ (non reduction) Analyses that are mapped to a call to which the reduction is mappedl are run in a modified order, 
+	                         which is that the reduction is run first and all other analyses are run afterwards in the order specified in the api specification for this event
+	                    -~ For analyses that are mapped to calls that may be reduced by a reduction, the following rules apply:
+	                    -~- Analyses that do not support the reduction will be run in receival modules of these calls, 
+	                          independent of whether the reduction provides a reduced representation of the record or not
+	                          Beware: if for some reason such a non-supporting analysis is mapped to the reductions wrapp-everywhere call,
+	                                       it will be called for the original and the reduced records. However, mapping an analysis to a reductions
+	                                       wrapp-everywhere call without supporting this reduction is a very questionable design anyways
+	                    -~- Analyses that support the reduction are only run in the receival if the reduction of the record fails; otherwise
+	                          the analysis will be called for the reduced record; Rational: without this definition, analyses that need a final reduced
+	                          value would have to do the last reduction step themselves  
+	                    - A reduction is only executed in receival modules, otherwise there would be an inifinte recursion 
+	                         on the wrapp-everywhere call (Reduction is mapped to it and calls it)
+	                    - A reduction has different return values than regular analyses
+	                        (They need to specify whether the reduction is still waiting for further input or whether it succeeded)
+	                    - Two reductions must not be mapped to the same pre/post event of an API call
+	                       (This limitation results from the handling of reductions and how waiting for a reduction to finish is implemented)
+                        - The weaver should give helpful output on cases were a reduction can't be used due to an analysis not supporting it,
+                          or if two reductions are mapped to the same call
+                        - Must not be global, process-global, or a local integrity!
+                        - Beware of dependencies
+                        -~ Dependencies of a reduction will be placed wherever a reduction is placed
+                        -~ These dependencies may render the applicability of other reductions impossible or 
+                             cause substantial overheads to other levels 
+                        -~ Keep this in mind when adding such dependencies
+                        - Must not be placed onto levels in the Layout description, is placed automatically by the weaver
+	                   [optional]
+	"listens-to-timeouts": valid values are "yes" and "no" (without the quotes), "no" is the assumed default. If yes, the analysis
+	                                  is notified of timeouts, even though it is not a reduction. IMPORTANT: This will only be possible if
+	                                   the analysis is placed on a non-application node, as application nodes have no timeouts.
+    "continuous": valid values are "yes" and "no" (without the quotes), "no" is the assumed default. If yes, the analysis
+	                                  must be triggered regularily by the placement drivers that execute them, irrespective
+	                                  of whether an input event for the analysis arrives or not.
+	"added-automagically": valid values are "yes" and "no" (without the quotes), "no" is the assumed default. If yes, the analyses
+	                                     of this module are added automatically (without a module mapping for the respective layer) if all
+	                                     of the analysis inputs are present anyways (due to the presence of other modules on this layer
+	                                     or another layer). The module is only added to wrappers, not to receival.
+	                                     IMPORTANT: this is an exerimental feature that might not stay as is, so only use if you have to. 
+-->
+<!ELEMENT analysis (registered-name, module-name, header-name, interface-type, is-global, is-process-global, dependencies, reductions?, analysis-function+)>
+<!ATTLIST analysis
+   name CDATA #REQUIRED
+   sub-group CDATA #IMPLIED
+   local-integrity CDATA #IMPLIED 
+   reduction CDATA #IMPLIED
+   listens-to-timeouts CDATA #IMPLIED
+   continuous CDATA #IMPLIED
+   added-automagically CDATA #IMPLIED
+>
+
+<!-- Name used for registering and querying the module that implements the analysis. -->
+<!ELEMENT registered-name (#PCDATA)>
+
+<!-- Name of the module (used for P^nMPI/Dynasty configuration files) that implements the analysis. -->
+<!ELEMENT module-name (#PCDATA)>
+
+<!-- Name of the header file that declares the interface used by this analysis module. -->
+<!ELEMENT header-name (#PCDATA)>
+
+<!-- The type used for the interface for this module. -->
+<!ELEMENT interface-type (#PCDATA)>
+
+<!-- Is this an analysis that requires information from all all processes ?
+     Valid values are 0 and 1. 
+-->
+<!ELEMENT is-global (#PCDATA)>
+
+<!-- Is this an analysis that requires information from all threads of a process ? 
+	 Valid values are 0 and 1.
+-->
+<!ELEMENT is-process-global (#PCDATA)>
+
+<!-- 
+   List of other analyses on which this analysis depends. 
+   
+   A dependency must not be added from an analysis to a reduction,
+   as it can't be guaranteed that the reduction is placed at all.   
+-->
+<!ELEMENT dependencies (analysis-depend)*>
+
+<!-- List of Reductions to which this analysis is compatible. 
+     Only reduction modules may be specified in the analysis-depend nodes!
+     
+     The analysis function may be run on an original record for a certain event (pre/post of an API call) or on a reduced record for this event created by
+     ANY reduction specified here. Note that there will always be at most one reduced record that is used instead, as no two reductions may 
+     run on a single event.   
+     The analysis should be mapped to ALL of the wrapp-everywhere functions used by the reductions specified here (If not it can't really be accepting the respective reduction ...)
+     
+-->
+<!ELEMENT reductions (analysis-depend)*>
+
+<!-- The name of an analysis on which this analysis depends (from this analysis group). 
+	"group": name of the group in which the analysis to depend on is, if not specified
+	         the group of this specification is assumed. If it is another group
+	         it needs to be loaded first to calculate the dependency, as a result
+	         avoid the creation of cyclic inter-group dependencies. 
+	         (e.g. avoid "A of group X depends on B of group Y" along with
+	                     "C of group Y depends on D of group X")
+	         [optional]
+	"soft": either "yes" or "no", "no" is the default. If set to "yes" this is a soft dependency
+	          which means that it influences module placement, i.e. if this module is placed
+	          the softly dependent module is placed too, but it does not causes the dependent
+	          module to be a child module of this module. This is useful if you just want 
+	          to influence placement with dependencies, or if you must avoid cyclic child dependencies
+	          that are not allowed. Only a valid for dependencies not for reductions. [optional]
+-->
+<!ELEMENT analysis-depend (#PCDATA)>
+<!ATTLIST analysis-depend
+   group CDATA #IMPLIED
+   soft CDATA #IMPLIED
+>
+
+<!-- Description of the arguments that are used by this analysis. 
+	"name": the name of the function in the interface, e.g. "check".
+	             Also used to identify the analysis function to use for mappings to API calls.
+	"needs-channel-id": if set to "yes", this function needs an extra argument which is the 
+	                                channel id that is associated with the record given to the function.
+	                                In receival modules this will be the updated channel id with the 
+	                                full channel path that lead the record to this place. In wrapper modules
+	                                it will be a NULL pointer to indicate that the record is from this
+	                                very place itself. This extra argument is of the type "I_ChannelId*"
+	                                and must not be added as an analysis-argument. The channel id will
+	                                be deleted after the call to the analysis returns. Thus, it must not
+	                                be freed by the analysis, and if the analysis needs the channel id
+	                                at a later point it must create its own copy of the channel id. For reductions
+	                                this argument has no effect, as these get a channel id anyways. 
+	                                [optional, default "no"]    
+-->
+<!ELEMENT analysis-function (analysis-argument)*>
+<!ATTLIST analysis-function
+   name CDATA #REQUIRED
+   needs-channel-id CDATA #IMPLIED
+>
+
+<!-- An argument of the analysis function.
+	"order": 0-N, order X specifies this is the Xth argument in the signature (starting with 0) 
+	"type": data type used for this argument, e.g. "int", or "int*"
+	"name": name for the argument, usage is only for usability and presentation needs, if not 
+	        specified "arg<ORDER>" is used where <ORDER> is the specified value for the order 
+	        attribute. [optional]
+-->
+<!ELEMENT analysis-argument EMPTY>
+<!ATTLIST analysis-argument
+   order CDATA #REQUIRED
+   type CDATA #REQUIRED
+   name CDATA #IMPLIED
+>
+
+<!-- List of all operations in this analysis group. -->
+<!ELEMENT operations (operation)*>
+
+<!-- A single operation.
+	"name": the name of this operation
+	"return-type": The data type of the value which is computed by this operation
+-->
+<!ELEMENT operation (extra-headers, operation-arguments, source-template, cleanup-template?, return-is-array?)>
+<!ATTLIST operation
+   name CDATA #REQUIRED
+   return-type CDATA #REQUIRED
+>
+
+<!--
+   If this node is specified the operation returns an array
+   of values, which is useful to convert each value of an input 
+   array. The content of this node specifies the type of the
+   length argument for the array.   
+   Each array returning operation must specify a value for RETURN_LEN
+   in its source template which holds the length of the array.
+-->
+<!ELEMENT return-is-array (#PCDATA)>
+
+<!-- List of headers that are required for the computations in this operation. -->
+<!ELEMENT extra-headers (header)*>
+
+<!-- A header name, e.g. stdio.g, must be portable. -->
+<!ELEMENT header (#PCDATA)>
+
+<!-- A list of arguments that are needed for this operation. -->
+<!ELEMENT operation-arguments (operation-argument)*>
+
+<!-- A single argument for an operation. 
+	"order": 0-N, order X specifies this is the Xth argument in the signature of the operation (starting with 0) 
+	"type": data type used for this argument, e.g. "int", or "int*"
+	"name": name for the argument, usage is only for usability and presentation needs, if not 
+	        specified "arg<ORDER>" is used where <ORDER> is the specified value for the order 
+	        attribute. [optional]
+-->
+<!ELEMENT operation-argument EMPTY>
+<!ATTLIST operation-argument
+   order CDATA #REQUIRED
+   type CDATA #REQUIRED
+   name CDATA #IMPLIED
+>
+
+<!-- The source code that implements this operation.
+	 Can be directly inlined code or a call to a 
+	 function from the headers specified in the 
+	 description of the operation.
+	 The source is parsed and templates in it will
+	 be substituted. The Template RETURN will be 
+	 substituted by a variable name that is used
+	 for the result of the operation. So make sure
+	 to store the operation result in RETURN. 
+	 The templates ARG0-ARGN are used for the 
+	 individual input args for the operation, e.g.:
+	 "int RETURN = ARG0 + ARG1;"
+	 For operations that return an array an additional
+	 template for the length of the array is used,
+	 which is RETURN_LEN.
+	 If you need to use any of the words that will be
+	 replaced while not wanting a replacement,
+	 you can put a "?" in front of them to avoid the
+	 replacement, while the "?" will be removed.
+-->
+<!ELEMENT source-template (#PCDATA)>
+
+<!--
+     Extra sourcecode that is executed before leaving
+     a wrapped function (after pre ops, actual call,
+     and post ops). Usage is to free or unregister 
+     resources. May use the same templates as 
+     source-template.
+-->
+<!ELEMENT cleanup-template (#PCDATA)>

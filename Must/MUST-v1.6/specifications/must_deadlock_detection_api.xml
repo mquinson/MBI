@@ -1,0 +1,384 @@
+<?xml version="1.0"?>
+
+<!--
+  This file is part of MUST (Marmot Umpire Scalable Tool)
+
+  Copyright (C)
+    2010-2016 ZIH, Technische Universitaet Dresden, Federal Republic of Germany
+    2010-2018 Lawrence Livermore National Laboratories, United States of America
+    2013-2018 RWTH Aachen University, Federal Republic of Germany
+
+  See the LICENSE file in the package base directory for details
+-->
+
+<!DOCTYPE api-specification SYSTEM "@MUST_SPECIFICATION_DTD_PATH@/api-specification.dtd">
+<api-specification unique-name="MUST_Deadlock_API">
+    <api-headers>
+        <header>DeadlockApi.h</header>
+    </api-headers>
+    <functions>
+        <function return-type="int" name="propagateRecvUpdate" wrapp-everywhere="yes">
+            <function-arguments>
+                <function-argument order="0" name="pId" type="uint64_t" intent="in">
+                </function-argument>
+                <function-argument order="1" name="lId" type="uint64_t" intent="in" />
+                <function-argument order="2" name="source" type="int" intent="in" />
+            </function-arguments>
+            <analyses>
+                <analysis order="pre" name="P2PMatch:recvUpdate" group="MUST_Deadlock">
+                    <analysis-arguments>
+                        <analysis-argument type="mapped" analysis-arg-order="0">
+                            <call-arg-name>pId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="1">
+                            <call-arg-name>lId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="2">
+                            <call-arg-name>source</call-arg-name>
+                        </analysis-argument>
+                    </analysis-arguments>
+                </analysis>
+                <analysis order="pre" name="DP2PMatch:recvUpdate" group="MUST_DistributedDeadlock">
+                    <analysis-arguments>
+                        <analysis-argument type="mapped" analysis-arg-order="0">
+                            <call-arg-name>pId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="1">
+                            <call-arg-name>lId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="2">
+                            <call-arg-name>source</call-arg-name>
+                        </analysis-argument>
+                    </analysis-arguments>
+                </analysis>
+            </analyses>
+            <operations>
+            </operations>
+        </function>
+        <function return-type="int" name="propagateIrecvUpdate" wrapp-everywhere="yes">
+            <function-arguments>
+                <function-argument order="0" name="pId" type="uint64_t" intent="in">
+                </function-argument>
+                <function-argument order="1" name="lId" type="uint64_t" intent="in" />
+                <function-argument order="2" name="source" type="int" intent="in" />
+                <function-argument order="3" name="request" type="@REQUEST_F_TYPE@" intent="in" />
+            </function-arguments>
+            <analyses>
+                <analysis order="pre" name="P2PMatch:irecvUpdate" group="MUST_Deadlock">
+                    <analysis-arguments>
+                        <analysis-argument type="mapped" analysis-arg-order="0">
+                            <call-arg-name>pId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="1">
+                            <call-arg-name>lId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="2">
+                            <call-arg-name>source</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="3">
+                            <call-arg-name>request</call-arg-name>
+                        </analysis-argument>
+                    </analysis-arguments>
+                </analysis>
+                <analysis order="pre" name="DP2PMatch:irecvUpdate" group="MUST_DistributedDeadlock">
+                    <analysis-arguments>
+                        <analysis-argument type="mapped" analysis-arg-order="0">
+                            <call-arg-name>pId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="1">
+                            <call-arg-name>lId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="2">
+                            <call-arg-name>source</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="3">
+                            <call-arg-name>request</call-arg-name>
+                        </analysis-argument>
+                    </analysis-arguments>
+                </analysis>
+            </analyses>
+            <operations>
+            </operations>
+        </function>
+        <function return-type="int" name="splitSend" wrapp-everywhere="yes">
+            <function-arguments>
+                <function-argument order="0" name="pId" type="uint64_t" intent="in">
+                </function-argument>
+                <function-argument order="1" name="lId" type="uint64_t" intent="in" />
+                <function-argument order="2" name="dest" type="int" intent="in" />
+                <function-argument order="3" name="tag" type="int" intent="in" />
+                <function-argument order="4" name="comm" type="@COMM_F_TYPE@" intent="in" />
+                <function-argument order="5" name="type" type="@DATATYPE_F_TYPE@" intent="in" />
+                <function-argument order="6" name="count" type="int" intent="in" />
+            </function-arguments>
+            <analyses>
+                <analysis order="pre" name="P2PMatch:send" group="MUST_Deadlock">
+                    <analysis-arguments>
+                        <analysis-argument type="mapped" analysis-arg-order="0">
+                            <call-arg-name>pId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="1">
+                            <call-arg-name>lId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="2">
+                            <call-arg-name>dest</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="3">
+                            <call-arg-name>tag</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="4">
+                            <call-arg-name>comm</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="5">
+                            <call-arg-name>type</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="6">
+                            <call-arg-name>count</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="operation" analysis-arg-order="7">
+                            <op-name group="MUST_Resource" id="1">getSendModeStandard</op-name>
+                        </analysis-argument>
+                    </analysis-arguments>
+                </analysis>
+                <analysis order="pre" name="MsgMatchReduction:send" group="MUST_Deadlock">
+                    <analysis-arguments>
+                        <analysis-argument type="mapped" analysis-arg-order="0">
+                            <call-arg-name>pId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="1">
+                            <call-arg-name>lId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="2">
+                            <call-arg-name>dest</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="3">
+                            <call-arg-name>tag</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="4">
+                            <call-arg-name>comm</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="5">
+                            <call-arg-name>type</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="6">
+                            <call-arg-name>count</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="operation" analysis-arg-order="7">
+                            <op-name group="MUST_Resource" id="1">getSendModeStandard</op-name>
+                        </analysis-argument>
+                    </analysis-arguments>
+                </analysis>
+                <analysis order="pre" name="DP2PMatch:send" group="MUST_DistributedDeadlock">
+                    <analysis-arguments>
+                        <analysis-argument type="mapped" analysis-arg-order="0">
+                            <call-arg-name>pId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="1">
+                            <call-arg-name>lId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="2">
+                            <call-arg-name>dest</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="3">
+                            <call-arg-name>tag</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="4">
+                            <call-arg-name>comm</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="5">
+                            <call-arg-name>type</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="6">
+                            <call-arg-name>count</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="operation" analysis-arg-order="7">
+                            <op-name group="MUST_Resource" id="1">getSendModeStandard</op-name>
+                        </analysis-argument>
+                        <!--  This is an invalid value as we do not really need it, its in the analysis for convenience to make the function similar to an intra-layer function -->
+                        <analysis-argument type="mapped" analysis-arg-order="8">
+                            <call-arg-name>tag</call-arg-name>
+                        </analysis-argument>
+                    </analysis-arguments>
+                </analysis>
+                <analysis order="pre" name="BlockingState:srsend" group="MUST_Deadlock">
+                    <analysis-arguments>
+                        <analysis-argument type="mapped" analysis-arg-order="0">
+                            <call-arg-name>pId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="1">
+                            <call-arg-name>lId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="2">
+                            <call-arg-name>dest</call-arg-name>
+                        </analysis-argument>
+                    </analysis-arguments>
+                </analysis>
+            </analyses>
+            <operations>
+                <operation order="pre" name="getSendModeStandard" group="MUST_Resource" id="1">
+                    <operation-arguments>
+                    </operation-arguments>
+                </operation>
+            </operations>
+        </function>
+        <function return-type="int" name="splitRecv" wrapp-everywhere="yes">
+            <function-arguments>
+                <function-argument order="0" name="pId" type="uint64_t" intent="in">
+                </function-argument>
+                <function-argument order="1" name="lId" type="uint64_t" intent="in" />
+                <function-argument order="2" name="source" type="int" intent="in" />
+                <function-argument order="3" name="tag" type="int" intent="in" />
+                <function-argument order="4" name="comm" type="@COMM_F_TYPE@" intent="in" />
+                <function-argument order="5" name="type" type="@DATATYPE_F_TYPE@" intent="in" />
+                <function-argument order="6" name="count" type="int" intent="in" />
+            </function-arguments>
+            <analyses>
+                <analysis order="pre" name="P2PMatch:recv" group="MUST_Deadlock">
+                    <analysis-arguments>
+                        <analysis-argument type="mapped" analysis-arg-order="0">
+                            <call-arg-name>pId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="1">
+                            <call-arg-name>lId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="2">
+                            <call-arg-name>source</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="3">
+                            <call-arg-name>tag</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="4">
+                            <call-arg-name>comm</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="5">
+                            <call-arg-name>type</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="6">
+                            <call-arg-name>count</call-arg-name>
+                        </analysis-argument>
+                    </analysis-arguments>
+                </analysis>
+                <analysis order="pre" name="MsgMatchReduction:recv" group="MUST_Deadlock">
+                    <analysis-arguments>
+                        <analysis-argument type="mapped" analysis-arg-order="0">
+                            <call-arg-name>pId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="1">
+                            <call-arg-name>lId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="2">
+                            <call-arg-name>source</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="3">
+                            <call-arg-name>tag</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="4">
+                            <call-arg-name>comm</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="5">
+                            <call-arg-name>type</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="6">
+                            <call-arg-name>count</call-arg-name>
+                        </analysis-argument>
+                    </analysis-arguments>
+                </analysis>
+                <analysis order="pre" name="DP2PMatch:recv" group="MUST_DistributedDeadlock">
+                    <analysis-arguments>
+                        <analysis-argument type="mapped" analysis-arg-order="0">
+                            <call-arg-name>pId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="1">
+                            <call-arg-name>lId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="2">
+                            <call-arg-name>source</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="3">
+                            <call-arg-name>tag</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="4">
+                            <call-arg-name>comm</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="5">
+                            <call-arg-name>type</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="6">
+                            <call-arg-name>count</call-arg-name>
+                        </analysis-argument>
+                    </analysis-arguments>
+                </analysis>
+                <analysis order="pre" name="BlockingState:receive" group="MUST_Deadlock">
+                    <analysis-arguments>
+                        <analysis-argument type="mapped" analysis-arg-order="0">
+                            <call-arg-name>pId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="1">
+                            <call-arg-name>lId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="2">
+                            <call-arg-name>source</call-arg-name>
+                        </analysis-argument>
+                    </analysis-arguments>
+                </analysis>
+            </analyses>
+            <operations>
+            </operations>
+        </function>
+        <function return-type="int" name="splitStart">
+            <function-arguments>
+                <function-argument order="0" name="pId" type="uint64_t" intent="in">
+                </function-argument>
+                <function-argument order="1" name="lId" type="uint64_t" intent="in" />
+                <function-argument order="2" name="request" type="@REQUEST_F_TYPE@" intent="in" />
+            </function-arguments>
+            <analyses>
+                <analysis order="post" name="P2PMatch:startPersistent" group="MUST_Deadlock">
+                    <analysis-arguments>
+                        <analysis-argument type="mapped" analysis-arg-order="0">
+                            <call-arg-name>pId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="1">
+                            <call-arg-name>lId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="2">
+                            <call-arg-name>request</call-arg-name>
+                        </analysis-argument>
+                    </analysis-arguments>
+                </analysis>
+                <analysis order="post" name="MsgMatchReduction:startPersistent" group="MUST_Deadlock">
+                    <analysis-arguments>
+                        <analysis-argument type="mapped" analysis-arg-order="0">
+                            <call-arg-name>pId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="1">
+                            <call-arg-name>lId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="2">
+                            <call-arg-name>request</call-arg-name>
+                        </analysis-argument>
+                    </analysis-arguments>
+                </analysis>
+                <analysis order="post" name="DP2PMatch:startPersistent" group="MUST_DistributedDeadlock">
+                    <analysis-arguments>
+                        <analysis-argument type="mapped" analysis-arg-order="0">
+                            <call-arg-name>pId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="1">
+                            <call-arg-name>lId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="2">
+                            <call-arg-name>request</call-arg-name>
+                        </analysis-argument>
+                        <!--  This is an invalid value as we do not really need it, its in the analysis for convenience to make the function similar to an intra-layer function -->
+                        <analysis-argument type="mapped" analysis-arg-order="3">
+                            <call-arg-name>request</call-arg-name>
+                        </analysis-argument>
+                    </analysis-arguments>
+                </analysis>
+            </analyses>
+            <operations>
+            </operations>
+        </function>
+    </functions>
+</api-specification>

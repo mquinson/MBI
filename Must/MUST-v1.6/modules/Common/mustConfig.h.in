@@ -1,0 +1,236 @@
+/* This file is part of MUST (Marmot Umpire Scalable Tool)
+ *
+ * Copyright (C)
+ *  2010-2016 ZIH, Technische Universitaet Dresden, Federal Republic of Germany
+ *  2010-2018 Lawrence Livermore National Laboratories, United States of America
+ *  2013-2018 RWTH Aachen University, Federal Republic of Germany
+ *
+ * See the LICENSE file in the package base directory for details
+ */
+
+/**
+ * @file mustConfig.h
+ *       Header with configuration defines.
+ *
+ *  @date 22.02.2011
+ *  @author Tobias Hilbrich
+ */
+
+
+#ifndef MUSTCONFIG_H
+#define MUSTCONFIG_H
+
+/* Define if Fortran support is enabled. */
+#cmakedefine GTI_ENABLE_FORTRAN 1
+
+/* Define if mpi.h has MPI_LONG_LONG_INT */
+#cmakedefine HAVE_MPI_LONG_LONG_INT 1
+
+/* Define if mpi.h has MPI_LONG_LONG */
+#cmakedefine HAVE_MPI_LONG_LONG 1
+
+/* Define if mpi.h has MPI_UNSIGNED_LONG_LONG */
+#cmakedefine HAVE_MPI_UNSIGNED_LONG_LONG 1
+
+/* Define if mpi.h has MPI_WCHAR */
+#cmakedefine HAVE_MPI_WCHAR 1
+
+/* Define if mpi.h has MPI_SIGNED_CHAR */
+#cmakedefine HAVE_MPI_SIGNED_CHAR 1
+
+/* Define if mpi.h has MPI_C_BOOL */
+#cmakedefine HAVE_MPI_C_BOOL 1
+
+/* Define if mpi.h has MPI_INT8_T */
+#cmakedefine HAVE_MPI_INT8_T 1
+
+/* Define if mpi.h has MPI_INT16_T */
+#cmakedefine HAVE_MPI_INT16_T 1
+
+/* Define if mpi.h has MPI_INT32_T */
+#cmakedefine HAVE_MPI_INT32_T 1
+
+/* Define if mpi.h has MPI_INT64_T */
+#cmakedefine HAVE_MPI_INT64_T 1
+
+/* Define if mpi.h has MPI_UINT8_T */
+#cmakedefine HAVE_MPI_UINT8_T 1
+
+/* Define if mpi.h has MPI_UINT16_T */
+#cmakedefine HAVE_MPI_UINT16_T 1
+
+/* Define if mpi.h has MPI_UINT32_T */
+#cmakedefine HAVE_MPI_UINT32_T 1
+
+/* Define if mpi.h has MPI_UINT64_T */
+#cmakedefine HAVE_MPI_UINT64_T 1
+
+/* Define if mpi.h has MPI_C_COMPLEX */
+#cmakedefine HAVE_MPI_C_COMPLEX 1
+
+/* Define if mpi.h has MPI_C_FLOAT_COMPLEX */
+#cmakedefine HAVE_MPI_C_FLOAT_COMPLEX 1
+
+/* Define if mpi.h has MPI_C_DOUBLE_COMPLEX */
+#cmakedefine HAVE_MPI_C_DOUBLE_COMPLEX 1
+
+/* Define if mpi.h has MPI_C_LONG_DOUBLE_COMPLEX */
+#cmakedefine HAVE_MPI_C_LONG_DOUBLE_COMPLEX 1
+
+/* Define if mpi.h has MPI_CXX_BOOL */
+#cmakedefine HAVE_MPI_CXX_BOOL 1
+
+/* Define if mpi.h has MPI_CXX_FLOAT_COMPLEX */
+#cmakedefine HAVE_MPI_CXX_FLOAT_COMPLEX 1
+
+/* Define if mpi.h has MPI_CXX_DOUBLE_COMPLEX */
+#cmakedefine HAVE_MPI_CXX_DOUBLE_COMPLEX 1
+
+/* Define if mpi.h has MPI_CXX_LONG_DOUBLE_COMPLEX */
+#cmakedefine HAVE_MPI_CXX_LONG_DOUBLE_COMPLEX 1
+
+/* Define if mpi.h has MPI_DOUBLE_COMPLEX */
+#cmakedefine HAVE_MPI_DOUBLE_COMPLEX 1
+
+/* Define if mpi.h has MPI_REAL2 */
+#cmakedefine HAVE_MPI_REAL2 1
+
+/* Define if mpi.h has MPI_REAL4 */
+#cmakedefine HAVE_MPI_REAL4 1
+
+/* Define if mpi.h has MPI_REAL8 */
+#cmakedefine HAVE_MPI_REAL8 1
+
+/* Define if mpi.h has MPI_REAL16 */
+#cmakedefine HAVE_MPI_REAL16 1
+
+/* Define if mpi.h has MPI_INTEGER1 */
+#cmakedefine HAVE_MPI_INTEGER1 1
+
+/* Define if mpi.h has MPI_INTEGER2 */
+#cmakedefine HAVE_MPI_INTEGER2 1
+
+/* Define if mpi.h has MPI_INTEGER4 */
+#cmakedefine HAVE_MPI_INTEGER4 1
+
+/* Define if mpi.h has MPI_INTEGER8 */
+#cmakedefine HAVE_MPI_INTEGER8 1
+
+/* Define if mpi.h has MPI_INTEGER16 */
+#cmakedefine HAVE_MPI_INTEGER16 1
+
+/* Define if mpi.h has MPI_COMPLEX8 */
+#cmakedefine HAVE_MPI_COMPLEX8 1
+
+/* Define if mpi.h has MPI_COMPLEX16 */
+#cmakedefine HAVE_MPI_COMPLEX16 1
+
+/* Define if mpi.h has MPI_COMPLEX32 */
+#cmakedefine HAVE_MPI_COMPLEX32 1
+
+/* Define if mpi.h has MPI_LOGICAL1 */
+#cmakedefine HAVE_MPI_LOGICAL1 1
+
+/* Define if mpi.h has MPI_LOGICAL2 */
+#cmakedefine HAVE_MPI_LOGICAL2 1
+
+/* Define if mpi.h has MPI_LOGICAL4 */
+#cmakedefine HAVE_MPI_LOGICAL4 1
+
+/* Define if mpi.h has MPI_LOGICAL8 */
+#cmakedefine HAVE_MPI_LOGICAL8 1
+
+/* Define if mpi.h has MPI_LOGICAL16 */
+#cmakedefine HAVE_MPI_LOGICAL16 1
+
+/* Define if mpi.h has MPI_2COMPLEX */
+#cmakedefine HAVE_MPI_2COMPLEX 1
+
+/* Define if mpi.h has MPI_2DOUBLE_COMPLEX */
+#cmakedefine HAVE_MPI_2DOUBLE_COMPLEX 1
+
+/* Define if mpi.h has MPI_Type_get_extent */
+#cmakedefine HAVE_MPI_TYPE_GET_EXTENT 1
+
+/* Define if mpi.h has MPI_Type_get_true_extent */
+#cmakedefine HAVE_MPI_TYPE_GET_TRUE_EXTENT 1
+
+/* Define if mpi.h has MPI_get_address */
+#cmakedefine HAVE_MPI_GET_ADDRESS 1
+
+/* Define if mpi.h has MPI_Type_create_struct */
+#cmakedefine HAVE_MPI_TYPE_CREATE_STRUCT 1
+
+/* Define if mpi.h has MPI_Type_create_hvector */
+#cmakedefine HAVE_MPI_TYPE_CREATE_HVECTOR 1
+
+/* Define if mpi.h has MPI_Type_create_hindexed */
+#cmakedefine HAVE_MPI_TYPE_CREATE_HINDEXED 1
+
+/* Define if mpi.h has MPI_Type_create_resized */
+#cmakedefine HAVE_MPI_TYPE_CREATE_RESIZED 1
+
+/* Define if mpi.h has MPI_Type_create_resized */
+#cmakedefine HAVE_MPI_COMM_CREATE_KEYVAL 1
+
+/* Define if mpi.h has MPI_STATUS_IGNORE */
+#cmakedefine HAVE_MPI_STATUS_IGNORE 1
+
+/* Define if mpi.h has MPI_STATUSES_IGNORE */
+#cmakedefine HAVE_MPI_STATUSES_IGNORE 1
+
+/* Define if mpi.h has MPI_comm_c2f() and MPI_comm_f2c() */
+#cmakedefine HAVE_MPI_COMM_C2F 1
+
+/* Define if mpi.h has MPI_errhandler_c2f() and MPI_errhandler_f2c() */
+#cmakedefine HAVE_MPI_ERRHANDLER_C2F 1
+
+/* Define if mpi.h has MPI_file_c2f() and MPI_file_f2c() */
+#cmakedefine HAVE_MPI_FILE_C2F 1
+
+/* Define if mpi.h has MPI_group_c2f() and MPI_group_f2c() */
+#cmakedefine HAVE_MPI_GROUP_C2F 1
+
+/* Define if mpi.h has MPI_info_c2f() and MPI_info_f2c() */
+#cmakedefine HAVE_MPI_INFO_C2F 1
+
+/* Define if mpi.h has MPI_op_c2f() and MPI_op_f2c() */
+#cmakedefine HAVE_MPI_OP_C2F 1
+
+/* Define if mpi.h has MPI_request_c2f() and MPI_request_f2c() */
+#cmakedefine HAVE_MPI_REQUEST_C2F 1
+
+/* Define if mpi.h has MPI_Status_c2f() and MPI_Status_f2c() */
+#cmakedefine HAVE_MPI_STATUS_C2F 1
+
+/* Define if mpi.h has MPI_type_c2f() and MPI_type_f2c() */
+#cmakedefine HAVE_MPI_TYPE_C2F 1
+
+/* Define if mpi.h has MPI_win_c2f() and MPI_win_f2c() */
+#cmakedefine HAVE_MPI_WIN_C2F 1
+
+/* Define if mpi.h has MPI_Dist_graph_neighbors_count */
+#cmakedefine HAVE_MPI_DIST_GRAPH_NEIGHBORS_COUNT 1
+
+/* Define if mpi.h has MPI_DISTRIBUTE_BLOCK */
+#cmakedefine HAVE_MPI_DISTRIBUTE_BLOCK 1
+
+/* Define if mpi.h has MPI_DIST_GRAPH */
+#cmakedefine HAVE_MPI_DIST_GRAPH 1
+
+/* Define if mpi.h has MPI_ORDER_C */
+#cmakedefine HAVE_MPI_ORDER_C 1
+
+/* Define if mpi.h has MPI_Type_create_struct */
+#cmakedefine HAVE_MPI_TYPE_CREATE_STRUCT 1
+
+/* Define if the callpath module is available */
+#cmakedefine USE_CALLPATH 1
+
+/*  Define if the dot tool is available */
+#cmakedefine DOT "@DOT@"
+
+/*  Define for filepath of our timeout script */
+#cmakedefine MUST_TIMEOUT_SCRIPT "@MUST_TIMEOUT_SCRIPT@"
+
+#endif /* MUSTCONFIG_H */

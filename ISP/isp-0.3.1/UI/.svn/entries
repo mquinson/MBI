@@ -1,0 +1,140 @@
+8
+
+dir
+6031
+svn://proof.cs.utah.edu/isp/branches/wfchiang/Oct_2011_ispUI_fix/UI
+svn://proof.cs.utah.edu
+
+
+
+2011-11-08T00:28:56.428349Z
+6024
+wfchiang
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+f26f91df-4c49-0410-b835-8340b77052b9
+
+classsrc.stamp
+file
+
+
+
+
+2011-11-09T22:21:02.000000Z
+1ded054093de910d9786c62bc4fe8cc6
+2011-11-08T00:28:56.428349Z
+6024
+wfchiang
+
+Graph
+dir
+
+Makefile.in
+file
+
+
+
+
+2011-11-09T22:21:02.000000Z
+329f36fd27caf37335bf983304ee4d63
+2011-11-08T00:28:56.428349Z
+6024
+wfchiang
+
+ispui.jar
+file
+
+
+
+
+2011-11-09T22:21:02.000000Z
+59fe316586d650addb7b4b07b0ecfc16
+2011-11-08T00:28:56.428349Z
+6024
+wfchiang
+has-props
+
+manifest.txt
+file
+
+
+
+
+2011-11-09T22:21:02.000000Z
+c45b7f3926340ae2bc5c34b5ec91b7a3
+2011-11-08T00:28:56.428349Z
+6024
+wfchiang
+
+lib
+dir
+
+Data
+dir
+
+Makefile.am
+file
+
+
+
+
+2011-11-09T22:21:02.000000Z
+ddd5c68a44f76105cae3d0ea9870516f
+2011-11-08T00:28:56.428349Z
+6024
+wfchiang
+
+Parser
+dir
+
+Makefile.orig
+file
+
+
+
+
+2011-11-09T22:21:02.000000Z
+43d6e64951fbc117d32e77c5787922e9
+2011-11-08T00:28:56.428349Z
+6024
+wfchiang
+
+UI
+dir
+
+Makefile
+file
+
+
+
+
+2011-11-09T22:21:02.000000Z
+051015dccb4bffe02109dbf5fa2780a5
+2011-11-08T00:28:56.428349Z
+6024
+wfchiang
+
+build.xml
+file
+
+
+
+
+2011-11-09T22:21:02.000000Z
+fcca53d793c799c0250bb7b093806407
+2011-11-08T00:28:56.428349Z
+6024
+wfchiang
+

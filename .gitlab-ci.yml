@@ -1,0 +1,544 @@
+image: registry.gitlab.com/mwapl/benchmarking-mpi:latest
+
+variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+
+stages: 
+    - build
+    - test
+    - datacollec
+    
+build-must:
+    stage: build
+    needs: []
+    variables:
+        GIT_SUBMODULE_STRATEGY: none
+    script:
+        - cd Must/MUST-v1.6
+        - mkdir BUILD
+        - cd BUILD
+        - cmake --version
+        - CC=$(which gcc) CXX=$(which gcc++) FC=$(which gfortran) cmake ../ -DCMAKE_INSTALL_PREFIX=/builds/Mwapl/benchmarking-mpi/Must/MUST-v1.6 -DCMAKE_BUILD_TYPE=Release
+        - make -j8 install
+    artifacts:
+        untracked: false
+        expire_in: 30 days
+        paths:
+            - Must/MUST-v1.6/*
+            
+test-mustdist-50:
+    stage: test
+    needs:
+        - job: build-must
+          artifacts: true
+    variables:
+        GIT_SUBMODULE_STRATEGY: none
+    script:
+        - export PATH=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Must/MUST-v1.6/bin:$PATH
+        - cd Benchmarks
+        - for file in $(ls /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Benchmarks/microbenchs/*.c | head -50); do python3.8 runner.py -x mustdist -o bench_mustdist50.csv -t 300 --job $CI_JOB_ID $file; done
+    artifacts:
+        untracked: false
+        expire_in: 30 days
+        when: always
+        paths:
+            - Benchmarks/bench_mustdist50.csv
+            - Benchmarks/*.txt
+            
+test-mustdist-100:
+    stage: test
+    needs:
+        - job: build-must
+          artifacts: true
+    variables:
+        GIT_SUBMODULE_STRATEGY: none
+    script:
+        - export PATH=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Must/MUST-v1.6/bin:$PATH
+        - cd Benchmarks
+        - for file in $(ls /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Benchmarks/microbenchs/*.c | tail -n +51 | head -50); do python3.8 runner.py -x mustdist -o bench_mustdist100.csv -t 300 --job $CI_JOB_ID $file; done
+    artifacts:
+        untracked: false
+        expire_in: 30 days
+        when: always
+        paths:
+            - Benchmarks/bench_mustdist100.csv
+            - Benchmarks/*.txt
+            
+test-mustdist-150:
+    stage: test
+    needs:
+        - job: build-must
+          artifacts: true
+    variables:
+        GIT_SUBMODULE_STRATEGY: none
+    script:
+        - export PATH=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Must/MUST-v1.6/bin:$PATH
+        - cd Benchmarks
+        - for file in $(ls /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Benchmarks/microbenchs/*.c | tail -n +101 | head -50); do python3.8 runner.py -x mustdist -o bench_mustdist150.csv -t 300 --job $CI_JOB_ID $file; done
+    artifacts:
+        untracked: false
+        expire_in: 30 days
+        when: always
+        paths:
+            - Benchmarks/bench_mustdist150.csv
+            - Benchmarks/*.txt
+            
+test-mustdist-200:
+    stage: test
+    needs:
+        - job: build-must
+          artifacts: true
+    variables:
+        GIT_SUBMODULE_STRATEGY: none
+    script:
+        - export PATH=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Must/MUST-v1.6/bin:$PATH
+        - cd Benchmarks
+        - for file in $(ls /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Benchmarks/microbenchs/*.c | tail -n +151 | head -50); do python3.8 runner.py -x mustdist -o bench_mustdist200.csv -t 300 --job $CI_JOB_ID $file; done
+    artifacts:
+        untracked: false
+        expire_in: 30 days
+        when: always
+        paths:
+            - Benchmarks/bench_mustdist200.csv
+            - Benchmarks/*.txt
+            
+test-mustdist-medium:
+    stage: test
+    needs:
+        - job: build-must
+          artifacts: true
+    script:
+        - export PATH=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Must/MUST-v1.6/bin:$PATH
+        - cd Benchmarks
+        - for file in $(ls /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Benchmarks/mediumbenchs/*.c); do python3.8 runner.py -x mustdist -o bench_mustdist_med.csv -t 600 $file; done
+    artifacts:
+        untracked: false
+        expire_in: 30 days
+        when: always
+        paths:
+            - Benchmarks/bench_mustdist_med.csv
+            - Benchmarks/*.txt
+
+build-aislinn:
+    stage: build
+    needs: []
+    image: ubuntu:18.04
+    before_script:
+        - apt-get update
+        - apt-get install -y gcc python2.7 python3.8 python-jinja2 autotools-dev automake build-essential
+    script:
+        - cp -r ./Aislinn/aislinn-valgrind-312 ./Aislinn/aislinn-git/valgrind  
+        - cd Aislinn/aislinn-git/valgrind
+        - sh autogen.sh
+        - ./configure
+        - make
+        - cd ../
+        - ./waf configure
+        - ./waf
+    artifacts:
+        untracked: false
+        expire_in: 30 days
+        when: always
+        paths:
+            - Aislinn/aislinn-git/*
+
+test-aislinn:
+    stage: test
+    image: ubuntu:18.04
+    variables:
+        GIT_SUBMODULE_STRATEGY: none
+    needs:
+        - job: build-aislinn
+          artifacts: true 
+    before_script:
+        - apt-get update
+        - apt-get install -y gcc python2.7 python3.8 python-jinja2 autotools-dev automake build-essential
+    script:
+        - export PATH=$PATH:/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Aislinn/aislinn-git/bin/
+        - cd Benchmarks
+        - for file in $(ls /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Benchmarks/microbenchs/*.c); do python3.8 runner.py -x aislinn -o bench_aislinn.csv -t 300 --job $CI_JOB_ID $file; done
+    artifacts:
+        untracked: false
+        expire_in: 30 days
+        when: always
+        paths:
+            - ./Benchmarks/bench_aislinn.csv
+            - Benchmarks/*.txt
+
+build-civl:
+    stage: build
+    needs: []
+    variables:
+        GIT_SUBMODULE_STRATEGY: none
+    script:
+        - cd CIVL/CIVL-1.20_5259/lib
+        - java -jar civl-1.20_5259.jar config 
+    artifacts:
+        untracked: false
+        expire_in: 30 days
+        when: always
+        paths:
+            - ./CIVL/*
+
+test-civl:
+    stage: test
+    needs:
+        - job: build-civl
+          artifacts: false
+    variables:
+        GIT_SUBMODULE_STRATEGY: none
+    script:
+        - cd Benchmarks
+        - for file in $(ls /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Benchmarks/microbenchs/*.c); do python3.8 runner.py -x civl -o bench_civl.csv -t 300 --job $CI_JOB_ID $file; done
+    artifacts:
+        untracked: false
+        expire_in: 30 days
+        when: always
+        paths:
+            - Benchmarks/bench_civl.csv
+            - Benchmarks/*.txt
+            
+test-civl-medium:
+    stage: test
+    needs:
+        - job: build-civl
+          artifacts: false
+    variables:
+        GIT_SUBMODULE_STRATEGY: none
+    script:
+        - cd Benchmarks
+        - for file in $(ls /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Benchmarks/mediumbenchs/*.c); do python3.8 runner.py -x civl -o bench_civl_med.csv -t 600 $file; done
+    artifacts:
+        untracked: false
+        expire_in: 30 days
+        when: always
+        paths:
+            - Benchmarks/bench_civl_med.csv
+            - Benchmarks/*.txt
+            
+build-parcoach:
+    stage: build
+    needs : []
+    script:
+        - ln -s $(which clang) /usr/lib/llvm-9/bin/clang
+        - cd Parcoach/parcoach
+        - mkdir build
+        - cd build
+        - cmake .. -DCMAKE_C_COMPILER=clang -DLLVM_DIR=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Parcoach/llvm-project/build
+        - make -j$(nproc)
+        - ctest
+    artifacts:
+        untracked: false
+        expire_in: 30 days
+        when: always
+        paths:
+            - ./Parcoach/*
+            
+test-parcoach:
+    stage: test
+    needs:
+        - job: build-parcoach
+          artifacts: true
+    variables:
+        GIT_SUBMODULE_STRATEGY: none
+    script:
+        - cd Benchmarks
+        - for file in $(ls /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Benchmarks/microbenchs/*.c); do python3.8 runner.py -x parcoach -o bench_parcoach.csv -t 300 --job $CI_JOB_ID $file; done    
+    artifacts:
+        untracked: false
+        expire_in: 30 days
+        when: always
+        paths:
+            - Benchmarks/bench_parcoach.csv
+            - Benchmarks/*.txt
+            
+test-parcoach-medium:
+    stage: test
+    needs:
+        - job: build-parcoach
+          artifacts: true
+    variables:
+        GIT_SUBMODULE_STRATEGY: none
+    script:
+        - cd Benchmarks
+        - for file in $(ls /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Benchmarks/mediumbenchs/*.c); do python3.8 runner.py -x parcoach -o bench_parcoach_med.csv -t 600 $file; done    
+    artifacts:
+        untracked: false
+        expire_in: 30 days
+        when: always
+        paths:
+            - Benchmarks/bench_parcoach_med.csv
+            - Benchmarks/*.txt
+            
+
+build-simgrid:
+    stage: build
+    needs : []
+    script:
+        - cd SimGrid/simgrid
+        - cmake -DCMAKE_INSTALL_PREFIX=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/SimGrid/build -Denable_model-checking=ON .
+        - make -j$(nproc) install
+    artifacts:
+        untracked: false
+        expire_in: 30 days
+        when: always
+        paths:
+            - ./SimGrid/*
+
+test-simgrid:
+    stage: test
+    needs:
+        - job: build-simgrid
+          artifacts: true
+    variables:
+        GIT_SUBMODULE_STRATEGY: none
+    script:
+        - export PATH=$PATH:/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/SimGrid/build/bin/
+        - cp SimGrid/simgrid/examples/platforms/cluster_backbone.xml Benchmarks/cluster.xml
+        - cd Benchmarks
+        - for file in $(ls /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Benchmarks/microbenchs/*.c); do python3.8 runner.py -x simgrid -o bench_simgrid.csv -t 300 --job $CI_JOB_ID $file; done
+    artifacts:
+        untracked: false
+        expire_in: 30 days
+        when: always
+        paths:
+            - Benchmarks/bench_simgrid.csv
+            - Benchmarks/*.txt
+            
+test-simgrid-medium:
+    stage: test
+    needs:
+        - job: build-simgrid
+          artifacts: true
+    variables:
+        GIT_SUBMODULE_STRATEGY: none
+    script:
+        - export PATH=$PATH:/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/SimGrid/build/bin/
+        - cp SimGrid/simgrid/examples/platforms/cluster_backbone.xml Benchmarks/cluster.xml
+        - cd Benchmarks
+        - for file in $(ls /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Benchmarks/mediumbenchs/*.c); do python3.8 runner.py -x simgrid -o bench_simgrid_med.csv -t 600 $file; done
+    artifacts:
+        untracked: false
+        expire_in: 30 days
+        when: always
+        paths:
+            - Benchmarks/bench_simgrid_med.csv
+            - Benchmarks/*.txt
+            
+build-isp:
+    stage: build
+    needs : []
+    variables:  
+        GIT_SUBMODULE_STRATEGY: none
+    script:
+        - cd ISP/isp-0.3.1
+        - mkdir BUILD 
+        - ./configure --prefix=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/ISP/isp-0.3.1/BUILD --with-mpi-inc-dir=/usr/lib/x86_64-linux-gnu/mpich/include
+        - sed -i "s/-source 1.5 -target 1.5 -classpath/-source 1.7 -target 1.7 -classpath/" UI/Makefile*
+        - make
+        - make install
+    artifacts:
+        untracked: false
+        expire_in: 30 days
+        when: always
+        paths:
+            - ./ISP/*    
+
+test-isp:
+    stage: test
+    needs:
+        - job: build-isp
+          artifacts: true
+    variables:
+        GIT_SUBMODULE_STRATEGY: none
+    before_script:
+        - apt-get update
+        - apt-get install -y lsof
+    script:
+        - export PATH=$PATH:/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/ISP/isp-0.3.1/BUILD/bin/
+        - cd Benchmarks
+        - for file in $(ls /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Benchmarks/microbenchs/*.c); do python3.8 runner.py -x isp -o bench_isp.csv -t 300 --job $CI_JOB_ID $file; done
+    artifacts:
+        untracked: false
+        expire_in: 30 days
+        when: always
+        paths:
+            - Benchmarks/bench_isp.csv
+            - Benchmarks/*.txt
+
+simgrid-svg:
+    stage: datacollec
+    needs:
+        - job: test-simgrid
+          artifacts: true
+    variables:
+        GIT_SUBMODULE_STRATEGY: none
+    before_script:
+      - apt-get update
+      - apt-get install -y python3-pip libcairo2
+      - pip3 install drawSvg
+    script:
+      - cd Data
+      - python3.8 gen_svg.py -i /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Benchmarks/bench_simgrid.csv -o simgrid_result_LOG --header false --mode log
+      - python3.8 gen_svg.py -i /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Benchmarks/bench_simgrid.csv -o simgrid_result_SRC --header false --mode src
+    artifacts:
+        untracked: false
+        expire_in: 30 days
+        when: always
+        paths:
+            - Data/simgrid_result_LOG.svg
+            - Data/simgrid_result_SRC.svg
+
+parcoach-svg:
+    stage: datacollec
+    needs:
+        - job: test-parcoach
+          artifacts: true
+    variables:
+        GIT_SUBMODULE_STRATEGY: none
+    before_script:
+      - apt-get update
+      - apt-get install -y python3-pip libcairo2
+      - pip3 install drawSvg
+    script:
+      - cd Data
+      - python3.8 gen_svg.py -i /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Benchmarks/bench_parcoach.csv -o parcoach_result_LOG --header false --mode log
+      - python3.8 gen_svg.py -i /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Benchmarks/bench_parcoach.csv -o parcoach_result_SRC --header false --mode src
+    artifacts:
+        untracked: false
+        expire_in: 30 days
+        when: always
+        paths:
+            - Data/parcoach_result_LOG.svg
+            - Data/parcoach_result_SRC.svg
+isp-svg:
+    stage: datacollec
+    needs:
+        - job: test-isp
+          artifacts: true
+    variables:
+        GIT_SUBMODULE_STRATEGY: none
+    before_script:
+      - apt-get update
+      - apt-get install -y python3-pip libcairo2
+      - pip3 install drawSvg
+    script:
+      - cd Data
+      - python3.8 gen_svg.py -i /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Benchmarks/bench_isp.csv -o isp_result_LOG --header false --mode log
+      - python3.8 gen_svg.py -i /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Benchmarks/bench_isp.csv -o isp_result_SRC --header false --mode src
+    artifacts:
+        untracked: false
+        expire_in: 30 days
+        when: always
+        paths:
+            - Data/isp_result_LOG.svg
+            - Data/isp_result_SRC.svg
+
+aislinn-svg:
+    stage: datacollec
+    needs:
+        - job: test-aislinn
+          artifacts: true
+    variables:
+        GIT_SUBMODULE_STRATEGY: none
+    before_script:
+      - apt-get update
+      - apt-get install -y python3-pip libcairo2
+      - pip3 install drawSvg
+    script:
+      - cd Data
+      - python3.8 gen_svg.py -i /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Benchmarks/bench_aislinn.csv -o aislinn_result_LOG --header false --mode log
+      - python3.8 gen_svg.py -i /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Benchmarks/bench_aislinn.csv -o aislinn_result_SRC --header false --mode src
+    artifacts:
+        untracked: false
+        expire_in: 30 days
+        when: always
+        paths:
+            - Data/aislinn_result_LOG.svg
+            - Data/aislinn_result_SRC.svg
+
+civl-svg:
+    stage: datacollec
+    needs:
+        - job: test-civl
+          artifacts: true
+    variables:
+        GIT_SUBMODULE_STRATEGY: none
+    before_script:
+      - apt-get update
+      - apt-get install -y python3-pip libcairo2
+      - pip3 install drawSvg
+    script:
+      - cd Data
+      - python3.8 gen_svg.py -i /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Benchmarks/bench_civl.csv -o civl_result_LOG --header false --mode log
+      - python3.8 gen_svg.py -i /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Benchmarks/bench_civl.csv -o civl_result_SRC --header false --mode src
+    artifacts:
+        untracked: false
+        expire_in: 30 days
+        when: always
+        paths:
+            - Data/civl_result_LOG.svg
+            - Data/civl_result_SRC.svg
+
+must-svg:
+    stage: datacollec
+    needs:
+        - job: test-mustdist-50
+          artifacts: true
+        - job: test-mustdist-100
+          artifacts: true
+        - job: test-mustdist-150
+          artifacts: true
+        - job: test-mustdist-200
+          artifacts: true
+    variables:
+        GIT_SUBMODULE_STRATEGY: none
+    before_script:
+      - apt-get update
+      - apt-get install -y python3-pip libcairo2
+      - pip3 install drawSvg
+    script:
+      - cat ./Benchmarks/*.csv >> result.csv
+      - cd Data
+      - python3.8 gen_svg.py -i /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/result.csv -o must_result_LOG --header false --mode log
+      - python3.8 gen_svg.py -i /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/result.csv -o must_result_SRC --header false --mode src
+    artifacts:
+        untracked: false
+        expire_in: 30 days
+        when: always
+        paths:
+            - Data/must_result_LOG.svg
+            - Data/must_result_SRC.svg
+            
+data-collect:
+    stage: datacollec
+    needs:
+        - job: test-mustdist-50
+          artifacts: true
+        - job: test-mustdist-100
+          artifacts: true
+        - job: test-mustdist-150
+          artifacts: true
+        - job: test-mustdist-200
+          artifacts: true
+        - job: test-civl
+          artifacts: true
+        - job: test-parcoach
+          artifacts: true
+        - job: test-simgrid
+          artifacts: true
+        - job: test-isp
+          artifacts: true
+        - job: test-aislinn
+          artifacts: true
+    variables:
+        GIT_SUBMODULE_STRATEGY: none
+    script:
+        - echo "filename;id;tool;TO;NP;buff;expected;result;jobid" > result.csv
+        - cat ./Benchmarks/*.csv >> result.csv
+    artifacts:
+        untracked: false
+        expire_in: 30 days
+        when: always
+        paths:
+            - ./result.csv

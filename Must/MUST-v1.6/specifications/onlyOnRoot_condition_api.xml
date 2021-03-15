@@ -1,0 +1,199 @@
+<?xml version="1.0"?>
+
+<!--
+  This file is part of MUST (Marmot Umpire Scalable Tool)
+
+  Copyright (C)
+    2010-2016 ZIH, Technische Universitaet Dresden, Federal Republic of Germany
+    2010-2018 Lawrence Livermore National Laboratories, United States of America
+    2013-2018 RWTH Aachen University, Federal Republic of Germany
+
+  See the LICENSE file in the package base directory for details
+-->
+
+<!DOCTYPE api-specification SYSTEM "@MUST_SPECIFICATION_DTD_PATH@/api-specification.dtd">
+<api-specification unique-name="OnlyOnRoot_Condition_API">
+    <api-headers>
+        <header>OnlyOnRootConditionApi.h</header>
+    </api-headers>
+    <functions>
+        <function return-type="int" name="MustOnRootTransferCounts" wrapp-everywhere="yes">
+            <function-arguments>
+                <function-argument order="0" name="pId" type="uint64_t" intent="in" />
+                <function-argument order="1" name="lId" type="uint64_t" intent="in" />
+                <function-argument order="2" name="isSend" type="int" intent="in" >
+                </function-argument>
+                <function-argument order="3" name="buf" type="MustAddressType" intent="in" />
+                <function-argument order="4" name="bufArgId" type="@ArgId_TYPE@" intent="in" />
+                <function-array-argument order="5" name="counts" type="const int" intent="inout" typeAfterArg="[]">
+                    <length-argument type="argument">
+                        <call-arg-name>commSize</call-arg-name>
+                    </length-argument>
+                </function-array-argument>
+                <function-argument order="6" name="countsArgId" type="@ArgId_TYPE@" intent="in">
+                </function-argument>
+                <function-array-argument order="7" name="displs" type="const int" intent="inout" typeAfterArg="[]">
+                    <length-argument type="argument">
+                        <call-arg-name>commSize</call-arg-name>
+                    </length-argument>
+                </function-array-argument>
+                <function-argument order="8" name="displsArgId" type="@ArgId_TYPE@" intent="in">
+                </function-argument>
+                <function-argument order="9" name="type" type="@DATATYPE_F_TYPE@" intent="in">
+                </function-argument>
+                <function-argument order="10" name="typeArgId" type="@ArgId_TYPE@" intent="in">
+                </function-argument>
+                <function-argument order="11" name="commSize" type="int" intent="in">
+                </function-argument>
+            </function-arguments>
+            <analyses>
+                <analysis order="pre" name="IntegerChecks:warningIfZeroArray" group="MUST_BasicChecks">
+                    <analysis-arguments>
+                        <analysis-argument type="mapped" analysis-arg-order="0">
+                            <call-arg-name>pId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="1">
+                            <call-arg-name>lId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="2">
+                            <call-arg-name>countsArgId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="3">
+                            <call-arg-name>counts</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="4">
+                            <call-arg-name>commSize</call-arg-name>
+                        </analysis-argument>
+                    </analysis-arguments>
+                </analysis>
+                <analysis order="pre" name="IntegerChecks:errorIfLessThanZeroArray" group="MUST_BasicChecks">
+                    <analysis-arguments>
+                        <analysis-argument type="mapped" analysis-arg-order="0">
+                            <call-arg-name>pId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="1">
+                            <call-arg-name>lId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="2">
+                            <call-arg-name>countsArgId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="3">
+                            <call-arg-name>counts</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="4">
+                            <call-arg-name>commSize</call-arg-name>
+                        </analysis-argument>
+                    </analysis-arguments>
+                </analysis>
+                <analysis order="pre" name="IntegerChecks:errorIfLessThanZeroArray" group="MUST_BasicChecks">
+                    <analysis-arguments>
+                        <analysis-argument type="mapped" analysis-arg-order="0">
+                            <call-arg-name>pId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="1">
+                            <call-arg-name>lId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="2">
+                            <call-arg-name>displsArgId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="3">
+                            <call-arg-name>displs</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="4">
+                            <call-arg-name>commSize</call-arg-name>
+                        </analysis-argument>
+                    </analysis-arguments>
+                </analysis>
+                <analysis order="pre" name="DatatypeChecks:errorIfNotValidForCommunication" group="MUST_DatatypeChecks">
+                    <analysis-arguments>
+                        <analysis-argument type="mapped" analysis-arg-order="0">
+                            <call-arg-name>pId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="1">
+                            <call-arg-name>lId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="2">
+                            <call-arg-name>typeArgId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="3">
+                            <call-arg-name>type</call-arg-name>
+                        </analysis-argument>
+                    </analysis-arguments>
+                </analysis>
+            </analyses>
+            <operations>
+            </operations>
+        </function>
+        <function return-type="int" name="MustOnRootTransfer" wrapp-everywhere="yes">
+            <function-arguments>
+                <function-argument order="0" name="pId" type="uint64_t" intent="in" />
+                <function-argument order="1" name="lId" type="uint64_t" intent="in" />
+                <function-argument order="2" name="isSend" type="int" intent="in" >
+                </function-argument>
+                <function-argument order="3" name="buf" type="MustAddressType" intent="in" >
+                </function-argument>
+                <function-argument order="4" name="bufArgId" type="@ArgId_TYPE@" intent="in" />
+                <function-argument order="5" name="count" type="int" intent="in">
+                </function-argument>
+                <function-argument order="6" name="countArgId" type="@ArgId_TYPE@" intent="in">
+                </function-argument>
+                <function-argument order="7" name="type" type="@DATATYPE_F_TYPE@" intent="in">
+                </function-argument>
+                <function-argument order="8" name="typeArgId" type="@ArgId_TYPE@" intent="in">
+                </function-argument>
+            </function-arguments>
+            <analyses>
+                <analysis order="pre" name="IntegerChecks:warningIfZero" group="MUST_BasicChecks">
+                    <analysis-arguments>
+                        <analysis-argument type="mapped" analysis-arg-order="0">
+                            <call-arg-name>pId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="1">
+                            <call-arg-name>lId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="2">
+                            <call-arg-name>countArgId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="3">
+                            <call-arg-name>count</call-arg-name>
+                        </analysis-argument>
+                    </analysis-arguments>
+                </analysis>
+                <analysis order="pre" name="IntegerChecks:errorIfLessThanZero" group="MUST_BasicChecks">
+                    <analysis-arguments>
+                        <analysis-argument type="mapped" analysis-arg-order="0">
+                            <call-arg-name>pId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="1">
+                            <call-arg-name>lId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="2">
+                            <call-arg-name>countArgId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="3">
+                            <call-arg-name>count</call-arg-name>
+                        </analysis-argument>
+                    </analysis-arguments>
+                </analysis>
+                <analysis order="pre" name="DatatypeChecks:errorIfNotValidForCommunication" group="MUST_DatatypeChecks">
+                    <analysis-arguments>
+                        <analysis-argument type="mapped" analysis-arg-order="0">
+                            <call-arg-name>pId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="1">
+                            <call-arg-name>lId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="2">
+                            <call-arg-name>typeArgId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="3">
+                            <call-arg-name>type</call-arg-name>
+                        </analysis-argument>
+                    </analysis-arguments>
+                </analysis>
+            </analyses>
+            <operations>
+            </operations>
+        </function>
+    </functions>
+</api-specification>

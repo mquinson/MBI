@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  This file is part of GTI (Generic Tool Infrastructure)
+
+  Copyright (C)
+    2008-2019 ZIH, Technische Universitaet Dresden, Federal Republic of Germany
+    2008-2019 Lawrence Livermore National Laboratories, United States of America
+    2013-2019 RWTH Aachen University, Federal Republic of Germany
+
+  See the LICENSE file in the package base directory for details
+-->
+
+<!DOCTYPE analysis-specification SYSTEM "../system-builder/dtd/analysis-specification.dtd">
+<analysis-specification path-to-libs="$HOME/lib" include-path="$HOME/include" group-name="MPI-Check2">
+	
+	
+	<analyses><analysis name="test2">
+		<registered-name>test2</registered-name>
+		<module-name>test2</module-name>
+		<header-name>Test2.h</header-name><interface-type>Test2</interface-type><is-global>0</is-global>
+		<is-process-global>0</is-process-global>
+		<dependencies>
+			<analysis-depend group="MPI-Check">test</analysis-depend></dependencies>
+		<analysis-function name="checkArraySomething">
+			<analysis-argument order="0" type="int"></analysis-argument>
+			<analysis-argument order="1" type="int*" /></analysis-function>
+		
+		</analysis></analyses>
+	<operations></operations></analysis-specification>

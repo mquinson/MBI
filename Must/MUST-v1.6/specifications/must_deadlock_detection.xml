@@ -1,0 +1,579 @@
+<?xml version="1.0"?>
+
+<!--
+  This file is part of MUST (Marmot Umpire Scalable Tool)
+
+  Copyright (C)
+    2010-2016 ZIH, Technische Universitaet Dresden, Federal Republic of Germany
+    2010-2018 Lawrence Livermore National Laboratories, United States of America
+    2013-2018 RWTH Aachen University, Federal Republic of Germany
+
+  See the LICENSE file in the package base directory for details
+-->
+
+<!DOCTYPE analysis-specification SYSTEM "@MUST_SPECIFICATION_DTD_PATH@/analysis-specification.dtd">
+<analysis-specification path-to-libs="@CMAKE_INSTALL_PREFIX@/modules" include-path="" group-name="MUST_Deadlock">
+    <analyses>
+        <analysis name="OperationReordering">
+            <registered-name>OperationReordering</registered-name>
+            <module-name>liboperationReordering</module-name>
+            <header-name>I_OperationReordering.h</header-name>
+            <interface-type>I_OperationReordering</interface-type>
+            <is-global>0</is-global>
+            <is-process-global>0</is-process-global>
+            <dependencies>
+                <analysis-depend group="GTI_IMPLICIT">FloodControl</analysis-depend>
+            </dependencies>
+            <reductions>
+                <analysis-depend group="MUST_Resource">CommReduction</analysis-depend>
+            </reductions>
+            <analysis-function name="init">
+                <analysis-argument order="0" type="int" name="worldSize">
+                </analysis-argument>
+            </analysis-function>
+        </analysis>
+        <analysis name="P2PMatch">
+            <registered-name>P2PMatch</registered-name>
+            <module-name>libp2PMatch</module-name>
+            <header-name>I_P2PMatch.h</header-name>
+            <interface-type>I_P2PMatch</interface-type>
+            <is-global>1</is-global>
+            <is-process-global>0</is-process-global>
+            <dependencies>
+                <analysis-depend group="MUST_Base">ParallelIdAnalysis</analysis-depend>
+                <analysis-depend group="MUST_Resource">BaseConstants</analysis-depend>
+                <analysis-depend group="MUST_Base">CreateMessage</analysis-depend>
+                <analysis-depend group="MUST_Resource">CommTrack</analysis-depend>
+                <analysis-depend group="MUST_Resource">RequestTrack</analysis-depend>
+                <analysis-depend group="MUST_Resource">DatatypeTrack</analysis-depend>
+                <analysis-depend group="MUST_Deadlock">OperationReordering</analysis-depend>
+                <analysis-depend group="GTI_IMPLICIT">FloodControl</analysis-depend>
+                <analysis-depend group="MUST_Base">
+                    LocationAnalysis 
+                </analysis-depend>
+            </dependencies>
+            <reductions>
+                <!-- <analysis-depend>MsgMatchReduction</analysis-depend> -->
+                <analysis-depend group="MUST_Base">
+                    FinalizeReduction 
+                </analysis-depend>
+            </reductions>
+            <analysis-function name="send">
+                <analysis-argument order="0" type="uint64_t" name="pId" />
+                <analysis-argument order="1" type="uint64_t" name="lId" />
+                <analysis-argument order="2" type="int" name="dest" />
+                <analysis-argument order="3" type="int" name="tag">
+                </analysis-argument>
+                <analysis-argument order="4" type="@COMM_F_TYPE@" name="comm" />
+                <analysis-argument order="5" type="@DATATYPE_F_TYPE@" name="type" />
+                <analysis-argument order="6" type="int" name="count" />
+                <analysis-argument order="7" type="int" name="mode" />
+            </analysis-function>
+            <analysis-function name="isend">
+                <analysis-argument order="0" type="uint64_t" name="pId" />
+                <analysis-argument order="1" type="uint64_t" name="lId" />
+                <analysis-argument order="2" type="int" name="dest" />
+                <analysis-argument order="3" type="int" name="tag">
+                </analysis-argument>
+                <analysis-argument order="4" type="@COMM_F_TYPE@" name="comm" />
+                <analysis-argument order="5" type="@DATATYPE_F_TYPE@" name="type" />
+                <analysis-argument order="6" type="int" name="count" />
+                <analysis-argument order="7" type="int" name="mode" />
+                <analysis-argument order="8" type="@REQUEST_F_TYPE@" name="request" />
+            </analysis-function>
+            <analysis-function name="recv">
+                <analysis-argument order="0" type="uint64_t" name="pId" />
+                <analysis-argument order="1" type="uint64_t" name="lId" />
+                <analysis-argument order="2" type="int" name="source" />
+                <analysis-argument order="3" type="int" name="tag">
+                </analysis-argument>
+                <analysis-argument order="4" type="@COMM_F_TYPE@" name="comm" />
+                <analysis-argument order="5" type="@DATATYPE_F_TYPE@" name="type" />
+                <analysis-argument order="6" type="int" name="count" />
+            </analysis-function>
+            <analysis-function name="irecv">
+                <analysis-argument order="0" type="uint64_t" name="pId" />
+                <analysis-argument order="1" type="uint64_t" name="lId" />
+                <analysis-argument order="2" type="int" name="source" />
+                <analysis-argument order="3" type="int" name="tag">
+                </analysis-argument>
+                <analysis-argument order="4" type="@COMM_F_TYPE@" name="comm" />
+                <analysis-argument order="5" type="@DATATYPE_F_TYPE@" name="type" />
+                <analysis-argument order="6" type="int" name="count" />
+                <analysis-argument order="7" type="@REQUEST_F_TYPE@" name="request" />
+            </analysis-function>
+            <analysis-function name="recvUpdate">
+                <analysis-argument order="0" type="uint64_t" name="pId" />
+                <analysis-argument order="1" type="uint64_t" name="lId" />
+                <analysis-argument order="2" type="int" name="source" />
+            </analysis-function>
+            <analysis-function name="irecvUpdate">
+                <analysis-argument order="0" type="uint64_t" name="pId" />
+                <analysis-argument order="1" type="uint64_t" name="lId" />
+                <analysis-argument order="2" type="int" name="source" />
+                <analysis-argument order="3" type="@REQUEST_F_TYPE@" name="request" />
+            </analysis-function>
+            <analysis-function name="startPersistent">
+                <analysis-argument order="0" type="uint64_t" name="pId" />
+                <analysis-argument order="1" type="uint64_t" name="lId" />
+                <analysis-argument order="2" type="@REQUEST_F_TYPE@" name="request" />
+            </analysis-function>
+            <analysis-function name="cancel">
+                <analysis-argument order="0" type="uint64_t" name="pId" />
+                <analysis-argument order="1" type="uint64_t" name="lId" />
+                <analysis-argument order="2" type="@REQUEST_F_TYPE@" name="request" />
+            </analysis-function>
+            <analysis-function name="printLostMessages" needs-channel-id="yes">
+            </analysis-function>
+        </analysis>
+        <analysis name="MsgMatchReduction" reduction="yes">
+            <registered-name>MsgMatchReduction</registered-name>
+            <module-name>libmsgMatchReduction</module-name>
+            <header-name>I_MsgMatchReduction.h</header-name>
+            <interface-type>I_MsgMatchReduction</interface-type>
+            <is-global>0</is-global>
+            <is-process-global>0</is-process-global>
+            <dependencies>
+                <analysis-depend group="MUST_Base">ParallelIdAnalysis</analysis-depend>
+                <analysis-depend>P2PMatch</analysis-depend>
+                <analysis-depend group="MUST_Resource">RequestTrack</analysis-depend>
+            </dependencies>
+            <analysis-function name="send">
+                <analysis-argument order="0" type="uint64_t" name="pId" />
+                <analysis-argument order="1" type="uint64_t" name="lId" />
+                <analysis-argument order="2" type="int" name="dest" />
+                <analysis-argument order="3" type="int" name="tag" />
+                <analysis-argument order="4" type="@COMM_F_TYPE@" name="comm" />
+                <analysis-argument order="5" type="@DATATYPE_F_TYPE@" name="type" />
+                <analysis-argument order="6" type="int" name="count" />
+                <analysis-argument order="7" type="int" name="mode" />
+            </analysis-function>
+            <analysis-function name="isend">
+                <analysis-argument order="0" type="uint64_t" name="pId" />
+                <analysis-argument order="1" type="uint64_t" name="lId" />
+                <analysis-argument order="2" type="int" name="dest" />
+                <analysis-argument order="3" type="int" name="tag" />
+                <analysis-argument order="4" type="@COMM_F_TYPE@" name="comm" />
+                <analysis-argument order="5" type="@DATATYPE_F_TYPE@" name="type" />
+                <analysis-argument order="6" type="int" name="count" />
+                <analysis-argument order="7" type="int" name="mode" />
+                <analysis-argument order="8" type="@REQUEST_F_TYPE@" name="request" />
+            </analysis-function>
+            <analysis-function name="recv">
+                <analysis-argument order="0" type="uint64_t" name="pId" />
+                <analysis-argument order="1" type="uint64_t" name="lId" />
+                <analysis-argument order="2" type="int" name="source" />
+                <analysis-argument order="3" type="int" name="tag" />
+                <analysis-argument order="4" type="@COMM_F_TYPE@" name="comm" />
+                <analysis-argument order="5" type="@DATATYPE_F_TYPE@" name="type" />
+                <analysis-argument order="6" type="int" name="count" />
+            </analysis-function>
+            <analysis-function name="irecv">
+                <analysis-argument order="0" type="uint64_t" name="pId" />
+                <analysis-argument order="1" type="uint64_t" name="lId" />
+                <analysis-argument order="2" type="int" name="source" />
+                <analysis-argument order="3" type="int" name="tag" />
+                <analysis-argument order="4" type="@COMM_F_TYPE@" name="comm" />
+                <analysis-argument order="5" type="@DATATYPE_F_TYPE@" name="type" />
+                <analysis-argument order="6" type="int" name="count" />
+                <analysis-argument order="7" type="@REQUEST_F_TYPE@" name="request" />
+            </analysis-function>
+            <analysis-function name="startPersistent">
+                <analysis-argument order="0" type="uint64_t" name="pId" />
+                <analysis-argument order="1" type="uint64_t" name="lId" />
+                <analysis-argument order="2" type="@REQUEST_F_TYPE@" name="request" />
+            </analysis-function>
+        </analysis>
+        <analysis name="OpSplitter">
+            <registered-name>OpSplitter</registered-name>
+            <module-name>libopSplitter</module-name>
+            <header-name>I_OpSplitter.h</header-name>
+            <interface-type>I_OpSplitter</interface-type>
+            <is-global>0</is-global>
+            <is-process-global>0</is-process-global>
+            <dependencies>
+            </dependencies>
+            <analysis-function name="splitSendRecv">
+                <analysis-argument order="0" type="uint64_t" name="pId" />
+                <analysis-argument order="1" type="uint64_t" name="lId" />
+                <analysis-argument order="2" type="int" name="dest" />
+                <analysis-argument order="3" type="int" name="sendtag" >
+                </analysis-argument>
+                <analysis-argument order="4" type="@DATATYPE_F_TYPE@" name="sendtype" />
+                <analysis-argument order="5" type="int" name="sendcount" />
+                <analysis-argument order="6" type="int" name="source">
+                </analysis-argument>
+                <analysis-argument order="7" type="int" name="recvtag" />
+                <analysis-argument order="8" type="@DATATYPE_F_TYPE@" name="recvtype" />
+                <analysis-argument order="9" type="int" name="recvcount" />
+                <analysis-argument order="10" type="@COMM_F_TYPE@" name="comm">
+                </analysis-argument>
+            </analysis-function>
+            <analysis-function name="splitStartall">
+                <analysis-argument order="0" type="uint64_t" name="pId">
+                </analysis-argument>
+                <analysis-argument order="1" type="uint64_t" name="lId" />
+                <analysis-argument order="2" type="int" name="count" />
+                <analysis-argument order="3" type="@REQUEST_F_TYPE@*" name="requests" />
+            </analysis-function>
+        </analysis>
+        <analysis name="WcUpdate">
+            <registered-name>WcUpdate</registered-name>
+            <module-name>libwcUpdate</module-name>
+            <header-name>I_WcUpdate.h</header-name>
+            <interface-type>I_WcUpdate</interface-type>
+            <is-global>0</is-global>
+            <is-process-global>0</is-process-global>
+            <dependencies>
+                <analysis-depend group="MUST_Resource">RequestTrack</analysis-depend>
+            </dependencies>
+            <analysis-function name="addPredefineds">
+                <analysis-argument order="0" type="int" name="anySource" />
+            </analysis-function>
+            <analysis-function name="recvPost">
+                <analysis-argument order="0" type="uint64_t" name="pId" />
+                <analysis-argument order="1" type="uint64_t" name="lId" />
+                <analysis-argument order="2" type="int" name="source" />
+                <analysis-argument order="3" type="int" name="statusSource" />
+            </analysis-function>
+            <analysis-function name="irecv">
+                <analysis-argument order="0" type="uint64_t" name="pId" />
+                <analysis-argument order="1" type="uint64_t" name="lId" />
+                <analysis-argument order="2" type="int" name="source" />
+                <analysis-argument order="3" type="@REQUEST_F_TYPE@" name="request">
+                </analysis-argument>
+            </analysis-function>
+            <analysis-function name="startPersistent">
+                <analysis-argument order="0" type="uint64_t" name="pId" />
+                <analysis-argument order="1" type="uint64_t" name="lId" />
+                <analysis-argument order="2" type="@REQUEST_F_TYPE@" name="request" />
+            </analysis-function>
+            <analysis-function name="startPersistentArray">
+                <analysis-argument order="0" type="uint64_t" name="pId" />
+                <analysis-argument order="1" type="uint64_t" name="lId" />
+                <analysis-argument order="2" type="@REQUEST_F_TYPE@*" name="requests" />
+                <analysis-argument order="3" type="int" name="count" />
+            </analysis-function>
+            <analysis-function name="complete">
+                <analysis-argument order="0" type="uint64_t" name="pId" />
+                <analysis-argument order="1" type="uint64_t" name="lId" />
+                <analysis-argument order="2" type="@REQUEST_F_TYPE@" name="request" />
+                <analysis-argument order="3" type="int" name="flag" />
+                <analysis-argument order="4" type="int" name="statusSource" />
+            </analysis-function>
+            <analysis-function name="completeAny">
+                <analysis-argument order="0" type="uint64_t" name="pId" />
+                <analysis-argument order="1" type="uint64_t" name="lId" />
+                <analysis-argument order="2" type="@REQUEST_F_TYPE@*" name="requests" />
+                <analysis-argument order="3" type="int" name="count" />
+                <analysis-argument order="4" type="int" name="index" />
+                <analysis-argument order="5" type="int" name="flag" />
+                <analysis-argument order="6" type="int" name="statusSource" />
+            </analysis-function>
+            <analysis-function name="completeArray">
+                <analysis-argument order="0" type="uint64_t" name="pId" />
+                <analysis-argument order="1" type="uint64_t" name="lId" />
+                <analysis-argument order="2" type="@REQUEST_F_TYPE@*" name="requests" />
+                <analysis-argument order="3" type="int" name="count" />
+                <analysis-argument order="4" type="int" name="flag" />
+                <analysis-argument order="5" type="int*" name="statusSources" />
+            </analysis-function>
+            <analysis-function name="completeSome">
+                <analysis-argument order="0" type="uint64_t" name="pId" />
+                <analysis-argument order="1" type="uint64_t" name="lId" />
+                <analysis-argument order="2" type="@REQUEST_F_TYPE@*" name="requests" />
+                <analysis-argument order="3" type="int" name="count" />
+                <analysis-argument order="4" type="int*" name="indices" />
+                <analysis-argument order="5" type="int" name="numIndices" />
+                <analysis-argument order="6" type="int*" name="statusSources" />
+            </analysis-function>
+        </analysis>
+        <analysis name="CollectiveMatch">
+            <registered-name>CollectiveMatch</registered-name>
+            <module-name>libcollectiveMatch</module-name>
+            <header-name>I_CollectiveMatch.h</header-name>
+            <interface-type>I_CollectiveMatch</interface-type>
+            <is-global>1</is-global>
+            <is-process-global>0</is-process-global>
+            <dependencies>
+                <analysis-depend group="MUST_Base">ParallelIdAnalysis</analysis-depend>
+                <analysis-depend group="MUST_Resource">BaseConstants</analysis-depend>
+                <analysis-depend group="MUST_Base">CreateMessage</analysis-depend>
+                <analysis-depend group="MUST_Resource">CommTrack</analysis-depend>
+                <analysis-depend group="MUST_Resource">DatatypeTrack</analysis-depend>
+                <analysis-depend group="MUST_Resource">OpTrack</analysis-depend>
+                <analysis-depend group="MUST_Deadlock">OperationReordering</analysis-depend>
+            </dependencies>
+            <analysis-function name="CollNoTransfer">
+                <analysis-argument order="0" type="uint64_t" name="pId" />
+                <analysis-argument order="1" type="uint64_t" name="lID" />
+                <analysis-argument order="2" type="int" name="coll" />
+                <analysis-argument order="3" type="@COMM_F_TYPE@" name="comm" />
+                <analysis-argument order="4" type="int" name="numTasks" />
+                <analysis-argument order="5" type="int" name="hasRequest" />
+            </analysis-function>
+            <analysis-function name="CollSend">
+                <analysis-argument order="0" type="uint64_t" name="pId" />
+                <analysis-argument order="1" type="uint64_t" name="lID" />
+                <analysis-argument order="2" type="int" name="coll" />
+                <analysis-argument order="3" type="int" name="count" />
+                <analysis-argument order="4" type="@DATATYPE_F_TYPE@" name="type" />
+                <analysis-argument order="5" type="int" name="dest" />
+                <analysis-argument order="6" type="@COMM_F_TYPE@" name="comm" />
+                <analysis-argument order="7" type="int" name="hasOp" />
+                <analysis-argument order="8" type="@OP_F_TYPE@" name="op" />
+                <analysis-argument order="9" type="int" name="numTasks" />
+                <analysis-argument order="10" type="int" name="hasRequest" />
+            </analysis-function>
+            <analysis-function name="CollSendN">
+                <analysis-argument order="0" type="uint64_t" name="pId" />
+                <analysis-argument order="1" type="uint64_t" name="lID" />
+                <analysis-argument order="2" type="int" name="coll" />
+                <analysis-argument order="3" type="int" name="count" />
+                <analysis-argument order="4" type="@DATATYPE_F_TYPE@" name="type" />
+                <analysis-argument order="5" type="int" name="commsize" />
+                <analysis-argument order="6" type="@COMM_F_TYPE@" name="comm" />
+                <analysis-argument order="7" type="int" name="hasOp" />
+                <analysis-argument order="8" type="@OP_F_TYPE@" name="op" />
+                <analysis-argument order="9" type="int" name="numTasks" />
+                <analysis-argument order="10" type="int" name="hasRequest" />
+            </analysis-function>
+            <analysis-function name="CollSendCounts">
+                <analysis-argument order="0" type="uint64_t" name="pId" >
+                </analysis-argument>
+                <analysis-argument order="1" type="uint64_t" name="lID" />
+                <analysis-argument order="2" type="int" name="coll" />
+                <analysis-argument order="3" type="int*" name="counts" />
+                <analysis-argument order="4" type="@DATATYPE_F_TYPE@" name="type" />
+                <analysis-argument order="5" type="int" name="commsize" />
+                <analysis-argument order="6" type="@COMM_F_TYPE@" name="comm" />
+                <analysis-argument order="7" type="int" name="hasOp" />
+                <analysis-argument order="8" type="@OP_F_TYPE@" name="op" />
+                <analysis-argument order="9" type="int" name="numTasks" />
+                <analysis-argument order="10" type="int" name="hasRequest" />
+            </analysis-function>
+            <analysis-function name="CollSendTypes">
+                <analysis-argument order="0" type="uint64_t" name="pId">
+                </analysis-argument>
+                <analysis-argument order="1" type="uint64_t" name="lID" />
+                <analysis-argument order="2" type="int" name="coll" />
+                <analysis-argument order="3" type="int*" name="counts" />
+                <analysis-argument order="4" type="@DATATYPE_F_TYPE@*" name="types" />
+                <analysis-argument order="5" type="int" name="commsize" />
+                <analysis-argument order="6" type="@COMM_F_TYPE@" name="comm" />
+                <analysis-argument order="7" type="int" name="numTasks" />
+                <analysis-argument order="8" type="int" name="hasRequest" />
+            </analysis-function>
+            <analysis-function name="CollRecv">
+                <analysis-argument order="0" type="uint64_t" name="pId" />
+                <analysis-argument order="1" type="uint64_t" name="lID" />
+                <analysis-argument order="2" type="int" name="coll" />
+                <analysis-argument order="3" type="int" name="count" />
+                <analysis-argument order="4" type="@DATATYPE_F_TYPE@" name="type" />
+                <analysis-argument order="5" type="int" name="src" />
+                <analysis-argument order="6" type="@COMM_F_TYPE@" name="comm" />
+                <analysis-argument order="7" type="int" name="numTasks" />
+                <analysis-argument order="8" type="int" name="hasRequest" />
+            </analysis-function>
+            <analysis-function name="CollRecvN">
+                <analysis-argument order="0" type="uint64_t" name="pId" />
+                <analysis-argument order="1" type="uint64_t" name="lID" />
+                <analysis-argument order="2" type="int" name="coll" />
+                <analysis-argument order="3" type="int" name="count" />
+                <analysis-argument order="4" type="@DATATYPE_F_TYPE@" name="type" />
+                <analysis-argument order="5" type="int" name="commsize" />
+                <analysis-argument order="6" type="@COMM_F_TYPE@" name="comm" />
+                <analysis-argument order="7" type="int" name="hasOp" />
+                <analysis-argument order="8" type="@OP_F_TYPE@" name="op" />
+                <analysis-argument order="9" type="int" name="numTasks" />
+                <analysis-argument order="10" type="int" name="hasRequest" />
+            </analysis-function>
+            <analysis-function name="CollRecvCounts">
+                <analysis-argument order="0" type="uint64_t" name="pId">
+                </analysis-argument>
+                <analysis-argument order="1" type="uint64_t" name="lID" />
+                <analysis-argument order="2" type="int" name="coll" />
+                <analysis-argument order="3" type="int*" name="counts" />
+                <analysis-argument order="4" type="@DATATYPE_F_TYPE@" name="type" />
+                <analysis-argument order="5" type="int" name="commsize" />
+                <analysis-argument order="6" type="@COMM_F_TYPE@" name="comm" />
+                <analysis-argument order="7" type="int" name="numTasks" />
+                <analysis-argument order="8" type="int" name="hasRequest" />
+            </analysis-function>
+            <analysis-function name="CollRecvTypes">
+                <analysis-argument order="0" type="uint64_t" name="pId">
+                </analysis-argument>
+                <analysis-argument order="1" type="uint64_t" name="lID" />
+                <analysis-argument order="2" type="int" name="coll" />
+                <analysis-argument order="3" type="int*" name="counts" />
+                <analysis-argument order="4" type="@DATATYPE_F_TYPE@*" name="types" />
+                <analysis-argument order="5" type="int" name="commsize" />
+                <analysis-argument order="6" type="@COMM_F_TYPE@" name="comm" />
+                <analysis-argument order="7" type="int" name="numTasks" />
+                <analysis-argument order="8" type="int" name="hasRequest" />
+            </analysis-function>
+        </analysis>
+        <analysis name="BlockingState" listens-to-timeouts="yes">
+            <registered-name>BlockingState</registered-name>
+            <module-name>libblockingState</module-name>
+            <header-name>I_BlockingState.h</header-name>
+            <interface-type>I_BlockingState</interface-type>
+            <is-global>1</is-global>
+            <is-process-global>0</is-process-global>
+            <dependencies>
+                <analysis-depend group="MUST_Base">
+                    ParallelIdAnalysis 
+                </analysis-depend>
+                <analysis-depend group="MUST_Resource">
+                    BaseConstants 
+                </analysis-depend>
+                <analysis-depend group="MUST_Base">
+                    CreateMessage 
+                </analysis-depend>
+                <analysis-depend group="MUST_Resource">
+                    CommTrack 
+                </analysis-depend>
+                <analysis-depend group="MUST_Deadlock">
+                    OperationReordering 
+                </analysis-depend>
+                <analysis-depend group="MUST_Deadlock">
+                    P2PMatch 
+                </analysis-depend>
+                <analysis-depend group="MUST_Deadlock">
+                    CollectiveMatch 
+                </analysis-depend>
+                <analysis-depend group="MUST_Base">
+                    LocationAnalysis 
+                </analysis-depend>
+                <analysis-depend group="MUST_Resource">
+                    RequestTrack 
+                </analysis-depend>
+            </dependencies>
+            <reductions>
+                <analysis-depend group="MUST_Base">
+                    FinalizeReduction 
+                </analysis-depend>
+            </reductions>
+            <analysis-function name="CollAll">
+                <analysis-argument order="0" type="uint64_t" name="pId" />
+                <analysis-argument order="1" type="uint64_t" name="lID" />
+                <analysis-argument order="2" type="int" name="coll" />
+                <analysis-argument order="3" type="@COMM_F_TYPE@" name="comm" />
+                <analysis-argument order="4" type="int" name="isSend" />
+                <analysis-argument order="5" type="int" name="numTasks">
+                </analysis-argument>
+            </analysis-function>
+            <analysis-function name="CollRoot">
+                <analysis-argument order="0" type="uint64_t" name="pId">
+                </analysis-argument>
+                <analysis-argument order="1" type="uint64_t" name="lID" />
+                <analysis-argument order="2" type="int" name="coll" />
+                <analysis-argument order="3" type="@COMM_F_TYPE@" name="comm" />
+                <analysis-argument order="4" type="int" name="isSend" />
+                <analysis-argument order="5" type="int" name="root">
+                </analysis-argument>
+                <analysis-argument order="6" type="int" name="numTasks">
+                </analysis-argument>
+            </analysis-function>
+            <analysis-function name="send">
+                <analysis-argument order="0" type="uint64_t" name="pId">
+                </analysis-argument>
+                <analysis-argument order="1" type="uint64_t" name="lID" />
+                <analysis-argument order="2" type="int" name="dest" />
+            </analysis-function>
+            <analysis-function name="srsend">
+                <analysis-argument order="0" type="uint64_t" name="pId" />
+                <analysis-argument order="1" type="uint64_t" name="lID" />
+                <analysis-argument order="2" type="int" name="dest" />
+            </analysis-function>
+            <analysis-function name="receive">
+                <analysis-argument order="0" type="uint64_t" name="pId">
+                </analysis-argument>
+                <analysis-argument order="1" type="uint64_t" name="lID" />
+                <analysis-argument order="2" type="int" name="source" />
+            </analysis-function>
+            <analysis-function name="wait">
+                <analysis-argument order="0" type="uint64_t" name="pId">
+                </analysis-argument>
+                <analysis-argument order="1" type="uint64_t" name="lID" />
+                <analysis-argument order="2" type="@REQUEST_F_TYPE@" name="request" />
+            </analysis-function>
+            <analysis-function name="waitAny">
+                <analysis-argument order="0" type="uint64_t" name="pId">
+                </analysis-argument>
+                <analysis-argument order="1" type="uint64_t" name="lID" />
+                <analysis-argument order="2" type="@REQUEST_F_TYPE@*" name="requests*" />
+                <analysis-argument order="3" type="int" name="count" />
+                <analysis-argument order="4" type="int" name="numProcNull" />
+            </analysis-function>
+            <analysis-function name="waitAll">
+                <analysis-argument order="0" type="uint64_t" name="pId">
+                </analysis-argument>
+                <analysis-argument order="1" type="uint64_t" name="lID" />
+                <analysis-argument order="2" type="@REQUEST_F_TYPE@*" name="requests*" />
+                <analysis-argument order="3" type="int" name="count" />
+                <analysis-argument order="4" type="int" name="numProcNull" />
+            </analysis-function>
+            <analysis-function name="waitSome">
+                <analysis-argument order="0" type="uint64_t" name="pId">
+                </analysis-argument>
+                <analysis-argument order="1" type="uint64_t" name="lID" />
+                <analysis-argument order="2" type="@REQUEST_F_TYPE@*" name="requests*" />
+                <analysis-argument order="3" type="int" name="count" />
+                <analysis-argument order="4" type="int" name="numProcNull" />
+            </analysis-function>
+            <analysis-function name="completedRequest">
+                <analysis-argument order="0" type="uint64_t" name="pId">
+                </analysis-argument>
+                <analysis-argument order="1" type="uint64_t" name="lID" />
+                <analysis-argument order="2" type="@REQUEST_F_TYPE@" name="request" />
+            </analysis-function>
+            <analysis-function name="completedRequests">
+                <analysis-argument order="0" type="uint64_t" name="pId">
+                </analysis-argument>
+                <analysis-argument order="1" type="uint64_t" name="lID" />
+                <analysis-argument order="2" type="@REQUEST_F_TYPE@*" name="requests*" />
+                <analysis-argument order="3" type="int" name="count" />
+            </analysis-function>
+            <analysis-function name="notifyFinalize" needs-channel-id="yes">
+            </analysis-function>
+        </analysis>
+    </analyses>
+    <operations>
+        <operation return-type="int" name="getHasOpFalse">
+            <extra-headers>
+            </extra-headers>
+            <operation-arguments>
+            </operation-arguments>
+            <source-template>int RETURN = 0;</source-template>
+        </operation>
+        <operation return-type="int" name="getHasOpTrue">
+            <extra-headers>
+            </extra-headers>
+            <operation-arguments>
+            </operation-arguments>
+            <source-template>int RETURN = 1;</source-template>
+        </operation>
+        <operation return-type="int" name="getIsSendFalse">
+            <extra-headers>
+            </extra-headers>
+            <operation-arguments>
+            </operation-arguments>
+            <source-template>int RETURN = 0;</source-template>
+        </operation>
+        <operation return-type="int" name="getIsSendTrue">
+            <extra-headers>
+            </extra-headers>
+            <operation-arguments>
+            </operation-arguments>
+            <source-template>int RETURN = 1;</source-template>
+        </operation>
+        <operation return-type="@OP_F_TYPE@" name="getNullOp">
+            <extra-headers>
+            </extra-headers>
+            <operation-arguments>
+            </operation-arguments>
+            <source-template>int RETURN = 0;</source-template>
+        </operation>
+    </operations>
+</analysis-specification>

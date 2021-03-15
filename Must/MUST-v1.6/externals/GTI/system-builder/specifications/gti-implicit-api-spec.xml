@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  This file is part of GTI (Generic Tool Infrastructure)
+
+  Copyright (C)
+    2008-2019 ZIH, Technische Universitaet Dresden, Federal Republic of Germany
+    2008-2019 Lawrence Livermore National Laboratories, United States of America
+    2013-2019 RWTH Aachen University, Federal Republic of Germany
+
+  See the LICENSE file in the package base directory for details
+-->
+
+<!DOCTYPE api-specification SYSTEM "/Users/hilbrich/workspace/gti/system-builder/dtd/api-specification.dtd">
+<api-specification unique-name="GTI_IMPLICIT_API">
+    <api-headers>
+        <header>@CMAKE_INSTALL_PREFIX@/src/GtiApi.h</header>
+    </api-headers>
+    <functions>
+        <function return-type="int" name="gtiShutdownNotify"
+        	wrapp-down="yes" notify-finalize="yes">
+        	<function-arguments></function-arguments>
+        	<analyses>
+        		<analysis order="pre" name="ShutdownReceiver:receive"
+        			group="GTI_IMPLICIT">
+        			<analysis-arguments></analysis-arguments>
+        		</analysis>
+        	</analyses>
+        	<operations></operations>
+        </function>
+        <function return-type="int" name="gtiRaisePanic"
+        	wrapp-everywhere="yes" out-of-order="yes">
+        	<function-arguments></function-arguments>
+        	<analyses>
+        		<analysis order="pre" name="PanicHandler:raisePanic"
+        			group="GTI_IMPLICIT">
+        			<analysis-arguments></analysis-arguments>
+        		</analysis>
+        		<analysis order="pre" name="PanicFilter:propagate"
+        			group="GTI_IMPLICIT">
+        			<analysis-arguments></analysis-arguments>
+        		</analysis>
+        		<analysis order="pre"
+        			name="PanicReceiver:notifyRaisePanic" group="GTI_IMPLICIT">
+        			<analysis-arguments></analysis-arguments>
+        		</analysis>
+        	</analyses>
+        	<operations></operations>
+        </function>
+        <function return-type="int" name="gtiNotifyPanic"
+        	wrapp-down="yes">
+        	<function-arguments></function-arguments>
+        	<analyses>
+        		<analysis order="pre" name="PanicReceiver:notifyPanic"
+        			group="GTI_IMPLICIT">
+        			<analysis-arguments></analysis-arguments>
+        		</analysis>
+        		<analysis order="pre" name="FinishNotify:finish" group="MUST_Base">
+        			<analysis-arguments></analysis-arguments>
+        		</analysis>
+        	</analyses>
+        	<operations></operations>
+        </function><function return-type="int" name="gtiNotifyFlush" wrapp-down="yes">
+        	<function-arguments></function-arguments>
+        	<analyses>
+        		<analysis order="pre" name="PanicReceiver:notifyFlush" group="GTI_IMPLICIT">
+        			<analysis-arguments></analysis-arguments>
+        		</analysis>
+        	</analyses>
+        	<operations></operations>
+        </function>
+    	<function return-type="int" name="gtiBreakRequest"
+    		wrapp-everywhere="yes" out-of-order="yes">
+    		<!--This is indeed a wrapp everywhere to which an aggregation applies and out-of-order; This works since the aggregation that applies here is just a filter indeed--><function-arguments></function-arguments>
+    		<analyses>
+    			<analysis order="pre"
+    				name="BreakReduction:addBreakRequest" group="GTI_IMPLICIT">
+    				<analysis-arguments></analysis-arguments>
+    			</analysis>
+    			<analysis order="pre" name="BreakManager:requestBreak"
+    				group="GTI_IMPLICIT">
+    				<analysis-arguments></analysis-arguments>
+    			</analysis>
+    		</analyses>
+    		<operations></operations>
+    		<created-by>
+    			<by name="BreakReduction" group="GTI_IMPLICIT" /></created-by>
+    	</function>
+    	<function return-type="int" name="gtiBreakConsume"
+    		wrapp-everywhere="yes" out-of-order="yes">
+    		<function-arguments></function-arguments>
+    		<!--This is indeed a wrapp everywhere to which an aggregation applies and out-of-order; This works since the aggregation that applies here is just a filter indeed--><analyses>
+    			<analysis order="pre"
+    				name="BreakReduction:removeBreakRequest" group="GTI_IMPLICIT">
+    				<analysis-arguments></analysis-arguments>
+    			</analysis>
+    			<analysis order="pre" name="BreakManager:removeBreak"
+    				group="GTI_IMPLICIT">
+    				<analysis-arguments></analysis-arguments>
+    			</analysis>
+    		</analyses>
+    		<operations></operations>
+    	<created-by>
+    			<by name="BreakReduction" group="GTI_IMPLICIT" /></created-by></function>
+    	<function return-type="int" name="gtiBroadcastBreak"
+    		wrapp-down="yes">
+    		<function-arguments>
+    			<function-argument order="0" name="code" type="int" intent="in"></function-argument>
+    		</function-arguments>
+    		<analyses>
+    			<!--TODO: This is currently a virtual mapping, the enforcer runs on the application; No way to deliver this there (A "test" mechanism will pull this instead)--><analysis order="pre"
+    				name="BreakEnforcer:handleBroadcastBreak" group="GTI_IMPLICIT">
+    				<analysis-arguments>
+    					<analysis-argument type="mapped"
+    						analysis-arg-order="0">
+    						<call-arg-name>code</call-arg-name>
+    					</analysis-argument></analysis-arguments>
+    			</analysis>
+    		</analyses>
+    		<operations></operations>
+    		<created-by>
+    			<by name="GTI_IMPLICIT" group="BreakManager" /></created-by>
+    	</function></functions>
+</api-specification>

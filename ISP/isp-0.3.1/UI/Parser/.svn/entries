@@ -1,0 +1,53 @@
+8
+
+dir
+6031
+svn://proof.cs.utah.edu/isp/branches/wfchiang/Oct_2011_ispUI_fix/UI/Parser
+svn://proof.cs.utah.edu
+
+
+
+2011-11-08T00:28:56.428349Z
+6024
+wfchiang
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+f26f91df-4c49-0410-b835-8340b77052b9
+
+Parser.class
+file
+
+
+
+
+2011-11-09T22:21:02.000000Z
+8018d8840fdbc823b542f86f5cf71aee
+2011-11-08T00:28:56.428349Z
+6024
+wfchiang
+has-props
+
+Parser.java
+file
+
+
+
+
+2011-11-09T22:21:02.000000Z
+7fb1a264fb17b6bc4e101aa6e73cca35
+2011-11-08T00:28:56.428349Z
+6024
+wfchiang
+

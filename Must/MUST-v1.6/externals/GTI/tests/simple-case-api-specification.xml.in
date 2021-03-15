@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  This file is part of GTI (Generic Tool Infrastructure)
+
+  Copyright (C)
+    2008-2019 ZIH, Technische Universitaet Dresden, Federal Republic of Germany
+    2008-2019 Lawrence Livermore National Laboratories, United States of America
+    2013-2019 RWTH Aachen University, Federal Republic of Germany
+
+  See the LICENSE file in the package base directory for details
+-->
+
+<!DOCTYPE api-specification SYSTEM "../system-builder/dtd/api-specification.dtd">
+
+<api-specification unique-name="Simple">
+    <api-headers><header>@PROJECT_SOURCE_DIR@/tests/SimpleAPI.h</header></api-headers>
+    <functions>
+    <function return-type="int" name="reducedFloatSum" wrapp-everywhere="yes">
+    		<function-arguments>
+    			<function-argument order="0" name="fSum" type="float" intent="in" />
+    		</function-arguments>
+    		<analyses>
+    			<analysis order="post" name="sumAllFloats" group="simple">
+    				<analysis-arguments>
+    					<analysis-argument type="mapped"
+    						analysis-arg-order="0">
+    						<call-arg-name>fSum</call-arg-name>
+    					</analysis-argument></analysis-arguments>
+    			</analysis>
+    			<analysis order="post" name="printFloatSum" group="simple">
+    				<analysis-arguments>
+    					<analysis-argument type="mapped"
+    						analysis-arg-order="0">
+    						<call-arg-name>fSum</call-arg-name>
+    					</analysis-argument>
+    				</analysis-arguments>
+    			</analysis>
+    		</analyses>
+    		<operations>
+    		</operations>
+    </function>
+    	<function return-type="int" name="test1">
+    		<function-arguments>
+    			<function-argument order="0" name="count" type="int" intent="in" /><function-array-argument
+    				order="1" name="sizes" type="int*" intent="in">
+    				<length-argument type="argument">
+    					<call-arg-name>count</call-arg-name>
+    				</length-argument>
+</function-array-argument>
+    			<function-argument order="2" name="f" type="float" intent="in" /></function-arguments>
+    		<analyses>
+    			<analysis order="pre" name="checkArray" group="simple">
+    				<analysis-arguments>
+    					<analysis-argument type="mapped"
+    						analysis-arg-order="0">
+    						<call-arg-name>count</call-arg-name>
+    					</analysis-argument>
+    					<analysis-argument type="mapped"
+    						analysis-arg-order="1">
+    						<call-arg-name>sizes</call-arg-name>
+    					</analysis-argument></analysis-arguments>
+    			</analysis>
+    			<analysis order="pre" name="handleSizes:analyse" group="simple">
+    				<analysis-arguments>
+    					<analysis-argument type="mapped"
+    						analysis-arg-order="0">
+    						<call-arg-name>count</call-arg-name>
+    					</analysis-argument>
+    					<analysis-argument type="operation"
+    						analysis-arg-order="1">
+    						<op-name group="simple" id="1">doubleSizes</op-name>
+    						
+    					</analysis-argument></analysis-arguments>
+    			</analysis>
+    			<analysis order="pre" name="handleSizes:analyse2" group="simple">
+    				<analysis-arguments>
+    					<analysis-argument type="mapped"
+    						analysis-arg-order="0">
+    						<call-arg-name>count</call-arg-name>
+    					</analysis-argument></analysis-arguments>
+    			</analysis>
+    			<analysis order="post" name="sumAllFloats" group="simple">
+    				<analysis-arguments>
+    					<analysis-argument type="mapped"
+    						analysis-arg-order="0">
+    						<call-arg-name>f</call-arg-name>
+    					</analysis-argument></analysis-arguments>
+    			</analysis>
+    			<analysis order="pre" name="sumAllCounts" group="simple">
+    				<analysis-arguments>
+    					<analysis-argument type="mapped"
+    						analysis-arg-order="0">
+    						<call-arg-name>count</call-arg-name>
+    					</analysis-argument></analysis-arguments>
+    			</analysis>
+    		<analysis order="post" name="printFloatSum" group="simple">
+    				<analysis-arguments>
+    					<analysis-argument type="mapped" analysis-arg-order="0">
+    						<call-arg-name>f</call-arg-name>
+    					</analysis-argument>
+    				</analysis-arguments>
+    			</analysis></analyses>
+    		<operations>
+    			<operation order="pre" name="doubleSizes" group="simple" id="1">
+    				<operation-arguments>
+    					<operation-argument op-arg-order="0">
+    						<call-arg-name>count</call-arg-name>
+    					</operation-argument>
+    					<operation-argument op-arg-order="1">
+    						<call-arg-name>sizes</call-arg-name>
+    					</operation-argument></operation-arguments>
+    			</operation></operations>
+    	</function>
+    	<function return-type="int" name="newSize"
+    		wrapp-everywhere="yes">
+    		<function-arguments>
+    			<function-argument order="0" name="size" type="int"
+    				intent="in" />
+    		</function-arguments>
+    		<analyses>
+    			<analysis order="pre" name="superSumSize" group="simple">
+    				<analysis-arguments>
+    					<analysis-argument type="mapped"
+    						analysis-arg-order="0">
+    						<call-arg-name>size</call-arg-name>
+    					</analysis-argument></analysis-arguments>
+    			</analysis></analyses>
+    		<operations></operations>
+    	</function><function name="MPI_Init" return-type="int">
+			<function-arguments>
+				<function-argument name="argc" type="int*" intent="inout" order="0" />
+				<function-argument name="argv" type="char***" intent="in" order="1" />
+			</function-arguments>
+			<analyses>
+				<analysis order="pre" name="sumAllFloats" group="simple">
+					<analysis-arguments>
+						<analysis-argument type="operation"
+							analysis-arg-order="0">
+							<op-name group="simple" id="1">returnFloat</op-name>
+							
+						</analysis-argument>
+					</analysis-arguments>
+				</analysis>
+			<analysis order="pre" name="printFloatSum" group="simple">
+    				<analysis-arguments>
+    					<analysis-argument type="operation" analysis-arg-order="0">
+    						<op-name group="simple" id="1">returnFloat</op-name>
+    						
+    					</analysis-argument>
+    				</analysis-arguments>
+    			</analysis></analyses>
+			<operations>
+				<operation order="pre" name="returnFloat" group="simple" id="1">
+					<operation-arguments></operation-arguments>
+				</operation>
+			</operations>
+		</function>
+    	<function return-type="int" name="shutdown" is-finalizer="yes">
+    		<function-arguments></function-arguments>
+    		<analyses></analyses>
+    		<operations></operations>
+    	</function></functions></api-specification>

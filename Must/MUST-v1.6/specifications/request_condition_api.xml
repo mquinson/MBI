@@ -1,0 +1,186 @@
+<?xml version="1.0"?>
+
+<!--
+  This file is part of MUST (Marmot Umpire Scalable Tool)
+
+  Copyright (C)
+    2010-2016 ZIH, Technische Universitaet Dresden, Federal Republic of Germany
+    2010-2018 Lawrence Livermore National Laboratories, United States of America
+    2013-2018 RWTH Aachen University, Federal Republic of Germany
+
+  See the LICENSE file in the package base directory for details
+-->
+
+<!DOCTYPE api-specification SYSTEM "@MUST_SPECIFICATION_DTD_PATH@/api-specification.dtd">
+<api-specification unique-name="Request_Condition_API">
+    <api-headers>
+        <header>RequestConditionApi.h</header>
+    </api-headers>
+    <functions>
+        <function return-type="int" name="propagateRequestRealComplete" wrapp-everywhere="yes">
+            <function-arguments>
+                <function-argument order="0" name="pId" type="uint64_t" intent="in">
+                </function-argument>
+                <function-argument order="1" name="lId" type="uint64_t" intent="in" />
+                <function-argument order="2" name="source" type="int" intent="in" />
+                <function-argument order="3" name="request" type="@REQUEST_F_TYPE@" intent="in" />
+            </function-arguments>
+            <analyses>
+                <analysis order="pre" name="OverlapChecks:finishRequest" group="MUST_OverlapChecks">
+                    <analysis-arguments>
+                        <analysis-argument type="mapped" analysis-arg-order="0">
+                            <call-arg-name>pId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="1">
+                            <call-arg-name>lId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="2">
+                            <call-arg-name>request</call-arg-name>
+                        </analysis-argument>
+                    </analysis-arguments>
+                </analysis>
+                <analysis order="pre" name="BlockingState:completedRequest" group="MUST_Deadlock">
+                    <analysis-arguments>
+                        <analysis-argument type="mapped" analysis-arg-order="0">
+                            <call-arg-name>pId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="1">
+                            <call-arg-name>lId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="2">
+                            <call-arg-name>request</call-arg-name>
+                        </analysis-argument>
+                    </analysis-arguments>
+                </analysis>
+                <analysis order="pre" name="DWaitState:completedRequest" group="MUST_DistributedDeadlock">
+                    <analysis-arguments>
+                        <analysis-argument type="mapped" analysis-arg-order="0">
+                            <call-arg-name>pId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="1">
+                            <call-arg-name>lId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="2">
+                            <call-arg-name>request</call-arg-name>
+                        </analysis-argument>
+                    </analysis-arguments>
+                </analysis>
+                <analysis order="pre" name="RequestTrack:complete" group="MUST_Resource">
+                    <analysis-arguments>
+                        <analysis-argument type="mapped" analysis-arg-order="0">
+                            <call-arg-name>pId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="1">
+                            <call-arg-name>lId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="2">
+                            <call-arg-name>request</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="operation" analysis-arg-order="3">
+                            <op-name group="MUST_Resource" id="1">return1</op-name>
+                        </analysis-argument>
+                    </analysis-arguments>
+                </analysis>
+            </analyses>
+            <operations>
+                <operation order="pre" name="return1" group="MUST_Resource" id="1">
+                    <operation-arguments>
+                    </operation-arguments>
+                </operation>
+            </operations>
+        </function>
+        <function return-type="int" name="propagateRequestsRealComplete" wrapp-everywhere="yes">
+            <function-arguments>
+                <function-argument order="0" name="pId" type="uint64_t" intent="in">
+                </function-argument>
+                <function-argument order="1" name="lId" type="uint64_t" intent="in" />
+                <function-array-argument order="2" name="sources" type="int*" intent="in">
+                    <length-argument type="argument">
+                        <call-arg-name>count</call-arg-name>
+                    </length-argument>
+                </function-array-argument>
+                <function-array-argument order="3" name="requests" type="@REQUEST_F_TYPE@*" intent="in">
+                    <length-argument type="argument">
+                        <call-arg-name>count</call-arg-name>
+                    </length-argument>
+                </function-array-argument>
+                <function-argument order="4" name="count" type="int" intent="in" />
+            </function-arguments>
+            <analyses>
+                <analysis order="pre" name="OverlapChecks:finishRequests" group="MUST_OverlapChecks">
+                    <analysis-arguments>
+                        <analysis-argument type="mapped" analysis-arg-order="0">
+                            <call-arg-name>pId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="1">
+                            <call-arg-name>lId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="2">
+                            <call-arg-name>requests</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="3">
+                            <call-arg-name>count</call-arg-name>
+                        </analysis-argument>
+                    </analysis-arguments>
+                </analysis>
+                <analysis order="pre" name="BlockingState:completedRequests" group="MUST_Deadlock">
+                    <analysis-arguments>
+                        <analysis-argument type="mapped" analysis-arg-order="0">
+                            <call-arg-name>pId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="1">
+                            <call-arg-name>lId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="2">
+                            <call-arg-name>requests</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="3">
+                            <call-arg-name>count</call-arg-name>
+                        </analysis-argument>
+                    </analysis-arguments>
+                </analysis>
+                <analysis order="pre" name="DWaitState:completedRequests" group="MUST_DistributedDeadlock">
+                    <analysis-arguments>
+                        <analysis-argument type="mapped" analysis-arg-order="0">
+                            <call-arg-name>pId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="1">
+                            <call-arg-name>lId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="2">
+                            <call-arg-name>requests</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="3">
+                            <call-arg-name>count</call-arg-name>
+                        </analysis-argument>
+                    </analysis-arguments>
+                </analysis>
+                <analysis order="pre" name="RequestTrack:completeArray" group="MUST_Resource">
+                    <analysis-arguments>
+                        <analysis-argument type="mapped" analysis-arg-order="0">
+                            <call-arg-name>pId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="1">
+                            <call-arg-name>lId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="2">
+                            <call-arg-name>requests</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="3">
+                            <call-arg-name>count</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="operation" analysis-arg-order="4">
+                            <op-name group="MUST_Resource" id="1">return1</op-name>
+                        </analysis-argument>
+                    </analysis-arguments>
+                </analysis>
+            </analyses>
+            <operations>
+                <operation order="pre" name="return1" group="MUST_Resource" id="1">
+                    <operation-arguments>
+                    </operation-arguments>
+                </operation>
+            </operations>
+        </function>
+    </functions>
+</api-specification>

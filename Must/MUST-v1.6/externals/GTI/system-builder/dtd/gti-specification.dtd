@@ -1,0 +1,227 @@
+<!--
+  This file is part of GTI (Generic Tool Infrastructure)
+
+  Copyright (C)
+    2008-2019 ZIH, Technische Universitaet Dresden, Federal Republic of Germany
+    2008-2019 Lawrence Livermore National Laboratories, United States of America
+    2013-2019 RWTH Aachen University, Federal Republic of Germany
+
+  See the LICENSE file in the package base directory for details
+-->
+
+<!--Root node for a GTI specification
+ - path-to-libs: absolute path to the library directory of the GTI
+ - path-to-execs: path to executables that are part of the GTI
+ - include-path: absolute path to the include directory of the GTI
+-->
+<!ELEMENT gti-specification (comm-protocols, comm-strategies, places, enums)>
+<!ATTLIST gti-specification
+   path-to-libs CDATA #REQUIRED
+   path-to-execs CDATA #REQUIRED
+   include-path CDATA #REQUIRED
+>
+
+<!-- Contains all enums.
+-->
+<!ELEMENT enums (enum*)>
+
+<!-- Contains the descriptions of all Communication Protocols.
+-->
+<!ELEMENT comm-protocols (comm-protocol*)>
+
+<!-- Description of a Communication Protocol.
+  name: name used to identify this module 
+        (Name used for registering and quering the 
+         module with P^nMPI)
+  supports-intra: "yes"/"no", optional, default is "no". If set to "yes" this protocol
+                           supports intra layer communication and can be used by intra
+                           communication protocols.
+-->
+<!ELEMENT comm-protocol (module-name, settings, prepend-modules, required-apis)>
+<!ATTLIST comm-protocol
+   name CDATA #REQUIRED
+   supports-intra CDATA #IMPLIED
+>
+
+<!-- Name of a module, used for P^nMPI configuration files.
+-->
+<!ELEMENT module-name (#PCDATA)>
+
+<!-- Node that contains all settings available for a module.
+-->
+<!ELEMENT settings (setting*)>
+
+<!-- Description of a setting.
+   - name: name of the setting
+-->
+<!ELEMENT setting (description, value)>
+<!ATTLIST setting
+   name CDATA #REQUIRED
+>
+
+<!-- Textual description of a setting.
+-->
+<!ELEMENT description (#PCDATA)>
+
+<!-- List of modules that need to be 
+     put in front of all other modules.
+     Use case: Modules that split MPI into disjunct 
+               groups.
+-->
+<!ELEMENT prepend-modules (prepend-module*)>
+
+
+<!-- A module to prepend.
+ - name: name used to identify this module 
+        (Name used for registering and quering the 
+         module with P^nMPI)
+--> 
+<!ELEMENT prepend-module (module-name)>
+<!ATTLIST prepend-module
+   name CDATA #REQUIRED
+>
+
+<!-- List of APIs that are needed for this modules. -->
+<!ELEMENT required-apis (required-api*)>
+
+<!-- Name of an API required for a module. -->
+<!ELEMENT required-api (#PCDATA)>
+
+<!-- Contains the descriptions of all Communication Strategies.
+-->
+<!ELEMENT comm-strategies (comm-strategy | comm-strategy-intra)*>
+
+<!-- Description of a Communication Strategy.
+ - name-up: name used to identify the tree upwards communication
+            strategy module 
+        (Name used for registering and quering the 
+         module with P^nMPI)
+ - name-down: name used to identify the tree downwards communication
+            strategy module 
+        (Name used for registering and quering the 
+         module with P^nMPI)
+-->
+<!ELEMENT comm-strategy (module-name-up, module-name-down, settings)>
+<!ATTLIST comm-strategy
+   name-up CDATA #REQUIRED
+   name-down CDATA #REQUIRED
+>
+
+<!-- Description of a Intra-Communication Strategy.
+ - name: name used to identify the tree upwards communication
+            strategy module 
+        (Name used for registering and quering the 
+         module with P^nMPI)
+-->
+<!ELEMENT comm-strategy-intra (module-name, settings)>
+<!ATTLIST comm-strategy-intra
+   name CDATA #REQUIRED
+>
+
+<!-- Name of a module, used for P^nMPI configuration files.
+-->
+<!ELEMENT module-name-up (#PCDATA)>
+
+<!-- Name of a module, used for P^nMPI configuration files.
+-->
+<!ELEMENT module-name-down (#PCDATA)>
+
+<!-- Contains the descriptions of all tool places.
+-->
+<!ELEMENT places (place*)>
+
+<!-- Description of a tool place.
+ - name: name of the place, if it is a module it is the name
+         used to identify the module 
+        (Name used for registering and quering the 
+         module with P^nMPI)
+-->
+<!ELEMENT place (prepend-modules, instance, required-apis, settings)>
+<!ATTLIST place
+   name CDATA #REQUIRED
+>
+
+<!-- Describes what type of instance a tool place is.
+     (Either a module or an executable)
+ - type: one out of "executable" and "module" 
+-->
+<!ELEMENT instance (module-name?, executable-name?)>
+<!ATTLIST instance
+   type CDATA #REQUIRED
+>
+
+<!-- Name of an executable. -->
+<!ELEMENT executable-name (#PCDATA)>
+
+
+<!-- ================= Value description ================ -->
+
+<!-- A single value description.
+     "type": one of:
+         -> bool -> 0,1 
+         -> enum -> as described in <enum> with given enumid
+         -> enumselection -> as described in <enum> with given enumid
+         -> float
+         -> integer
+         -> filepath -> path to file should be absoulute, a default should be $PWD/something or $BIN_DIR/something
+         -> path -> path to file should be absoulute, a default should be $PWD or $BIN_DIR
+         -> string  //should be avoided
+     - For integer and float the optional <range> child limits 
+       the valid values for the number
+     - For enums the <enumid> child must be used, which needs to
+       be a valid id from one of the enum specifications    
+     - For path and filepath the optional <io> child shows if it is an
+       input or output. Valid values are:
+           -> in
+           -> out
+           -> in_out
+     - For enumselections, if the one-required child is present
+       at least one value from the enum needs to be selected
+-->
+<!ELEMENT value (default, range?, enumid?, one-required?, io?)>
+<!ATTLIST value
+   type CDATA #REQUIRED
+>
+
+<!-- Default value for a value, format depends on type of value. -->
+<!ELEMENT default (#PCDATA)>
+
+<!-- Id of an enum. -->
+<!ELEMENT enumid (#PCDATA)>
+
+<!-- Specifies wheter at least one selection is required for an
+     enum selection.
+     Valid values are "0" and "1".
+-->
+<!ELEMENT one-required (#PCDATA)>
+
+<!-- direction of fileIO. 
+  Valid values are given in the documentation of the value node.
+  Usage: to determine whether a file needs to be existent or not.
+-->
+<!ELEMENT io (#PCDATA)>
+
+<!-- A range specification for a number 
+	min: lower bound
+	max: upper bound
+	Either min or may may be set to "*" to indicate that this
+	bound is not used: e.g.: <range min="1" max="*"> for number >=1
+-->
+<!ELEMENT range EMPTY>
+<!ATTLIST range 
+   min CDATA #REQUIRED
+   max CDATA #REQUIRED
+>
+
+<!-- Description of an enumeration.
+     When displaying the entries, they should be
+     ordered as in the XML file.  
+     "id": id used for this enum
+-->
+<!ELEMENT enum (entry)+>
+<!ATTLIST enum 
+   id CDATA #REQUIRED
+>
+
+<!-- An entry of an enum, its content is the name of the entry. -->
+<!ELEMENT entry (#PCDATA)>

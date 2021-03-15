@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  This file is part of GTI (Generic Tool Infrastructure)
+
+  Copyright (C)
+    2008-2019 ZIH, Technische Universitaet Dresden, Federal Republic of Germany
+    2008-2019 Lawrence Livermore National Laboratories, United States of America
+    2013-2019 RWTH Aachen University, Federal Republic of Germany
+
+  See the LICENSE file in the package base directory for details
+-->
+
+<!DOCTYPE analysis-specification SYSTEM "../system-builder/dtd/analysis-specification.dtd">
+<analysis-specification path-to-libs="$HOME/lib" include-path="@PROJECT_SOURCE_DIR@/tests/reduction/modules" group-name="Example">
+	<analyses>
+		<analysis name="sumFloatReduction" reduction="yes">
+			<registered-name>sumFloatReduction</registered-name>
+			<module-name>libsumFloatReduction</module-name>
+			<header-name>SumFloatReduction.h</header-name>
+			<interface-type>I_SumFloatReduction</interface-type>
+			<is-global>0</is-global>
+			<is-process-global>0</is-process-global>
+			<dependencies></dependencies>
+			<analysis-function name="reduce">
+				<analysis-argument order="0" type="float" name="f" /></analysis-function>
+		</analysis>
+		<analysis name="printFloatSum">
+			<registered-name>printFloatSum</registered-name>
+			<module-name>libprintFloatSumExample</module-name>
+			<header-name>PrintFloatSum.h</header-name>
+			<interface-type>I_PrintFloatSum</interface-type>
+			<is-global>1</is-global>
+			<is-process-global>0</is-process-global>
+			<dependencies></dependencies>
+			<reductions>
+				<analysis-depend>sumFloatReduction</analysis-depend></reductions>
+			<analysis-function name="print" needs-channel-id="yes">
+				<analysis-argument order="0" type="float" name="f" ></analysis-argument></analysis-function>
+		</analysis></analyses>
+	<operations>
+		<operation return-type="float" name="returnFloat">
+			<extra-headers></extra-headers>
+			<operation-arguments></operation-arguments>
+			<source-template>int rank;MPI_Comm_rank(MPI_COMM_WORLD,&amp;rank);float RETURN = rank;</source-template>
+		</operation></operations></analysis-specification>

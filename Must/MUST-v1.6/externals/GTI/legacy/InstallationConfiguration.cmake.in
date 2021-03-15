@@ -1,0 +1,23 @@
+# This file is part of GTI (Generic Tool Infrastructure)
+#
+# Copyright (C)
+#   2008-2019 ZIH, Technische Universitaet Dresden, Federal Republic of Germany
+#   2008-2019 Lawrence Livermore National Laboratories, United States of America
+#   2013-2019 RWTH Aachen University, Federal Republic of Germany
+#
+# See the LICENSE file in the package base directory for details
+
+# This file is a wrapper for legacy compatibility to include GTI's new CMake
+# configuration file.
+#
+# NOTE: Using this file is deprecated. Switch to FIND_PACKAGE(GTI) instead!
+
+MESSAGE(DEPRECATION "The file 'InstallationConfiguration.cmake' of GTI is "
+                    "deprecated. Please use 'GTIConfig.cmake' with "
+                    "FIND_PACKAGE() instead.")
+
+INCLUDE("@CMAKE_INSTALL_FULL_DATAROOTDIR@/cmake/GTI/GTIConfig.cmake")
+
+STRING(REGEX REPLACE "/bin/pnmpi-patch" ""
+       PnMPI_INSTALL_PREFIX ${PnMPI_PATCHER})
+SET(PnMPI_HOME "${PnMPI_INSTALL_PREFIX}" CACHE PATH "" FORCE)

@@ -1,0 +1,16 @@
+If you are building/installing ISP from a tarball, you
+only need to perform the following:
+
+./configure --prefix="Some Directory"
+make
+make install
+
+Otherwise, if you're building from a repository checkout,
+  please perform these steps:
+
+autoreconf --force
+./configure --prefix="Some Directory"
+make
+make install
+
+***

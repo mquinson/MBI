@@ -1,0 +1,830 @@
+<?xml version="1.0"?>
+
+<!--
+  This file is part of MUST (Marmot Umpire Scalable Tool)
+
+  Copyright (C)
+    2010-2016 ZIH, Technische Universitaet Dresden, Federal Republic of Germany
+    2010-2018 Lawrence Livermore National Laboratories, United States of America
+    2013-2018 RWTH Aachen University, Federal Republic of Germany
+
+  See the LICENSE file in the package base directory for details
+-->
+
+<!DOCTYPE api-specification SYSTEM "@MUST_SPECIFICATION_DTD_PATH@/api-specification.dtd">
+<api-specification unique-name="MUST_DistributedDeadlock_API">
+    <api-headers>
+        <header>DistributedDeadlockApi.h</header>
+    </api-headers>
+    <functions>
+        <function return-type="int" name="passSendForMatching" wrapp-across="yes">
+            <function-arguments>
+                <function-argument order="0" name="pId" type="uint64_t" intent="in">
+                </function-argument>
+                <function-argument order="1" name="lId" type="uint64_t" intent="in">
+                </function-argument>
+                <function-argument order="2" name="dest" type="int" intent="in">
+                </function-argument>
+                <function-argument order="3" name="tag" type="int" intent="in">
+                </function-argument>
+                <function-argument order="4" name="comm" type="@COMM_F_TYPE@" intent="in">
+                </function-argument>
+                <function-argument order="5" name="type" type="@DATATYPE_F_TYPE@" intent="in">
+                </function-argument>
+                <function-argument order="6" name="count" type="int" intent="in">
+                </function-argument>
+                <function-argument order="7" name="mode" type="int" intent="in">
+                </function-argument>
+                <function-argument order="8" name="remoteTS" type="@LOGICAL_TS_TYPE@" intent="in"></function-argument>
+            </function-arguments>
+            <analyses>
+                <analysis order="pre" name="DP2PMatch:send" group="MUST_DistributedDeadlock">
+                    <analysis-arguments>
+                        <analysis-argument type="mapped" analysis-arg-order="0">
+                            <call-arg-name>pId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="1">
+                            <call-arg-name>lId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="2">
+                            <call-arg-name>dest</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="3">
+                            <call-arg-name>tag</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="4">
+                            <call-arg-name>comm</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="5">
+                            <call-arg-name>type</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="6">
+                            <call-arg-name>count</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="7">
+                            <call-arg-name>mode</call-arg-name>
+                        </analysis-argument>
+                    <analysis-argument type="mapped" analysis-arg-order="8">
+                            <call-arg-name>remoteTS</call-arg-name>
+                        </analysis-argument></analysis-arguments>
+                </analysis>
+            </analyses>
+            <operations>
+            </operations>
+            <created-by>
+                <by name="DP2PMatch" group="MUST_DistributedDeadlock" />
+            </created-by>
+        </function>
+        <function return-type="int" name="passIsendForMatching" wrapp-across="yes">
+            <function-arguments>
+                <function-argument order="0" name="pId" type="uint64_t" intent="in">
+                </function-argument>
+                <function-argument order="1" name="lId" type="uint64_t" intent="in">
+                </function-argument>
+                <function-argument order="2" name="dest" type="int" intent="in">
+                </function-argument>
+                <function-argument order="3" name="tag" type="int" intent="in">
+                </function-argument>
+                <function-argument order="4" name="comm" type="@COMM_F_TYPE@" intent="in">
+                </function-argument>
+                <function-argument order="5" name="type" type="@DATATYPE_F_TYPE@" intent="in">
+                </function-argument>
+                <function-argument order="6" name="count" type="int" intent="in">
+                </function-argument>
+                <function-argument order="7" name="mode" type="int" intent="in">
+                </function-argument>
+                <function-argument order="8" name="request" type="@REQUEST_F_TYPE@" intent="in">
+                </function-argument>
+            <function-argument order="9" name="remoteTS" type="@LOGICAL_TS_TYPE@" intent="in"></function-argument></function-arguments>
+            <analyses>
+                <analysis order="pre" name="DP2PMatch:isend" group="MUST_DistributedDeadlock">
+                    <analysis-arguments>
+                        <analysis-argument type="mapped" analysis-arg-order="0">
+                            <call-arg-name>pId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="1">
+                            <call-arg-name>lId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="2">
+                            <call-arg-name>dest</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="3">
+                            <call-arg-name>tag</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="4">
+                            <call-arg-name>comm</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="5">
+                            <call-arg-name>type</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="6">
+                            <call-arg-name>count</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="7">
+                            <call-arg-name>mode</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="8">
+                            <call-arg-name>request</call-arg-name>
+                        </analysis-argument>
+                    <analysis-argument type="mapped" analysis-arg-order="9">
+                            <call-arg-name>remoteTS</call-arg-name>
+                        </analysis-argument></analysis-arguments>
+                </analysis>
+            </analyses>
+            <operations>
+            </operations>
+            <created-by>
+                <by name="DP2PMatch" group="MUST_DistributedDeadlock" />
+            </created-by>
+        </function>
+        <function return-type="int" name="passSendStartForMatching" wrapp-across="yes">
+            <function-arguments>
+                <function-argument order="0" name="pId" type="uint64_t" intent="in">
+                </function-argument>
+                <function-argument order="1" name="lId" type="uint64_t" intent="in">
+                </function-argument>
+                <function-argument order="2" name="request" type="@REQUEST_F_TYPE@" intent="in">
+                </function-argument>
+            <function-argument order="3" name="remoteTS" type="@LOGICAL_TS_TYPE@" intent="in"></function-argument></function-arguments>
+            <analyses>
+                <analysis order="pre" name="DP2PMatch:startPersistent" group="MUST_DistributedDeadlock">
+                    <analysis-arguments>
+                        <analysis-argument type="mapped" analysis-arg-order="0">
+                            <call-arg-name>pId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="1">
+                            <call-arg-name>lId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="2">
+                            <call-arg-name>request</call-arg-name>
+                        </analysis-argument>
+                    <analysis-argument type="mapped" analysis-arg-order="3">
+                            <call-arg-name>remoteTS</call-arg-name>
+                        </analysis-argument></analysis-arguments>
+                </analysis>
+            </analyses>
+            <operations>
+            </operations>
+            <created-by>
+                <by name="DP2PMatch" group="MUST_DistributedDeadlock" />
+            </created-by>
+        </function>
+        <function return-type="int" name="dCollMatchAncestorHasIntra" wrapp-everywhere="yes">
+            <function-arguments>
+                <function-argument order="0" name="ancestorHas" type="int" intent="in">
+                    function-argument 
+                </function-argument>
+            </function-arguments>
+            <analyses>
+                <analysis order="pre" name="DCollectiveMatchReduction:ancestorHasIntraComm" group="MUST_DistributedDeadlock">
+                    <analysis-arguments>
+                        <analysis-argument type="mapped" analysis-arg-order="0">
+                            <call-arg-name>ancestorHas</call-arg-name>
+                        </analysis-argument>
+                    </analysis-arguments>
+                </analysis>
+            </analyses>
+            <operations>
+            </operations>
+        </function>
+        <function return-type="int" name="passTypeMatchInfo" wrapp-across="yes">
+            <function-arguments>
+                <function-argument order="0" name="pId" type="uint64_t" intent="in">
+                    function-argument 
+                </function-argument>
+                <function-argument order="1" name="lId" type="uint64_t" intent="in">
+                    function-argument 
+                </function-argument>
+                <function-argument order="2" name="commRId" type="uint64_t" intent="in">
+                    function-argument 
+                </function-argument>
+                <function-argument order="3" name="typeRId" type="uint64_t" intent="in">
+                    function-argument 
+                </function-argument>
+                <function-argument order="4" name="numCounts" type="int" intent="in">
+                    function-argument 
+                </function-argument>
+                <function-array-argument order="5" name="counts" type="int*" intent="in">
+                    <length-argument type="argument">
+                        <call-arg-name>numCounts</call-arg-name>
+                    </length-argument>
+                </function-array-argument>
+                <function-argument order="6" name="firstRank" type="int" intent="in">
+                </function-argument>
+                <function-argument order="7" name="collectiveNum" type="int" intent="in">
+                    function-argument 
+                </function-argument>
+                <function-argument order="8" name="collId" type="int" intent="in">
+                    function-argument 
+                </function-argument>
+            </function-arguments>
+            <analyses>
+                <analysis order="pre" name="DCollectiveMatchReduction:handleIntraTypeMatchInfo" group="MUST_DistributedDeadlock">
+                    <analysis-arguments>
+                        <analysis-argument type="mapped" analysis-arg-order="0">
+                            <call-arg-name>pId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="1">
+                            <call-arg-name>lId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="2">
+                            <call-arg-name>commRId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="3">
+                            <call-arg-name>typeRId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="4">
+                            <call-arg-name>numCounts</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="5">
+                            <call-arg-name>counts</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="6">
+                            <call-arg-name>firstRank</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="7">
+                            <call-arg-name>collectiveNum</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="8">
+                            <call-arg-name>collId</call-arg-name>
+                        </analysis-argument>
+                    </analysis-arguments>
+                </analysis>
+            </analyses>
+            <operations>
+            </operations>
+            <created-by>
+    			<by name="DCollectiveMatchReduction" group="MUST_DistributedDeadlock" /></created-by>
+        </function>
+        <function return-type="int" name="passTypeMatchInfoTypes" wrapp-across="yes">
+            <function-arguments>
+                <function-argument order="0" name="pId" type="uint64_t" intent="in">
+                    function-argument 
+                </function-argument>
+                <function-argument order="1" name="lId" type="uint64_t" intent="in">
+                    function-argument 
+                </function-argument>
+                <function-argument order="2" name="commRId" type="uint64_t" intent="in">
+                    function-argument 
+                </function-argument>
+                <function-argument order="3" name="numCountsAndTypes" type="int" intent="in">
+                    function-argument 
+                </function-argument>
+                <function-array-argument order="4" name="typeRIds" type="uint64_t*" intent="in">
+                    <length-argument type="argument">
+                        <call-arg-name>numCountsAndTypes</call-arg-name>
+                    </length-argument>
+                </function-array-argument>
+                <function-array-argument order="5" name="counts" type="int*" intent="in">
+                    <length-argument type="argument">
+                        <call-arg-name>numCountsAndTypes</call-arg-name>
+                    </length-argument>
+                </function-array-argument>
+                <function-argument order="6" name="firstRank" type="int" intent="in">
+                </function-argument>
+                <function-argument order="7" name="collectiveNum" type="int" intent="in">
+                    function-argument 
+                </function-argument>
+                <function-argument order="8" name="collId" type="int" intent="in">
+                    function-argument 
+                </function-argument>
+            </function-arguments>
+            <analyses>
+                <analysis order="pre" name="DCollectiveMatchReduction:handleIntraTypeMatchInfoTypes" group="MUST_DistributedDeadlock">
+                    <analysis-arguments>
+                        <analysis-argument type="mapped" analysis-arg-order="0">
+                            <call-arg-name>pId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="1">
+                            <call-arg-name>lId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="2">
+                            <call-arg-name>commRId</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="3">
+                            <call-arg-name>numCountsAndTypes</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="4">
+                            <call-arg-name>typeRIds</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="5">
+                            <call-arg-name>counts</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="6">
+                            <call-arg-name>firstRank</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="7">
+                            <call-arg-name>collectiveNum</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="8">
+                            <call-arg-name>collId</call-arg-name>
+                        </analysis-argument>
+                    </analysis-arguments>
+                </analysis>
+            </analyses>
+            <operations>
+            </operations>
+            <created-by>
+    			<by name="DCollectiveMatchReduction" group="MUST_DistributedDeadlock" /></created-by>
+        </function>
+        <function return-type="int"
+        	name="generateCollectiveActiveRequest" wrapp-everywhere="yes">
+        	<function-arguments><function-argument order="0" name="isIntercomm" type="int" intent="in">
+        		</function-argument><function-argument order="1" name="contextId" type="unsigned long long" intent="in">
+			</function-argument><function-argument order="2" name="collCommType" type="int" intent="in">
+        		</function-argument><function-argument order="3" name="localGroupSize" type="int" intent="in">
+        		</function-argument><function-argument order="4" name="remoteGroupSize" type="int" intent="in">
+        		</function-argument>
+        		<function-argument order="5" name="numTasks" type="int"
+        			intent="in">
+        		</function-argument>
+        	</function-arguments>
+        	<analyses>
+        		<analysis order="pre" name="DWaitStateCollReduction:request" group="MUST_DistributedDeadlock">
+        			<analysis-arguments>
+        				<analysis-argument type="mapped" analysis-arg-order="0">
+        					<call-arg-name>isIntercomm</call-arg-name>
+        				</analysis-argument>
+        				<analysis-argument type="mapped" analysis-arg-order="1">
+        					<call-arg-name>contextId</call-arg-name>
+        				</analysis-argument>
+                                        <analysis-argument type="mapped" analysis-arg-order="2">
+                                            <call-arg-name>collCommType</call-arg-name>
+                                        </analysis-argument>
+					<analysis-argument type="mapped" analysis-arg-order="3">
+        					<call-arg-name>localGroupSize</call-arg-name>
+        				</analysis-argument>
+					<analysis-argument type="mapped" analysis-arg-order="4">
+        					<call-arg-name>remoteGroupSize</call-arg-name>
+        				</analysis-argument>
+                                        <analysis-argument type="mapped" analysis-arg-order="5">
+        					<call-arg-name>numTasks</call-arg-name>
+        				</analysis-argument></analysis-arguments>
+        		</analysis><analysis order="pre" name="DWaitStateCollMgr:request"
+        			group="MUST_DistributedDeadlock">
+        			<analysis-arguments>
+                                    <analysis-argument type="mapped" analysis-arg-order="0">
+        					<call-arg-name>isIntercomm</call-arg-name>
+        				</analysis-argument><analysis-argument type="mapped" analysis-arg-order="1">
+        					<call-arg-name>contextId</call-arg-name>
+        				</analysis-argument><analysis-argument type="mapped" analysis-arg-order="2">
+        					<call-arg-name>collCommType</call-arg-name>
+        				</analysis-argument><analysis-argument type="mapped" analysis-arg-order="3">
+        					<call-arg-name>localGroupSize</call-arg-name>
+        				</analysis-argument><analysis-argument type="mapped" analysis-arg-order="4">
+        					<call-arg-name>remoteGroupSize</call-arg-name>
+        				</analysis-argument><analysis-argument type="mapped" analysis-arg-order="5">
+        					<call-arg-name>numTasks</call-arg-name>
+        				</analysis-argument></analysis-arguments>
+        		</analysis>
+        	<analysis order="pre" name="DWaitStateWfgMgr:collActivityNotify" group="MUST_DistributedDeadlock">
+        			<analysis-arguments></analysis-arguments>
+        		</analysis></analyses>
+        	<operations></operations>
+        	<created-by>
+        		<by name="DWaitState" group="MUST_DistributedDeadlock" />
+        	</created-by>
+        </function>
+        <function return-type="int"
+        	name="generateCollectiveActiveAcknowledge" wrapp-down="yes">
+        	<function-arguments>
+        		<function-argument order="0" name="isIntercomm" type="int"
+        			intent="in">
+        		</function-argument>
+        		<function-argument order="1" name="contextId" type="unsigned long long"
+        			intent="in">
+        		</function-argument>
+        		<function-argument order="2" name="localGroupSize"
+        			type="int" intent="in">
+        		</function-argument>
+        		<function-argument order="3" name="remoteGroupSize" type="int"
+        			intent="in">
+        		</function-argument>
+        	</function-arguments>
+        	<analyses>
+        		<analysis order="pre" name="DWaitState:collectiveAcknowledge"
+        			group="MUST_DistributedDeadlock">
+        			<analysis-arguments>
+        				<analysis-argument type="mapped"
+        					analysis-arg-order="0">
+        					<call-arg-name>isIntercomm</call-arg-name>
+        				</analysis-argument>
+        				<analysis-argument type="mapped"
+        					analysis-arg-order="1">
+        					<call-arg-name>contextId</call-arg-name>
+        				</analysis-argument>
+        				<analysis-argument type="mapped"
+        					analysis-arg-order="2">
+        					<call-arg-name>localGroupSize</call-arg-name>
+        				</analysis-argument>
+        				<analysis-argument type="mapped"
+        					analysis-arg-order="3">
+        					<call-arg-name>remoteGroupSize</call-arg-name>
+        				</analysis-argument>
+        			</analysis-arguments>
+        		</analysis>
+        	</analyses>
+        	<operations></operations>
+        	<created-by>
+        		<by name="DWaitStateCollMgr" group="MUST_DistributedDeadlock" />
+        	</created-by>
+        </function><function return-type="int" name="generateReceiveActiveRequest" wrapp-across="yes">
+            <function-arguments>
+                <function-argument order="0" name="sendRank" type="int" intent="in"></function-argument>
+                <function-argument order="1" name="sendLTS" type="@LOGICAL_TS_TYPE@" intent="in"></function-argument>
+                <function-argument order="2" name="receiveLTS" type="@LOGICAL_TS_TYPE@" intent="in"></function-argument>
+            </function-arguments>
+            <analyses>
+                <analysis order="pre" name="DWaitState:receiveActiveRequest" group="MUST_DistributedDeadlock">
+                    <analysis-arguments>
+                        <analysis-argument type="mapped" analysis-arg-order="0">
+                            <call-arg-name>sendRank</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="1">
+                            <call-arg-name>sendLTS</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="2">
+                            <call-arg-name>receiveLTS</call-arg-name>
+                        </analysis-argument>
+                    </analysis-arguments>
+                </analysis>
+            </analyses>
+            <operations>
+            </operations>
+            <created-by>
+    			<by name="DWaitState" group="MUST_DistributedDeadlock" /></created-by>
+        </function><function return-type="int" name="generateReceiveActiveAcknowledge" wrapp-across="yes">
+            <function-arguments>
+                <function-argument order="0" name="receiveRank" type="int" intent="in"></function-argument>
+                <function-argument order="1" name="receiveLTS" type="@LOGICAL_TS_TYPE@" intent="in"></function-argument>
+            </function-arguments>
+            <analyses>
+                <analysis order="pre" name="DWaitState:receiveActiveAcknowledge" group="MUST_DistributedDeadlock">
+                    <analysis-arguments>
+                        <analysis-argument type="mapped" analysis-arg-order="0">
+                            <call-arg-name>receiveRank</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="1">
+                            <call-arg-name>receiveLTS</call-arg-name>
+                        </analysis-argument>
+                    </analysis-arguments>
+                </analysis>
+            </analyses>
+            <operations>
+            </operations>
+            <created-by>
+    			<by name="DWaitState" group="MUST_DistributedDeadlock" /></created-by>
+        </function><function return-type="int" name="provideWaitForInfosEmpty" wrapp-everywhere="yes">
+    		<function-arguments>
+    			<function-argument order="0" name="worldRank" type="int" intent="in">
+    			</function-argument></function-arguments>
+    		<analyses>
+    			<analysis order="pre" name="DWaitStateWfgMgr:waitForInfoEmpty" group="MUST_DistributedDeadlock">
+    				<analysis-arguments>
+    					<analysis-argument type="mapped" analysis-arg-order="0">
+    						<call-arg-name>worldRank</call-arg-name>
+    					</analysis-argument></analysis-arguments>
+    			</analysis>
+    		</analyses>
+    		<operations></operations>
+    		<created-by>
+    			<by name="DWaitState" group="MUST_DistributedDeadlock" />
+    		</created-by>
+    	</function>
+    	<function return-type="int"
+    		name="provideWaitForInfosSingle" wrapp-everywhere="yes">
+    		<function-arguments>
+    			<function-argument order="0" name="worldRank"
+    				type="int" intent="in">
+    			</function-argument>
+    			<function-argument order="1" name="pId"
+    				type="uint64_t" intent="in">
+    			</function-argument>
+    		<function-argument order="2" name="lId" type="uint64_t" intent="in">
+    			</function-argument><function-argument order="3" name="subId" type="int" intent="in">
+    			</function-argument><function-argument order="4" name="count" type="int" intent="in">
+    			</function-argument><function-argument order="5" name="type" type="int" intent="in">
+    			</function-argument>
+    			<function-array-argument order="6" name="toRanks" type="int*"
+    				intent="in">
+    				<length-argument type="argument">
+    					<call-arg-name>count</call-arg-name>
+    				</length-argument>
+    			</function-array-argument><function-array-argument order="7" name="labelPIds" type="uint64_t*" intent="in">
+    				<length-argument type="argument">
+    					<call-arg-name>count</call-arg-name>
+    				</length-argument>
+    			</function-array-argument><function-array-argument order="8" name="labelLIds" type="uint64_t*" intent="in">
+    				<length-argument type="argument">
+    					<call-arg-name>count</call-arg-name>
+    				</length-argument>
+    			</function-array-argument><function-argument order="9" name="labelsSize" type="int" intent="in">
+    			</function-argument><function-array-argument order="10" name="labels" type="char*" intent="in">
+    				<length-argument type="argument">
+    					<call-arg-name>labelsSize</call-arg-name>
+    				</length-argument>
+    			</function-array-argument></function-arguments>
+    		<analyses>
+    			<analysis order="pre"
+    				name="DWaitStateWfgMgr:waitForInfoSingle"
+    				group="MUST_DistributedDeadlock">
+    				<analysis-arguments>
+    					<analysis-argument type="mapped"
+    						analysis-arg-order="0">
+    						<call-arg-name>worldRank</call-arg-name>
+    					</analysis-argument>
+    				<analysis-argument type="mapped" analysis-arg-order="1">
+    						<call-arg-name>pId</call-arg-name>
+    					</analysis-argument><analysis-argument type="mapped" analysis-arg-order="2">
+    						<call-arg-name>lId</call-arg-name>
+    					</analysis-argument><analysis-argument type="mapped" analysis-arg-order="3">
+    						<call-arg-name>subId</call-arg-name>
+    					</analysis-argument><analysis-argument type="mapped" analysis-arg-order="4">
+    						<call-arg-name>count</call-arg-name>
+    					</analysis-argument><analysis-argument type="mapped" analysis-arg-order="5">
+    						<call-arg-name>type</call-arg-name>
+    					</analysis-argument><analysis-argument type="mapped" analysis-arg-order="6">
+    						<call-arg-name>toRanks</call-arg-name>
+    					</analysis-argument><analysis-argument type="mapped" analysis-arg-order="7">
+    						<call-arg-name>labelPIds</call-arg-name>
+    					</analysis-argument><analysis-argument type="mapped" analysis-arg-order="8">
+    						<call-arg-name>labelLIds</call-arg-name>
+    					</analysis-argument><analysis-argument type="mapped" analysis-arg-order="9">
+    						<call-arg-name>labelsSize</call-arg-name>
+    					</analysis-argument><analysis-argument type="mapped" analysis-arg-order="10">
+    						<call-arg-name>labels</call-arg-name>
+    					</analysis-argument></analysis-arguments>
+    			</analysis>
+    		</analyses>
+    		<operations></operations>
+    		<created-by>
+    			<by name="DWaitState" group="MUST_DistributedDeadlock" />
+    		</created-by>
+    	</function><function return-type="int" name="provideWaitForInfosMixed" wrapp-everywhere="yes">
+    		<function-arguments>
+    			<function-argument order="0" name="worldRank" type="int" intent="in">
+    			</function-argument>
+    			<function-argument order="1" name="pId" type="uint64_t" intent="in">
+    			</function-argument>
+    		<function-argument order="2" name="lId" type="uint64_t" intent="in">
+    			</function-argument><function-argument order="3" name="numSubs" type="int" intent="in">
+    			</function-argument><function-argument order="4" name="type" type="int" intent="in">
+    			</function-argument><function-array-argument order="5" name="labelPIds" type="uint64_t*" intent="in">
+    				<length-argument type="argument">
+    					<call-arg-name>numSubs</call-arg-name>
+    				</length-argument>
+    			</function-array-argument><function-array-argument order="6" name="labelLIds" type="uint64_t*" intent="in">
+    				<length-argument type="argument">
+    					<call-arg-name>numSubs</call-arg-name>
+    				</length-argument>
+    			</function-array-argument><function-argument order="7" name="labelsSize" type="int" intent="in">
+    			</function-argument><function-array-argument order="8" name="labels" type="char*" intent="in">
+    				<length-argument type="argument">
+    					<call-arg-name>labelsSize</call-arg-name>
+    				</length-argument>
+    			</function-array-argument></function-arguments>
+    		<analyses>
+    			<analysis order="pre" name="DWaitStateWfgMgr:waitForInfoMixed" group="MUST_DistributedDeadlock">
+    				<analysis-arguments>
+    					<analysis-argument type="mapped" analysis-arg-order="0">
+    						<call-arg-name>worldRank</call-arg-name>
+    					</analysis-argument>
+    				<analysis-argument type="mapped" analysis-arg-order="1">
+    						<call-arg-name>pId</call-arg-name>
+    					</analysis-argument><analysis-argument type="mapped" analysis-arg-order="2">
+    						<call-arg-name>lId</call-arg-name>
+    					</analysis-argument><analysis-argument type="mapped" analysis-arg-order="3">
+    						<call-arg-name>numSubs</call-arg-name>
+    					</analysis-argument><analysis-argument type="mapped" analysis-arg-order="4">
+    						<call-arg-name>type</call-arg-name>
+    					</analysis-argument><analysis-argument type="mapped" analysis-arg-order="5">
+    						<call-arg-name>labelPIds</call-arg-name>
+    					</analysis-argument><analysis-argument type="mapped" analysis-arg-order="6">
+    						<call-arg-name>labelLIds</call-arg-name>
+    					</analysis-argument><analysis-argument type="mapped" analysis-arg-order="7">
+    						<call-arg-name>labelsSize</call-arg-name>
+    					</analysis-argument><analysis-argument type="mapped" analysis-arg-order="8">
+    						<call-arg-name>labels</call-arg-name>
+    					</analysis-argument></analysis-arguments>
+    			</analysis>
+    		</analyses>
+    		<operations></operations>
+    		<created-by>
+    			<by name="DWaitState" group="MUST_DistributedDeadlock" />
+    		</created-by>
+    	</function>
+    	<function return-type="int" name="provideWaitForInfosColl" wrapp-everywhere="yes">
+    		<function-arguments>
+    			<function-argument order="0" name="worldRank" type="int" intent="in">
+    			</function-argument>
+    			<function-argument order="1" name="pId" type="uint64_t" intent="in">
+    			</function-argument>
+    		<function-argument order="2" name="lId" type="uint64_t" intent="in">
+    			</function-argument><function-argument order="3" name="collType" type="int" intent="in">
+    			</function-argument><function-argument order="4" name="isIntercomm" type="int" intent="in">
+        		</function-argument><function-argument order="5" name="contextId" type="unsigned long long" intent="in">
+        		</function-argument><function-argument order="6" name="localGroupSize" type="int" intent="in">
+        		</function-argument><function-argument order="7" name="remoteGroupSize" type="int" intent="in">
+        		</function-argument></function-arguments>
+    		<analyses>
+    			<analysis order="pre" name="DWaitStateWfgMgr:waitForInfoColl" group="MUST_DistributedDeadlock">
+    				<analysis-arguments>
+    					<analysis-argument type="mapped" analysis-arg-order="0">
+    						<call-arg-name>worldRank</call-arg-name>
+    					</analysis-argument>
+    				<analysis-argument type="mapped" analysis-arg-order="1">
+    						<call-arg-name>pId</call-arg-name>
+    					</analysis-argument><analysis-argument type="mapped" analysis-arg-order="2">
+    						<call-arg-name>lId</call-arg-name>
+    					</analysis-argument><analysis-argument type="mapped" analysis-arg-order="3">
+    						<call-arg-name>collType</call-arg-name>
+    					</analysis-argument><analysis-argument type="mapped" analysis-arg-order="4">
+    						<call-arg-name>isIntercomm</call-arg-name>
+    					</analysis-argument><analysis-argument type="mapped" analysis-arg-order="5">
+    						<call-arg-name>contextId</call-arg-name>
+    					</analysis-argument><analysis-argument type="mapped" analysis-arg-order="6">
+    						<call-arg-name>localGroupSize</call-arg-name>
+    					</analysis-argument><analysis-argument type="mapped" analysis-arg-order="7">
+    						<call-arg-name>remoteGroupSize</call-arg-name>
+    					</analysis-argument></analysis-arguments>
+    			</analysis>
+    		</analyses>
+    		<operations></operations>
+    		<created-by>
+    			<by name="DWaitState" group="MUST_DistributedDeadlock" />
+    		</created-by>
+    	</function><function return-type="int" name="requestWaitForInfos"
+    		wrapp-down="yes">
+    		<function-arguments>
+    		</function-arguments>
+    		<analyses>
+    			<analysis order="pre"
+    				name="DWaitState:requestWaitForInfos"
+    				group="MUST_DistributedDeadlock">
+    				<analysis-arguments>
+    				</analysis-arguments>
+    			</analysis>
+    		</analyses>
+    		<operations></operations>
+    		<created-by>
+    			<by name="DWaitStateWfgMgr" group="MUST_DistributedDeadlock" />
+    		</created-by>
+    	</function><function return-type="int" name="requestConsistentState" wrapp-down="yes">
+    		<function-arguments>
+    		</function-arguments>
+    		<analyses>
+    			<analysis order="pre" name="DWaitState:requestConsistentState" group="MUST_DistributedDeadlock">
+    				<analysis-arguments>
+    				</analysis-arguments>
+    			</analysis>
+    		</analyses>
+    		<operations></operations>
+    		<created-by>
+    			<by name="DWaitStateWfgMgr" group="MUST_DistributedDeadlock" />
+    		</created-by>
+    	</function>
+    	<function return-type="int" name="acknowledgeConsistentState"
+    		wrapp-everywhere="yes">
+    		<function-arguments>
+    			<function-argument order="0" name="numHeads" type="int" intent="in"></function-argument></function-arguments>
+    		<analyses>
+    			<analysis order="pre"
+    				name="DWaitStateWfgMgr:acknowledgeConsistentState"
+    				group="MUST_DistributedDeadlock">
+    				<analysis-arguments>
+    					<analysis-argument type="mapped"
+    						analysis-arg-order="0">
+    						<call-arg-name>numHeads</call-arg-name>
+    					</analysis-argument></analysis-arguments>
+    			</analysis>
+    		</analyses>
+    		<operations></operations>
+    		<created-by>
+    			<by name="DWaitState"
+    				group="MUST_DistributedDeadlock" ></by>
+    		</created-by>
+    	</function>
+    	<function return-type="int" name="pingDWaitState"
+    		wrapp-across="yes">
+    		<function-arguments>
+    			<function-argument order="0" name="fromNode" type="int" intent="in"></function-argument><function-argument order="1" name="pingsRemaining" type="int" intent="in"></function-argument></function-arguments>
+    		<analyses>
+    			<analysis order="pre"
+    				name="DWaitState:handlePing"
+    				group="MUST_DistributedDeadlock">
+    				<analysis-arguments>
+    					<analysis-argument type="mapped"
+    						analysis-arg-order="0">
+    						<call-arg-name>fromNode</call-arg-name>
+    					</analysis-argument><analysis-argument type="mapped" analysis-arg-order="1">
+    						<call-arg-name>pingsRemaining</call-arg-name>
+    					</analysis-argument></analysis-arguments>
+    			</analysis>
+    		</analyses>
+    		<operations></operations>
+    		<created-by>
+    			<by name="DWaitState"
+    				group="MUST_DistributedDeadlock" />
+    		</created-by>
+    	</function><function return-type="int" name="pongDWaitState" wrapp-across="yes">
+    		<function-arguments>
+    			<function-argument order="0" name="fromNode" type="int" intent="in"></function-argument><function-argument order="1" name="pingsRemaining" type="int" intent="in"></function-argument></function-arguments>
+    		<analyses>
+    			<analysis order="pre" name="DWaitState:handlePong" group="MUST_DistributedDeadlock">
+    				<analysis-arguments>
+    					<analysis-argument type="mapped" analysis-arg-order="0">
+    						<call-arg-name>fromNode</call-arg-name>
+    					</analysis-argument><analysis-argument type="mapped" analysis-arg-order="1">
+    						<call-arg-name>pingsRemaining</call-arg-name>
+    					</analysis-argument></analysis-arguments>
+    			</analysis>
+    		</analyses>
+    		<operations></operations>
+    		<created-by>
+    			<by name="DWaitState" group="MUST_DistributedDeadlock" />
+    		</created-by>
+    	</function><function return-type="int" name="provideWaitForNbcBackground" wrapp-everywhere="yes">
+    		<function-arguments>
+    			<function-argument order="0" name="worldRank" type="int" intent="in">
+    			</function-argument>
+    			<function-argument order="1" name="pId" type="uint64_t" intent="in">
+    			</function-argument>
+    		<function-argument order="2" name="lId" type="uint64_t" intent="in">
+    			</function-argument><function-argument order="3" name="waveNumInColl" type="int" intent="in">
+    			</function-argument><function-argument order="4" name="isIntercomm" type="int" intent="in">
+        		</function-argument><function-argument order="5" name="contextId" type="unsigned long long" intent="in">
+        		</function-argument><function-argument order="6" name="localGroupSize" type="int" intent="in">
+        		</function-argument><function-argument order="7" name="remoteGroupSize" type="int" intent="in">
+        		</function-argument></function-arguments>
+    		<analyses>
+    			<analysis order="pre" name="DWaitStateWfgMgr:waitForBackgroundNbc" group="MUST_DistributedDeadlock">
+    				<analysis-arguments>
+    					<analysis-argument type="mapped" analysis-arg-order="0">
+    						<call-arg-name>worldRank</call-arg-name>
+    					</analysis-argument>
+    				<analysis-argument type="mapped" analysis-arg-order="1">
+    						<call-arg-name>pId</call-arg-name>
+    					</analysis-argument><analysis-argument type="mapped" analysis-arg-order="2">
+    						<call-arg-name>lId</call-arg-name>
+    					</analysis-argument><analysis-argument type="mapped" analysis-arg-order="3">
+    						<call-arg-name>waveNumInColl</call-arg-name>
+    					</analysis-argument><analysis-argument type="mapped" analysis-arg-order="4">
+    						<call-arg-name>isIntercomm</call-arg-name>
+    					</analysis-argument><analysis-argument type="mapped" analysis-arg-order="5">
+    						<call-arg-name>contextId</call-arg-name>
+    					</analysis-argument><analysis-argument type="mapped" analysis-arg-order="6">
+    						<call-arg-name>localGroupSize</call-arg-name>
+    					</analysis-argument><analysis-argument type="mapped" analysis-arg-order="7">
+    						<call-arg-name>remoteGroupSize</call-arg-name>
+    					</analysis-argument></analysis-arguments>
+    			</analysis>
+    		</analyses>
+    		<operations></operations>
+    		<created-by>
+    			<by name="DWaitState" group="MUST_DistributedDeadlock" />
+    		</created-by>
+    	</function><function return-type="int" name="provideWaitForInfosNbcColl" wrapp-everywhere="yes">
+    		<function-arguments>
+    			<function-argument order="0" name="worldRank" type="int" intent="in">
+    			</function-argument>
+    			<function-argument order="1" name="pId" type="uint64_t" intent="in">
+    			</function-argument>
+    		<function-argument order="2" name="lId" type="uint64_t" intent="in">
+    			</function-argument><function-argument order="3" name="subId" type="int" intent="in">
+    			</function-argument><function-argument order="4" name="waveNumInColl" type="int" intent="in">
+    			</function-argument><function-argument order="5" name="isIntercomm" type="int" intent="in">
+        		</function-argument><function-argument order="6" name="contextId" type="unsigned long long" intent="in">
+        		</function-argument><function-argument order="7" name="localGroupSize" type="int" intent="in">
+        		</function-argument><function-argument order="8" name="remoteGroupSize" type="int" intent="in">
+        		</function-argument></function-arguments>
+    		<analyses>
+    			<analysis order="pre" name="DWaitStateWfgMgr:waitForInfoNbcColl" group="MUST_DistributedDeadlock">
+    				<analysis-arguments>
+    					<analysis-argument type="mapped" analysis-arg-order="0">
+    						<call-arg-name>worldRank</call-arg-name>
+    					</analysis-argument>
+    				<analysis-argument type="mapped" analysis-arg-order="1">
+    						<call-arg-name>pId</call-arg-name>
+    					</analysis-argument><analysis-argument type="mapped" analysis-arg-order="2">
+    						<call-arg-name>lId</call-arg-name>
+    					</analysis-argument><analysis-argument type="mapped" analysis-arg-order="3">
+    						<call-arg-name>subId</call-arg-name>
+    				    </analysis-argument><analysis-argument type="mapped" analysis-arg-order="4">
+                            <call-arg-name>waveNumInColl</call-arg-name>
+    					</analysis-argument><analysis-argument type="mapped" analysis-arg-order="5">
+    						<call-arg-name>isIntercomm</call-arg-name>
+    					</analysis-argument><analysis-argument type="mapped" analysis-arg-order="6">
+    						<call-arg-name>contextId</call-arg-name>
+    					</analysis-argument><analysis-argument type="mapped" analysis-arg-order="7">
+    						<call-arg-name>localGroupSize</call-arg-name>
+    					</analysis-argument><analysis-argument type="mapped" analysis-arg-order="8">
+    						<call-arg-name>remoteGroupSize</call-arg-name>
+    					</analysis-argument></analysis-arguments>
+    			</analysis>
+    		</analyses>
+    		<operations></operations>
+    		<created-by>
+    			<by name="DWaitState" group="MUST_DistributedDeadlock" />
+    		</created-by>
+    	</function></functions>
+</api-specification>

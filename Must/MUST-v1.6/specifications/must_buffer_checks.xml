@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  This file is part of MUST (Marmot Umpire Scalable Tool)
+
+  Copyright (C)
+    2010-2016 ZIH, Technische Universitaet Dresden, Federal Republic of Germany
+    2010-2018 Lawrence Livermore National Laboratories, United States of America
+    2013-2018 RWTH Aachen University, Federal Republic of Germany
+
+  See the LICENSE file in the package base directory for details
+-->
+
+<!DOCTYPE analysis-specification PUBLIC "must_base" "@MUST_SPECIFICATION_DTD_PATH@/analysis-specification.dtd">
+<analysis-specification group-name="MUST_BufferChecks" include-path="" path-to-libs="@CMAKE_INSTALL_PREFIX@/modules">
+    <analyses>
+        <analysis name="BufferChecks">
+            <registered-name>BufferChecks</registered-name>
+            <module-name>libbufferChecks</module-name>
+            <header-name>I_BufferChecks.h</header-name>
+            <interface-type>I_BufferChecks</interface-type>
+            <is-global>0</is-global>
+            <is-process-global>0</is-process-global>
+            <dependencies>
+                <analysis-depend group="MUST_Base">ParallelIdAnalysis</analysis-depend>
+                <analysis-depend group="MUST_Base">CreateMessage</analysis-depend>
+                <analysis-depend group="MUST_Base">ArgumentAnalysis</analysis-depend>
+            </dependencies>
+            <analysis-function name="bufferAttach">
+                <analysis-argument order="0" type="uint64_t" name="pId" />
+                <analysis-argument order="1" type="uint64_t" name="lId" />
+                <analysis-argument order="2" type="int" name="aId" />
+                <analysis-argument order="3" type="int" name="size" />
+            </analysis-function>
+            <analysis-function name="bufferDetach">
+                <analysis-argument order="0" type="uint64_t" name="pId" />
+                <analysis-argument order="1" type="uint64_t" name="lId" />
+            </analysis-function>
+            <analysis-function name="bufferUsage">
+                <analysis-argument order="0" type="uint64_t" name="pId" />
+                <analysis-argument order="1" type="uint64_t" name="lId" />
+                <analysis-argument order="2" type="int" name="size" />
+            </analysis-function>
+        </analysis>
+    </analyses>
+    <operations>
+        <operation return-type="int" name="getBsendSize">
+            <extra-headers>
+            </extra-headers>
+            <operation-arguments>
+                <operation-argument order="0" type="int" name="incount" />
+                <operation-argument order="1" type="MPI_Datatype" name="datatype" />
+                <operation-argument order="2" type="MPI_Comm" name="comm" />
+            </operation-arguments>
+            <source-template>int RETURN = 0; PMPI_Pack_size(ARG0,ARG1,ARG2,&amp;RETURN); RETURN += MPI_BSEND_OVERHEAD;</source-template>
+        </operation>
+    </operations>
+</analysis-specification>

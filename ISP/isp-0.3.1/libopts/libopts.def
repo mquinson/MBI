@@ -1,0 +1,11 @@
+LIBRARY
+EXPORTS
+	optionUsage
+	optionPagedUsage
+	optionPrintVersion
+	optionBooleanVal
+	optionNumericVal
+	optionShowRange
+	option_usage_fp
+	optionEnumerationVal
+	optionProcess

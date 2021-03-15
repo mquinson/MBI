@@ -1,0 +1,9 @@
+[submodule "Parcoach/parcoach"]
+	path = Parcoach/parcoach
+	url = https://github.com/parcoach/parcoach.git
+[submodule "SimGrid/simgrid"]
+	path = SimGrid/simgrid
+	url = https://framagit.org/simgrid/simgrid.git
+[submodule "Aislinn/aislinn-git"]
+	path = Aislinn/aislinn-git
+	url = https://github.com/spirali/aislinn.git

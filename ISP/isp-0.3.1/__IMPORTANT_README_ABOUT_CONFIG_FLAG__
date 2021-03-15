@@ -1,0 +1,15 @@
+11/10/11 : Ganesh
+
+This is how you build ISP by suppressing the ample-set fix. 
+This step is essential now because ISP's ample-set optimization
+is broken and seg-faults on some examples, esp. the heat-flow
+example in our SC'11 demo!
+
+Note that the "isp -a" flag need not be set, as main.cpp inside
+scheduler now has   bool no_ample_set_fix = true; 
+
+1) ./configure --enable-optional-ample-set-fix
+
+2) make
+
+3) make install
