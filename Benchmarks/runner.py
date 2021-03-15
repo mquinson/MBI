@@ -3,6 +3,9 @@
 import shutil, os, sys, stat, subprocess, re, argparse
 import runner_must, runner_civl, runner_simgrid, runner_parcoach, runner_isp, runner_mpisv, runner_aislinn
 
+# Some scripts may fail if error messages get translated
+os.environ["LC_ALL"] = "C"
+
 ########################
 ## Argument Parsing
 ########################
