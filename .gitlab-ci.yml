@@ -6,7 +6,7 @@ variables:
 stages: 
     - build
     - test
-    - datacollec
+    - svg
     
 build-must:
     stage: build
@@ -366,7 +366,7 @@ test-isp:
             - Benchmarks/*.txt
 
 simgrid-svg:
-    stage: datacollec
+    stage: svg
     needs:
         - job: test-simgrid
           artifacts: true
@@ -389,7 +389,7 @@ simgrid-svg:
             - Data/simgrid_result_SRC.svg
 
 parcoach-svg:
-    stage: datacollec
+    stage: svg
     needs:
         - job: test-parcoach
           artifacts: true
@@ -411,7 +411,7 @@ parcoach-svg:
             - Data/parcoach_result_LOG.svg
             - Data/parcoach_result_SRC.svg
 isp-svg:
-    stage: datacollec
+    stage: svg
     needs:
         - job: test-isp
           artifacts: true
@@ -434,7 +434,7 @@ isp-svg:
             - Data/isp_result_SRC.svg
 
 aislinn-svg:
-    stage: datacollec
+    stage: svg
     needs:
         - job: test-aislinn
           artifacts: true
@@ -457,7 +457,7 @@ aislinn-svg:
             - Data/aislinn_result_SRC.svg
 
 civl-svg:
-    stage: datacollec
+    stage: svg
     needs:
         - job: test-civl
           artifacts: true
@@ -480,7 +480,7 @@ civl-svg:
             - Data/civl_result_SRC.svg
 
 must-svg:
-    stage: datacollec
+    stage: svg
     needs:
         - job: test-mustdist-50
           artifacts: true
@@ -510,7 +510,7 @@ must-svg:
             - Data/must_result_SRC.svg
             
 data-collect:
-    stage: datacollec
+    stage: svg
     needs:
         - job: test-mustdist-50
           artifacts: true
