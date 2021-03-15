@@ -28,13 +28,6 @@ args = parser.parse_args()
 ## Usefull globals
 ########################
 
-def line_prepender(filename, line):
-    with open(filename, 'r+') as f:
-        content = f.read()
-        f.seek(0, 0)
-        f.write(line.rstrip('\r\n') + '\n' + content)
-
-
 ok_noerror=[]
 ok_deadlock=[]
 ok_numstab=[]
@@ -112,9 +105,10 @@ for filename in args.filenames:
         print("Test {}'{}'".format("" if test_count == 0 else "{} ".format(test_count+1), binary), end=":")
         sys.stdout.flush()
        
-       
+        cmd = re.sub('^', "echo 'Executing https://gitlab.com/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/-/tree/master/Benchmarks/microbenchs/{}.c';echo;".format(binary), cmd)
+
         if args.x == 'mpirun':
-            print("No tool was provided, please retry with -x parameter. (see -h for further informations on usage)")
+            print("No tool was provided, please retry with -x parameter. (see -h for further information on usage)")
             sys.exit(1)
         elif args.x == 'must':
             ans = runner_must.mustrun(cmd, args.timeout, filename, binary, test_count)
@@ -181,9 +175,6 @@ for filename in args.filenames:
                 outcome,
                 ans,
                 args.job))
-
-        line_prepender("./{}_{}.txt".format(binary, test_count),
-                       "https://gitlab.com/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/-/tree/master/Benchmarks/microbenchs/{}.c".format(binary))
             
         test_count += 1
             
