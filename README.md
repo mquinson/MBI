@@ -6,7 +6,7 @@ Source code and CI of the MPI Correctness Benchmark.
   
 Every figure in this section uses those notations :
 
-![graph](https://gitlab.com/Mwapl/benchmarking-mpi/-/raw/master/Data/caption.svg)
+![graph](Data/caption.svg)
   
 First figure links to the job logs, second to the C source code.
 

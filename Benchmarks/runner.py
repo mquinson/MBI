@@ -180,7 +180,7 @@ for filename in args.filenames:
                 args.job))
 
         line_prepender("./{}_{}.txt".format(binary, test_count),
-                       "https://gitlab.com/Mwapl/benchmarking-mpi/-/tree/master/Benchmarks/microbenchs/{}.c".format(binary))
+                       "https://gitlab.com/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/-/tree/master/Benchmarks/microbenchs/{}.c".format(binary))
             
         test_count += 1
             

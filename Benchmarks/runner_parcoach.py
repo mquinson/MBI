@@ -2,7 +2,7 @@ import shutil, os, sys, stat, subprocess, re, argparse
 
 def parcoachrun(cmd, to, filename, binary, id):
     subprocess.call("clang -c -g -emit-llvm {} -I/usr/lib/x86_64-linux-gnu/mpich/include/ -o {}.bc".format(filename,binary), shell=True)
-    cmd = "opt-9 -load /builds/Mwapl/benchmarking-mpi/Parcoach/parcoach/build/src/aSSA/aSSA.so -parcoach -check-mpi < {}.bc > /dev/null 2> {}_{}.txt".format(binary,binary,id)
+    cmd = "opt-9 -load /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Parcoach/parcoach/build/src/aSSA/aSSA.so -parcoach -check-mpi < {}.bc > /dev/null 2> {}_{}.txt".format(binary,binary,id)
     print("\nRUNNING : {}\n".format(cmd))
     ret = None	
     try:

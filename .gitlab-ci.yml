@@ -18,7 +18,7 @@ build-must:
         - mkdir BUILD
         - cd BUILD
         - cmake --version
-        - CC=$(which gcc) CXX=$(which gcc++) FC=$(which gfortran) cmake ../ -DCMAKE_INSTALL_PREFIX=/builds/Mwapl/benchmarking-mpi/Must/MUST-v1.6 -DCMAKE_BUILD_TYPE=Release
+        - CC=$(which gcc) CXX=$(which gcc++) FC=$(which gfortran) cmake ../ -DCMAKE_INSTALL_PREFIX=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Must/MUST-v1.6 -DCMAKE_BUILD_TYPE=Release
         - make -j8 install
     artifacts:
         untracked: false

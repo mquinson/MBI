@@ -1,7 +1,7 @@
 import shutil, os, sys, stat, subprocess, re, argparse
 
 def civlrun(cmd, to, filename, binary, id):
-    cmd = re.sub("mpirun", "java -jar /builds/Mwapl/benchmarking-mpi/CIVL/CIVL-1.20_5259/lib/civl-1.20_5259.jar verify", cmd)
+    cmd = re.sub("mpirun", "java -jar /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/CIVL/CIVL-1.20_5259/lib/civl-1.20_5259.jar verify", cmd)
     cmd = re.sub('-np ', "-input_mpi_nprocs=", cmd)
     cmd = re.sub('\${EXE}', filename, cmd)
     cmd = re.sub('\$zero_buffer', "", cmd)
