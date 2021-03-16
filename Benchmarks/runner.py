@@ -118,6 +118,7 @@ for filename in args.filenames:
             q = mp.Queue()
             p = mp.Process(target=runner_must.mustrun, args=(cmd, args.timeout, filename, binary, test_count, True))
             p.start()
+            print("Wait up to {} seconds".format(args.timeout))
             p.join(args.timeout)
             p.terminate()
             try:
