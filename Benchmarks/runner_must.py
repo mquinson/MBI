@@ -1,4 +1,4 @@
-import shutil, os, sys, stat, subprocess, re, argparse
+import shutil, os, sys, stat, subprocess, re, argparse, shlex
 
 def mustrun(cmd, to, filename, binary, id, distributed=False):
     try:
@@ -13,9 +13,23 @@ def mustrun(cmd, to, filename, binary, id, distributed=False):
     cmd = re.sub('\$zero_buffer', "", cmd)
     cmd = re.sub('\$infty_buffer', "", cmd)	
     print("\nRUNNING : {}\n".format(cmd))
-    ret = None	
+    ret = None
+    output = "Executing https://gitlab.com/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/-/tree/master/Benchmarks/microbenchs/{}.c\n\n".format(binary)
+
     try:
-        ret = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, timeout=to)
+        # We run the subprocess and parse its output line by line, so that we can kill it as soon as it detects a timeout
+        process = subprocess.Popen(shlex.split(cmd), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        while True:
+            line = process.stdout.readline()
+            if line == '' and process.poll() is not None:
+                break
+            if line:
+                line = line.decode('UTF-8') # From byte array to string
+                output = output + line
+                print (line.strip())
+                if re.search("ERROR: MUST detected a deadlock", line):
+                    process.terminate()
+        rc = process.poll()
     except subprocess.TimeoutExpired:
         if not os.path.isfile("./MUST_Output.html"):   
             return 'timeout'
@@ -42,13 +56,13 @@ def mustrun(cmd, to, filename, binary, id, distributed=False):
     elif int(subprocess.check_output("grep 'must use equal type signatures' {}_{}.txt | wc -l".format(binary,id), shell=True)) > 0:
         return 'mpierr'
     
-    elif ret!= None and ret.stdout!= None and re.search('caught MPI error', ret.stdout.decode('UTF-8')) != None:
+    elif re.search('caught MPI error', output.decode('UTF-8')) != None:
         return 'mpierr'     
     
     elif int(subprocess.check_output("grep 'Error' {}_{}.txt | wc -l".format(binary,id), shell=True)) > 0:
         return 'other'
 
-    elif ret!= None and ret.stderr!= None and re.search('MUST-ERROR', ret.stderr.decode('UTF-8')) != None:
+    elif re.search('MUST-ERROR', output.decode('UTF-8')) != None:
         return 'RSF'
     
     else:

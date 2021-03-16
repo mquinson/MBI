@@ -1,6 +1,7 @@
 #! /usr/bin/python3
 
 import shutil, os, sys, stat, subprocess, re, argparse
+import multiprocessing as mp
 import runner_must, runner_civl, runner_simgrid, runner_parcoach, runner_isp, runner_mpisv, runner_aislinn
 
 # Some scripts may fail if error messages get translated
@@ -105,7 +106,8 @@ for filename in args.filenames:
         print("Test {}'{}'".format("" if test_count == 0 else "{} ".format(test_count+1), binary), end=":")
         sys.stdout.flush()
        
-        cmd = re.sub('^', "echo 'Executing https://gitlab.com/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/-/tree/master/Benchmarks/microbenchs/{}.c';echo;".format(binary), cmd)
+        if args.x != 'mustdist':
+            cmd = re.sub('^', "echo 'Executing https://gitlab.com/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/-/tree/master/Benchmarks/microbenchs/{}.c';echo;".format(binary), cmd)
 
         if args.x == 'mpirun':
             print("No tool was provided, please retry with -x parameter. (see -h for further information on usage)")
@@ -113,7 +115,16 @@ for filename in args.filenames:
         elif args.x == 'must':
             ans = runner_must.mustrun(cmd, args.timeout, filename, binary, test_count)
         elif args.x == 'mustdist':
-            ans = runner_must.mustrun(cmd, args.timeout, filename, binary, test_count, distributed=True)
+            q = mp.Queue()
+            p = mp.Process(target=runner_must.mustrun, args=(cmd, args.timeout, filename, binary, test_count, True))
+            p.start()
+            p.join(args.timeout)
+            p.terminate()
+            try:
+                ans = q.get(block=False)
+            except mp.Queue.Empty:
+                ans = 'RSF'
+            #ans = runner_must.mustrun(cmd, args.timeout, filename, binary, test_count, distributed=True)
         elif args.x == 'civl':
             ans = runner_civl.civlrun(cmd, args.timeout, filename, binary, test_count)
         elif args.x == 'simgrid':
