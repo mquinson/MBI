@@ -122,7 +122,7 @@ for filename in args.filenames:
             p.terminate()
             try:
                 ans = q.get(block=False)
-            except mp.Queue.Empty:
+            except mp.queue.Empty:
                 ans = 'RSF'
             #ans = runner_must.mustrun(cmd, args.timeout, filename, binary, test_count, distributed=True)
         elif args.x == 'civl':
