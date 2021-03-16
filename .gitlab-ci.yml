@@ -535,9 +535,14 @@ data-collect:
     script:
         - echo "filename;id;tool;TO;NP;buff;expected;result;jobid" > result.csv
         - cat ./Benchmarks/*.csv >> result.csv
+        - cd Data
+        - python3.8 gen_svg.py -i /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/result.csv -o must_result_LOG --header true --mode log > result_summary.txt
+        - python3.8 gen_svg.py -i /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/result.csv -o must_result_SRC --header true --mode src
     artifacts:
         untracked: false
         expire_in: 30 days
         when: always
         paths:
             - ./result.csv
+            - Data/must_result_LOG.svg
+            - Data/must_result_SRC.svg

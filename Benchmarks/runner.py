@@ -36,7 +36,7 @@ ok_mpierr=[]
 ok_resleak=[]
 ok_livelock=[]
 ok_compliance=[]
-ok_other=[]
+ok_datarace=[]
 failed=[]
 notimplemented=[]
 
@@ -76,7 +76,7 @@ for filename in args.filenames:
                 if not m:
                     print("\n{}:{}: 'Test' line not followed by a proper 'Expect' line:\n{}{}".format(filename,line_num, line, nextline))
                 expect = [expects for expects in m.groups() if expects!=None]
-                if not expect[0] in ["noerror", "deadlock",  "numstab", "segfault", "mpierr", "resleak", "livelock", "compliance", "other"]:
+                if not expect[0] in ["noerror", "deadlock",  "numstab", "segfault", "mpierr", "resleak", "livelock", "compliance", "datarace"]:
                     print("\n{}:{}: expectation >>{}<< not understood."
                           .format(filename, line_num, expect))
                     continue
@@ -149,8 +149,8 @@ for filename in args.filenames:
             ok_livelock.append(binary)
         elif 'compliance' in outcome:
             ok_compliance.append(binary)
-        elif 'other' in outcome:
-            ok_other.append(binary)
+        elif 'datarace' in outcome:
+            ok_datarace.append(binary)
         
         np = re.search(r"(?:-np) [0-9]+", cmd)
         np = int(re.sub(r"-np ", "", np.group(0)))
@@ -192,7 +192,7 @@ passed_count += len(ok_mpierr)
 passed_count += len(ok_resleak)
 passed_count += len(ok_livelock)
 passed_count += len(ok_compliance)
-passed_count += len(ok_other)
+passed_count += len(ok_datarace)
 
 print("XXXXXXXXX\nResult: {} test{} out of {} passed."
       .format(passed_count, '' if passed_count==1 else 's', passed_count+len(failed)))

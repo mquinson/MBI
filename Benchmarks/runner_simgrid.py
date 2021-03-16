@@ -35,5 +35,3 @@ def simgridrun(cmd, to, filename, binary, id):
     else:
         print("Couldn't assign output to specific behaviour (ret=={}) : this will be treated as 'other'".format(ret))
         return 'other'
-
-

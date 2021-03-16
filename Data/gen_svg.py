@@ -100,6 +100,18 @@ case_per_error = []
 for error in error_type:
     case_per_error.append([row for row in data if ast.literal_eval(row[6])[0] == error])
 
+nb_FP = {}
+nb_TP = {}
+nb_TN = {}
+nb_FN = {}
+nb_error = {}
+
+for t in tools:
+    nb_FP[t] = 0
+    nb_TP[t] = 0
+    nb_TN[t] = 0
+    nb_FN[t] = 0
+    nb_error[t] = 0
 
 #############################
 ## Actual printing method
@@ -129,16 +141,25 @@ def print_result(top_left_x, top_left_y, i, j, row):
     
     if result == "timeout":
         fig = "TO.svg"
+        nb_error[tool] += 1
     elif result == "CUN":
         fig = "CUN.svg"
+        nb_error[tool] += 1
     elif result == "RSF":
         fig = "RSF.svg"
+        nb_error[tool] += 1
     elif result not in expected:
         fig = "cross.svg"
-    # elif expected[0] == "noerror" and result != "noerror":
-    #     fig = "cross.svg"
-    # elif expected[0] != "noerror" and result == "noerror":
-    #     fig = "cross.svg"
+        if result == "noerror":
+            nb_FN[tool] += 1
+        else:
+            nb_FP[tool] += 1
+    else:
+        if result == "noerror":
+            nb_TN[tool] += 1
+        else:
+            nb_TP[tool] += 1
+
     
 
     r.append(draw.Image(top_left_x + 0.1*CASE_WIDTH + i * (CASE_WIDTH*1.1),
@@ -312,3 +333,11 @@ caption.append(draw.Rectangle(x,
 caption.append(draw.Text("Run time error", HEADER_SIZE, x + 1.5*CASE_WIDTH, y, fill='black'))
 
 caption.saveSvg('caption.svg')
+
+#############################
+## Printing result
+#############################
+
+for t in tools:
+    print("TOOLS : {}\n  TP : {}\n  TN : {}\n  FP : {}\n  FN : {}\n  Error : {}\n".
+          format(t, nb_TP[t], nb_TN[t], nb_FP[t], nb_FN[t], nb_error[t]))
