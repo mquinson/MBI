@@ -45,14 +45,9 @@ notimplemented=[]
 ## Going through files
 ########################
 
-for filename in args.filenames:
-    if filename == "template.c":
-        continue
-    
-    binary = re.sub('\.c','',os.path.basename(filename))
-    sys.stdout.flush()
-        
-    todo=[]
+def extract_todo(filename):
+    """Reads the header of the filename, and extract a list of todo item, each of them being a (cmd, expect) tupple"""
+    todo = []
     with open(filename, "r") as input:
         state = 0 # 0: before header; 1: in header; 2; after header
         line_num=1
@@ -83,18 +78,30 @@ for filename in args.filenames:
                     continue
                 todo.append((cmd, expect))
                 line_num+=1
-                
-        if len(todo) == 0:
-            print(" no test found. Please fix it.")
-            notimplemented.append(filename)
-            continue
 
-        if state == 0:
-            print("\nBug header not found")
-            sys.exit(1)
-        if state == 1:
-            print("\nNo end of bug header found")
-            sys.exit(1)
+    if state == 0:
+        print("\nBug header not found")
+        sys.exit(1)
+    if state == 1:
+        print("\nNo end of bug header found")
+        sys.exit(1)
+
+    return todo
+
+for filename in args.filenames:
+    if filename == "template.c":
+        continue
+    
+    binary = re.sub('\.c','',os.path.basename(filename))
+    sys.stdout.flush()
+        
+    todo=extract_todo(filename)
+                
+    if len(todo) == 0:
+        print(" no test found. Please fix it.")
+        notimplemented.append(filename)
+        continue
+
 
 
 ########################
