@@ -1,18 +1,32 @@
 image: registry.gitlab.com/mwapl/benchmarking-mpi:latest
 
 variables:
-    GIT_SUBMODULE_STRATEGY: recursive
+    GIT_SUBMODULE_STRATEGY: none
 
 stages: 
+    - init
     - build
     - test
     - svg
     
+git-submodules:
+    stage: init
+    variables:
+        GIT_SUBMODULE_STRATEGY: recursive
+    script:
+        - echo "Submodules initialized"
+    artifacts:
+        untracked: false
+        expire_in: 3 days
+        when: always
+        paths:
+            - Aislinn/aislinn-git/*
+            - Parcoach/*
+            - SimGrid/*
+
 build-must:
     stage: build
     needs: []
-    variables:
-        GIT_SUBMODULE_STRATEGY: none
     script:
         - cd Must/MUST-v1.6
         - mkdir -p BUILD
@@ -34,8 +48,6 @@ test-mustdist-50:
     needs:
         - job: build-must
           artifacts: true
-    variables:
-        GIT_SUBMODULE_STRATEGY: none
     script:
         - export PATH=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Must/MUST-v1.6/bin:$PATH
         - cd Benchmarks
@@ -53,8 +65,6 @@ test-mustdist-100:
     needs:
         - job: build-must
           artifacts: true
-    variables:
-        GIT_SUBMODULE_STRATEGY: none
     script:
         - export PATH=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Must/MUST-v1.6/bin:$PATH
         - cd Benchmarks
@@ -72,8 +82,6 @@ test-mustdist-150:
     needs:
         - job: build-must
           artifacts: true
-    variables:
-        GIT_SUBMODULE_STRATEGY: none
     script:
         - export PATH=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Must/MUST-v1.6/bin:$PATH
         - cd Benchmarks
@@ -91,8 +99,6 @@ test-mustdist-200:
     needs:
         - job: build-must
           artifacts: true
-    variables:
-        GIT_SUBMODULE_STRATEGY: none
     script:
         - export PATH=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Must/MUST-v1.6/bin:$PATH
         - cd Benchmarks
@@ -124,7 +130,8 @@ test-mustdist-medium:
 
 build-aislinn:
     stage: build
-    needs: []
+    needs: 
+        - job: git-submodules
     image: ubuntu:18.04
     before_script:
         - apt-get update
@@ -151,8 +158,6 @@ build-aislinn:
 test-aislinn:
     stage: test
     image: ubuntu:18.04
-    variables:
-        GIT_SUBMODULE_STRATEGY: none
     needs:
         - job: build-aislinn
           artifacts: true 
@@ -174,8 +179,6 @@ test-aislinn:
 build-civl:
     stage: build
     needs: []
-    variables:
-        GIT_SUBMODULE_STRATEGY: none
     script:
         - cd CIVL/CIVL-1.20_5259/lib
         - java -jar civl-1.20_5259.jar config 
@@ -191,8 +194,6 @@ test-civl:
     needs:
         - job: build-civl
           artifacts: false
-    variables:
-        GIT_SUBMODULE_STRATEGY: none
     script:
         - cd Benchmarks
         - for file in $(ls /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Benchmarks/microbenchs/*.c); do python3.8 runner.py -x civl -o bench_civl.csv -t 300 --job $CI_JOB_ID $file; done
@@ -209,8 +210,6 @@ test-civl-medium:
     needs:
         - job: build-civl
           artifacts: false
-    variables:
-        GIT_SUBMODULE_STRATEGY: none
     script:
         - cd Benchmarks
         - for file in $(ls /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Benchmarks/mediumbenchs/*.c); do python3.8 runner.py -x civl -o bench_civl_med.csv -t 600 $file; done
@@ -224,7 +223,8 @@ test-civl-medium:
             
 build-parcoach:
     stage: build
-    needs : []
+    needs : 
+        - job: git-submodules
     script:
         - ln -s $(which clang) /usr/lib/llvm-9/bin/clang
         - cd Parcoach/parcoach
@@ -235,21 +235,19 @@ build-parcoach:
         - ctest
     cache:
         paths:
-            - ./Parcoach/*
+            - Parcoach/*
     artifacts:
         untracked: false
         expire_in: 30 days
         when: always
         paths:
-            - ./Parcoach/*
+            - Parcoach/*
             
 test-parcoach:
     stage: test
     needs:
         - job: build-parcoach
           artifacts: true
-    variables:
-        GIT_SUBMODULE_STRATEGY: none
     script:
         - cd Benchmarks
         - for file in $(ls /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Benchmarks/microbenchs/*.c); do python3.8 runner.py -x parcoach -o bench_parcoach.csv -t 300 --job $CI_JOB_ID $file; done    
@@ -266,8 +264,6 @@ test-parcoach-medium:
     needs:
         - job: build-parcoach
           artifacts: true
-    variables:
-        GIT_SUBMODULE_STRATEGY: none
     script:
         - cd Benchmarks
         - for file in $(ls /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Benchmarks/mediumbenchs/*.c); do python3.8 runner.py -x parcoach -o bench_parcoach_med.csv -t 600 $file; done    
@@ -282,28 +278,27 @@ test-parcoach-medium:
 
 build-simgrid:
     stage: build
-    needs : []
+    needs : 
+        - job: git-submodules
     script:
         - cd SimGrid/simgrid
         - cmake -DCMAKE_INSTALL_PREFIX=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/SimGrid/build -Denable_model-checking=ON .
         - make -j$(nproc) install
     cache:
         paths:
-            - ./Parcoach/*
+            - SimGrid/*
     artifacts:
         untracked: false
         expire_in: 30 days
         when: always
         paths:
-            - ./SimGrid/*
+            - SimGrid/*
 
 test-simgrid:
     stage: test
     needs:
         - job: build-simgrid
           artifacts: true
-    variables:
-        GIT_SUBMODULE_STRATEGY: none
     script:
         - export PATH=$PATH:/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/SimGrid/build/bin/
         - cp SimGrid/simgrid/examples/platforms/cluster_backbone.xml Benchmarks/cluster.xml
@@ -322,8 +317,6 @@ test-simgrid-medium:
     needs:
         - job: build-simgrid
           artifacts: true
-    variables:
-        GIT_SUBMODULE_STRATEGY: none
     script:
         - export PATH=$PATH:/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/SimGrid/build/bin/
         - cp SimGrid/simgrid/examples/platforms/cluster_backbone.xml Benchmarks/cluster.xml
@@ -340,8 +333,6 @@ test-simgrid-medium:
 build-isp:
     stage: build
     needs : []
-    variables:  
-        GIT_SUBMODULE_STRATEGY: none
     script:
         - cd ISP/isp-0.3.1
         - mkdir -p BUILD 
@@ -363,8 +354,6 @@ test-isp:
     needs:
         - job: build-isp
           artifacts: true
-    variables:
-        GIT_SUBMODULE_STRATEGY: none
     before_script:
         - apt-get update
         - apt-get install -y lsof
@@ -385,8 +374,6 @@ simgrid-svg:
     needs:
         - job: test-simgrid
           artifacts: true
-    variables:
-        GIT_SUBMODULE_STRATEGY: none
     before_script:
       - apt-get update
       - apt-get install -y python3-pip libcairo2
@@ -408,8 +395,6 @@ parcoach-svg:
     needs:
         - job: test-parcoach
           artifacts: true
-    variables:
-        GIT_SUBMODULE_STRATEGY: none
     before_script:
       - apt-get update
       - apt-get install -y python3-pip libcairo2
@@ -430,8 +415,6 @@ isp-svg:
     needs:
         - job: test-isp
           artifacts: true
-    variables:
-        GIT_SUBMODULE_STRATEGY: none
     before_script:
       - apt-get update
       - apt-get install -y python3-pip libcairo2
@@ -453,8 +436,6 @@ aislinn-svg:
     needs:
         - job: test-aislinn
           artifacts: true
-    variables:
-        GIT_SUBMODULE_STRATEGY: none
     before_script:
       - apt-get update
       - apt-get install -y python3-pip libcairo2
@@ -476,8 +457,6 @@ civl-svg:
     needs:
         - job: test-civl
           artifacts: true
-    variables:
-        GIT_SUBMODULE_STRATEGY: none
     before_script:
       - apt-get update
       - apt-get install -y python3-pip libcairo2
@@ -505,8 +484,6 @@ must-svg:
           artifacts: true
         - job: test-mustdist-200
           artifacts: true
-    variables:
-        GIT_SUBMODULE_STRATEGY: none
     before_script:
       - apt-get update
       - apt-get install -y python3-pip libcairo2
@@ -545,8 +522,6 @@ data-collect:
           artifacts: true
         - job: test-aislinn
           artifacts: true
-    variables:
-        GIT_SUBMODULE_STRATEGY: none
     script:
         - echo "filename;id;tool;TO;NP;buff;expected;result;jobid" > result.csv
         - cat Benchmarks/*.csv >> result.csv
