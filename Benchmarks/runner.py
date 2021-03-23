@@ -29,6 +29,8 @@ args = parser.parse_args()
 ## Usefull globals
 ########################
 
+todo=[]
+
 ok_noerror=[]
 ok_deadlock=[]
 ok_numstab=[]
@@ -46,8 +48,12 @@ notimplemented=[]
 ########################
 
 def extract_todo(filename):
-    """Reads the header of the filename, and extract a list of todo item, each of them being a (cmd, expect) tupple"""
-    todo = []
+    """
+    Reads the header of the filename, and extract a list of todo item, each of them being a (cmd, expect, test_count) tupple.
+    The test_count is useful to build a log file containing both the binary and the test_count, when there is more than one test in the same binary.
+    """
+    res = []
+    test_count = 0
     with open(filename, "r") as input:
         state = 0 # 0: before header; 1: in header; 2; after header
         line_num=1
@@ -76,17 +82,18 @@ def extract_todo(filename):
                     print("\n{}:{}: expectation >>{}<< not understood."
                           .format(filename, line_num, expect))
                     continue
-                todo.append((cmd, expect))
+                res.append((cmd, expect, test_count))
+                test_count+=1
                 line_num+=1
 
     if state == 0:
-        print("\nBug header not found")
+        print("\nBug header not found in file '{}'.".format(filename))
         sys.exit(1)
     if state == 1:
-        print("\nNo end of bug header found")
+        print("\nNo end of bug header found in file '{}'.".format(filename))
         sys.exit(1)
 
-    return todo
+    return res
 
 for filename in args.filenames:
     if filename == "template.c":
@@ -95,7 +102,7 @@ for filename in args.filenames:
     binary = re.sub('\.c','',os.path.basename(filename))
     sys.stdout.flush()
         
-    todo=extract_todo(filename)
+    todo = todo + extract_todo(filename)
                 
     if len(todo) == 0:
         print(" no test found. Please fix it.")
@@ -108,8 +115,7 @@ for filename in args.filenames:
 ## Running the tests
 ########################
             
-    test_count = 0
-    for cmd, outcome in todo:
+    for cmd, outcome, test_count in todo:
         print("Test {}'{}'".format("" if test_count == 0 else "{} ".format(test_count+1), binary), end=":")
         sys.stdout.flush()
        
@@ -198,9 +204,6 @@ for filename in args.filenames:
                 outcome,
                 ans,
                 args.job))
-            
-        test_count += 1
-            
 
 ########################
 ## Termination
