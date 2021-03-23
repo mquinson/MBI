@@ -15,7 +15,7 @@ build-must:
         GIT_SUBMODULE_STRATEGY: none
     script:
         - cd Must/MUST-v1.6
-        - mkdir BUILD
+        - mkdir -p BUILD
         - cd BUILD
         - cmake --version
         - CC=$(which gcc) CXX=$(which gcc++) FC=$(which gfortran) cmake ../ -DCMAKE_INSTALL_PREFIX=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Must/MUST-v1.6 -DCMAKE_BUILD_TYPE=Release
@@ -228,7 +228,7 @@ build-parcoach:
     script:
         - ln -s $(which clang) /usr/lib/llvm-9/bin/clang
         - cd Parcoach/parcoach
-        - mkdir build
+        - mkdir -p build
         - cd build
         - cmake .. -DCMAKE_C_COMPILER=clang -DLLVM_DIR=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Parcoach/llvm-project/build
         - make -j$(nproc)
@@ -344,7 +344,7 @@ build-isp:
         GIT_SUBMODULE_STRATEGY: none
     script:
         - cd ISP/isp-0.3.1
-        - mkdir BUILD 
+        - mkdir -p BUILD 
         - ./configure --prefix=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/ISP/isp-0.3.1/BUILD --with-mpi-inc-dir=/usr/lib/x86_64-linux-gnu/mpich/include
         - sed -i "s/-source 1.5 -target 1.5 -classpath/-source 1.7 -target 1.7 -classpath/" UI/Makefile*
         - make -j$(nproc) install
