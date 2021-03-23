@@ -11,7 +11,7 @@ def simgridrun(cmd, to, filename, binary, id):
     cmd = re.sub('\${EXE}', binary, cmd)
     cmd = re.sub('\$zero_buffer', "--cfg=smpi/buffering:zero", cmd)
     cmd = re.sub('\$infty_buffer', "--cfg=smpi/buffering:infty", cmd)
-    cmd = re.sub('$', ' > {}_{}.txt 2>&1'.format(binary,id), cmd)
+    cmd = re.sub('$', ' >> {}_{}.txt 2>&1'.format(binary,id), cmd)
     try:
         ret = subprocess.call(cmd, shell=True, timeout=to)
     except subprocess.TimeoutExpired:    
