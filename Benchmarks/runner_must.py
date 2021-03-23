@@ -1,6 +1,6 @@
 import shutil, os, sys, stat, subprocess, re, argparse, shlex
 
-def mustrun(cmd, to, filename, binary, id, distributed=False):
+def mustrun(cmd, filename, binary, id, distributed=True):
     try:
         subprocess.run("mpicc {} -o {} > {}_{}.txt 2>&1".format(filename,binary,binary,id), shell=True, check=True)
     except subprocess.CalledProcessError:
@@ -26,7 +26,7 @@ def mustrun(cmd, to, filename, binary, id, distributed=False):
             if line:
                 line = line.decode('UTF-8') # From byte array to string
                 output = output + line
-                print (line.strip())
+                print (line, end='')
                 if re.search("ERROR: MUST detected a deadlock", line):
                     process.terminate()
         rc = process.poll()

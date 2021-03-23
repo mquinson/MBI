@@ -1,6 +1,6 @@
 #! /usr/bin/python3
 
-import shutil, os, sys, stat, subprocess, re, argparse
+import shutil, os, sys, stat, subprocess, re, argparse, queue
 import multiprocessing as mp
 import runner_must, runner_civl, runner_simgrid, runner_parcoach, runner_isp, runner_mpisv, runner_aislinn
 
@@ -95,6 +95,9 @@ def extract_todo(filename):
 
     return res
 
+def return_to_queue(queue, func, args):
+    queue.put(func(*args))
+
 for filename in args.filenames:
     if filename == "template.c":
         continue
@@ -119,30 +122,33 @@ for filename in args.filenames:
         print("Test {}'{}'".format("" if test_count == 0 else "{} ".format(test_count+1), binary), end=":")
         sys.stdout.flush()
        
-        if args.x != 'mustdist':
+        if args.x != 'mustdist' and args.x != 'simgrid':
             cmd = re.sub('^', "echo 'Executing https://gitlab.com/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/-/tree/master/Benchmarks/microbenchs/{}.c';echo;".format(binary), cmd)
 
         if args.x == 'mpirun':
             print("No tool was provided, please retry with -x parameter. (see -h for further information on usage)")
             sys.exit(1)
-        elif args.x == 'must':
-            ans = runner_must.mustrun(cmd, args.timeout, filename, binary, test_count)
-        elif args.x == 'mustdist':
+#        elif args.x == 'must':
+#            ans = runner_must.mustrun(cmd, args.timeout, filename, binary, test_count)
+        elif args.x == 'mustdist' or args.x == 'simgrid':
             q = mp.Queue()
-            p = mp.Process(target=runner_must.mustrun, args=(cmd, args.timeout, filename, binary, test_count, True))
+            if args.x == 'mustdist':
+                func = runner_must.mustrun
+            elif args.x == 'simgrid':
+                func = runner_simgrid.simgridrun
+            p = mp.Process(target=return_to_queue, args=(q, func, (cmd, filename, binary, test_count)))
             p.start()
             print("Wait up to {} seconds".format(args.timeout))
             p.join(args.timeout)
             p.terminate()
             try:
-                ans = q.get(block=False)
-            except mp.queue.Empty:
+                ans = q.get(block=True)
+            except queue.Empty:
                 ans = 'RSF'
-            #ans = runner_must.mustrun(cmd, args.timeout, filename, binary, test_count, distributed=True)
         elif args.x == 'civl':
             ans = runner_civl.civlrun(cmd, args.timeout, filename, binary, test_count)
-        elif args.x == 'simgrid':
-            ans = runner_simgrid.simgridrun(cmd, args.timeout, filename, binary, test_count)
+#        elif args.x == 'simgrid':
+#            ans = (cmd, args.timeout, filename, binary, test_count)
         elif args.x == 'parcoach':
             ans = runner_parcoach.parcoachrun(cmd, args.timeout, filename, binary, test_count)
         elif args.x == 'isp':

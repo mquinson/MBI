@@ -1,37 +1,69 @@
-import shutil, os, sys, stat, subprocess, re, argparse
+import shutil, os, sys, stat, subprocess, re, argparse, shlex
 
-def simgridrun(cmd, to, filename, binary, id):
+def run_cmd(buildcmd, execcmd, binary, read_line_lambda=None):
+    output = "Compiling https://gitlab.com/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/-/tree/master/Benchmarks/microbenchs/{}.c\n\n".format(binary)
 
+    compil = subprocess.run(buildcmd, shell=True, stderr=subprocess.STDOUT)
+    if compil.stdout is not None:
+        output += compil.stdout
+    if compil.returncode != 0:
+        print("Compilation of {}.c raised an error".format(binary))
+        print("$ {}".buildcmd)
+        for line in compil.stdout.split('\n'):
+            print(line, end='')
+        return 'CUN', output
+
+    output += "\n\nExecuting https://gitlab.com/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/-/tree/master/Benchmarks/microbenchs/{}.c\n\n"
     try:
-        subprocess.run("smpicc {} -o {}  > {}_{}.txt 2>&1".format(filename,binary,binary,id), shell=True, check=True)
-    except subprocess.CalledProcessError:
-        return 'CUN'
-        
-    cmd = re.sub("mpirun", "smpirun -wrapper simgrid-mc -platform ./cluster.xml --cfg=smpi/list-leaks:10", cmd)
-    cmd = re.sub('\${EXE}', binary, cmd)
-    cmd = re.sub('\$zero_buffer', "--cfg=smpi/buffering:zero", cmd)
-    cmd = re.sub('\$infty_buffer', "--cfg=smpi/buffering:infty", cmd)
-    cmd = re.sub('$', ' >> {}_{}.txt 2>&1'.format(binary,id), cmd)
-    try:
-        ret = subprocess.call(cmd, shell=True, timeout=to)
-    except subprocess.TimeoutExpired:    
-        return 'timeout'
-        
-    if int(subprocess.check_output("grep 'No property violation found' {}_{}.txt | wc -l".format(binary,id), shell=True)) > 0:
-        return 'noerror'
+        # We run the subprocess and parse its output line by line, so that we can kill it as soon as it detects a timeout
+        process = subprocess.Popen(shlex.split(execcmd), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        while True:
+            line = process.stdout.readline()
+            if line:
+                line = line.decode('UTF-8') # From byte array to string
+                output = output + line
+                print (line, end='')
+                if read_line_lambda != None:
+                    read_line_lambda(line, process)
+            if process.poll() is not None:
+                break
+        rc = process.poll()
+    except subprocess.TimeoutExpired:
+        return 'timeout', output
 
-    elif int(subprocess.check_output("grep 'DEADLOCK DETECTED' {}_{}.txt | wc -l".format(binary,id), shell=True)) > 0:
-        return 'deadlock'
+    return None, rc, output
 
-    elif int(subprocess.check_output("grep 'returned MPI_ERR' {}_{}.txt | wc -l".format(binary,id), shell=True)) > 0:
-        return 'mpierr'
 
-    elif int(subprocess.check_output("grep 'Not yet implemented' {}_{}.txt | wc -l".format(binary,id), shell=True)) > 0:
-        return 'CUN'
+def sg_filter(line, process):
+    if re.search("ERROR: MUST detected a deadlock", line):
+        process.terminate()
+def simgridrun(execcmd, filename, binary, id):
 
-    elif int(subprocess.check_output("grep 'leak detected' {}_{}.txt | wc -l".format(binary,id), shell=True)) > 0:
-        return 'resleak' 
+    execcmd = re.sub("mpirun", "smpirun -wrapper simgrid-mc -platform ./cluster.xml --cfg=smpi/list-leaks:10", execcmd)
+    execcmd = re.sub('\${EXE}', binary, execcmd)
+    execcmd = re.sub('\$zero_buffer', "--cfg=smpi/buffering:zero", execcmd)
+    execcmd = re.sub('\$infty_buffer', "--cfg=smpi/buffering:infty", execcmd)
     
-    else:
-        print("Couldn't assign output to specific behaviour (ret=={}) : this will be treated as 'other'".format(ret))
-        return 'other'
+    res, rc, output = run_cmd(
+        buildcmd="smpicc {} -o {}  > {}_{}.txt 2>&1".format(filename,binary,binary,id),
+        execcmd=execcmd, 
+        binary=binary)
+
+    with open('{}_{}.txt'.format(binary, id), 'w') as outfile:
+        outfile.write(output)    
+        
+    if res != None:
+        return res
+    if re.search('No property violation found', output):
+        return 'noerror'
+    if re.search('DEADLOCK DETECTED', output):
+        return 'deadlock'
+    if re.search('returned MPI_ERR', output):
+        return 'mpierr'
+    if re.search('Not yet implemented', output):
+        return 'CUN'
+    if re.search('leak detected', output):
+        return 'resleak'
+
+    print("Couldn't assign output to specific behaviour (ret: {}) : this will be treated as 'other'".format(rc))
+    return 'other'
