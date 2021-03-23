@@ -156,7 +156,7 @@ for filename in args.filenames:
             sys.exit(1)
 
         print("Tool output (outcome: {}; expected: {})".format(ans, outcome))
-        with open('{}_{}.txt'.format(binary, test_count)) as input:
+        with open('{}_{}.txt'.format(binary, test_count), 'rb') as input:
             for line in input:
                 print ("| {}".format(line.rstrip()))
             
