@@ -133,7 +133,7 @@ for filename in args.filenames:
         elif args.x == 'mustdist' or args.x == 'simgrid':
             q = mp.Queue()
             if args.x == 'mustdist':
-                func = runner_must.mustrun
+                func = runner_simgrid.mustrun
             elif args.x == 'simgrid':
                 func = runner_simgrid.simgridrun
             p = mp.Process(target=return_to_queue, args=(q, func, (cmd, filename, binary, test_count)))

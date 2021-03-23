@@ -18,9 +18,6 @@ build-must:
         - cmake --version
         - CC=$(which gcc) CXX=$(which gcc++) FC=$(which gfortran) cmake ../ -DCMAKE_INSTALL_PREFIX=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Must/MUST-v1.6 -DCMAKE_BUILD_TYPE=Release
         - make -j$(nproc) install
-    cache:
-        paths:
-            - Must/MUST-v1.6/*
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -43,6 +40,7 @@ test-mustdist-50:
         paths:
             - Benchmarks/bench_mustdist50.csv
             - Benchmarks/*.txt
+            - Benchmarks/*.html
             
 test-mustdist-100:
     stage: test
@@ -60,6 +58,7 @@ test-mustdist-100:
         paths:
             - Benchmarks/bench_mustdist100.csv
             - Benchmarks/*.txt
+            - Benchmarks/*.html
             
 test-mustdist-150:
     stage: test
@@ -77,6 +76,7 @@ test-mustdist-150:
         paths:
             - Benchmarks/bench_mustdist150.csv
             - Benchmarks/*.txt
+            - Benchmarks/*.html
             
 test-mustdist-200:
     stage: test
@@ -94,6 +94,7 @@ test-mustdist-200:
         paths:
             - Benchmarks/bench_mustdist200.csv
             - Benchmarks/*.txt
+            - Benchmarks/*.html
             
 test-mustdist-medium:
     stage: test
@@ -111,6 +112,7 @@ test-mustdist-medium:
         paths:
             - Benchmarks/bench_mustdist_med.csv
             - Benchmarks/*.txt
+            - Benchmarks/*.html
 
 build-aislinn:
     stage: build
