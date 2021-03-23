@@ -1,6 +1,6 @@
 #! /usr/bin/python3
 
-import shutil, os, sys, stat, subprocess, re, argparse, queue
+import shutil, os, sys, stat, subprocess, re, argparse, queue, time
 import multiprocessing as mp
 import runner_must, runner_civl, runner_simgrid, runner_parcoach, runner_isp, runner_mpisv, runner_aislinn
 
@@ -125,6 +125,8 @@ for filename in args.filenames:
         if args.x != 'mustdist' and args.x != 'simgrid':
             cmd = re.sub('^', "echo 'Executing https://gitlab.com/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/-/tree/master/Benchmarks/microbenchs/{}.c';echo;".format(binary), cmd)
 
+        start_time = time.time()
+
         if args.x == 'mpirun':
             print("No tool was provided, please retry with -x parameter. (see -h for further information on usage)")
             sys.exit(1)
@@ -139,6 +141,7 @@ for filename in args.filenames:
             p = mp.Process(target=return_to_queue, args=(q, func, (cmd, filename, binary, test_count)))
             p.start()
             print("Wait up to {} seconds".format(args.timeout))
+            sys.stdout.flush()
             p.join(args.timeout)
             p.terminate()
             try:
@@ -161,9 +164,10 @@ for filename in args.filenames:
             print("The tool parameter you provided ({}) is either incorect or not yet implemented.".format(args.x))
             sys.exit(1)
 
-        print("Tool output (30 last lines only; outcome: {}; expected: {})".format(ans, outcome))
+        curr_time = time.time()
+        print("Tool output (15 last lines only; elapsed: {:f} sec; outcome: {}; expected: {})".format(curr_time-start_time, ans, outcome))
         with open('{}_{}.txt'.format(binary, test_count), 'rb') as input:
-            for line in (input.readlines() [-30:]):
+            for line in (input.readlines() [-15:]):
                 print ("| {}".format(line))
             
         if ans not in outcome:    
