@@ -155,10 +155,10 @@ for filename in args.filenames:
             print("The tool parameter you provided ({}) is either incorect or not yet implemented.".format(args.x))
             sys.exit(1)
 
-        print("Tool output (outcome: {}; expected: {})".format(ans, outcome))
+        print("Tool output (30 last lines only; outcome: {}; expected: {})".format(ans, outcome))
         with open('{}_{}.txt'.format(binary, test_count), 'rb') as input:
-            for line in input:
-                print ("| {}".format(line.rstrip()))
+            for line in (input.readlines() [-30:]):
+                print ("| {}".format(line))
             
         if ans not in outcome:    
             failed.append("{} (expected {} but returned {})".format(binary, outcome, ans))
