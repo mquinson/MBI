@@ -142,6 +142,10 @@ for filename in args.filenames:
             print("The tool parameter you provided ({}) is either incorect or not yet implemented.".format(args.x))
             sys.exit(1)
 
+        print("Tool output (outcome: {}; expected: {})".format(ans, outcome))
+        with open('{}_{}.txt'.format(binary, test_count)) as input:
+            for line in input:
+                print ("| {}".format(line.rstrip()))
             
         if ans not in outcome:    
             failed.append("{} (expected {} but returned {})".format(binary, outcome, ans))
