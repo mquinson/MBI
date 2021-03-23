@@ -4,25 +4,9 @@ variables:
     GIT_SUBMODULE_STRATEGY: none
 
 stages: 
-    - init
     - build
     - test
     - svg
-    
-git-submodules:
-    stage: init
-    variables:
-        GIT_SUBMODULE_STRATEGY: recursive
-    script:
-        - echo "Submodules initialized"
-    artifacts:
-        untracked: false
-        expire_in: 3 days
-        when: always
-        paths:
-            - Aislinn/aislinn-git/*
-            - Parcoach/*
-            - SimGrid/*
 
 build-must:
     stage: build
@@ -130,13 +114,13 @@ test-mustdist-medium:
 
 build-aislinn:
     stage: build
-    needs: 
-        - job: git-submodules
+    needs: []
     image: ubuntu:18.04
     before_script:
         - apt-get update
-        - apt-get install -y gcc python2.7 python3.8 python-jinja2 autotools-dev automake build-essential
+        - apt-get install -y gcc python2.7 python3.8 python-jinja2 autotools-dev automake build-essential git
     script:
+        - if [ -e Aislinn/aislinn-git/.git ] ; then (cd Aislinn/aislinn-git ; git pull); else rm -rf Aislinn/aislinn-git; git clone --depth=1 https://github.com/spirali/aislinn.git Aislinn/aislinn-git; fi
         - cp -r ./Aislinn/aislinn-valgrind-312 ./Aislinn/aislinn-git/valgrind  
         - cd Aislinn/aislinn-git/valgrind
         - sh autogen.sh
@@ -223,10 +207,13 @@ test-civl-medium:
             
 build-parcoach:
     stage: build
-    needs : 
-        - job: git-submodules
+    needs : []
+    before_script:
+        - apt-get update
+        - apt-get install -y git
     script:
         - ln -s $(which clang) /usr/lib/llvm-9/bin/clang
+        - if [ -e Parcoach/parcoach/.git ] ; then (cd Parcoach/parcoach ; git pull); else rm -rf Parcoach/parcoach; git clone --depth=1 https://github.com/parcoach/parcoach.git Parcoach/parcoach; fi
         - cd Parcoach/parcoach
         - mkdir -p build
         - cd build
@@ -278,9 +265,12 @@ test-parcoach-medium:
 
 build-simgrid:
     stage: build
-    needs : 
-        - job: git-submodules
+    needs : []
+    before_script:
+        - apt-get update
+        - apt-get install -y git
     script:
+        - if [ -e SimGrid/simgrid/.git ] ; then (cd SimGrid/simgrid ; git pull); else rm -rf SimGrid/simgrid; git clone --depth=1 https://framagit.org/simgrid/simgrid.git SimGrid/simgrid; fi
         - cd SimGrid/simgrid
         - cmake -DCMAKE_INSTALL_PREFIX=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/SimGrid/build -Denable_model-checking=ON .
         - make -j$(nproc) install
