@@ -8,7 +8,7 @@ def run_cmd(buildcmd, execcmd, binary, read_line_lambda=None):
         output += compil.stdout
     if compil.returncode != 0:
         print("Compilation of {}.c raised an error".format(binary))
-        print("$ {}".buildcmd)
+        print("$ {}".format(buildcmd))
         for line in compil.stdout.split('\n'):
             print(line, end='')
         return 'CUN', output
