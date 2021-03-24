@@ -219,7 +219,7 @@ build-parcoach:
         - cd Parcoach/parcoach
         - mkdir -p build
         - cd build
-        - cmake .. -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DLLVM_DIR=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Parcoach/llvm-project/build
+        - cmake .. -DCMAKE_C_COMPILER=clang -DLLVM_DIR=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Parcoach/llvm-project/build
         - make -j$(nproc) VERBOSE=1
         - ctest --output-on-failure
     cache:
