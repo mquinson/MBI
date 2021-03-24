@@ -165,10 +165,7 @@ for filename in args.filenames:
             sys.exit(1)
 
         curr_time = time.time()
-        print("Tool output (15 last lines only; elapsed: {:f} sec; outcome: {}; expected: {})".format(curr_time-start_time, ans, outcome))
-        with open('{}_{}.txt'.format(binary, test_count), 'rb') as input:
-            for line in (input.readlines() [-15:]):
-                print ("| {}".format(line))
+        print("The tool returned {} (expected: {}; elapsed: {:f} sec)\n\n".format(ans, outcome, curr_time-start_time))
             
         if ans not in outcome:    
             failed.append("{} (expected {} but returned {})".format(binary, outcome, ans))

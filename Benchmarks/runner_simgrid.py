@@ -14,7 +14,10 @@ def run_cmd(buildcmd, execcmd, binary, read_line_lambda=None):
                 print(line, end='')
         return 'CUN', compil.returncode, output
 
-    output += "\n\nExecuting https://gitlab.com/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/-/tree/master/Benchmarks/microbenchs/{}.c\n{}\n\n".format(binary,execcmd)
+    output += "\n\nExecuting https://gitlab.com/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/-/tree/master/Benchmarks/microbenchs/{}.c\n\n$ {}\n".format(binary,execcmd)
+    for line in (output.split('\n')):
+        print ("| {}".format(line))
+
     try:
         # We run the subprocess and parse its output line by line, so that we can kill it as soon as it detects a timeout
         process = subprocess.Popen(shlex.split(execcmd), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -23,7 +26,7 @@ def run_cmd(buildcmd, execcmd, binary, read_line_lambda=None):
             if line:
                 line = line.decode('UTF-8') # From byte array to string
                 output = output + line
-                #print (line, end='')
+                print ("| {}".format(line), end='')
                 if read_line_lambda != None:
                     read_line_lambda(line, process)
             if process.poll() is not None:
