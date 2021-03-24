@@ -7,6 +7,7 @@ stages:
     - build
     - test
     - svg
+    - gather
 
 build-must:
     stage: build
@@ -494,7 +495,7 @@ must-svg:
             - Data/must_result_SRC.svg
             
 data-collect:
-    stage: svg
+    stage: gather
     needs:
         - job: test-mustdist-50
           artifacts: true
@@ -514,6 +515,18 @@ data-collect:
           artifacts: true
         - job: test-aislinn
           artifacts: true
+        - job: must-svg
+          artifacts: true
+        - job: civl-svg
+          artifacts: true
+        - job: parcoach-svg
+          artifacts: true
+        - job: simgrid-svg
+          artifacts: true
+        - job: isp-svg
+          artifacts: true
+        - job: aislinn-svg
+          artifacts: true
     script:
         - echo "filename;id;tool;TO;NP;buff;expected;result;jobid" > result.csv
         - cat Benchmarks/*.csv >> result.csv
@@ -526,5 +539,4 @@ data-collect:
         when: always
         paths:
             - ./result.csv
-            - Data/all_result_LOG.svg
-            - Data/all_result_SRC.svg
+            - Data/*.svg
