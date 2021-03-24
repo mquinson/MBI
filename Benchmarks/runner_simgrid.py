@@ -12,7 +12,7 @@ def run_cmd(buildcmd, execcmd, binary, read_line_lambda=None):
         if compil.stdout is not None:
             for line in compil.stdout.split('\n'):
                 print(line, end='')
-        return 'CUN', output
+        return 'CUN', compil.returncode, output
 
     output += "\n\nExecuting https://gitlab.com/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/-/tree/master/Benchmarks/microbenchs/{}.c\n{}\n\n".format(binary,execcmd)
     try:
