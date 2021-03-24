@@ -145,7 +145,7 @@ for filename in args.filenames:
             p.join(args.timeout)
             p.terminate()
             try:
-                ans = q.get(block=True)
+                ans = q.get(block=False)
             except queue.Empty:
                 ans = 'RSF'
         elif args.x == 'civl':
