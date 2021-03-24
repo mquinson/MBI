@@ -143,13 +143,15 @@ for filename in args.filenames:
             print("Wait up to {} seconds".format(args.timeout))
             sys.stdout.flush()
             p.join(args.timeout)
-            if p.is_alive():
-                print("Timeout!")
-                p.terminate()
             try:
                 ans = q.get(block=False)
             except queue.Empty:
-                ans = 'timeout'
+                if p.is_alive():
+                    print("Timeout!")
+                    p.terminate()
+                    ans = 'timeout'
+                else:
+                    ans = 'RSF'
         elif args.x == 'civl':
             ans = runner_civl.civlrun(cmd, args.timeout, filename, binary, test_count)
 #        elif args.x == 'simgrid':
