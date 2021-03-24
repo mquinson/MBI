@@ -7,10 +7,11 @@ def run_cmd(buildcmd, execcmd, binary, read_line_lambda=None):
     if compil.stdout is not None:
         output += compil.stdout
     if compil.returncode != 0:
-        print("Compilation of {}.c raised an error".format(binary))
+        print("Compilation of {}.c raised an error (retcode: %d)".format(binary, compil.returncode))
         print("$ {}".format(buildcmd))
-        for line in compil.stdout.split('\n'):
-            print(line, end='')
+        if compil.stdout is not None:
+            for line in compil.stdout.split('\n'):
+                print(line, end='')
         return 'CUN', output
 
     output += "\n\nExecuting https://gitlab.com/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/-/tree/master/Benchmarks/microbenchs/{}.c\n{}\n\n".format(binary,execcmd)
