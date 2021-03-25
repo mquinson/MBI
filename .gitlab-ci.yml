@@ -7,6 +7,7 @@ stages:
     - build
     - test
     - svg
+    - gather
 
 build-must:
     stage: build
@@ -17,7 +18,7 @@ build-must:
         - cd BUILD
         - cmake --version
         - CC=$(which gcc) CXX=$(which gcc++) FC=$(which gfortran) cmake ../ -DCMAKE_INSTALL_PREFIX=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Must/MUST-v1.6 -DCMAKE_BUILD_TYPE=Release
-        - make -j$(nproc) install
+        - make -j$(nproc) install VERBOSE=1
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -220,8 +221,8 @@ build-parcoach:
         - mkdir -p build
         - cd build
         - cmake .. -DCMAKE_C_COMPILER=clang -DLLVM_DIR=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Parcoach/llvm-project/build
-        - make -j$(nproc)
-        - ctest
+        - make -j$(nproc) VERBOSE=1
+        - ctest --output-on-failure
     cache:
         paths:
             - Parcoach/*
@@ -275,7 +276,7 @@ build-simgrid:
         - if [ -e SimGrid/simgrid/.git ] ; then (cd SimGrid/simgrid ; git pull); else rm -rf SimGrid/simgrid; git clone --depth=1 https://framagit.org/simgrid/simgrid.git SimGrid/simgrid; fi
         - cd SimGrid/simgrid
         - cmake -DCMAKE_INSTALL_PREFIX=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/SimGrid/build -Denable_model-checking=ON .
-        - make -j$(nproc) install
+        - make -j$(nproc) install VERBOSE=1
     cache:
         paths:
             - SimGrid/*
@@ -494,7 +495,7 @@ must-svg:
             - Data/must_result_SRC.svg
             
 data-collect:
-    stage: svg
+    stage: gather
     needs:
         - job: test-mustdist-50
           artifacts: true
@@ -514,6 +515,18 @@ data-collect:
           artifacts: true
         - job: test-aislinn
           artifacts: true
+        - job: must-svg
+          artifacts: true
+        - job: civl-svg
+          artifacts: true
+        - job: parcoach-svg
+          artifacts: true
+        - job: simgrid-svg
+          artifacts: true
+        - job: isp-svg
+          artifacts: true
+        - job: aislinn-svg
+          artifacts: true
     script:
         - echo "filename;id;tool;TO;NP;buff;expected;result;jobid" > result.csv
         - cat Benchmarks/*.csv >> result.csv
@@ -526,5 +539,4 @@ data-collect:
         when: always
         paths:
             - ./result.csv
-            - Data/all_result_LOG.svg
-            - Data/all_result_SRC.svg
+            - Data/*.svg

@@ -132,7 +132,6 @@ for filename in args.filenames:
             print("No tool was provided, please retry with -x parameter. (see -h for further information on usage)")
             sys.exit(1)
             
-
         elif args.x == 'mustdist':
             func = runner_simgrid.mustrun
         elif args.x == 'simgrid':
@@ -154,11 +153,15 @@ for filename in args.filenames:
         print("Wait up to {} seconds".format(args.timeout))
         sys.stdout.flush()
         p.join(args.timeout)
-        p.terminate()
         try:
             ans = q.get(block=False)
         except queue.Empty:
-            ans = 'RSF'
+            if p.is_alive():
+                print("Timeout!")
+                p.terminate()
+                ans = 'timeout'
+            else:
+                ans = 'RSF'
         
 
         curr_time = time.time()
