@@ -1,7 +1,7 @@
 import shutil, os, sys, stat, subprocess, re, argparse, time
 
 def aislinnrun(cmd, to, filename, binary, id):
-
+    
     try:
         subprocess.run("aislinn-cc -g {} -o {} > {}_{}.txt 2>&1".format(filename,binary,binary,id), shell=True, check=True)
     except subprocess.CalledProcessError:
@@ -12,6 +12,10 @@ def aislinnrun(cmd, to, filename, binary, id):
     cmd = re.sub('\$zero_buffer', "--send-protocol=rendezvous", cmd)
     cmd = re.sub('\$infty_buffer', "--send-protocol=eager", cmd)
     cmd = re.sub('-np ', '-p=', cmd)
+    print("\nRUNNING : {}\n".format(cmd))
+    ret = None
+    output = "Executing https://gitlab.com/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/-/tree/master/Benchmarks/microbenchs/{}.c\n\n".format(binary)
+    
     cmd = re.sub('$', ' > {}_{}.txt 2>&1'.format(binary, id), cmd)
     try:
         ret = subprocess.call(cmd, shell=True, timeout=to)

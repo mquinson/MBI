@@ -122,47 +122,44 @@ for filename in args.filenames:
         print("Test {}'{}'".format("" if test_count == 0 else "{} ".format(test_count+1), binary), end=":")
         sys.stdout.flush()
        
-        if args.x != 'mustdist' and args.x != 'simgrid':
-            cmd = re.sub('^', "echo 'Executing https://gitlab.com/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/-/tree/master/Benchmarks/microbenchs/{}.c';echo;".format(binary), cmd)
+        # if args.x != 'mustdist' and args.x != 'simgrid':
+        #     cmd = re.sub('^', "echo 'Executing https://gitlab.com/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/-/tree/master/Benchmarks/microbenchs/{}.c';echo;".format(binary), cmd)
 
         start_time = time.time()
-
+        q = mp.Queue()
+        
         if args.x == 'mpirun':
             print("No tool was provided, please retry with -x parameter. (see -h for further information on usage)")
             sys.exit(1)
-#        elif args.x == 'must':
-#            ans = runner_must.mustrun(cmd, args.timeout, filename, binary, test_count)
-        elif args.x == 'mustdist' or args.x == 'simgrid':
-            q = mp.Queue()
-            if args.x == 'mustdist':
-                func = runner_simgrid.mustrun
-            elif args.x == 'simgrid':
-                func = runner_simgrid.simgridrun
-            p = mp.Process(target=return_to_queue, args=(q, func, (cmd, filename, binary, test_count)))
-            p.start()
-            print("Wait up to {} seconds".format(args.timeout))
-            sys.stdout.flush()
-            p.join(args.timeout)
-            p.terminate()
-            try:
-                ans = q.get(block=False)
-            except queue.Empty:
-                ans = 'RSF'
+            
+
+        elif args.x == 'mustdist':
+            func = runner_simgrid.mustrun
+        elif args.x == 'simgrid':
+            func = runner_simgrid.simgridrun
         elif args.x == 'civl':
-            ans = runner_civl.civlrun(cmd, args.timeout, filename, binary, test_count)
-#        elif args.x == 'simgrid':
-#            ans = (cmd, args.timeout, filename, binary, test_count)
+            func = runner_simgrid.civlrun
         elif args.x == 'parcoach':
-            ans = runner_parcoach.parcoachrun(cmd, args.timeout, filename, binary, test_count)
+            func = runner_simgrid.parcoachrun
         elif args.x == 'isp':
-            ans = runner_isp.isprun(cmd, args.timeout, filename, binary, test_count)
-        elif args.x == 'mpisv':
-            ans = runner_mpisv.mpisvrun(cmd, args.timeout, filename, binary, test_count)
+            func = runner_simgrid.isprun
         elif args.x == 'aislinn':
-            ans = runner_aislinn.aislinnrun(cmd, args.timeout, filename, binary, test_count)
+            func = runner_simgrid.aislinnrun
         else:
             print("The tool parameter you provided ({}) is either incorect or not yet implemented.".format(args.x))
             sys.exit(1)
+            
+        p = mp.Process(target=return_to_queue, args=(q, func, (cmd, filename, binary, test_count)))
+        p.start()
+        print("Wait up to {} seconds".format(args.timeout))
+        sys.stdout.flush()
+        p.join(args.timeout)
+        p.terminate()
+        try:
+            ans = q.get(block=False)
+        except queue.Empty:
+            ans = 'RSF'
+        
 
         curr_time = time.time()
         print("The tool returned {} (expected: {}; elapsed: {:f} sec)\n\n".format(ans, outcome, curr_time-start_time))

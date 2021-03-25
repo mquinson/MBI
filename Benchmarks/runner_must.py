@@ -30,12 +30,10 @@ def mustrun(cmd, filename, binary, id, distributed=True):
                 if re.search("ERROR: MUST detected a deadlock", line):
                     process.terminate()
         rc = process.poll()
-    except subprocess.TimeoutExpired:
-        if not os.path.isfile("./MUST_Output.html"):   
+    except subprocess.TimeoutExpired:   
             return 'timeout'
-        else:
-            print("Timeout but an output was found")
 
+        
     if not os.path.isfile("./MUST_Output.html"):
         return 'RSF'
     os.rename("./MUST_Output.html", "{}_{}.txt".format(binary,id))        

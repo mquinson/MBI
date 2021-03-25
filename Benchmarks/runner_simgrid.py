@@ -97,6 +97,9 @@ def mustrun(execcmd, filename, binary, id):
             html += line
     os.rename("./MUST_Output.html", "{}_{}.html".format(binary,id))
 
+    if res != None:
+        return res
+    
     if re.search('deadlock', html):
         return 'deadlock'
     
@@ -109,14 +112,158 @@ def mustrun(execcmd, filename, binary, id):
     if re.search('unknown datatype', html) or re.search('has to be a non-negative integer', html) or re.search('must use equal type signatures', html):
         return 'mpierr'
     
-    if re.search('caught MPI error', html):
+    if re.search('caught MPI error', output):
         return 'mpierr'     
     
     if re.search('Error', html):
         return 'other'
 
-    if re.search('MUST-ERROR', html):
+    if re.search('MUST-ERROR', output):
         return 'RSF'
     
     return 'noerror'
 
+
+def aislinnrun(execcmd, filename, binary, id):
+
+    execcmd = re.sub("mpirun", "aislinn", execcmd)
+    execcmd = re.sub('\${EXE}', binary, execcmd)
+    execcmd = re.sub('\$zero_buffer', "--send-protocol=rendezvous", execcmd)
+    execcmd = re.sub('\$infty_buffer', "--send-protocol=eager", execcmd)
+    execcmd = re.sub('-np ', '-p=', execcmd)
+
+    res, rc, output = run_cmd(
+        buildcmd="aislinn-cc -g {} -o {} > {}_{}.txt 2>&1".format(filename,binary,binary,id),
+        execcmd=execcmd, 
+        binary=binary)
+
+    if res != None:
+        return res
+    
+    if re.search('No errors found', output):
+        return 'noerror'
+    
+    if re.search('Deadlock', output):
+        return 'deadlock'
+    if re.search('Collective operation mismatch', output):
+        return 'deadlock'
+    
+    if re.search('Invalid rank', output):
+        return 'mpierr'
+    if re.search('Invalid datatype', output):
+        return 'mpierr'
+    
+    if re.search('Collective operation: root mismatch', output):
+        return 'compliance'
+
+    if re.search('Unkown function call', output):
+        return 'RSF'
+    
+    return 'other'
+
+    
+def civlrun(cmd, to, filename, binary, id):
+
+    execcmd = re.sub("mpirun", "java -jar /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/CIVL/CIVL-1.20_5259/lib/civl-1.20_5259.jar verify", execcmd)
+    execcmd = re.sub('-np ', "-input_mpi_nprocs=", execcmd)
+    execcmd = re.sub('\${EXE}', filename, execcmd)
+    execcmd = re.sub('\$zero_buffer', "", execcmd)
+    execcmd = re.sub('\$infty_buffer', "", execcmd)
+    execcmd = re.sub('$', " > {}_{}.txt 2>&1".format(binary,id), execcmd)
+
+    res, rc, output = run_cmd(
+        buildcmd="echo 'Nothing to compile'",
+        execcmd=execcmd, 
+        binary=binary)
+
+    if res != None:
+        return res
+    
+    if re.search('DEADLOCK', output):
+        return 'deadlock'
+   
+    if re.search('has a different root', output):
+        return 'compliance'
+    if re.search('has a different MPI_Op', output):
+        return 'compliance'
+
+    if re.search('MPI message leak', output):
+        return 'mpierr'
+    if re.search('MPI_ERROR', output):
+        return 'mpierr'
+
+    if re.search('MEMORY_LEAK', output):
+        return 'resleak'
+   
+    if re.search('The standard properties hold for all executions', output):
+        return 'noerror'
+
+    if re.search('A CIVL internal error has occurred', output):
+        return 'RSF'
+    
+    if re.search('This feature is not yet implemented', output):
+        return 'CUN'
+    if re.search('doesn.t have a definition', output):
+        return 'CUN'
+    if re.search('Undeclared identifier', output):
+        return 'CUN'
+    
+    return 'other'
+
+
+def isprun(cmd, to, filename, binary, id):
+
+    execcmd = re.sub("mpirun", "isp.exe", execcmd)
+    execcmd = re.sub('-np', '-n', execcmd)
+    execcmd = re.sub('\${EXE}', "./{}".format(binary), execcmd)
+    execcmd = re.sub('\$zero_buffer', "-b", execcmd)
+    execcmd = re.sub('\$infty_buffer', "-g", execcmd)
+    execcmd = re.sub('$', " > {}_{}.txt 2>&1".format(binary,id), execcmd)
+
+    print("\nClearing port before RUNNING : {}\n".format(cmd))
+    subprocess.run("kill -9 $(lsof -t -i:9999)", shell=True)
+
+    res, rc, output = run_cmd(
+        buildcmd="ispcc -o {} {} > {}_{}.txt".format(binary,filename,binary,id),
+        execcmd=execcmd, 
+        binary=binary)
+
+    if res != None:
+        return res
+    
+    if re.search('ISP detected deadlock!!!', output):
+        return 'deadlock'
+
+    if re.search('resource leaks detected', output):
+        return 'resleak'
+
+    if re.search('ISP detected no deadlocks', output):
+        return 'noerror'
+
+    if re.search('Fatal error in PMPI', output):
+        return 'mpierr'
+    if re.search('Fatal error in MPI', output):
+        return 'mpierr'
+    
+    return 'other'
+
+
+def parcoachrun(cmd, to, filename, binary, id):
+
+    execcmd = "opt-9 -load /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Parcoach/parcoach/build/src/aSSA/aSSA.so -parcoach -check-mpi < {}.bc > /dev/null 2> {}_{}.txt".format(binary,binary,id)
+
+    res, rc, output = run_cmd(
+        buildcmd="clang -c -g -emit-llvm {} -I/usr/lib/x86_64-linux-gnu/mpich/include/ -o {}.bc".format(filename,binary),
+        execcmd=execcmd, 
+        binary=binary)
+
+    if res != None:
+        return res
+    
+    if re.search('0 warning(s) issued', output):
+        return 'noerror'
+
+    if re.search('missing info for external function', output):
+        return 'CUN'
+    
+    return 'deadlock'

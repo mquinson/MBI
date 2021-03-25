@@ -2,6 +2,7 @@ import drawSvg as draw
 import csv
 import argparse
 import ast
+import os
 
 #############################
 ## Argument handling
@@ -86,8 +87,10 @@ tools.sort()
 
 width_per_tool = WIDTH / (len(tools) + 1)
 
-error_type = list(set([ast.literal_eval(row[6])[0] for row in data]))
-error_type.sort()
+error_type_not_sorted = list(set([ast.literal_eval(row[6])[0] for row in data]))
+error_type_not_sorted.sort()
+error_type = ['noerror'] + [error for error in error_type_not_sorted if error != 'noerror'] 
+
 
 height_per_error = HEIGHT / (len(error_type) + 1)
 
@@ -112,6 +115,7 @@ for t in tools:
     nb_TN[t] = 0
     nb_FN[t] = 0
     nb_error[t] = 0
+    
 
 #############################
 ## Actual printing method
@@ -131,9 +135,9 @@ def print_result(top_left_x, top_left_y, i, j, row):
     job_id = row[8]
 
     if DEBUG:
-        link = "https://gitlab.com/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/-/jobs/{}/artifacts/raw/Benchmarks/{}_{}.txt".format(job_id,name,id)
+        link = "https://gitlab.com/Mwapl/benchmarking-mpi/-/jobs/{}/artifacts/raw/Benchmarks/{}_{}.txt".format(job_id,name,id)
     else:
-        link = "https://gitlab.com/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/-/tree/master/Benchmarks/microbenchs/{}.c".format(name)
+        link = "https://gitlab.com/Mwapl/benchmarking-mpi/-/tree/master/Benchmarks/microbenchs/{}.c".format(name)
     
     r = Hyperlink(link)
     
@@ -211,7 +215,7 @@ adjust_height = 50
 for i in range(len(error_type)):
 
     # Print the error name
-    d.append(draw.Text(error_type[i], HEADER_SIZE/2, -(WIDTH/2) + 5,  (HEIGHT/2) - adjust_height, fill='black'))
+    d.append(draw.Text(error_type[i], HEADER_SIZE, -(WIDTH/2) + 5,  (HEIGHT/2) - adjust_height, fill='black'))
     
     
     for j in range(len(tools)):
@@ -341,3 +345,170 @@ caption.saveSvg('caption.svg')
 for t in tools:
     print("TOOLS : {}\n  TP : {}\n  TN : {}\n  FP : {}\n  FN : {}\n  Error : {}\n".
           format(t, nb_TP[t], nb_TN[t], nb_FP[t], nb_FN[t], nb_error[t]))
+
+#############################
+## Extracting features
+#############################
+
+feature_data = [["Name", "Origin", "P2P", "iP2P", "PERS", "COLL", "iCOLL", "TOPO", "IO", "RMA", "PROB",
+	 "COM", "GRP", "DATA", "OP", "HYB", "LOOP", "SP", "deadlock", "numstab", "segfault", "mpierr",
+	 "resleak", "livelock", "compliance", "datarace"]]
+directory = "../Benchmarks/microbenchs/"
+for filename in os.listdir(directory):
+    if filename.endswith(".c"):
+        row = [0]*len(feature_data[0])
+        row[0] = filename
+        f = open(os.path.join(directory, filename), 'r')
+        line = f.readline()
+        while line[0] == "/":
+            line = f.readline()
+            parsed_line = line.split(" ")
+            try:
+                if len(parsed_line) >= 3:
+                    index_data = feature_data[0].index(parsed_line[1][:-1])
+                    if parsed_line[1][:-1] == "Origin":
+                        row[index_data] = parsed_line[2].rstrip('\n')
+                    else:
+                        row[index_data] = parsed_line[2][:1]
+            except ValueError:
+                pass
+        f.close()
+        feature_data.append(row)
+
+feature_per_file = {}
+for row in feature_data:
+    feature_per_file[row[0]] = []
+    if "no-error" in row[0]:
+        for j in range(2,18):
+            if row[j] == "C":
+                feature_per_file[row[0]].append(feature_data[0][j]) 
+    else:
+        for j in range(2,18):
+            if row[j] == "I":
+                feature_per_file[row[0]].append(feature_data[0][j])
+        if len(feature_per_file[row[0]]) == 0:
+            for j in range(2,18):
+                if row[j] == "C":
+                    feature_per_file[row[0]].append(feature_data[0][j])
+        
+                
+most_feature_per_file = 0
+for filename in feature_per_file:
+    feature_per_file[filename].sort()
+    most_feature_per_file = max(most_feature_per_file,
+                                len(feature_per_file[filename]))
+
+
+CASE_WIDTH = WIDTH / 6.7
+width_per_feature = CASE_WIDTH / most_feature_per_file
+CASE_HEIGHT = HEIGHT / ((nb_uniq_testcase // 5)*1.1 + len(error_type) + 1)
+
+
+nb_features = {}
+for feat in ["P2P", "iP2P", "PERS", "COLL", "iCOLL", "TOPO", "IO", "RMA", "PROB", "COM", "GRP", "DATA", "OP", "HYB", "LOOP", "SP"]:
+    nb_features[feat] = [0,0]
+    
+#############################
+## Feature printing function
+#############################
+
+
+
+def print_feature(top_left_x, top_left_y, i, j, n, feature):
+
+    fig = "./featureFigs/{}.svg".format(feature)
+    
+    r = draw.Image(
+        top_left_x + 0.1*CASE_WIDTH + i * (CASE_WIDTH*1.1) + n * width_per_feature,
+        top_left_y - 0.1*CASE_HEIGHT - j * (CASE_HEIGHT*1.1),
+        width_per_feature,
+        CASE_HEIGHT,
+        fig,
+        embed=True)
+    
+    return r
+
+def print_box(top_left_x, top_left_y, i, j):
+
+    r = (draw.Rectangle(top_left_x + 0.1*CASE_WIDTH + i * (CASE_WIDTH*1.1),
+            top_left_y - 0.1*CASE_HEIGHT - j * (CASE_HEIGHT*1.1),
+            CASE_WIDTH,
+            CASE_HEIGHT,
+            fill='none',
+            stroke="black",
+            stroke_width="0.3"
+    ))
+    
+    return r
+    
+#############################
+## Printing features
+#############################
+
+feature_drawing = draw.Drawing(WIDTH, HEIGHT, origin='center', displayInline=True)
+
+# for i in range(most_feature_per_file):
+#     feature_drawing.append(draw.Text("Feature {}".format(i+1), HEADER_SIZE, -(WIDTH/2) + (i+1)*width_per_tool,  (HEIGHT/2) - 15, fill='black'))
+
+
+adjust_height = 50
+    
+for i in range(len(error_type)):
+
+    # Print the error name
+    feature_drawing.append(draw.Text(error_type[i], HEADER_SIZE, -(WIDTH/2) + 5,  (HEIGHT/2) - adjust_height, fill='black'))
+
+    to_print = [cases for cases in case_per_error[i] if cases[2]==tools[0]]
+    to_print.sort()
+    
+    for k in range(len(to_print)):
+
+        filename = to_print[k][0] + '.c'
+
+        if not filename in feature_per_file:
+            continue
+        
+        list_feature = feature_per_file[filename]
+
+        feature_drawing.append(print_box(-(WIDTH/2) + CASE_WIDTH,
+                                         (HEIGHT/2) - adjust_height,
+                                         k%5,
+                                         k//5))
+
+        
+        for j in range(len(list_feature)):
+                       
+            if j < len(feature_per_file[filename]):
+
+                #counting
+                if "no-error" in filename:
+                    nb_features[list_feature[j]][0] += 1
+                else:
+                    nb_features[list_feature[j]][1] += 1
+
+                #printing
+                feature_drawing.append(print_feature(-(WIDTH/2) + CASE_WIDTH,
+                                                     (HEIGHT/2) - adjust_height,
+                                                     k%5,
+                                                     k//5,
+                                                     j,
+                                                     list_feature[j]))
+
+    to_add = len(to_print)//5
+    if len(to_print)%5!=0:
+        to_add+=1
+    adjust_height += (to_add)*CASE_HEIGHT*1.1
+
+d.setPixelScale(2)  # Set number of pixels per geometry unit
+#d.setRenderSize(400,200)  # Alternative to setPixelScale
+
+feature_drawing.saveSvg('features.svg')
+feature_drawing.savePng('features.png')
+
+#############################
+## Printing feature count
+#############################
+
+for feat in nb_features:
+    print("FEATURE : {}\n  Correct : {}\n  Incorect : {}\n".
+          format(feat, nb_features[feat][0], nb_features[feat][1]))
