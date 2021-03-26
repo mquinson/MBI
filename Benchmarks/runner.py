@@ -277,97 +277,6 @@ def run_cmd(buildcmd, execcmd, binary, read_line_lambda=None):
     return None, rc, output
 
 ##########################
-## SimGrid runner
-##########################
-def simgridrun(execcmd, filename, binary, id):
-
-    execcmd = re.sub("mpirun", "smpirun -wrapper simgrid-mc -platform ./cluster.xml --cfg=smpi/list-leaks:10", execcmd)
-    execcmd = re.sub('\${EXE}', binary, execcmd)
-    execcmd = re.sub('\$zero_buffer', "--cfg=smpi/buffering:zero", execcmd)
-    execcmd = re.sub('\$infty_buffer', "--cfg=smpi/buffering:infty", execcmd)
-    
-    res, rc, output = run_cmd(
-        buildcmd="smpicc {} -o {}  > {}_{}.txt 2>&1".format(filename,binary,binary,id),
-        execcmd=execcmd, 
-        binary=binary)
-
-    with open('{}_{}.txt'.format(binary, id), 'w') as outfile:
-        outfile.write(output)    
-        
-    if res != None:
-        return res
-    if re.search('No property violation found', output):
-        return 'noerror'
-    if re.search('DEADLOCK DETECTED', output):
-        return 'deadlock'
-    if re.search('returned MPI_ERR', output):
-        return 'mpierr'
-    if re.search('Not yet implemented', output):
-        return 'CUN'
-    if re.search('leak detected', output):
-        return 'resleak'
-
-    print("Couldn't assign output to specific behaviour (ret: {}) : this will be treated as 'other'".format(rc))
-    return 'other'
-
-##########################
-## MUST runner
-##########################
-def must_filter(line, process):
-    if re.search("ERROR: MUST detected a deadlock", line):
-        process.terminate()
-def mustrun(execcmd, filename, binary, id):
-
-    execcmd = re.sub("mpirun", "mustrun --must:distributed", execcmd)
-    execcmd = re.sub('\${EXE}', binary, execcmd)
-    execcmd = re.sub('\$zero_buffer', "", execcmd)
-    execcmd = re.sub('\$infty_buffer', "", execcmd)	
-
-    res, rc, output = run_cmd(
-        buildcmd="mpicc {} -o {} > {}_{}.txt 2>&1".format(filename,binary,binary,id),
-        execcmd=execcmd, 
-        binary=binary,
-        read_line_lambda=must_filter)
-
-    with open('{}_{}.txt'.format(binary, id), 'w') as outfile:
-        outfile.write(output)    
-    
-    if not os.path.isfile("./MUST_Output.html"):
-        return 'RSF'
-
-    html = ""
-    with open('MUST_Output.html') as input:
-        for line in (input.readlines()):
-            html += line
-    os.rename("./MUST_Output.html", "{}_{}.html".format(binary,id))
-
-    if res != None:
-        return res
-    
-    if re.search('deadlock', html):
-        return 'deadlock'
-    
-    if re.search('not freed', html):
-        return 'resleak'
-
-    if re.search('conflicting roots', html):
-        return 'compliance'
-
-    if re.search('unknown datatype', html) or re.search('has to be a non-negative integer', html) or re.search('must use equal type signatures', html):
-        return 'mpierr'
-    
-    if re.search('caught MPI error', output):
-        return 'mpierr'     
-    
-    if re.search('Error', html):
-        return 'other'
-
-    if re.search('MUST-ERROR', output):
-        return 'RSF'
-    
-    return 'noerror'
-
-##########################
 ## Aislinn runner
 ##########################
 def aislinnrun(execcmd, filename, binary, id):
@@ -504,6 +413,63 @@ def isprun(execcmd, filename, binary, id):
     return 'other'
 
 ##########################
+## MUST runner
+##########################
+def must_filter(line, process):
+    if re.search("ERROR: MUST detected a deadlock", line):
+        process.terminate()
+def mustrun(execcmd, filename, binary, id):
+
+    execcmd = re.sub("mpirun", "mustrun --must:distributed", execcmd)
+    execcmd = re.sub('\${EXE}', binary, execcmd)
+    execcmd = re.sub('\$zero_buffer', "", execcmd)
+    execcmd = re.sub('\$infty_buffer', "", execcmd)	
+
+    res, rc, output = run_cmd(
+        buildcmd="mpicc {} -o {} > {}_{}.txt 2>&1".format(filename,binary,binary,id),
+        execcmd=execcmd, 
+        binary=binary,
+        read_line_lambda=must_filter)
+
+    with open('{}_{}.txt'.format(binary, id), 'w') as outfile:
+        outfile.write(output)    
+    
+    if not os.path.isfile("./MUST_Output.html"):
+        return 'RSF'
+
+    html = ""
+    with open('MUST_Output.html') as input:
+        for line in (input.readlines()):
+            html += line
+    os.rename("./MUST_Output.html", "{}_{}.html".format(binary,id))
+
+    if res != None:
+        return res
+    
+    if re.search('deadlock', html):
+        return 'deadlock'
+    
+    if re.search('not freed', html):
+        return 'resleak'
+
+    if re.search('conflicting roots', html):
+        return 'compliance'
+
+    if re.search('unknown datatype', html) or re.search('has to be a non-negative integer', html) or re.search('must use equal type signatures', html):
+        return 'mpierr'
+    
+    if re.search('caught MPI error', output):
+        return 'mpierr'     
+    
+    if re.search('Error', html):
+        return 'other'
+
+    if re.search('MUST-ERROR', output):
+        return 'RSF'
+    
+    return 'noerror'
+
+##########################
 ## Parcoach runner
 ##########################
 def parcoachrun(execcmd, filename, binary, id):
@@ -528,3 +494,37 @@ def parcoachrun(execcmd, filename, binary, id):
         return 'CUN'
     
     return 'deadlock'
+
+##########################
+## SimGrid runner
+##########################
+def simgridrun(execcmd, filename, binary, id):
+
+    execcmd = re.sub("mpirun", "smpirun -wrapper simgrid-mc -platform ./cluster.xml --cfg=smpi/list-leaks:10", execcmd)
+    execcmd = re.sub('\${EXE}', binary, execcmd)
+    execcmd = re.sub('\$zero_buffer', "--cfg=smpi/buffering:zero", execcmd)
+    execcmd = re.sub('\$infty_buffer', "--cfg=smpi/buffering:infty", execcmd)
+    
+    res, rc, output = run_cmd(
+        buildcmd="smpicc {} -o {}  > {}_{}.txt 2>&1".format(filename,binary,binary,id),
+        execcmd=execcmd, 
+        binary=binary)
+
+    with open('{}_{}.txt'.format(binary, id), 'w') as outfile:
+        outfile.write(output)    
+        
+    if res != None:
+        return res
+    if re.search('No property violation found', output):
+        return 'noerror'
+    if re.search('DEADLOCK DETECTED', output):
+        return 'deadlock'
+    if re.search('returned MPI_ERR', output):
+        return 'mpierr'
+    if re.search('Not yet implemented', output):
+        return 'CUN'
+    if re.search('leak detected', output):
+        return 'resleak'
+
+    print("Couldn't assign output to specific behaviour (ret: {}) : this will be treated as 'other'".format(rc))
+    return 'other'
