@@ -259,7 +259,7 @@ def parcoachrun(execcmd, filename, binary, id):
     if res != None:
         return res
     
-    if re.search('0 warning(s) issued', output):
+    if re.search('0 warning\(s\) issued', output):
         return 'noerror'
 
     if re.search('missing info for external function', output):
