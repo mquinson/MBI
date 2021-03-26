@@ -353,7 +353,7 @@ for t in tools:
 
 feature_data = [["Name", "Origin", "P2P", "iP2P", "PERS", "COLL", "iCOLL", "TOPO", "IO", "RMA", "PROB",
 	 "COM", "GRP", "DATA", "OP", "HYB", "LOOP", "SP", "deadlock", "numstab", "segfault", "mpierr",
-	 "resleak", "livelock", "compliance", "datarace"]]
+	 "resleak", "livelock", "datarace"]]
 directory = "../Benchmarks/microbenchs/"
 for filename in os.listdir(directory):
     if filename.endswith(".c"):
