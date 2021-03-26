@@ -29,7 +29,6 @@
 // mpierr: never
 // resleak: never
 // livelock: never
-// compliance: never
 // other: never
 //
 // Test: mpirun -np 3 ${EXE}

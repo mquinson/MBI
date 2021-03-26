@@ -29,7 +29,6 @@
 // error_mpierr: never
 // error_resleak: never
 // error_livelock: never
-// error_compliance: always
 // error_other: never
 //
 // Test: mpirun -np 2 ${EXE}

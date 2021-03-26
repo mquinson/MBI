@@ -36,7 +36,6 @@
 // mpierr: never
 // resleak: never
 // livelock: never
-// compliance: never
 // other: transient
 //
 // Test: mpirun -np 5 ${EXE}
