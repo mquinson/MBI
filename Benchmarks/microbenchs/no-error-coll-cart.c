@@ -1,39 +1,38 @@
 ////////////////// MPI bugs collection header //////////////////
 //
-// Origin: MUST
+// Origin: MPICorrectnessBenchmark
 //
-// Description: Creates a cartesian communicator with MPI_COMM_WORLD as communicator without triggering any errors or
-// warnings
+// Description: Creates a cartesian communicator, and creates new communicators for lines and columns 
 //
 //// List of features
 // P2P: Lacking
 // iP2P: Lacking
 // PERS: Lacking
-// COLL: Correct  
+// COLL: Incorrect
 // iCOLL: Lacking
-// TOPO: Lacking
+// TOPO: Incorrect
 // IO: Lacking
 // RMA: Lacking
 // PROB: Lacking
-// COM: Correct
+// COM: Lacking
 // GRP: Lacking
 // DATA: Lacking
 // OP: Lacking
 // HYB: Lacking
-// LOOP: Lacking
-// SP: Lacking
+// LOOP:  Lacking
+// SP: Correct
 //
 //// List of errors
 // deadlock: never
 // numstab: never
 // segfault: never
-// mpierr: never
+// mpierr: never 
 // resleak: never
 // livelock: never
 // compliance: never
 // datarace: never
 //
-// Test: mpirun -np 2 ${EXE}
+// Test: mpirun -np 4 ${EXE}
 // Expect: noerror
 //
 ////////////////// End of MPI bugs collection header //////////////////
@@ -41,45 +40,58 @@
 
 #include <mpi.h>
 #include <stdio.h>
+#include <math.h>
 
-#ifndef MPI_MAX_PROCESSOR_NAME
-#define MPI_MAX_PROCESSOR_NAME 1024
-#endif
+int main(int argc, char** argv){
 
-int main(int argc, char** argv)
-{
-  int nprocs = -1;
-  int rank   = -1;
-  char processor_name[MPI_MAX_PROCESSOR_NAME];
-  int namelen = 128;
+  int rank, newrank, Rrank, Crank, size, ndim=2, dim, periods[2]={0,0}, reorder=0, coords[2];
+	int remain_dims[2];
+	MPI_Comm newcomm, Rcomm, Ccomm;
 
-  MPI_Init(&argc, &argv);
-  MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
+  MPI_Init(&argc,&argv);
+
+  MPI_Comm_size(MPI_COMM_WORLD, &size);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-  MPI_Get_processor_name(processor_name, &namelen);
-  printf("rank %d is alive on %s\n", rank, processor_name);
 
-  if (nprocs < 2) {
-    printf("\033[0;31m! This test needs at least 2 processes !\033[0;0m\n");
-    MPI_Finalize();
-    return 1;
-  }
+	// Define the dimensions of the square grid
+	dim = sqrt(size);
 
-  // create a cartesian communicator
-  MPI_Comm comm;
-  int dims[2], periods[2];
-  int source, dest;
-  dims[0]    = 2;
-  dims[1]    = 1;
-  periods[0] = 1;
-  periods[1] = 1;
+	if(rank ==0)
+		fprintf(stderr,"Dimensions of the grid:%d x %d  - %d processes\n", dim, dim, size);	
 
-  MPI_Cart_create(MPI_COMM_WORLD, 2, dims, periods, 0, &comm);
+	int dims[2]={dim,dim};
 
-  if (comm != MPI_COMM_NULL)
-    MPI_Comm_free(&comm);
+	MPI_Cart_create(MPI_COMM_WORLD, ndim, dims, periods, reorder, &newcomm);
+
+	if(newcomm == MPI_COMM_NULL)
+		fprintf(stderr,"newcomm is null for P%d (process not in the grid)\n",rank);
+
+	if(rank < (dim*dim)){
+		MPI_Comm_rank(newcomm, &newrank);
+		MPI_Cart_coords(newcomm, newrank, ndim, coords);
+
+		/* Create 1D row subgrids*/
+		remain_dims[0]=0;
+		remain_dims[1]=1;// belongs to subgrid
+		MPI_Cart_sub(newcomm, remain_dims, &Rcomm);
+		/* Create 1D column subgrids*/
+		remain_dims[0]=1;
+		remain_dims[1]=0;
+		MPI_Cart_sub(newcomm, remain_dims, &Ccomm);
+
+		MPI_Comm_rank(Rcomm, &Rrank);
+		MPI_Comm_rank(Ccomm, &Crank);
+		printf("rank=%d, newrank=%d, (%d,%d), Rrank:%d Crank:%d\n", rank, newrank, coords[0], coords[1],Rrank,Crank);
+
+	}
+
+	if(newcomm != MPI_COMM_NULL)
+		MPI_Comm_free(&newcomm);
+	if(Rcomm != MPI_COMM_NULL)
+		MPI_Comm_free(&Rcomm);
+	if(Ccomm != MPI_COMM_NULL)
+		MPI_Comm_free(&Ccomm);
 
   MPI_Finalize();
-  printf("\033[0;32mrank %d Finished normally\033[0;0m\n", rank);
   return 0;
 }
