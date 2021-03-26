@@ -136,6 +136,9 @@ def aislinnrun(execcmd, filename, binary, id):
         execcmd=execcmd, 
         binary=binary)
 
+    with open('{}_{}.txt'.format(binary, id), 'w') as outfile:
+        outfile.write(output)  
+    
     if res != None:
         return res
     
@@ -175,6 +178,9 @@ def civlrun(execcmd, filename, binary, id):
         execcmd=execcmd, 
         binary=binary)
 
+    with open('{}_{}.txt'.format(binary, id), 'w') as outfile:
+        outfile.write(output)  
+    
     if res != None:
         return res
     
@@ -217,9 +223,8 @@ def isprun(execcmd, filename, binary, id):
     execcmd = re.sub('\${EXE}', "./{}".format(binary), execcmd)
     execcmd = re.sub('\$zero_buffer', "-b", execcmd)
     execcmd = re.sub('\$infty_buffer', "-g", execcmd)
-    execcmd = re.sub('$', " > {}_{}.txt 2>&1".format(binary,id), execcmd)
 
-    print("\nClearing port before RUNNING : {}\n".format(cmd))
+    print("\nClearing port before executing ISP\n".format(cmd))
     subprocess.run("kill -9 $(lsof -t -i:9999)", shell=True)
 
     res, rc, output = run_cmd(
@@ -227,6 +232,9 @@ def isprun(execcmd, filename, binary, id):
         execcmd=execcmd, 
         binary=binary)
 
+    with open('{}_{}.txt'.format(binary, id), 'w') as outfile:
+        outfile.write(output)  
+    
     if res != None:
         return res
     
@@ -249,13 +257,16 @@ def isprun(execcmd, filename, binary, id):
 
 def parcoachrun(execcmd, filename, binary, id):
 
-    execcmd = "opt-9 -load /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Parcoach/parcoach/build/src/aSSA/aSSA.so -parcoach -check-mpi < {}.bc > /dev/null 2> {}_{}.txt".format(binary,binary,id)
+    execcmd = "opt-9 -load /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Parcoach/parcoach/build/src/aSSA/aSSA.so -parcoach -check-mpi < {}.bc ".format(binary,binary,id)
 
     res, rc, output = run_cmd(
         buildcmd="clang -c -g -emit-llvm {} -I/usr/lib/x86_64-linux-gnu/mpich/include/ -o {}.bc".format(filename,binary),
         execcmd=execcmd, 
         binary=binary)
 
+    with open('{}_{}.txt'.format(binary, id), 'w') as outfile:
+        outfile.write(output)  
+    
     if res != None:
         return res
     
