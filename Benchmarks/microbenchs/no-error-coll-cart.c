@@ -18,7 +18,10 @@
 // GRP: Lacking
 // DATA: Lacking
 // OP: Lacking
+<<<<<<< HEAD
 // HYB: Lacking
+=======
+>>>>>>> a32ab45fe0149c6c540578fd7c26f080dcc1780e
 // LOOP:  Lacking
 // SP: Correct
 //
