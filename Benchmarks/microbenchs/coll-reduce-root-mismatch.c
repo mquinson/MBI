@@ -24,7 +24,7 @@
 //
 //// List of errors
 // deadlock: transient
-// numstab: never
+// numstab: transient
 // segfault: never
 // mpierr: never
 // resleak: never
@@ -33,7 +33,7 @@
 // datarace: never
 //
 // Test: mpirun -np 2 ${EXE}
-// Expect: deadlock|compliance
+// Expect: various
 //
 ////////////////// End of MPI bugs collection header //////////////////
 //////////////////       original file begins        //////////////////

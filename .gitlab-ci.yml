@@ -25,7 +25,7 @@ build-must:
         paths:
             - Must/MUST-v1.6/*
             
-test-mustdist-50:
+test-must-50:
     stage: test
     needs:
         - job: build-must
@@ -33,17 +33,17 @@ test-mustdist-50:
     script:
         - export PATH=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Must/MUST-v1.6/bin:$PATH
         - cd Benchmarks
-        - for file in $(ls /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Benchmarks/microbenchs/*.c | head -50); do python3.8 runner.py -x mustdist -o bench_mustdist50.csv -t 300 --job $CI_JOB_ID $file; done
+        - for file in $(ls /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Benchmarks/microbenchs/*.c | head -50); do python3.8 runner.py -x must -o bench_must50.csv -t 300 --job $CI_JOB_ID $file; done
     artifacts:
         untracked: false
         expire_in: 30 days
         when: always
         paths:
-            - Benchmarks/bench_mustdist50.csv
+            - Benchmarks/bench_must50.csv
             - Benchmarks/*.txt
             - Benchmarks/*.html
             
-test-mustdist-100:
+test-must-100:
     stage: test
     needs:
         - job: build-must
@@ -51,17 +51,17 @@ test-mustdist-100:
     script:
         - export PATH=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Must/MUST-v1.6/bin:$PATH
         - cd Benchmarks
-        - for file in $(ls /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Benchmarks/microbenchs/*.c | tail -n +51 | head -50); do python3.8 runner.py -x mustdist -o bench_mustdist100.csv -t 300 --job $CI_JOB_ID $file; done
+        - for file in $(ls /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Benchmarks/microbenchs/*.c | tail -n +51 | head -50); do python3.8 runner.py -x must -o bench_must100.csv -t 300 --job $CI_JOB_ID $file; done
     artifacts:
         untracked: false
         expire_in: 30 days
         when: always
         paths:
-            - Benchmarks/bench_mustdist100.csv
+            - Benchmarks/bench_must100.csv
             - Benchmarks/*.txt
             - Benchmarks/*.html
             
-test-mustdist-150:
+test-must-150:
     stage: test
     needs:
         - job: build-must
@@ -69,17 +69,17 @@ test-mustdist-150:
     script:
         - export PATH=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Must/MUST-v1.6/bin:$PATH
         - cd Benchmarks
-        - for file in $(ls /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Benchmarks/microbenchs/*.c | tail -n +101 | head -50); do python3.8 runner.py -x mustdist -o bench_mustdist150.csv -t 300 --job $CI_JOB_ID $file; done
+        - for file in $(ls /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Benchmarks/microbenchs/*.c | tail -n +101 | head -50); do python3.8 runner.py -x must -o bench_must150.csv -t 300 --job $CI_JOB_ID $file; done
     artifacts:
         untracked: false
         expire_in: 30 days
         when: always
         paths:
-            - Benchmarks/bench_mustdist150.csv
+            - Benchmarks/bench_must150.csv
             - Benchmarks/*.txt
             - Benchmarks/*.html
             
-test-mustdist-200:
+test-must-200:
     stage: test
     needs:
         - job: build-must
@@ -87,17 +87,17 @@ test-mustdist-200:
     script:
         - export PATH=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Must/MUST-v1.6/bin:$PATH
         - cd Benchmarks
-        - for file in $(ls /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Benchmarks/microbenchs/*.c | tail -n +151 | head -50); do python3.8 runner.py -x mustdist -o bench_mustdist200.csv -t 300 --job $CI_JOB_ID $file; done
+        - for file in $(ls /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Benchmarks/microbenchs/*.c | tail -n +151 | head -50); do python3.8 runner.py -x must -o bench_must200.csv -t 300 --job $CI_JOB_ID $file; done
     artifacts:
         untracked: false
         expire_in: 30 days
         when: always
         paths:
-            - Benchmarks/bench_mustdist200.csv
+            - Benchmarks/bench_must200.csv
             - Benchmarks/*.txt
             - Benchmarks/*.html
             
-test-mustdist-medium:
+test-must-medium:
     stage: test
     needs:
         - job: build-must
@@ -105,13 +105,13 @@ test-mustdist-medium:
     script:
         - export PATH=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Must/MUST-v1.6/bin:$PATH
         - cd Benchmarks
-        - for file in $(ls /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Benchmarks/mediumbenchs/*.c); do python3.8 runner.py -x mustdist -o bench_mustdist_med.csv -t 600 $file; done
+        - for file in $(ls /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Benchmarks/mediumbenchs/*.c); do python3.8 runner.py -x must -o bench_must_med.csv -t 600 $file; done
     artifacts:
         untracked: false
         expire_in: 30 days
         when: always
         paths:
-            - Benchmarks/bench_mustdist_med.csv
+            - Benchmarks/bench_must_med.csv
             - Benchmarks/*.txt
             - Benchmarks/*.html
 
@@ -162,6 +162,7 @@ test-aislinn:
         paths:
             - ./Benchmarks/bench_aislinn.csv
             - Benchmarks/*.txt
+            - Benchmarks/*.html
 
 build-civl:
     stage: build
@@ -469,13 +470,13 @@ civl-svg:
 must-svg:
     stage: svg
     needs:
-        - job: test-mustdist-50
+        - job: test-must-50
           artifacts: true
-        - job: test-mustdist-100
+        - job: test-must-100
           artifacts: true
-        - job: test-mustdist-150
+        - job: test-must-150
           artifacts: true
-        - job: test-mustdist-200
+        - job: test-must-200
           artifacts: true
     before_script:
       - apt-get update
@@ -497,13 +498,13 @@ must-svg:
 data-collect:
     stage: gather
     needs:
-        - job: test-mustdist-50
+        - job: test-must-50
           artifacts: true
-        - job: test-mustdist-100
+        - job: test-must-100
           artifacts: true
-        - job: test-mustdist-150
+        - job: test-must-150
           artifacts: true
-        - job: test-mustdist-200
+        - job: test-must-200
           artifacts: true
         - job: test-civl
           artifacts: true
