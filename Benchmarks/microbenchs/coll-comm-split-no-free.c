@@ -29,7 +29,6 @@
 // mpierr: never
 // resleak: always
 // livelock: never
-// compliance: never
 // datarace: never
 //
 // Test: mpirun -np 2 ${EXE}

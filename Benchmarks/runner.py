@@ -86,7 +86,7 @@ def aislinnrun(execcmd, filename, binary, id):
         return 'mpierr'
     
     if re.search('Collective operation: root mismatch', output):
-        return 'compliance'
+        return 'various'
 
     if re.search('Unkown function call', output):
         return 'RSF'
@@ -119,9 +119,9 @@ def civlrun(execcmd, filename, binary, id):
         return 'deadlock'
    
     if re.search('has a different root', output):
-        return 'compliance'
+        return 'various'
     if re.search('has a different MPI_Op', output):
-        return 'compliance'
+        return 'various'
 
     if re.search('MPI message leak', output):
         return 'mpierr'
@@ -228,7 +228,7 @@ def mustrun(execcmd, filename, binary, id):
         return 'resleak'
 
     if re.search('conflicting roots', html):
-        return 'compliance'
+        return 'various'
 
     if re.search('unknown datatype', html) or re.search('has to be a non-negative integer', html) or re.search('must use equal type signatures', html):
         return 'mpierr'
@@ -336,7 +336,7 @@ ok_segfault=[]
 ok_mpierr=[]
 ok_resleak=[]
 ok_livelock=[]
-ok_compliance=[]
+ok_various=[]
 ok_datarace=[]
 failed=[]
 notimplemented=[]
@@ -376,7 +376,7 @@ def extract_todo(filename):
                 if not m:
                     print("\n{}:{}: 'Test' line not followed by a proper 'Expect' line:\n{}{}".format(filename,line_num, line, nextline))
                 expect = [expects for expects in m.groups() if expects!=None]
-                if not expect[0] in ["noerror", "deadlock",  "numstab", "segfault", "mpierr", "resleak", "livelock", "compliance", "datarace"]:
+                if not expect[0] in ["noerror", "deadlock",  "numstab", "segfault", "mpierr", "resleak", "livelock", "various", "datarace"]:
                     print("\n{}:{}: expectation >>{}<< not understood."
                           .format(filename, line_num, expect))
                     continue
@@ -478,8 +478,8 @@ for filename in args.filenames:
             ok_resleak.append(binary)
         elif 'livelock' in outcome:
             ok_livelock.append(binary)
-        elif 'compliance' in outcome:
-            ok_compliance.append(binary)
+        elif 'various' in outcome:
+            ok_various.append(binary)
         elif 'datarace' in outcome:
             ok_datarace.append(binary)
         
@@ -519,7 +519,7 @@ passed_count += len(ok_segfault)
 passed_count += len(ok_mpierr)
 passed_count += len(ok_resleak)
 passed_count += len(ok_livelock)
-passed_count += len(ok_compliance)
+passed_count += len(ok_various)
 passed_count += len(ok_datarace)
 
 print("XXXXXXXXX\nResult: {} test{} out of {} passed."

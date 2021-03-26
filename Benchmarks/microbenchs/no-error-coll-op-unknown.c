@@ -2,25 +2,26 @@
 //
 // Origin: MUST
 //
-// Description: This code creates a group with MPI_Group_range_excl without any error or warning
+// Description: This code tries to free copy of an instatiate operator
+//
 //
 //// List of features
 // P2P: Lacking
 // iP2P: Lacking
 // PERS: Lacking
-// COLL: Correct  
+// COLL: Incorrect
 // iCOLL: Lacking
 // TOPO: Lacking
 // IO: Lacking
 // RMA: Lacking
 // PROB: Lacking
 // COM: Lacking
-// GRP: Correct
+// GRP: Lacking
 // DATA: Lacking
-// OP: Lacking
+// OP: Incorrect
 // HYB: Lacking
 // LOOP: Lacking
-// SP: Lacking
+// SP: Correct
 //
 //// List of errors
 // deadlock: never
@@ -44,10 +45,15 @@
 #define MPI_MAX_PROCESSOR_NAME 1024
 #endif
 
-int main(int argc, char** argv)
-{
+// user defined operation that returns the sum
+void myOp(int *invec, int *inoutvec, int *len, MPI_Datatype *dtype) {
+  for (int i = 0; i < *len; i++)
+    inoutvec[i] += invec[i];
+}
+
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
 
@@ -57,25 +63,18 @@ int main(int argc, char** argv)
   MPI_Get_processor_name(processor_name, &namelen);
   printf("rank %d is alive on %s\n", rank, processor_name);
 
-  if (nprocs < 2) {
-    printf("\033[0;31m! This test needs at least 2 processes !\033[0;0m\n");
-    MPI_Finalize();
-    return 1;
-  }
+  // Create an Operation
+  MPI_Op op, op_unknown;
+  MPI_Op_create((MPI_User_function *)myOp, 0, &op);
 
-  MPI_Group group1, group2;
-  int range[1][3];
-  MPI_Comm_group(MPI_COMM_WORLD, &group1);
+  op_unknown = op;
 
-  range[0][0] = 0;
-  range[0][1] = 1;
-  range[0][2] = 1;
+  // Free an Operation
+  if (op != MPI_OP_NULL)
+    MPI_Op_free(&op);
 
-  // create a second group
-  MPI_Group_range_excl(group1, 1, range, &group2);
-
-  MPI_Group_free(&group1);
-  MPI_Group_free(&group2);
+  if (op_unknown != MPI_OP_NULL)
+    MPI_Op_free(&op_unknown);
 
   MPI_Finalize();
   printf("\033[0;32mrank %d Finished normally\033[0;0m\n", rank);
