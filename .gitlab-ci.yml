@@ -25,6 +25,24 @@ build-must:
         paths:
             - Must/MUST-v1.6/*
             
+test-must-25:
+    stage: test
+    needs:
+        - job: build-must
+          artifacts: true
+    script:
+        - export PATH=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Must/MUST-v1.6/bin:$PATH
+        - cd Benchmarks
+        - for file in $(ls microbenchs/*.c | head -25); do python3.8 runner.py -x must -o bench_must25.csv -t 300 --job $CI_JOB_ID $file; done
+    artifacts:
+        untracked: false
+        expire_in: 30 days
+        when: always
+        paths:
+            - Benchmarks/*.csv
+            - Benchmarks/*.txt
+            - Benchmarks/*.html
+
 test-must-50:
     stage: test
     needs:
@@ -33,13 +51,31 @@ test-must-50:
     script:
         - export PATH=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Must/MUST-v1.6/bin:$PATH
         - cd Benchmarks
-        - for file in $(ls /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Benchmarks/microbenchs/*.c | head -50); do python3.8 runner.py -x must -o bench_must50.csv -t 300 --job $CI_JOB_ID $file; done
+        - for file in $(ls microbenchs/*.c | tail -n +26 | head -25); do python3.8 runner.py -x must -o bench_must50.csv -t 300 --job $CI_JOB_ID $file; done
     artifacts:
         untracked: false
         expire_in: 30 days
         when: always
         paths:
-            - Benchmarks/bench_must50.csv
+            - Benchmarks/*.csv
+            - Benchmarks/*.txt
+            - Benchmarks/*.html
+            
+test-must-75:
+    stage: test
+    needs:
+        - job: build-must
+          artifacts: true
+    script:
+        - export PATH=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Must/MUST-v1.6/bin:$PATH
+        - cd Benchmarks
+        - for file in $(ls microbenchs/*.c | tail -n +51 | head -25); do python3.8 runner.py -x must -o bench_must75.csv -t 300 --job $CI_JOB_ID $file; done
+    artifacts:
+        untracked: false
+        expire_in: 30 days
+        when: always
+        paths:
+            - Benchmarks/*.csv
             - Benchmarks/*.txt
             - Benchmarks/*.html
             
@@ -51,13 +87,31 @@ test-must-100:
     script:
         - export PATH=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Must/MUST-v1.6/bin:$PATH
         - cd Benchmarks
-        - for file in $(ls /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Benchmarks/microbenchs/*.c | tail -n +51 | head -50); do python3.8 runner.py -x must -o bench_must100.csv -t 300 --job $CI_JOB_ID $file; done
+        - for file in $(ls microbenchs/*.c | tail -n +76 | head -25); do python3.8 runner.py -x must -o bench_must100.csv -t 300 --job $CI_JOB_ID $file; done
     artifacts:
         untracked: false
         expire_in: 30 days
         when: always
         paths:
-            - Benchmarks/bench_must100.csv
+            - Benchmarks/*.csv
+            - Benchmarks/*.txt
+            - Benchmarks/*.html
+            
+test-must-125:
+    stage: test
+    needs:
+        - job: build-must
+          artifacts: true
+    script:
+        - export PATH=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Must/MUST-v1.6/bin:$PATH
+        - cd Benchmarks
+        - for file in $(ls microbenchs/*.c | tail -n +101 | head -25); do python3.8 runner.py -x must -o bench_must125.csv -t 300 --job $CI_JOB_ID $file; done
+    artifacts:
+        untracked: false
+        expire_in: 30 days
+        when: always
+        paths:
+            - Benchmarks/*.csv
             - Benchmarks/*.txt
             - Benchmarks/*.html
             
@@ -69,17 +123,17 @@ test-must-150:
     script:
         - export PATH=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Must/MUST-v1.6/bin:$PATH
         - cd Benchmarks
-        - for file in $(ls /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Benchmarks/microbenchs/*.c | tail -n +101 | head -50); do python3.8 runner.py -x must -o bench_must150.csv -t 300 --job $CI_JOB_ID $file; done
+        - for file in $(ls microbenchs/*.c | tail -n +126 | head -25); do python3.8 runner.py -x must -o bench_must150.csv -t 300 --job $CI_JOB_ID $file; done
     artifacts:
         untracked: false
         expire_in: 30 days
         when: always
         paths:
-            - Benchmarks/bench_must150.csv
+            - Benchmarks/*.csv
             - Benchmarks/*.txt
             - Benchmarks/*.html
             
-test-must-200:
+test-must-175:
     stage: test
     needs:
         - job: build-must
@@ -87,15 +141,34 @@ test-must-200:
     script:
         - export PATH=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Must/MUST-v1.6/bin:$PATH
         - cd Benchmarks
-        - for file in $(ls /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Benchmarks/microbenchs/*.c | tail -n +151 | head -50); do python3.8 runner.py -x must -o bench_must200.csv -t 300 --job $CI_JOB_ID $file; done
+        - for file in $(ls microbenchs/*.c | tail -n +151); do python3.8 runner.py -x must -o bench_must175.csv -t 300 --job $CI_JOB_ID $file; done
     artifacts:
         untracked: false
         expire_in: 30 days
         when: always
         paths:
-            - Benchmarks/bench_must200.csv
+            - Benchmarks/*.csv
             - Benchmarks/*.txt
             - Benchmarks/*.html
+            
+# There is only 174 tests so far
+#test-must-200:
+#    stage: test
+#    needs:
+#        - job: build-must
+#          artifacts: true
+#    script:
+#        - export PATH=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Must/MUST-v1.6/bin:$PATH
+#        - cd Benchmarks
+#        - for file in $(ls microbenchs/*.c | tail -n +175 | head -25); do python3.8 runner.py -x must -o bench_must200.csv -t 300 --job $CI_JOB_ID $file; done
+#    artifacts:
+#        untracked: false
+#        expire_in: 30 days
+#        when: always
+#        paths:
+#            - Benchmarks/*.csv
+#            - Benchmarks/*.txt
+#            - Benchmarks/*.html
             
 test-must-medium:
     stage: test
@@ -105,13 +178,13 @@ test-must-medium:
     script:
         - export PATH=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Must/MUST-v1.6/bin:$PATH
         - cd Benchmarks
-        - for file in $(ls /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Benchmarks/mediumbenchs/*.c); do python3.8 runner.py -x must -o bench_must_med.csv -t 600 $file; done
+        - for file in $(ls mediumbenchs/*.c); do python3.8 runner.py -x must -o bench_must_med.csv -t 600 $file; done
     artifacts:
         untracked: false
         expire_in: 30 days
         when: always
         paths:
-            - Benchmarks/bench_must_med.csv
+            - Benchmarks/*.csv
             - Benchmarks/*.txt
             - Benchmarks/*.html
 
@@ -470,14 +543,22 @@ civl-svg:
 must-svg:
     stage: svg
     needs:
+        - job: test-must-25
+          artifacts: true
         - job: test-must-50
+          artifacts: true
+        - job: test-must-75
           artifacts: true
         - job: test-must-100
           artifacts: true
+        - job: test-must-125
+          artifacts: true
         - job: test-must-150
           artifacts: true
-        - job: test-must-200
+        - job: test-must-175
           artifacts: true
+#        - job: test-must-200
+#          artifacts: true
     before_script:
       - apt-get update
       - apt-get install -y python3-pip libcairo2
@@ -498,14 +579,22 @@ must-svg:
 data-collect:
     stage: gather
     needs:
+        - job: test-must-25
+          artifacts: true
         - job: test-must-50
+          artifacts: true
+        - job: test-must-75
           artifacts: true
         - job: test-must-100
           artifacts: true
+        - job: test-must-125
+          artifacts: true
         - job: test-must-150
           artifacts: true
-        - job: test-must-200
+        - job: test-must-175
           artifacts: true
+#        - job: test-must-200
+#          artifacts: true
         - job: test-civl
           artifacts: true
         - job: test-parcoach
