@@ -33,10 +33,7 @@ def run_cmd(buildcmd, execcmd, binary, read_line_lambda=None):
         while True:
             line = process.stdout.readline()
             if line:
-                try:
-                    line = line.decode('UTF-8') # From byte array to string
-                except UnicodeDecodeError:
-                    pass # The output seem to be binary. Fine, we can live with it.
+                line = str(line, errors='replace') # From byte array to string, replacing non-representable strings with question marks
                 output = output + line
                 print ("| {}".format(line), end='', file=sys.stderr)
                 if read_line_lambda != None:
