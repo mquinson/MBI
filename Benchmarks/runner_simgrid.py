@@ -171,7 +171,6 @@ def civlrun(execcmd, filename, binary, id):
     execcmd = re.sub('\${EXE}', filename, execcmd)
     execcmd = re.sub('\$zero_buffer', "", execcmd)
     execcmd = re.sub('\$infty_buffer', "", execcmd)
-    execcmd = re.sub('$', " > {}_{}.txt 2>&1".format(binary,id), execcmd)
 
     res, rc, output = run_cmd(
         buildcmd="echo 'Nothing to compile'",
@@ -224,7 +223,7 @@ def isprun(execcmd, filename, binary, id):
     execcmd = re.sub('\$zero_buffer', "-b", execcmd)
     execcmd = re.sub('\$infty_buffer', "-g", execcmd)
 
-    print("\nClearing port before executing ISP\n".format(cmd))
+    print("\nClearing port before executing ISP\n")
     subprocess.run("kill -9 $(lsof -t -i:9999)", shell=True)
 
     res, rc, output = run_cmd(
