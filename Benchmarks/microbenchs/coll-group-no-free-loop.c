@@ -18,7 +18,6 @@
 // GRP: Incorrect
 // DATA: Lacking
 // OP: Lacking
-// HYB: Lacking
 // LOOP: Incorrect
 // SP: Correct
 //
