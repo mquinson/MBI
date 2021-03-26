@@ -161,7 +161,7 @@ def aislinnrun(execcmd, filename, binary, id):
     return 'other'
 
     
-def civlrun(cmd, to, filename, binary, id):
+def civlrun(execcmd, filename, binary, id):
 
     execcmd = re.sub("mpirun", "java -jar /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/CIVL/CIVL-1.20_5259/lib/civl-1.20_5259.jar verify", execcmd)
     execcmd = re.sub('-np ', "-input_mpi_nprocs=", execcmd)
@@ -210,7 +210,7 @@ def civlrun(cmd, to, filename, binary, id):
     return 'other'
 
 
-def isprun(cmd, to, filename, binary, id):
+def isprun(execcmd, filename, binary, id):
 
     execcmd = re.sub("mpirun", "isp.exe", execcmd)
     execcmd = re.sub('-np', '-n', execcmd)
@@ -247,7 +247,7 @@ def isprun(cmd, to, filename, binary, id):
     return 'other'
 
 
-def parcoachrun(cmd, to, filename, binary, id):
+def parcoachrun(execcmd, filename, binary, id):
 
     execcmd = "opt-9 -load /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Parcoach/parcoach/build/src/aSSA/aSSA.so -parcoach -check-mpi < {}.bc > /dev/null 2> {}_{}.txt".format(binary,binary,id)
 
