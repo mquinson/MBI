@@ -224,7 +224,7 @@ def isprun(execcmd, filename, binary, id):
     execcmd = re.sub('\$infty_buffer', "-g", execcmd)
 
     print("\nClearing port before executing ISP\n")
-    subprocess.run("kill -9 $(lsof -t -i:9999)", shell=True)
+    subprocess.run("kill -9 $(lsof -t -i:9999) 2>/dev/null", shell=True)
 
     res, rc, output = run_cmd(
         buildcmd="ispcc -o {} {} > {}_{}.txt".format(binary,filename,binary,id),
