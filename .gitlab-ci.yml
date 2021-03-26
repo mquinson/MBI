@@ -162,6 +162,7 @@ test-aislinn:
         paths:
             - ./Benchmarks/bench_aislinn.csv
             - Benchmarks/*.txt
+            - Benchmarks/*.html
 
 build-civl:
     stage: build
