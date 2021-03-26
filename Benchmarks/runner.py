@@ -10,7 +10,7 @@ os.environ["LC_ALL"] = "C"
 ## Helper function to run tests
 ##########################
 
-def run_cmd(buildcmd, execcmd, binary, read_line_lambda=None):
+def run_cmd(buildcmd, execcmd, binary, timeout, read_line_lambda=None):
     output = "Compiling https://gitlab.com/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/-/tree/master/Benchmarks/microbenchs/{}.c\n\n".format(binary)
     output += "$ {}".format(buildcmd)
 
@@ -29,7 +29,7 @@ def run_cmd(buildcmd, execcmd, binary, read_line_lambda=None):
 
     try:
         # We run the subprocess and parse its output line by line, so that we can kill it as soon as it detects a timeout
-        process = subprocess.Popen(shlex.split(execcmd), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        process = subprocess.Popen(shlex.split(execcmd), stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=timeout)
         while True:
             line = process.stdout.readline()
             if line:
@@ -42,14 +42,14 @@ def run_cmd(buildcmd, execcmd, binary, read_line_lambda=None):
                 break
         rc = process.poll()
     except subprocess.TimeoutExpired:
-        return 'timeout', output
+        return 'timeout', 42, output
 
     return None, rc, output
 
 ##########################
 ## Aislinn runner
 ##########################
-def aislinnrun(execcmd, filename, binary, id):
+def aislinnrun(execcmd, filename, binary, id, timeout):
     execcmd = re.sub("mpirun", "aislinn", execcmd)
     execcmd = re.sub('\${EXE}', binary, execcmd)
     execcmd = re.sub('\$zero_buffer', "--send-protocol=rendezvous", execcmd)
@@ -59,7 +59,8 @@ def aislinnrun(execcmd, filename, binary, id):
     res, rc, output = run_cmd(
         buildcmd="aislinn-cc -g {} -o {}".format(filename,binary,binary,id),
         execcmd=execcmd, 
-        binary=binary)
+        binary=binary, 
+        timeout=timeout)
 
     with open('{}_{}.txt'.format(binary, id), 'w') as outfile:
         outfile.write(output)  
@@ -93,7 +94,7 @@ def aislinnrun(execcmd, filename, binary, id):
 ##########################
 ## CIVL runner
 ##########################
-def civlrun(execcmd, filename, binary, id):
+def civlrun(execcmd, filename, binary, id, timeout):
 
     execcmd = re.sub("mpirun", "java -jar /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/CIVL/CIVL-1.20_5259/lib/civl-1.20_5259.jar verify", execcmd)
     execcmd = re.sub('-np ', "-input_mpi_nprocs=", execcmd)
@@ -104,7 +105,8 @@ def civlrun(execcmd, filename, binary, id):
     res, rc, output = run_cmd(
         buildcmd=": # Nothing to compile",
         execcmd=execcmd, 
-        binary=binary)
+        binary=binary,
+        timeout=timeout)
 
     with open('{}_{}.txt'.format(binary, id), 'w') as outfile:
         outfile.write(output)  
@@ -146,7 +148,7 @@ def civlrun(execcmd, filename, binary, id):
 ##########################
 ## ISP runner
 ##########################
-def isprun(execcmd, filename, binary, id):
+def isprun(execcmd, filename, binary, id, timeout):
 
     execcmd = re.sub("mpirun", "isp.exe", execcmd)
     execcmd = re.sub('-np', '-n', execcmd)
@@ -160,7 +162,8 @@ def isprun(execcmd, filename, binary, id):
     res, rc, output = run_cmd(
         buildcmd="ispcc -o {} {}".format(binary,filename,binary,id),
         execcmd=execcmd, 
-        binary=binary)
+        binary=binary,
+        timeout=timeout)
 
     with open('{}_{}.txt'.format(binary, id), 'w') as outfile:
         outfile.write(output)  
@@ -190,7 +193,7 @@ def isprun(execcmd, filename, binary, id):
 def must_filter(line, process):
     if re.search("ERROR: MUST detected a deadlock", line):
         process.terminate()
-def mustrun(execcmd, filename, binary, id):
+def mustrun(execcmd, filename, binary, id, timeout):
 
     execcmd = re.sub("mpirun", "mustrun --must:distributed", execcmd)
     execcmd = re.sub('\${EXE}', binary, execcmd)
@@ -201,6 +204,7 @@ def mustrun(execcmd, filename, binary, id):
         buildcmd="mpicc {} -o {}".format(filename,binary,binary,id),
         execcmd=execcmd, 
         binary=binary,
+        timeout=timeout,
         read_line_lambda=must_filter)
 
     with open('{}_{}.txt'.format(binary, id), 'w') as outfile:
@@ -215,7 +219,7 @@ def mustrun(execcmd, filename, binary, id):
             html += line
     os.rename("./MUST_Output.html", "{}_{}.html".format(binary,id))
 
-    if res != None:
+    if res != None and res != 'timeout':
         return res
     
     if re.search('deadlock', html):
@@ -239,17 +243,20 @@ def mustrun(execcmd, filename, binary, id):
     if re.search('MUST-ERROR', output):
         return 'RSF'
     
-    return 'noerror'
+    if res != None:
+        return 'noerror'
+    return res
 
 ##########################
 ## Parcoach runner
 ##########################
-def parcoachrun(execcmd, filename, binary, id):
+def parcoachrun(execcmd, filename, binary, id, timeout):
 
     res, rc, output = run_cmd(
         buildcmd="clang -c -g -emit-llvm {} -I/usr/lib/x86_64-linux-gnu/mpich/include/ -o {}.bc".format(filename,binary),
         execcmd = "opt-9 -load /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Parcoach/parcoach/build/src/aSSA/aSSA.so -parcoach -check-mpi {}.bc ".format(binary,binary,id),
-        binary=binary)
+        binary=binary,
+        timeout=timeout)
 
     with open('{}_{}.txt'.format(binary, id), 'w') as outfile:
         outfile.write(output)  
@@ -268,7 +275,7 @@ def parcoachrun(execcmd, filename, binary, id):
 ##########################
 ## SimGrid runner
 ##########################
-def simgridrun(execcmd, filename, binary, id):
+def simgridrun(execcmd, filename, binary, id, timeout):
 
     execcmd = re.sub("mpirun", "smpirun -wrapper simgrid-mc -platform ./cluster.xml --cfg=smpi/list-leaks:10", execcmd)
     execcmd = re.sub('\${EXE}', binary, execcmd)
@@ -278,7 +285,8 @@ def simgridrun(execcmd, filename, binary, id):
     res, rc, output = run_cmd(
         buildcmd="smpicc {} -o {}".format(filename,binary,binary,id),
         execcmd=execcmd, 
-        binary=binary)
+        binary=binary,
+        timeout=timeout)
 
     with open('{}_{}.txt'.format(binary, id), 'w') as outfile:
         outfile.write(output)    
@@ -438,16 +446,16 @@ for filename in args.filenames:
             print("The tool parameter you provided ({}) is either incorect or not yet implemented.".format(args.x))
             sys.exit(1)
             
-        p = mp.Process(target=return_to_queue, args=(q, func, (cmd, filename, binary, test_count)))
+        p = mp.Process(target=return_to_queue, args=(q, func, (cmd, filename, binary, test_count, args.timeout)))
         p.start()
         print("Wait up to {} seconds".format(args.timeout))
         sys.stdout.flush()
-        p.join(args.timeout)
+        p.join(args.timeout+60)
         try:
             ans = q.get(block=False)
         except queue.Empty:
             if p.is_alive():
-                print("Timeout!")
+                print("HARD TIMEOUT! The child process failed to timeout by itself. Sorry for the output.")
                 p.terminate()
                 ans = 'timeout'
             else:
