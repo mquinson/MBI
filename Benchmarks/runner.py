@@ -14,7 +14,7 @@ parser = argparse.ArgumentParser(description='This runner intends to provide a b
 
 parser.add_argument('filenames', metavar='example.c', nargs="+", help='a list of MPI c sources.')
 
-parser.add_argument('-x', metavar='tool', default='mpirun', help='the tool you want at execution : one among [isp, must, mustdist, mpisv, aislinn, civl, simgrid, parcoach]')
+parser.add_argument('-x', metavar='tool', default='mpirun', help='the tool you want at execution : one among [aislinn, civl, isp, must, simgrid, parcoach]')
 
 parser.add_argument('-t', '--timeout', metavar='int', default=300, type=int, help='timeout value at execution time, given in seconds')
 
@@ -121,9 +121,6 @@ for filename in args.filenames:
         print("Test {}'{}'".format("" if test_count == 0 else "{} ".format(test_count+1), binary), end=":")
         sys.stdout.flush()
        
-        # if args.x != 'mustdist' and args.x != 'simgrid':
-        #     cmd = re.sub('^', "echo 'Executing https://gitlab.com/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/-/tree/master/Benchmarks/microbenchs/{}.c';echo;".format(binary), cmd)
-
         start_time = time.time()
         q = mp.Queue()
         
@@ -131,18 +128,18 @@ for filename in args.filenames:
             print("No tool was provided, please retry with -x parameter. (see -h for further information on usage)")
             sys.exit(1)
             
-        elif args.x == 'mustdist':
-            func = runner_simgrid.mustrun
+        elif args.x == 'must':
+            func = mustrun
         elif args.x == 'simgrid':
-            func = runner_simgrid.simgridrun
+            func = simgridrun
         elif args.x == 'civl':
-            func = runner_simgrid.civlrun
+            func = civlrun
         elif args.x == 'parcoach':
-            func = runner_simgrid.parcoachrun
+            func = parcoachrun
         elif args.x == 'isp':
-            func = runner_simgrid.isprun
+            func = isprun
         elif args.x == 'aislinn':
-            func = runner_simgrid.aislinnrun
+            func = aislinnrun
         else:
             print("The tool parameter you provided ({}) is either incorect or not yet implemented.".format(args.x))
             sys.exit(1)
