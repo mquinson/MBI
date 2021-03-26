@@ -23,7 +23,7 @@
 // SP: Correct
 //
 //// List of errors
-// deadlock: never
+// deadlock: transient
 // numstab: transient
 // segfault: never
 // mpierr: never
@@ -33,7 +33,7 @@
 // datarace: never
 //
 // Test: mpirun -np 3 ${EXE}
-// Expect: compliance
+// Expect: various
 //
 ////////////////// End of MPI bugs collection header //////////////////
 //////////////////       original file begins        //////////////////
