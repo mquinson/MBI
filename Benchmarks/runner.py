@@ -260,7 +260,10 @@ def run_cmd(buildcmd, execcmd, binary, read_line_lambda=None):
         while True:
             line = process.stdout.readline()
             if line:
-                line = line.decode('UTF-8') # From byte array to string
+                try:
+                    line = line.decode('UTF-8') # From byte array to string
+                except UnicodeDecodeError:
+                    pass # The output seem to be binary. Fine, we can live with it.
                 output = output + line
                 print ("| {}".format(line), end='', file=sys.stderr)
                 if read_line_lambda != None:
@@ -327,7 +330,7 @@ def civlrun(execcmd, filename, binary, id):
     execcmd = re.sub('\$infty_buffer', "", execcmd)
 
     res, rc, output = run_cmd(
-        buildcmd="echo 'Nothing to compile'",
+        buildcmd=": # Nothing to compile",
         execcmd=execcmd, 
         binary=binary)
 
