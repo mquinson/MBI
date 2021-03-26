@@ -2,7 +2,7 @@
 
 import shutil, os, sys, stat, subprocess, re, argparse, queue, time
 import multiprocessing as mp
-import runner_must, runner_civl, runner_simgrid, runner_parcoach, runner_isp, runner_mpisv, runner_aislinn
+import runner_simgrid
 
 # Some scripts may fail if error messages get translated
 os.environ["LC_ALL"] = "C"
