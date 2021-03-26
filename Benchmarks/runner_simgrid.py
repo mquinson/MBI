@@ -138,7 +138,15 @@ def aislinnrun(execcmd, filename, binary, id):
 
     with open('{}_{}.txt'.format(binary, id), 'w') as outfile:
         outfile.write(output)  
-    
+
+    html = ""
+    with open('report.html') as input:
+        for line in (input.readlines()):
+            html += line
+    os.rename("./report.html", "{}_{}.html".format(binary,id))
+        
+
+        
     if res != None:
         return res
     
@@ -256,7 +264,7 @@ def isprun(execcmd, filename, binary, id):
 
 def parcoachrun(execcmd, filename, binary, id):
 
-    execcmd = "opt-9 -load /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Parcoach/parcoach/build/src/aSSA/aSSA.so -parcoach -check-mpi < {}.bc ".format(binary,binary,id)
+    execcmd = "opt-9 -load /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Parcoach/parcoach/build/src/aSSA/aSSA.so -parcoach -check-mpi {}.bc ".format(binary,binary,id)
 
     res, rc, output = run_cmd(
         buildcmd="clang -c -g -emit-llvm {} -I/usr/lib/x86_64-linux-gnu/mpich/include/ -o {}.bc".format(filename,binary),
