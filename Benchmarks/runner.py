@@ -57,7 +57,7 @@ def aislinnrun(execcmd, filename, binary, id):
     execcmd = re.sub('-np ', '-p=', execcmd)
 
     res, rc, output = run_cmd(
-        buildcmd="aislinn-cc -g {} -o {} > {}_{}.txt 2>&1".format(filename,binary,binary,id),
+        buildcmd="aislinn-cc -g {} -o {}".format(filename,binary,binary,id),
         execcmd=execcmd, 
         binary=binary)
 
@@ -158,7 +158,7 @@ def isprun(execcmd, filename, binary, id):
     subprocess.run("kill -9 $(lsof -t -i:9999) 2>/dev/null", shell=True)
 
     res, rc, output = run_cmd(
-        buildcmd="ispcc -o {} {} > {}_{}.txt".format(binary,filename,binary,id),
+        buildcmd="ispcc -o {} {}".format(binary,filename,binary,id),
         execcmd=execcmd, 
         binary=binary)
 
@@ -198,7 +198,7 @@ def mustrun(execcmd, filename, binary, id):
     execcmd = re.sub('\$infty_buffer', "", execcmd)	
 
     res, rc, output = run_cmd(
-        buildcmd="mpicc {} -o {} > {}_{}.txt 2>&1".format(filename,binary,binary,id),
+        buildcmd="mpicc {} -o {}".format(filename,binary,binary,id),
         execcmd=execcmd, 
         binary=binary,
         read_line_lambda=must_filter)
@@ -246,11 +246,9 @@ def mustrun(execcmd, filename, binary, id):
 ##########################
 def parcoachrun(execcmd, filename, binary, id):
 
-    execcmd = "opt-9 -load /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Parcoach/parcoach/build/src/aSSA/aSSA.so -parcoach -check-mpi {}.bc ".format(binary,binary,id)
-
     res, rc, output = run_cmd(
         buildcmd="clang -c -g -emit-llvm {} -I/usr/lib/x86_64-linux-gnu/mpich/include/ -o {}.bc".format(filename,binary),
-        execcmd=execcmd, 
+        execcmd = "opt-9 -load /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Parcoach/parcoach/build/src/aSSA/aSSA.so -parcoach -check-mpi {}.bc ".format(binary,binary,id),
         binary=binary)
 
     with open('{}_{}.txt'.format(binary, id), 'w') as outfile:
@@ -278,7 +276,7 @@ def simgridrun(execcmd, filename, binary, id):
     execcmd = re.sub('\$infty_buffer', "--cfg=smpi/buffering:infty", execcmd)
     
     res, rc, output = run_cmd(
-        buildcmd="smpicc {} -o {}  > {}_{}.txt 2>&1".format(filename,binary,binary,id),
+        buildcmd="smpicc {} -o {}".format(filename,binary,binary,id),
         execcmd=execcmd, 
         binary=binary)
 
