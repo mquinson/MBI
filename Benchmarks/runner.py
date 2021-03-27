@@ -11,6 +11,7 @@ os.environ["LC_ALL"] = "C"
 ##########################
 
 def run_cmd(buildcmd, execcmd, binary, timeout, read_line_lambda=None):
+    start_time = time.time()
     output = "Compiling https://gitlab.com/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/-/tree/master/Benchmarks/microbenchs/{}.c\n\n".format(binary)
     output += "$ {}".format(buildcmd)
 
@@ -27,24 +28,31 @@ def run_cmd(buildcmd, execcmd, binary, timeout, read_line_lambda=None):
     for line in (output.split('\n')):
         print ("| {}".format(line), file=sys.stderr)
 
-    try:
-        # We run the subprocess and parse its output line by line, so that we can kill it as soon as it detects a timeout
-        process = subprocess.Popen(shlex.split(execcmd), stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=timeout)
-        while True:
-            line = process.stdout.readline()
-            if line:
-                line = str(line, errors='replace') # From byte array to string, replacing non-representable strings with question marks
-                output = output + line
-                print ("| {}".format(line), end='', file=sys.stderr)
-                if read_line_lambda != None:
-                    read_line_lambda(line, process)
-            if process.poll() is not None:
-                break
-        rc = process.poll()
-    except subprocess.TimeoutExpired:
-        return 'timeout', 42, output
+    # We run the subprocess and parse its output line by line, so that we can kill it as soon as it detects a timeout
+    process = subprocess.Popen(shlex.split(execcmd), stdout=subprocess.PIPE, stderr=subprocess.STDOUT, preexec_fn=os.setsid)
+    res = None
+    while True:
+        line = process.stdout.readline()
+        if line:
+            line = str(line, errors='replace') # From byte array to string, replacing non-representable strings with question marks
+            output = output + line
+            print ("| {}".format(line), end='', file=sys.stderr)
+            if read_line_lambda != None:
+                read_line_lambda(line, process)
+        if time.time() - start_time > timeout:
+            pid = process.pid
+            os.killpg(os.getpgid(pid), signal.SIGTERM)  # Send the signal to all the processes in the group. The command and everything it forked
+            time.sleep(0.2)
+            process.terminate()
+            time.sleep(0.2)
+            os.killpg(os.getpgid(pid), signal.SIGKILL)  # Go for a brutal KILL, just in case
+            res = 'timeout'
+        if process.poll() is not None:
+            break
 
-    return None, rc, output
+    rc = process.poll()
+
+    return res, rc, output
 
 ##########################
 ## Aislinn runner
