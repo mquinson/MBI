@@ -48,11 +48,14 @@ def run_cmd(buildcmd, execcmd, binary, timeout, read_line_lambda=None):
             break
 
     # We want to clean all forked processes in all cases, no matter whether they are still running (timeout) or supposed to be off. The runners easily get clogged with zombies :(
-    os.killpg(pgid, signal.SIGTERM)  # Terminate all forked processes, to make sure it's clean whatever the tool does
-    process.terminate() # No op if it's already stopped but useful on timeouts
-    time.sleep(0.2) # allow some time for the tool to finish its childs
-    os.killpg(pgid, signal.SIGKILL)  # Finish 'em all, manually
-    os.kill(pid, signal.SIGKILL)  # die! die! die!
+    try:
+        os.killpg(pgid, signal.SIGTERM)  # Terminate all forked processes, to make sure it's clean whatever the tool does
+        process.terminate() # No op if it's already stopped but useful on timeouts
+        time.sleep(0.2) # allow some time for the tool to finish its childs
+        os.killpg(pgid, signal.SIGKILL)  # Finish 'em all, manually
+        os.kill(pid, signal.SIGKILL)  # die! die! die!
+    except ProcessLookupError:
+        pass # OK, it's gone now
 
     rc = process.poll()
 
@@ -219,8 +222,11 @@ def must_filter(line, process):
     if re.search("ERROR: MUST detected a deadlock", line):
         pid = process.pid
         pgid = os.getpgid(pid)
-        process.terminate()
-        os.killpg(pgid, signal.SIGTERM)  # Send the signal to all the processes in the group. The command and everything it forked
+        try
+            process.terminate()
+            os.killpg(pgid, signal.SIGTERM)  # Send the signal to all the processes in the group. The command and everything it forked
+        except ProcessLookupError:
+            pass # Ok, it's gone now
 
 def mustrun(execcmd, filename, binary, id, timeout):
 
