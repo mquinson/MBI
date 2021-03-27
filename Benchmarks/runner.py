@@ -13,13 +13,13 @@ os.environ["LC_ALL"] = "C"
 def run_cmd(buildcmd, execcmd, binary, timeout, read_line_lambda=None):
     start_time = time.time()
     output = "Compiling https://gitlab.com/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/-/tree/master/Benchmarks/microbenchs/{}.c\n\n".format(binary)
-    output += "$ {}".format(buildcmd)
+    output += "$ {}\n".format(buildcmd)
 
-    compil = subprocess.run(buildcmd, shell=True, stderr=subprocess.STDOUT)
+    compil = subprocess.run(buildcmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     if compil.stdout is not None:
-        output += compil.stdout
+        output += str(compil.stdout, errors='replace')
     if compil.returncode != 0:
-        output += "Compilation of {}.c raised an error (retcode: %d)".format(binary, compil.returncode)
+        output += "Compilation of {}.c raised an error (retcode: {})".format(binary, compil.returncode)
         for line in (output.split('\n')):
             print ("| {}".format(line), file=sys.stderr)
         return 'CUN', compil.returncode, output
@@ -83,7 +83,8 @@ def aislinnrun(execcmd, filename, binary, id, timeout):
     with open('{}_{}.txt'.format(binary, id), 'w') as outfile:
         outfile.write(output)  
 
-    os.rename("./report.html", "{}_{}.html".format(binary,id))
+    if os.path.exists("report.html"):
+        os.rename("report.html", "{}_{}.html".format(binary,id))
     
     if res != None:
         return res
