@@ -30,6 +30,8 @@ test-must-25:
     needs:
         - job: build-must
           artifacts: true
+    before_script:
+        - apt-get install -y psmisc
     script:
         - export PATH=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Must/MUST-v1.6/bin:$PATH
         - cd Benchmarks
@@ -48,6 +50,8 @@ test-must-50:
     needs:
         - job: build-must
           artifacts: true
+    before_script:
+        - apt-get install -y psmisc
     script:
         - export PATH=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Must/MUST-v1.6/bin:$PATH
         - cd Benchmarks
@@ -66,10 +70,12 @@ test-must-75:
     needs:
         - job: build-must
           artifacts: true
+    before_script:
+        - apt-get install -y psmisc
     script:
         - export PATH=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Must/MUST-v1.6/bin:$PATH
         - cd Benchmarks
-        - for file in $(ls microbenchs/*.c | tail -n +51 | head -25); do python3.8 runner.py -x must -o bench_must75.csv -t 300 --job $CI_JOB_ID $file; uptime; killall mpirun 2>/dev/null; done
+        - for file in $(ls microbenchs/*.c | tail -n +51 | head -25); do python3.8 runner.py -x must -o bench_must75.csv -t 300 --job $CI_JOB_ID $file; uptime; killall mpirun; done
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -84,10 +90,12 @@ test-must-100:
     needs:
         - job: build-must
           artifacts: true
+    before_script:
+        - apt-get install -y psmisc
     script:
         - export PATH=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Must/MUST-v1.6/bin:$PATH
         - cd Benchmarks
-        - for file in $(ls microbenchs/*.c | tail -n +76 | head -25); do python3.8 runner.py -x must -o bench_must100.csv -t 300 --job $CI_JOB_ID $file; uptime; killall mpirun 2>/dev/null; done
+        - for file in $(ls microbenchs/*.c | tail -n +76 | head -25); do python3.8 runner.py -x must -o bench_must100.csv -t 300 --job $CI_JOB_ID $file; uptime;killall mpirun; done
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -102,10 +110,12 @@ test-must-125:
     needs:
         - job: build-must
           artifacts: true
+    before_script:
+        - apt-get install -y psmisc
     script:
         - export PATH=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Must/MUST-v1.6/bin:$PATH
         - cd Benchmarks
-        - for file in $(ls microbenchs/*.c | tail -n +101 | head -25); do python3.8 runner.py -x must -o bench_must125.csv -t 300 --job $CI_JOB_ID $file; uptime;killall mpirun 2>/dev/null; done
+        - for file in $(ls microbenchs/*.c | tail -n +101 | head -25); do python3.8 runner.py -x must -o bench_must125.csv -t 300 --job $CI_JOB_ID $file; uptime;killall mpirun; done
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -120,10 +130,12 @@ test-must-150:
     needs:
         - job: build-must
           artifacts: true
+    before_script:
+        - apt-get install -y psmisc
     script:
         - export PATH=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Must/MUST-v1.6/bin:$PATH
         - cd Benchmarks
-        - for file in $(ls microbenchs/*.c | tail -n +126 | head -25); do python3.8 runner.py -x must -o bench_must150.csv -t 300 --job $CI_JOB_ID $file; uptime; killall mpirun 2>/dev/null;done
+        - for file in $(ls microbenchs/*.c | tail -n +126 | head -25); do python3.8 runner.py -x must -o bench_must150.csv -t 300 --job $CI_JOB_ID $file; uptime;killall mpirun;done
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -138,10 +150,12 @@ test-must-175:
     needs:
         - job: build-must
           artifacts: true
+    before_script:
+        - apt-get install -y psmisc
     script:
         - export PATH=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Must/MUST-v1.6/bin:$PATH
         - cd Benchmarks
-        - for file in $(ls microbenchs/*.c | tail -n +151); do python3.8 runner.py -x must -o bench_must175.csv -t 300 --job $CI_JOB_ID $file; uptime;killall mpirun 2>/dev/null; done
+        - for file in $(ls microbenchs/*.c | tail -n +151); do python3.8 runner.py -x must -o bench_must175.csv -t 300 --job $CI_JOB_ID $file; uptime;killall mpirun; done
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -157,10 +171,12 @@ test-must-175:
 #    needs:
 #        - job: build-must
 #          artifacts: true
+#    before_script:
+#        - apt-get install -y psmisc
 #    script:
 #        - export PATH=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Must/MUST-v1.6/bin:$PATH
 #        - cd Benchmarks
-#        - for file in $(ls microbenchs/*.c | tail -n +175 | head -25); do python3.8 runner.py -x must -o bench_must200.csv -t 300 --job $CI_JOB_ID $file;uptime;killall mpirun 2>/dev/null; done
+#        - for file in $(ls microbenchs/*.c | tail -n +175 | head -25); do python3.8 runner.py -x must -o bench_must200.csv -t 300 --job $CI_JOB_ID $file;uptime;killall mpirun; done
 #    artifacts:
 #        untracked: false
 #        expire_in: 30 days
@@ -255,9 +271,11 @@ test-civl:
     needs:
         - job: build-civl
           artifacts: false
+    before_script:
+        - apt-get install -y psmisc
     script:
         - cd Benchmarks
-        - for file in $(ls /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Benchmarks/microbenchs/*.c); do python3.8 runner.py -x civl -o bench_civl.csv -t 300 --job $CI_JOB_ID $file; uptime;done
+        - for file in $(ls /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Benchmarks/microbenchs/*.c); do python3.8 runner.py -x civl -o bench_civl.csv -t 300 --job $CI_JOB_ID $file; uptime;killall java;done
     artifacts:
         untracked: false
         expire_in: 30 days
