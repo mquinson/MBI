@@ -214,7 +214,11 @@ def isprun(execcmd, filename, binary, id, timeout):
 ##########################
 def must_filter(line, process):
     if re.search("ERROR: MUST detected a deadlock", line):
+        pid = process.pid
+        pgid = os.getpgid(pid)
         process.terminate()
+        os.killpg(pgid, signal.SIGTERM)  # Send the signal to all the processes in the group. The command and everything it forked
+
 def mustrun(execcmd, filename, binary, id, timeout):
 
     execcmd = re.sub("mpirun", "mustrun --must:distributed", execcmd)
