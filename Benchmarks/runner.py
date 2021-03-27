@@ -1,6 +1,6 @@
 #! /usr/bin/python3
 
-import shutil, os, sys, stat, subprocess, re, argparse, queue, time, shlex
+import shutil, os, signal, sys, stat, subprocess, re, argparse, queue, time, shlex
 import multiprocessing as mp
 
 # Some scripts may fail if error messages get translated
