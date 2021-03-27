@@ -33,7 +33,7 @@ test-must-25:
     script:
         - export PATH=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Must/MUST-v1.6/bin:$PATH
         - cd Benchmarks
-        - for file in $(ls microbenchs/*.c | head -25); do python3.8 runner.py -x must -o bench_must25.csv -t 300 --job $CI_JOB_ID $file; done
+        - for file in $(ls microbenchs/*.c | head -25); do python3.8 runner.py -x must -o bench_must25.csv -t 300 --job $CI_JOB_ID $file; uptime; done
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -51,7 +51,7 @@ test-must-50:
     script:
         - export PATH=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Must/MUST-v1.6/bin:$PATH
         - cd Benchmarks
-        - for file in $(ls microbenchs/*.c | tail -n +26 | head -25); do python3.8 runner.py -x must -o bench_must50.csv -t 300 --job $CI_JOB_ID $file; done
+        - for file in $(ls microbenchs/*.c | tail -n +26 | head -25); do python3.8 runner.py -x must -o bench_must50.csv -t 300 --job $CI_JOB_ID $file; uptime; done
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -69,7 +69,7 @@ test-must-75:
     script:
         - export PATH=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Must/MUST-v1.6/bin:$PATH
         - cd Benchmarks
-        - for file in $(ls microbenchs/*.c | tail -n +51 | head -25); do python3.8 runner.py -x must -o bench_must75.csv -t 300 --job $CI_JOB_ID $file; done
+        - for file in $(ls microbenchs/*.c | tail -n +51 | head -25); do python3.8 runner.py -x must -o bench_must75.csv -t 300 --job $CI_JOB_ID $file; uptime; done
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -87,7 +87,7 @@ test-must-100:
     script:
         - export PATH=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Must/MUST-v1.6/bin:$PATH
         - cd Benchmarks
-        - for file in $(ls microbenchs/*.c | tail -n +76 | head -25); do python3.8 runner.py -x must -o bench_must100.csv -t 300 --job $CI_JOB_ID $file; done
+        - for file in $(ls microbenchs/*.c | tail -n +76 | head -25); do python3.8 runner.py -x must -o bench_must100.csv -t 300 --job $CI_JOB_ID $file; uptime; done
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -105,7 +105,7 @@ test-must-125:
     script:
         - export PATH=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Must/MUST-v1.6/bin:$PATH
         - cd Benchmarks
-        - for file in $(ls microbenchs/*.c | tail -n +101 | head -25); do python3.8 runner.py -x must -o bench_must125.csv -t 300 --job $CI_JOB_ID $file; done
+        - for file in $(ls microbenchs/*.c | tail -n +101 | head -25); do python3.8 runner.py -x must -o bench_must125.csv -t 300 --job $CI_JOB_ID $file; uptime; done
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -123,7 +123,7 @@ test-must-150:
     script:
         - export PATH=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Must/MUST-v1.6/bin:$PATH
         - cd Benchmarks
-        - for file in $(ls microbenchs/*.c | tail -n +126 | head -25); do python3.8 runner.py -x must -o bench_must150.csv -t 300 --job $CI_JOB_ID $file; done
+        - for file in $(ls microbenchs/*.c | tail -n +126 | head -25); do python3.8 runner.py -x must -o bench_must150.csv -t 300 --job $CI_JOB_ID $file; uptime; done
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -141,7 +141,7 @@ test-must-175:
     script:
         - export PATH=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Must/MUST-v1.6/bin:$PATH
         - cd Benchmarks
-        - for file in $(ls microbenchs/*.c | tail -n +151); do python3.8 runner.py -x must -o bench_must175.csv -t 300 --job $CI_JOB_ID $file; done
+        - for file in $(ls microbenchs/*.c | tail -n +151); do python3.8 runner.py -x must -o bench_must175.csv -t 300 --job $CI_JOB_ID $file; uptime; done
     artifacts:
         untracked: false
         expire_in: 30 days
