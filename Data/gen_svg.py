@@ -153,9 +153,14 @@ def print_result(top_left_x, top_left_y, i, j, row):
     elif result == "RSF":
         fig = "RSF.svg"
         nb_error[tool] += 1
+
     elif result not in expected:
         fig = "cross.svg"
-        if result == "noerror":
+        if 'various' in expected and (result == 'deadlock' or result == 'numstab'):
+            fig = "tick.svg"
+            nb_TP[tool] += 1
+            
+        elif result == "noerror":
             nb_FN[tool] += 1
         else:
             nb_FP[tool] += 1
@@ -346,6 +351,14 @@ caption.saveSvg('caption.svg')
 for t in tools:
     print("TOOLS : {}\n  TP : {}\n  TN : {}\n  FP : {}\n  FN : {}\n  Error : {}\n".
           format(t, nb_TP[t], nb_TN[t], nb_FP[t], nb_FN[t], nb_error[t]))
+
+if 'aislinn' in tools and 'isp' in tools and 'civl' in tools and 'must' in tools and 'parcoach' in tools and 'simgrid' in tools:
+    print("Aislinn & {} & {} & {} & {} & {} \\\\\n CIVL & {} & {} & {} & {} & {} \\\\\n ISP & {} & {} & {} & {} & {} \\\\\n Must & {} & {} & {} & {} & {}\\\\\n Parcoach & {} & {} & {} & {} & {}\\\\\n McSimGrid & {} & {} & {} & {} & {}\\\\".format(nb_TP[aislinn], nb_FN[aislinn], nb_FP[aislinn], nb_TN[aislinn], nb_error[aislinn],
+    nb_TP[civl], nb_FN[civl], nb_FP[civl], nb_TN[civl], nb_error[civl],
+    nb_TP[isp], nb_FN[isp], nb_FP[isp], nb_TN[isp], nb_error[isp],
+    nb_TP[must], nb_FN[must], nb_FP[must], nb_TN[must], nb_error[must],
+    nb_TP[t], nb_FN[parcoach], nb_FP[parcoach], nb_TN[parcoach], nb_error[parcoach],
+    nb_TP[simgrid], nb_FN[simgrid], nb_FP[simgrid], nb_TN[simgrid], nb_error[simgrid]))
 
 #############################
 ## Extracting features

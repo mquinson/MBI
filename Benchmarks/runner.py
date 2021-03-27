@@ -76,10 +76,23 @@ def aislinnrun(execcmd, filename, binary, id):
         return 'deadlock'
     if re.search('Collective operation mismatch', output):
         return 'deadlock'
+    if re.search('Mixing blocking and nonblocking collective operation', output):
+        return 'deadlock'
+    if re.search('Pending message', output):
+        return 'deadlock'
     
+        
     if re.search('Invalid rank', output):
         return 'mpierr'
     if re.search('Invalid datatype', output):
+        return 'mpierr'
+    if re.search('Invalid communicator', output):
+        return 'mpierr'
+    if re.search('Invalid color', output):
+        return 'mpierr'
+    if re.search('Invalid operation', output):
+        return 'mpierr'
+    if re.search('Invalid count', output):
         return 'mpierr'
     
     if re.search('Collective operation: root mismatch', output):
