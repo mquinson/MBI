@@ -78,7 +78,7 @@ int main(int argc, char** argv)
 
   MPI_Barrier(MPI_COMM_WORLD);
 
-  if (nprocs < 23) {
+  if (nprocs < 2) {
     printf("\033[0;31m! This test needs at least 2 processes !\033[0;0m\n");
   } else if (rank == 0) {
     MPI_Irecv(buf0, buf_size, MPI_INT, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &reqs[0]);
