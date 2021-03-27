@@ -318,7 +318,7 @@ def simgridrun(execcmd, filename, binary, id, timeout):
     execcmd = re.sub('\$infty_buffer', "--cfg=smpi/buffering:infty", execcmd)
     
     res, rc, output = run_cmd(
-        buildcmd="smpicc {} -o {}".format(filename,binary,binary,id),
+        buildcmd="smpicc {} -g -Wl,-znorelro -Wl,-znoseparate-code -o {}".format(filename,binary,binary,id),
         execcmd=execcmd, 
         binary=binary,
         timeout=timeout)
