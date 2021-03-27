@@ -1,6 +1,6 @@
 #! /usr/bin/python3
 
-import shutil, os, signal, sys, stat, subprocess, re, argparse, queue, time, shlex
+import shutil, os, signal, sys, stat, subprocess, re, argparse, queue, time, shlex, select
 import multiprocessing as mp
 
 # Some scripts may fail if error messages get translated
@@ -30,12 +30,15 @@ def run_cmd(buildcmd, execcmd, binary, timeout, read_line_lambda=None):
 
     # We run the subprocess and parse its output line by line, so that we can kill it as soon as it detects a timeout
     process = subprocess.Popen(shlex.split(execcmd), stdout=subprocess.PIPE, stderr=subprocess.STDOUT, preexec_fn=os.setsid)
+    poll_obj = select.poll()
+    poll_obj.register(process.stdout, select.POLLIN)
+
     pid = process.pid
-    pgid = os.getpgid(pid)
+    pgid = os.getpgid(pid) # We need that to forcefully kill subprocesses when leaving
     ans = None
     while True:
-        line = process.stdout.readline()
-        if line:
+        if poll_obj.poll(5): # Something to read? Do check the timeout status every 5 sec if not
+            line = process.stdout.readline()
             line = str(line, errors='replace') # From byte array to string, replacing non-representable strings with question marks
             output = output + line
             print ("| {}".format(line), end='', file=sys.stderr)
@@ -44,7 +47,7 @@ def run_cmd(buildcmd, execcmd, binary, timeout, read_line_lambda=None):
         if time.time() - start_time > timeout:
             ans = 'timeout'
             break
-        if process.poll() is not None:
+        if process.poll() is not None: # The subprocess ended
             break
 
     # We want to clean all forked processes in all cases, no matter whether they are still running (timeout) or supposed to be off. The runners easily get clogged with zombies :(
