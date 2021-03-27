@@ -278,7 +278,7 @@ def mustrun(execcmd, filename, binary, id, timeout):
     if re.search('MUST-ERROR', output):
         return 'RSF'
     
-    if res != None:
+    if res == None:
         return 'noerror'
     return res
 
