@@ -222,7 +222,7 @@ def must_filter(line, process):
     if re.search("ERROR: MUST detected a deadlock", line):
         pid = process.pid
         pgid = os.getpgid(pid)
-        try
+        try:
             process.terminate()
             os.killpg(pgid, signal.SIGTERM)  # Send the signal to all the processes in the group. The command and everything it forked
         except ProcessLookupError:
