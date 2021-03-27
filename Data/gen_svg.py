@@ -365,7 +365,7 @@ if 'aislinn' in tools and 'isp' in tools and 'civl' in tools and 'must' in tools
 #############################
 
 feature_data = [["Name", "Origin", "P2P", "iP2P", "PERS", "COLL", "iCOLL", "TOPO", "IO", "RMA", "PROB",
-	 "COM", "GRP", "DATA", "OP", "HYB", "LOOP", "SP", "deadlock", "numstab", "segfault", "mpierr",
+	 "COM", "GRP", "DATA", "OP", "LOOP", "SP", "deadlock", "numstab", "segfault", "mpierr",
 	 "resleak", "livelock", "datarace"]]
 directory = "../Benchmarks/microbenchs/"
 for filename in os.listdir(directory):
@@ -393,15 +393,15 @@ feature_per_file = {}
 for row in feature_data:
     feature_per_file[row[0]] = []
     if "no-error" in row[0]:
-        for j in range(2,18):
+        for j in range(2,17):
             if row[j] == "C":
                 feature_per_file[row[0]].append(feature_data[0][j]) 
     else:
-        for j in range(2,18):
+        for j in range(2,17):
             if row[j] == "I":
                 feature_per_file[row[0]].append(feature_data[0][j])
         if len(feature_per_file[row[0]]) == 0:
-            for j in range(2,18):
+            for j in range(2,17):
                 if row[j] == "C":
                     feature_per_file[row[0]].append(feature_data[0][j])
         
@@ -419,7 +419,7 @@ CASE_HEIGHT = HEIGHT / ((nb_uniq_testcase // 5)*1.1 + len(error_type) + 1)
 
 
 nb_features = {}
-for feat in ["P2P", "iP2P", "PERS", "COLL", "iCOLL", "TOPO", "IO", "RMA", "PROB", "COM", "GRP", "DATA", "OP", "HYB", "LOOP", "SP"]:
+for feat in ["P2P", "iP2P", "PERS", "COLL", "iCOLL", "TOPO", "IO", "RMA", "PROB", "COM", "GRP", "DATA", "OP", "LOOP", "SP"]:
     nb_features[feat] = [0,0]
     
 #############################
