@@ -12,17 +12,20 @@ os.environ["LC_ALL"] = "C"
 
 def run_cmd(buildcmd, execcmd, binary, timeout, read_line_lambda=None):
     start_time = time.time()
-    output = "Compiling https://gitlab.com/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/-/tree/master/Benchmarks/microbenchs/{}.c\n\n".format(binary)
-    output += "$ {}\n".format(buildcmd)
+    if buildcmd == None:
+        output = "No need to compile https://gitlab.com/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/-/tree/master/Benchmarks/microbenchs/{}.c\n\n".format(binary)
+    else:
+        output = "Compiling https://gitlab.com/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/-/tree/master/Benchmarks/microbenchs/{}.c\n\n".format(binary)
+        output += "$ {}\n".format(buildcmd)
 
-    compil = subprocess.run(buildcmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    if compil.stdout is not None:
-        output += str(compil.stdout, errors='replace')
-    if compil.returncode != 0:
-        output += "Compilation of {}.c raised an error (retcode: {})".format(binary, compil.returncode)
-        for line in (output.split('\n')):
-            print ("| {}".format(line), file=sys.stderr)
-        return 'CUN', compil.returncode, output
+        compil = subprocess.run(buildcmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        if compil.stdout is not None:
+            output += str(compil.stdout, errors='replace')
+        if compil.returncode != 0:
+            output += "Compilation of {}.c raised an error (retcode: {})".format(binary, compil.returncode)
+            for line in (output.split('\n')):
+                print ("| {}".format(line), file=sys.stderr)
+            return 'CUN', compil.returncode, output
 
     output += "\n\nExecuting https://gitlab.com/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/-/tree/master/Benchmarks/microbenchs/{}.c\n\n$ {}\n".format(binary,execcmd)
     for line in (output.split('\n')):
@@ -128,14 +131,14 @@ def aislinnrun(execcmd, filename, binary, id, timeout):
 ##########################
 def civlrun(execcmd, filename, binary, id, timeout):
 
-    execcmd = re.sub("mpirun", "java -jar /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/CIVL/CIVL-1.20_5259/lib/civl-1.20_5259.jar verify", execcmd)
+    execcmd = re.sub("mpirun", "java -jar ../CIVL/CIVL-1.20_5259/lib/civl-1.20_5259.jar verify", execcmd)
     execcmd = re.sub('-np ', "-input_mpi_nprocs=", execcmd)
     execcmd = re.sub('\${EXE}', filename, execcmd)
     execcmd = re.sub('\$zero_buffer', "", execcmd)
     execcmd = re.sub('\$infty_buffer', "", execcmd)
 
     res, rc, output = run_cmd(
-        buildcmd=": # Nothing to compile",
+        buildcmd=None,
         execcmd=execcmd, 
         binary=binary,
         timeout=timeout)
@@ -502,7 +505,7 @@ for filename in args.filenames:
         
 
         curr_time = time.time()
-        print("The tool returned {} (expected: {}; elapsed: {:f} sec)\n\n".format(ans, outcome, curr_time-start_time))
+        print("\nThe tool {} returned {} (expected: {}; elapsed: {:f} sec)\n\n".format(args.x, ans, outcome, curr_time-start_time))
             
         if ans not in outcome:    
             failed.append("{} (expected {} but returned {})".format(binary, outcome, ans))
@@ -566,8 +569,9 @@ passed_count += len(ok_datarace)
 
 print("XXXXXXXXX\nResult: {} test{} out of {} passed."
       .format(passed_count, '' if passed_count==1 else 's', passed_count+len(failed)))
-print("{} failed tests:".format(len(failed)))
-for p in failed:
-    print("  {}".format(p))
-for n in notimplemented:
-    print(n)
+if len(failed) > 0:
+    print("{} failed tests:".format(len(failed) + len(notimplemented)))
+    for p in failed:
+        print("  {}".format(p))
+    for n in notimplemented:
+        print(n)
