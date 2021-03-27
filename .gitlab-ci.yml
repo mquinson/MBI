@@ -266,7 +266,7 @@ build-civl:
         paths:
             - ./CIVL/*
 
-test-civl:
+test-civl100:
     stage: test
     needs:
         - job: build-civl
@@ -275,13 +275,30 @@ test-civl:
         - apt-get install -y psmisc
     script:
         - cd Benchmarks
-        - for file in $(ls /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Benchmarks/microbenchs/*.c); do python3.8 runner.py -x civl -o bench_civl.csv -t 300 --job $CI_JOB_ID $file; uptime;killall java||true;done
+        - for file in $(ls microbenchs/*.c | head -100); do python3.8 runner.py -x civl -o bench_civl100.csv -t 300 --job $CI_JOB_ID $file; uptime;killall java||true;done
     artifacts:
         untracked: false
         expire_in: 30 days
         when: always
         paths:
-            - Benchmarks/bench_civl.csv
+            - Benchmarks/*.csv
+            - Benchmarks/*.txt
+test-civl200:
+    stage: test
+    needs:
+        - job: build-civl
+          artifacts: false
+    before_script:
+        - apt-get install -y psmisc
+    script:
+        - cd Benchmarks
+        - for file in $(ls microbenchs/*.c | tail -n +101); do python3.8 runner.py -x civl -o bench_civl200.csv -t 300 --job $CI_JOB_ID $file; uptime;killall java||true;done
+    artifacts:
+        untracked: false
+        expire_in: 30 days
+        when: always
+        paths:
+            - Benchmarks/*.csv
             - Benchmarks/*.txt
             
 test-civl-medium:
@@ -541,16 +558,19 @@ aislinn-svg:
 civl-svg:
     stage: svg
     needs:
-        - job: test-civl
+        - job: test-civl100
+          artifacts: true
+        - job: test-civl200
           artifacts: true
     before_script:
       - apt-get update
       - apt-get install -y python3-pip libcairo2
       - pip3 install drawSvg
     script:
+      - cat ./Benchmarks/*.csv > result.csv
       - cd Data
-      - python3.8 gen_svg.py -i /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Benchmarks/bench_civl.csv -o civl_result_LOG --header false --mode log
-      - python3.8 gen_svg.py -i /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Benchmarks/bench_civl.csv -o civl_result_SRC --header false --mode src
+      - python3.8 gen_svg.py -i ../result.csv -o civl_result_LOG --header false --mode log
+      - python3.8 gen_svg.py -i ../result.csv -o civl_result_SRC --header false --mode src
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -583,7 +603,7 @@ must-svg:
       - apt-get install -y python3-pip libcairo2
       - pip3 install drawSvg
     script:
-      - cat ./Benchmarks/*.csv >> result.csv
+      - cat ./Benchmarks/*.csv > result.csv
       - cd Data
       - python3.8 gen_svg.py -i /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/result.csv -o must_result_LOG --header false --mode log
       - python3.8 gen_svg.py -i /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/result.csv -o must_result_SRC --header false --mode src
@@ -614,7 +634,9 @@ data-collect:
           artifacts: true
 #        - job: test-must-200
 #          artifacts: true
-        - job: test-civl
+        - job: test-civl100
+          artifacts: true
+        - job: test-civl200
           artifacts: true
         - job: test-parcoach
           artifacts: true
