@@ -38,7 +38,7 @@
 // livelock: never
 // datarace: never
 //
-// Test: mpirun -np 2 ${EXE}
+// Test: mpirun -np 3 ${EXE}
 // Expect: deadlock
 //
 ////////////////// End of MPI bugs collection header //////////////////
