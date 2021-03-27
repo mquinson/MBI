@@ -343,6 +343,8 @@ def simgridrun(execcmd, filename, binary, id, timeout, jobid):
         return 'noerror'
     if re.search('DEADLOCK DETECTED', output):
         return 'deadlock'
+    if re.search('CRASH IN THE PROGRAM', output):
+        return 'segfault'
     if re.search('returned MPI_ERR', output):
         return 'mpierr'
     if re.search('Not yet implemented', output):
