@@ -83,9 +83,11 @@ def aislinnrun(execcmd, filename, binary, id, timeout, jobid):
         binary=binary, 
         timeout=timeout)
 
-    if os.path.exists("report.html"):
-        os.rename("report.html", "{}_{}.html".format(binary,id))
+    if os.path.exists("./report.html"):
+        os.rename("./report.html", "{}_{}.html".format(binary,id))
         output += "\n\nHTML output: https://gitlab.com/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/-/jobs/{}/artifacts/raw/Benchmarks/{}_{}.html".format(jobid, binary, id)
+    else: 
+        output += "No html report found"
         
     with open('{}_{}.txt'.format(binary, id), 'w') as outfile:
         outfile.write(output)  
@@ -282,7 +284,7 @@ def mustrun(execcmd, filename, binary, id, timeout, jobid):
         return 'mpierr'     
     
     if re.search('Error', html):
-        return 'other'
+        return 'mpierr'
 
     if re.search('MUST-ERROR', output):
         return 'RSF'
@@ -507,7 +509,7 @@ for filename in args.filenames:
         
 
         curr_time = time.time()
-        print("\nThe tool {} returned {} (expected: {}; elapsed: {:f} sec)\n\n".format(args.x, ans, outcome, curr_time-start_time))
+        print("\nThe tool {} returned {} (expected: {}; elapsed: {:f} sec) on {}\n\n".format(args.x, ans, outcome, curr_time-start_time, binary))
             
         if ans not in outcome:    
             failed.append("{} (expected {} but returned {})".format(binary, outcome, ans))
