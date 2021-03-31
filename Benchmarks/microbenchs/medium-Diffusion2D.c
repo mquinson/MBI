@@ -2,7 +2,9 @@
 //
 // Origin: Hermes
 //
-// Description: Simulation of diffusion equation. This program deadlocks because P0 calls a send that has no matching recv while other processes call a barrier.  
+// Description: Simulation of diffusion equation. This program deadlocks because
+// P0 calls a send that has no matching recv while various processes call a
+// barrier.
 //
 //// List of features
 // P2P: Incorrect
@@ -28,7 +30,7 @@
 // mpierr: never
 // resleak: never
 // livelock: never
-// other: never
+// various: never
 //
 // Test: mpirun -np 3 ${EXE}
 // Expect: deadlock
@@ -36,24 +38,23 @@
 ////////////////// End of MPI bugs collection header //////////////////
 //////////////////       original file begins        //////////////////
 
-
 #include "mpi.h"
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <assert.h>
 
-#define SQUARE(x) ((x)*(x))
-#define nprocsx 2   /* number of processes, x direction           */
-#define nprocsy 4   /* number of processes, y direction           */
-#define nxl     2   /* extent of x coordinates for local piece    */
-#define nyl    2   /* extent of y coordinates for local piece    */
-#define nxlg    4   /* nxl + 2 (ghost cells)                      */
-#define nylg   6   /* nyl + 2 (ghost cells)                      */
-#define nsteps  1   /* number of time steps                       */
-#define D       0.1 /* Diffusion constant                         */
-#define dt      1.0 /* time step                                  */
-#define dx      1.0 /* distance between two lattice points        */
-#define r       3.0 /* radius of initial circle in center         */
+#define SQUARE(x) ((x) * (x))
+#define nprocsx 2 /* number of processes, x direction           */
+#define nprocsy 4 /* number of processes, y direction           */
+#define nxl 2     /* extent of x coordinates for local piece    */
+#define nyl 2     /* extent of y coordinates for local piece    */
+#define nxlg 4    /* nxl + 2 (ghost cells)                      */
+#define nylg 6    /* nyl + 2 (ghost cells)                      */
+#define nsteps 1  /* number of time steps                       */
+#define D 0.1     /* Diffusion constant                         */
+#define dt 1.0    /* time step                                  */
+#define dx 1.0    /* distance between two lattice points        */
+#define r 3.0     /* radius of initial circle in center         */
 
 #define write_frame write_frame_2
 
@@ -66,17 +67,18 @@ void initdata() {
 
   MPI_Comm_size(MPI_COMM_WORLD, &np);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-	printf("rank %d/%d is alive \n", rank, np);	
-  xcoord = rank % nprocsx; ycoord = rank / nprocsx;
-  up = xcoord + nprocsx*((ycoord + 1)%nprocsy);
-  down = xcoord + nprocsx*((ycoord + nprocsy - 1)%nprocsy);
-  left = (xcoord + nprocsx - 1)%nprocsx + nprocsx*ycoord;
-  right = (xcoord + 1)%nprocsx + nprocsx*ycoord;
+  printf("rank %d/%d is alive \n", rank, np);
+  xcoord = rank % nprocsx;
+  ycoord = rank / nprocsx;
+  up = xcoord + nprocsx * ((ycoord + 1) % nprocsy);
+  down = xcoord + nprocsx * ((ycoord + nprocsy - 1) % nprocsy);
+  left = (xcoord + nprocsx - 1) % nprocsx + nprocsx * ycoord;
+  right = (xcoord + 1) % nprocsx + nprocsx * ycoord;
   for (i = 1; i <= nxl; i++)
     for (j = 1; j <= nyl; j++) {
-      d = SQUARE(1.0*nxl*xcoord+i-1 - (1.0*nprocsx*nxl - 1)/2)
-        + SQUARE(1.0*nyl*ycoord+j-1 - (1.0*nprocsy*nyl - 1)/2);
-      u[i][j] = (d < (1.0)*r*r ? 100 : 0);
+      d = SQUARE(1.0 * nxl * xcoord + i - 1 - (1.0 * nprocsx * nxl - 1) / 2) +
+          SQUARE(1.0 * nyl * ycoord + j - 1 - (1.0 * nprocsy * nyl - 1) / 2);
+      u[i][j] = (d < (1.0) * r * r ? 100 : 0);
     }
 }
 
@@ -86,16 +88,17 @@ void write_frame_2(int time) {
 
   if (rank != 0) {
     for (j = 1; j <= nyl; j++) {
-      for (i = 1; i <= nxl; i++) buf[i-1] = u[i][j];
-			printf("rank %d sends to 0\n", rank);
-      MPI_Send(buf, nxl, MPI_DOUBLE, 0, j-1, MPI_COMM_WORLD);
+      for (i = 1; i <= nxl; i++)
+        buf[i - 1] = u[i][j];
+      printf("rank %d sends to 0\n", rank);
+      MPI_Send(buf, nxl, MPI_DOUBLE, 0, j - 1, MPI_COMM_WORLD);
     }
   } else {
     MPI_Status status;
     char filename[50];
     FILE *file;
-    int linelen = nprocsx*nxl*8+1; /* length of one line, incl. \n */
-    int numrecvs = nyl*(nprocsx*nprocsy - 1);
+    int linelen = nprocsx * nxl * 8 + 1; /* length of one line, incl. \n */
+    int numrecvs = nyl * (nprocsx * nprocsy - 1);
 
     sprintf(filename, "./diffusion2_%d.out", time);
     file = fopen(filename, "w");
@@ -103,29 +106,31 @@ void write_frame_2(int time) {
     for (n = 0; n < nprocsy; n++)
       for (j = 1; j <= nyl; j++) {
         for (m = 0; m < nprocsx; m++) {
-          from = n*nprocsx + m;
+          from = n * nprocsx + m;
           if (from != 0)
-            for (i = 1; i <= nxl; i++) fprintf(file, "        ");
+            for (i = 1; i <= nxl; i++)
+              fprintf(file, "        ");
           else
-            for (i = 1; i <= nxl; i++) fprintf(file, "%8.2f", u[i][j]);
+            for (i = 1; i <= nxl; i++)
+              fprintf(file, "%8.2f", u[i][j]);
         }
         fprintf(file, "\n");
       }
     for (k = 0; k < numrecvs; k++) {
       int procx, procy, row;
-			printf("rank %d recv from any source\n",rank);
+      printf("rank %d recv from any source\n", rank);
       MPI_Recv(buf, nxl, MPI_DOUBLE, MPI_ANY_SOURCE, MPI_ANY_TAG,
                MPI_COMM_WORLD, &status);
       procx = status.MPI_SOURCE % nprocsx;
       procy = status.MPI_SOURCE / nprocsx;
-      row = procy*nyl + status.MPI_TAG;
-      fseek(file, row*linelen + procx*nxl*8, SEEK_SET);
-      for (i = 1; i <= nxl; i++) fprintf(file, "%8.2f", buf[i-1]);
+      row = procy * nyl + status.MPI_TAG;
+      fseek(file, row * linelen + procx * nxl * 8, SEEK_SET);
+      for (i = 1; i <= nxl; i++)
+        fprintf(file, "%8.2f", buf[i - 1]);
     }
     fclose(file);
   }
 }
-
 
 void write_frame_1(int time) {
   int i, j, k, m, n, from;
@@ -133,7 +138,8 @@ void write_frame_1(int time) {
 
   if (rank != 0) {
     for (j = 1; j <= nyl; j++) {
-      for (i = 1; i <= nxl; i++) buf[i-1] = u[i][j];
+      for (i = 1; i <= nxl; i++)
+        buf[i - 1] = u[i][j];
       MPI_Send(buf, nxl, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
     }
   } else {
@@ -146,13 +152,15 @@ void write_frame_1(int time) {
     for (n = 0; n < nprocsy; n++)
       for (j = 1; j <= nyl; j++) {
         for (m = 0; m < nprocsx; m++) {
-          from = n*nprocsx + m;
+          from = n * nprocsx + m;
           if (from != 0)
             MPI_Recv(buf, nxl, MPI_DOUBLE, from, 0, MPI_COMM_WORLD,
                      MPI_STATUS_IGNORE);
           else
-            for (i = 1; i <= nxl; i++) buf[i-1] = u[i][j];
-          for (i = 1; i <= nxl; i++) fprintf(file, "%8.2f", buf[i-1]);
+            for (i = 1; i <= nxl; i++)
+              buf[i - 1] = u[i][j];
+          for (i = 1; i <= nxl; i++)
+            fprintf(file, "%8.2f", buf[i - 1]);
         }
         fprintf(file, "\n");
       }
@@ -164,75 +172,79 @@ void exchange_ghost_cells() {
   int i, j;
   double sbufx[nxl], rbufx[nxl], sbufy[nyl], rbufy[nyl];
 
-  for (i = 1; i <= nxl; ++i) sbufx[i-1] = u[i][1];
+  for (i = 1; i <= nxl; ++i)
+    sbufx[i - 1] = u[i][1];
   /* MPI_Sendrecv(sbufx, nxl, MPI_DOUBLE, down, 0, rbufx, nxl, */
   /*              MPI_DOUBLE, up, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE); */
   MPI_Send(sbufx, nxl, MPI_DOUBLE, down, 0, MPI_COMM_WORLD);
   MPI_Recv(rbufx, nxl, MPI_DOUBLE, up, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
+  for (i = 1; i <= nxl; ++i)
+    u[i][nyl + 1] = rbufx[i - 1];
 
-  for (i = 1; i <= nxl; ++i) u[i][nyl+1] = rbufx[i-1];
-
-  for (i = 1; i <= nxl; ++i) sbufx[i-1] = u[i][nyl];
+  for (i = 1; i <= nxl; ++i)
+    sbufx[i - 1] = u[i][nyl];
   /* MPI_Sendrecv(sbufx, nxl, MPI_DOUBLE, up, 0, rbufx, nxl, */
   /*              MPI_DOUBLE, down, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE); */
   MPI_Send(sbufx, nxl, MPI_DOUBLE, up, 0, MPI_COMM_WORLD);
   MPI_Recv(rbufx, nxl, MPI_DOUBLE, down, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
-  for (i = 1; i <= nxl; ++i) u[i][0] = rbufx[i-1];
+  for (i = 1; i <= nxl; ++i)
+    u[i][0] = rbufx[i - 1];
 
-  for (j = 1; j <= nyl; ++j) sbufy[j-1] = u[1][j];
+  for (j = 1; j <= nyl; ++j)
+    sbufy[j - 1] = u[1][j];
   /* MPI_Sendrecv(sbufy, nyl, MPI_DOUBLE, left, 0, rbufy, nyl, */
   /*              MPI_DOUBLE, right, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE); */
   MPI_Send(sbufy, nyl, MPI_DOUBLE, left, 0, MPI_COMM_WORLD);
   MPI_Recv(rbufy, nyl, MPI_DOUBLE, right, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
-  for (j = 1; j <= nyl; ++j) u[nxl+1][j] = rbufy[j-1];
+  for (j = 1; j <= nyl; ++j)
+    u[nxl + 1][j] = rbufy[j - 1];
 
-  for (j = 1; j <= nyl; ++j) sbufy[j-1] = u[nxl][j];
+  for (j = 1; j <= nyl; ++j)
+    sbufy[j - 1] = u[nxl][j];
   /* MPI_Sendrecv(sbufy, nyl, MPI_DOUBLE, right, 0, rbufy, nyl, */
   /*              MPI_DOUBLE, left, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE); */
   MPI_Send(sbufy, nyl, MPI_DOUBLE, right, 0, MPI_COMM_WORLD);
   MPI_Recv(rbufy, nyl, MPI_DOUBLE, left, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
-  for (j = 1; j <= nyl; ++j) u[0][j] = rbufy[j-1];
+  for (j = 1; j <= nyl; ++j)
+    u[0][j] = rbufy[j - 1];
 }
-
 
 void update() {
   int i, j;
-  double k = D*dt/(dx*dx);
+  double k = D * dt / (dx * dx);
   double u_new[nxlg][nylg];
 
   for (i = 1; i <= nxl; i++)
     for (j = 1; j <= nyl; j++)
-      u_new[i][j] = u[i][j]
-        + k*(u[i+1][j]+u[i-1][j]+u[i][j+1]+u[i][j-1]-4*u[i][j]);
+      u_new[i][j] = u[i][j] + k * (u[i + 1][j] + u[i - 1][j] + u[i][j + 1] +
+                                   u[i][j - 1] - 4 * u[i][j]);
   for (i = 1; i <= nxl; i++)
     for (j = 1; j <= nyl; j++)
       u[i][j] = u_new[i][j];
 }
 
-int main(int argc, char** argv)
-{
-	int iter;
+int main(int argc, char **argv) {
+  int iter;
 
   MPI_Init(&argc, &argv);
 
-	initdata();
+  initdata();
   //  MPI_Barrier(MPI_COMM_WORLD);
   write_frame(0);
-	printf("rank %d BARRIER\n",rank);
+  printf("rank %d BARRIER\n", rank);
   MPI_Barrier(MPI_COMM_WORLD);
   for (iter = 1; iter <= nsteps; iter++) {
     exchange_ghost_cells();
-    //MPI_Barrier(MPI_COMM_WORLD);
+    // MPI_Barrier(MPI_COMM_WORLD);
     update();
-    //MPI_Barrier(MPI_COMM_WORLD); 
+    // MPI_Barrier(MPI_COMM_WORLD);
     // write_frame(iter);
-    //MPI_Barrier(MPI_COMM_WORLD); 
+    // MPI_Barrier(MPI_COMM_WORLD);
   }
-
 
   MPI_Finalize();
   printf("\033[0;32mrank %d Finished normally\033[0;0m\n", rank);
