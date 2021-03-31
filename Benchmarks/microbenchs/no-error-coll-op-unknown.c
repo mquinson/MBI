@@ -9,7 +9,7 @@
 // P2P: Lacking
 // iP2P: Lacking
 // PERS: Lacking
-// COLL: Incorrect
+// COLL: Correct
 // iCOLL: Lacking
 // TOPO: Lacking
 // IO: Lacking
@@ -18,7 +18,7 @@
 // COM: Lacking
 // GRP: Lacking
 // DATA: Lacking
-// OP: Incorrect
+// OP: Correct
 // LOOP: Lacking
 // SP: Correct
 //

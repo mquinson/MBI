@@ -103,6 +103,8 @@ case_per_error = []
 for error in error_type:
     case_per_error.append([row for row in data if ast.literal_eval(row[6])[0] == error])
 
+nb_error = {}
+
 nb_FP = {}
 nb_TP = {}
 nb_TN = {}
@@ -203,6 +205,13 @@ def print_result(top_left_x, top_left_y, i, j, row):
         desc += "\nRETURNED : " + result  
         
     r.append(draw.Title(desc))
+
+    if tool == tools[0]:
+        for expects in expected:
+            if not expects in nb_error:
+                nb_error[expects] = 1
+            else:
+                nb_error[expects] += 1
     
     return r
 
@@ -526,3 +535,13 @@ feature_drawing.savePng('features.png')
 for feat in nb_features:
     print("FEATURE : {}\n  Correct : {}\n  Incorect : {}\n".
           format(feat, nb_features[feat][0], nb_features[feat][1]))
+
+
+#############################
+## Printing error count
+#############################
+
+for error in nb_error:
+    print("ERROR : {}\n  Number : {}\n".
+          format(error, nb_error[error]))
+

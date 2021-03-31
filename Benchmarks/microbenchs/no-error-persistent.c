@@ -7,8 +7,8 @@
 //// List of features
 // P2P: Lacking
 // iP2P: Lacking
-// PERS: Lacking
-// COLL: Correct  
+// PERS: Correct
+// COLL: Laking  
 // iCOLL: Lacking
 // TOPO: Lacking
 // IO: Lacking
@@ -17,8 +17,8 @@
 // COM: Lacking
 // GRP: Lacking
 // DATA: Lacking
-// OP: Correct
-// LOOP: Correct
+// OP: Laking
+// LOOP: Laking
 // SP: Lacking
 //
 //// List of errors

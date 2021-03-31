@@ -2,20 +2,19 @@
 //
 // Origin: MUST
 //
-// Description: Creates a cartesian communicator with a negative entry (-1) in the dims attribute, which is a usage
-// error
+// Description: Creates a cartesian communicator, and tries to get cartesian information of MPI_COMM_WORLD.
 //
 //// List of features
 // P2P: Lacking
 // iP2P: Lacking
 // PERS: Lacking
-// COLL: Incorrect
+// COLL: Lacking
 // iCOLL: Lacking
 // TOPO: Incorrect
 // IO: Lacking
 // RMA: Lacking
 // PROB: Lacking
-// COM: Incorrect
+// COM: Correct
 // GRP: Lacking
 // DATA: Lacking
 // OP: Lacking
@@ -65,18 +64,18 @@ int main(int argc, char** argv)
 
   // create a cartesian communicator
   MPI_Comm comm;
-  int dims[3], periods[3];
+  int dims[2], periods[2], coords[2];
   int source, dest;
-  dims[0]    = nprocs;
-  dims[1]    = -1; /*!!!HERE COMES THE ERROR FROM*/
-  dims[2]    = -1;
+  dims[0]    = 2;
+  dims[1]    = 1;
   periods[0] = 1;
   periods[1] = 1;
-  periods[2] = 1;
 
-  //!!! Warning happens here
-  MPI_Cart_create(MPI_COMM_WORLD, 3, dims /*!!!HERE THE ERROR IS PASSED TO MPI*/, periods, 0, &comm);
-  MPI_Comm_free(&comm);
+  MPI_Cart_create(MPI_COMM_WORLD, 2, dims, periods, 0, &comm);
+  MPI_Cart_get(MPI_COMM_WORLD, 2, dims, periods, coords);
+
+  if (comm != MPI_COMM_NULL)
+    MPI_Comm_free(&comm);
 
   MPI_Finalize();
   printf("\033[0;32mrank %d Finished normally\033[0;0m\n", rank);

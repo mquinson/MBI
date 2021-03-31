@@ -36,15 +36,15 @@
 //
 //// List of errors
 // deadlock: never
-// numstab: transient
+// numstab: never
 // segfault: never
 // mpierr: never
 // resleak: never
 // livelock: never
-// datarace: never
+// datarace: transient
 //
 // Test: mpirun -np 2 ${EXE}
-// Expect: numstab
+// Expect: datarace
 //
 ////////////////// End of MPI bugs collection header //////////////////
 //////////////////       original file begins        //////////////////
