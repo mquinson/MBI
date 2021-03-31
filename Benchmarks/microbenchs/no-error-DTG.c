@@ -2,14 +2,15 @@
 //
 // Origin: MPICorrectnessBenchmark
 //
-// Description: This code is correct. We force P0 to receive from P1 first.
+// Description: This code is correct as we force P0 to receive from P1 first.
 //
 // Communication pattern:
-// 
+//
 //   P0         P1        P2       P3      P4
-//  recv(1)   send(0)  recv(any) recv(1) send(2)
-//  send(3)   send(3)  send(0)   recv(0)   
-//  recv(any)      
+//  recv(1) send(0)  recv(any) recv(1) send(2)
+//  send(3)   send(3)  send(0)   recv(0)
+//  recv(any)
+//
 //
 //// List of features
 // P2P: Correct
@@ -29,12 +30,13 @@
 // SP: Correct
 //
 //// List of errors
-// deadlock: never
+// deadlock: nevert
 // numstab: never
 // segfault: never
 // mpierr: never
 // resleak: never
 // livelock: never
+// various: never
 //
 // Test: mpirun -np 5 ${EXE}
 // Expect: noerror
@@ -45,21 +47,19 @@
 #include "mpi.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 //#include <string.h>
 
-
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
-	int buf_size = 10;
+  int buf_size = 10;
   int buf0[10];
   int buf1[10];
   MPI_Status status;
   MPI_Request req;
-
 
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
@@ -73,51 +73,44 @@ int main(int argc, char** argv)
     return 1;
   }
 
-	if (rank == 0)
-    {
+  if (rank == 0) {
 
-      MPI_Recv (&buf0, buf_size, MPI_INT, 1, 0, MPI_COMM_WORLD, &status);
+    MPI_Recv(&buf0, buf_size, MPI_INT, 1, 0, MPI_COMM_WORLD,
+             &status);
 
-      MPI_Send (&buf0, buf_size, MPI_INT, 3, 0, MPI_COMM_WORLD);
-      MPI_Recv (&buf0, buf_size, MPI_INT, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &status);
+    MPI_Send(&buf0, buf_size, MPI_INT, 3, 0, MPI_COMM_WORLD);
+    MPI_Recv(&buf0, buf_size, MPI_INT, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD,
+             &status);
 
-    }
-  else if (rank == 1)
-    {
-      //memset (buf0, 0, buf_size);
+  } else if (rank == 1) {
+    // memset (buf0, 0, buf_size);
 
-    //  sleep (30);
+     // sleep (30);
 
-      MPI_Send (&buf0, buf_size, MPI_INT, 0, 0, MPI_COMM_WORLD);
+    MPI_Send(&buf0, buf_size, MPI_INT, 0, 0, MPI_COMM_WORLD);
 
-      MPI_Send (&buf0, buf_size, MPI_INT, 3, 0, MPI_COMM_WORLD);
-    }
-  else if (rank == 2)
-    {
-      //  memset (buf0, 0, buf_size);
+    MPI_Send(&buf0, buf_size, MPI_INT, 3, 0, MPI_COMM_WORLD);
+  } else if (rank == 2) {
+    //  memset (buf0, 0, buf_size);
 
-     // sleep (60);
-      MPI_Recv (&buf0, buf_size, MPI_INT, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &status);
-      MPI_Send (&buf0, buf_size, MPI_INT, 0, 0, MPI_COMM_WORLD);
-    }
-  else if (rank == 3)
-    {
-      //memset (buf0, 0, buf_size);
+    // sleep (60);
+    MPI_Recv(&buf0, buf_size, MPI_INT, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD,
+             &status);
+    MPI_Send(&buf0, buf_size, MPI_INT, 0, 0, MPI_COMM_WORLD);
+  } else if (rank == 3) {
+    // memset (buf0, 0, buf_size);
 
-     // sleep (60);
-      MPI_Recv (&buf0, buf_size, MPI_INT, 1, 0, MPI_COMM_WORLD, &status);
-      MPI_Recv (&buf0, buf_size, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
-/*       MPI_Send (buf1, buf_size, MPI_INT, 0, 0, MPI_COMM_WORLD); */
-    }
-  else if (rank == 4)
-    {
-      // memset (buf0, 0, buf_size);
-      MPI_Send (&buf0, buf_size, MPI_INT, 2, 0, MPI_COMM_WORLD);
-     // sleep (60);
+    // sleep (60);
+    MPI_Recv(&buf0, buf_size, MPI_INT, 1, 0, MPI_COMM_WORLD, &status);
+    MPI_Recv(&buf0, buf_size, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
+    /*       MPI_Send (buf1, buf_size, MPI_INT, 0, 0, MPI_COMM_WORLD); */
+  } else if (rank == 4) {
+    // memset (buf0, 0, buf_size);
+    MPI_Send(&buf0, buf_size, MPI_INT, 2, 0, MPI_COMM_WORLD);
+    // sleep (60);
 
-/*       MPI_Send (buf1, buf_size, MPI_INT, 0, 0, MPI_COMM_WORLD); */
-    }
-
+    /*       MPI_Send (buf1, buf_size, MPI_INT, 0, 0, MPI_COMM_WORLD); */
+  }
 
   MPI_Finalize();
   printf("\033[0;32mrank %d Finished normally\033[0;0m\n", rank);
