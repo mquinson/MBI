@@ -1,35 +1,18 @@
 ////////////////// MPI bugs collection header //////////////////
 //
-// Origin: Hermes 
+// Origin: MPICorrectnessBenchmark
 //
-// Description: This code deadlocks if P0 receives from P2 first and depending on the buffer mode. We force that with sleep functions.  
+// Description: This code is correct. We force P0 to receive from P1 first.
 //
-
 // Communication pattern:
 // 
 //   P0         P1        P2       P3      P4
-//  recv(any) send(0)  recv(any) recv(1) send(2)
+//  recv(1)   send(0)  recv(any) recv(1) send(2)
 //  send(3)   send(3)  send(0)   recv(0)   
 //  recv(any)      
 //
-// Correct situation:
-//
-//   P0         P1        P2       P3      P4
-//  recv(any) send(0)  recv(any)         send(2)
-//            send(3)             recv(1)
-//  send(3)                       recv(0)   
-//  recv(any)          send(0)
-//
-// Erroneous situation:
-//
-//   P0         P1        P2       P3      P4
-//										  recv(any)         send(2)
-//  recv(any)           send(0)
-//  send(3)    send(0)            recv(1)
-//
-//
 //// List of features
-// P2P: Incorrect
+// P2P: Correct
 // iP2P: Lacking
 // PERS: Lacking
 // COLL: Lacking
@@ -46,16 +29,15 @@
 // SP: Correct
 //
 //// List of errors
-// deadlock: transient
+// deadlock: never
 // numstab: never
 // segfault: never
 // mpierr: never
 // resleak: never
 // livelock: never
-// other: transient
 //
 // Test: mpirun -np 5 ${EXE}
-// Expect: deadlock
+// Expect: noerror
 //
 ////////////////// End of MPI bugs collection header //////////////////
 //////////////////       original file begins        //////////////////
@@ -63,7 +45,8 @@
 #include "mpi.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
+//#include <string.h>
+
 
 int main(int argc, char** argv)
 {
@@ -93,7 +76,7 @@ int main(int argc, char** argv)
 	if (rank == 0)
     {
 
-      MPI_Recv (&buf0, buf_size, MPI_INT, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &status);
+      MPI_Recv (&buf0, buf_size, MPI_INT, 1, 0, MPI_COMM_WORLD, &status);
 
       MPI_Send (&buf0, buf_size, MPI_INT, 3, 0, MPI_COMM_WORLD);
       MPI_Recv (&buf0, buf_size, MPI_INT, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &status);
@@ -103,7 +86,7 @@ int main(int argc, char** argv)
     {
       //memset (buf0, 0, buf_size);
 
-      sleep (30);
+    //  sleep (30);
 
       MPI_Send (&buf0, buf_size, MPI_INT, 0, 0, MPI_COMM_WORLD);
 
