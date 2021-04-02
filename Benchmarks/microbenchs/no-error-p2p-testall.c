@@ -8,7 +8,7 @@
 // P2P: Correct
 // iP2P: Correct
 // PERS: Lacking
-// COLL: Correct  
+// COLL: Correct
 // iCOLL: Lacking
 // TOPO: Lacking
 // IO: Lacking
@@ -46,11 +46,10 @@
 
 #define buf_size 128
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
-  int flag   = 0;
+  int rank = -1;
+  int flag = 0;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
   int buf0[buf_size];

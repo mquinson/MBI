@@ -2,13 +2,14 @@
 //
 // Origin: MUST
 //
-// Description: This code performs a MPI_Scatterv with an error on the datatype of receive buffer
+// Description: This code performs a MPI_Scatterv with an error on the datatype
+// of receive buffer
 //
 //// List of features
 // P2P: Lacking
 // iP2P: Lacking
 // PERS: Lacking
-// COLL: Incorrect  
+// COLL: Incorrect
 // iCOLL: Lacking
 // TOPO: Lacking
 // IO: Lacking
@@ -43,10 +44,9 @@
 #define MPI_MAX_PROCESSOR_NAME 1024
 #endif
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
   int i;
@@ -72,10 +72,11 @@ int main(int argc, char** argv)
   MPI_Type_contiguous(3 - rank, MPI_INT, &conti);
   MPI_Type_commit(&conti);
 
-  int displs[3]   = {0, 10, 20};
+  int displs[3] = {0, 10, 20};
   int sendcnts[3] = {6, 6, 5};
 
-  MPI_Scatterv(outbuf, sendcnts, displs, MPI_INT, inbuf, 6 / (3 - rank), conti, 1, MPI_COMM_WORLD);
+  MPI_Scatterv(outbuf, sendcnts, displs, MPI_INT, inbuf, 6 / (3 - rank), conti,
+               1, MPI_COMM_WORLD);
 
   MPI_Type_free(&conti);
 

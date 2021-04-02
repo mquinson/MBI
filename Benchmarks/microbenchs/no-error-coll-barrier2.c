@@ -8,7 +8,7 @@
 // P2P: Lacking
 // iP2P: Lacking
 // PERS: Lacking
-// COLL: Correct  
+// COLL: Correct
 // iCOLL: Lacking
 // TOPO: Lacking
 // IO: Lacking
@@ -49,9 +49,8 @@ typedef struct mystruct {
   int nprocs;
 } mystruct_t;
 
-int main(int argc, char** argv)
-{
-  mystruct_t* S = malloc(sizeof(mystruct_t));
+int main(int argc, char **argv) {
+  mystruct_t *S = malloc(sizeof(mystruct_t));
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
 

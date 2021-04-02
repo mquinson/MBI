@@ -2,7 +2,9 @@
 //
 // Origin: MC-Checker, MC-CChecker
 //
-// Description: Memory consistency error within an epoch: Two operations accessing variable buf (Put (READ on buf) + store (WRITE on buf)) by the same process
+// Description: Memory consistency error within an epoch: Two operations
+// accessing variable buf (Put (READ on buf) + store (WRITE on buf)) by the same
+// process
 //
 //// List of features
 // P2P: Lacking
@@ -45,14 +47,13 @@
 
 #define NUM_ELEMT 1000
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
   MPI_Win win;
-  int *X; // Window buffer
+  int *X;   // Window buffer
   int *buf; // Local buffer
 
   MPI_Init(&argc, &argv);
@@ -61,11 +62,11 @@ int main(int argc, char** argv)
   MPI_Get_processor_name(processor_name, &namelen);
   printf("rank %d is alive on %s\n", rank, processor_name);
 
-  MPI_Alloc_mem(NUM_ELEMT*sizeof(int), MPI_INFO_NULL, &X);
-  MPI_Alloc_mem(NUM_ELEMT*sizeof(int), MPI_INFO_NULL, &buf);
+  MPI_Alloc_mem(NUM_ELEMT * sizeof(int), MPI_INFO_NULL, &X);
+  MPI_Alloc_mem(NUM_ELEMT * sizeof(int), MPI_INFO_NULL, &buf);
 
-  buf[0]=0;
-  X[0]=4;
+  buf[0] = 0;
+  X[0] = 4;
 
   if (nprocs < 2) {
     printf("\033[0;31m! This test needs at least 2 processes !\033[0;0m\n");
@@ -73,16 +74,15 @@ int main(int argc, char** argv)
     return 1;
   }
 
-  MPI_Win_create(X, NUM_ELEMT*sizeof(int),sizeof(int),MPI_INFO_NULL, MPI_COMM_WORLD, &win);
+  MPI_Win_create(X, NUM_ELEMT * sizeof(int), sizeof(int), MPI_INFO_NULL,
+                 MPI_COMM_WORLD, &win);
 
-
-  MPI_Win_fence(0,win);
-  if(rank == 0){
+  MPI_Win_fence(0, win);
+  if (rank == 0) {
     MPI_Put(buf, NUM_ELEMT, MPI_INT, 1, 0, NUM_ELEMT, MPI_INT, win);
-    buf[0]=8;
+    buf[0] = 8;
   }
-  MPI_Win_fence(0,win);
-
+  MPI_Win_fence(0, win);
 
   MPI_Win_free(&win);
   MPI_Free_mem(X);

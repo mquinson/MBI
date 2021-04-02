@@ -2,13 +2,14 @@
 //
 // Origin: ISP (http://formalverification.cs.utah.edu/ISP_Tests/)
 //
-// Description: All processes call abort function except P0. This code is correct.
+// Description: All processes call abort function except P0. This code is
+// correct.
 //
 //// List of features
 // P2P: Lacking
 // iP2P: Lacking
 // PERS: Lacking
-// COLL: Correct  
+// COLL: Correct
 // iCOLL: Lacking
 // TOPO: Lacking
 // IO: Lacking
@@ -43,10 +44,9 @@
 #define MPI_MAX_PROCESSOR_NAME 1024
 #endif
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
 

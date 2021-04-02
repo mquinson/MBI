@@ -8,7 +8,7 @@
 // P2P: Lacking
 // iP2P: Lacking
 // PERS: Lacking
-// COLL: Correct  
+// COLL: Correct
 // iCOLL: Lacking
 // TOPO: Lacking
 // IO: Lacking
@@ -50,12 +50,11 @@ typedef struct {
   double real, imag;
 } Complex;
 
-void myProd(void* inp, void* inoutp, int* len, MPI_Datatype* dptr)
-{
+void myProd(void *inp, void *inoutp, int *len, MPI_Datatype *dptr) {
   int i;
   Complex c;
-  Complex* in    = (Complex*)inp;
-  Complex* inout = (Complex*)inoutp;
+  Complex *in = (Complex *)inp;
+  Complex *inout = (Complex *)inoutp;
 
   for (i = 0; i < *len; ++i) {
     c.real = inout->real * in->real - inout->imag * in->imag;
@@ -68,10 +67,9 @@ void myProd(void* inp, void* inoutp, int* len, MPI_Datatype* dptr)
   return;
 }
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   int i;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;

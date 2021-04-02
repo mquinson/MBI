@@ -2,11 +2,14 @@
 //
 // Origin: Aislinn
 //
-// Description: Process 0 executes a broadcast, followed by a blocking recv operation. Process one first executes a
-//              blocking send that matches the recv, followed by broadcast call that matches the broadcast of process
-//              0. The broadcast call on process 0 may block until process one executes the matching broadcast
-//              call, so that the recv is not executed. Process one will definitely block on the send and so, in this
-//              case, never executes the broadcast.
+// Description: Process 0 executes a broadcast, followed by a blocking recv
+// operation. Process one first executes a
+//              blocking send that matches the recv, followed by broadcast call
+//              that matches the broadcast of process 0. The broadcast call on
+//              process 0 may block until process one executes the matching
+//              broadcast call, so that the recv is not executed. Process one
+//              will definitely block on the send and so, in this case, never
+//              executes the broadcast.
 //
 //                  Communication pattern:
 //
@@ -19,7 +22,7 @@
 // P2P: Incorrect
 // iP2P: Lacking
 // PERS: Lacking
-// COLL: Incorrect  
+// COLL: Incorrect
 // iCOLL: Lacking
 // TOPO: Lacking
 // IO: Lacking
@@ -58,10 +61,9 @@
 #define MPI_MAX_PROCESSOR_NAME 1024
 #endif
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
   int r;

@@ -2,14 +2,16 @@
 //
 // Origin: MUST
 //
-// Description: A new communicator that reverses the order of MPI_COMM_WORLD is used in a Bcast and
-//              a barrier, the same collectives are also executed on MPI_COMM_WORLD.
+// Description: A new communicator that reverses the order of MPI_COMM_WORLD is
+// used in a Bcast and
+//              a barrier, the same collectives are also executed on
+//              MPI_COMM_WORLD.
 //
 //// List of features
 // P2P: Lacking
 // iP2P: Lacking
 // PERS: Lacking
-// COLL: Correct  
+// COLL: Correct
 // iCOLL: Lacking
 // TOPO: Lacking
 // IO: Lacking
@@ -45,10 +47,9 @@
 #define MPI_MAX_PROCESSOR_NAME 1024
 #endif
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
   int temp, root, *ranksIncl, i;
@@ -69,7 +70,7 @@ int main(int argc, char** argv)
 
   //== Create an inverse comm
   MPI_Comm_group(MPI_COMM_WORLD, &gworld);
-  ranksIncl = (int*)malloc(sizeof(int) * nprocs);
+  ranksIncl = (int *)malloc(sizeof(int) * nprocs);
   for (i = 0; i < nprocs; i++)
     ranksIncl[i] = nprocs - i - 1;
   MPI_Group_incl(gworld, nprocs, ranksIncl, &ginverse);

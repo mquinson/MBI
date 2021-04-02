@@ -2,7 +2,8 @@
 //
 // Origin: MUST (IsIntercommError.cpp)
 //
-// Description: Creates a cartesian communicator with an intercommunicator what will cause an error
+// Description: Creates a cartesian communicator with an intercommunicator what
+// will cause an error
 //
 //// List of features
 // P2P: Lacking
@@ -43,10 +44,9 @@
 #define MPI_MAX_PROCESSOR_NAME 1024
 #endif
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
   MPI_Comm comm, localcomm, intercomm;
@@ -74,8 +74,8 @@ int main(int argc, char** argv)
 
   int dims[2], periods[2];
   int source, dest;
-  dims[0]    = 1;
-  dims[1]    = 1;
+  dims[0] = 1;
+  dims[1] = 1;
   periods[0] = 1;
   periods[1] = 1;
 

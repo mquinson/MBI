@@ -2,7 +2,8 @@
 //
 // Origin: ISP (http://formalverification.cs.utah.edu/ISP_Tests/)
 //
-// Description: A MPI_Comm_dup function is used to create newcom which is never freed.
+// Description: A MPI_Comm_dup function is used to create newcom which is never
+// freed.
 //
 //// List of features
 // P2P: Lacking
@@ -43,10 +44,9 @@
 #define MPI_MAX_PROCESSOR_NAME 1024
 #endif
 
-int main(int argc, char** argv)
-{
-  int nprocs    = -1;
-  int rank      = -1;
+int main(int argc, char **argv) {
+  int nprocs = -1;
+  int rank = -1;
   MPI_Comm comm = MPI_COMM_WORLD;
   MPI_Comm newcomm;
   char processor_name[MPI_MAX_PROCESSOR_NAME];

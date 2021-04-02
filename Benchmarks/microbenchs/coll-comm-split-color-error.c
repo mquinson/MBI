@@ -43,10 +43,9 @@
 #define MPI_MAX_PROCESSOR_NAME 1024
 #endif
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
   MPI_Comm c2;
@@ -70,7 +69,7 @@ int main(int argc, char** argv)
   }
 
   MPI_Comm_free(&c2);
-  
+
   MPI_Finalize();
   printf("\033[0;32mrank %d Finished normally\033[0;0m\n", rank);
   return 0;

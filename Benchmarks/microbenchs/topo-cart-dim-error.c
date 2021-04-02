@@ -2,8 +2,8 @@
 //
 // Origin: MUST
 //
-// Description: Creates a cartesian communicator with a negative entry (-1) in the dims attribute, which is a usage
-// error
+// Description: Creates a cartesian communicator with a negative entry (-1) in
+// the dims attribute, which is a usage error
 //
 //// List of features
 // P2P: Lacking
@@ -44,10 +44,9 @@
 #define MPI_MAX_PROCESSOR_NAME 1024
 #endif
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
 
@@ -67,15 +66,17 @@ int main(int argc, char** argv)
   MPI_Comm comm;
   int dims[3], periods[3];
   int source, dest;
-  dims[0]    = nprocs;
-  dims[1]    = -1; /*!!!HERE COMES THE ERROR FROM*/
-  dims[2]    = -1;
+  dims[0] = nprocs;
+  dims[1] = -1; /*!!!HERE COMES THE ERROR FROM*/
+  dims[2] = -1;
   periods[0] = 1;
   periods[1] = 1;
   periods[2] = 1;
 
   //!!! Warning happens here
-  MPI_Cart_create(MPI_COMM_WORLD, 3, dims /*!!!HERE THE ERROR IS PASSED TO MPI*/, periods, 0, &comm);
+  MPI_Cart_create(MPI_COMM_WORLD, 3,
+                  dims /*!!!HERE THE ERROR IS PASSED TO MPI*/, periods, 0,
+                  &comm);
   MPI_Comm_free(&comm);
 
   MPI_Finalize();

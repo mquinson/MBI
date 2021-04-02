@@ -2,13 +2,14 @@
 //
 // Origin: MUST
 //
-// Description: All processes execute an MPI_Alltoallw with matching and valid arguments
+// Description: All processes execute an MPI_Alltoallw with matching and valid
+// arguments
 //
 //// List of features
 // P2P: Lacking
 // iP2P: Lacking
 // PERS: Lacking
-// COLL: Correct  
+// COLL: Correct
 // iCOLL: Lacking
 // TOPO: Lacking
 // IO: Lacking
@@ -44,10 +45,9 @@
 #define MPI_MAX_PROCESSOR_NAME 1024
 #endif
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
   int i;
@@ -72,7 +72,7 @@ int main(int argc, char** argv)
 
   int recvcnts[3] = {18, 12, 6};
   int sendcnts[3] = {18, 12, 6};
-  int displs[3]   = {0 * sizeof(int), 36 * sizeof(int), 72 * sizeof(int)};
+  int displs[3] = {0 * sizeof(int), 36 * sizeof(int), 72 * sizeof(int)};
   int typesize;
 
   for (i = 0; i < 3; i++) {
@@ -83,7 +83,8 @@ int main(int argc, char** argv)
     sendcnts[i] = ((3 - rank + i) % 3 + 1) * 6 / typesize;
   }
 
-  MPI_Alltoallw(outbuf, sendcnts, displs, contis, inbuf, recvcnts, displs, contis, MPI_COMM_WORLD);
+  MPI_Alltoallw(outbuf, sendcnts, displs, contis, inbuf, recvcnts, displs,
+                contis, MPI_COMM_WORLD);
 
   for (i = 0; i < 3; i++) {
     MPI_Type_free(contis + i);

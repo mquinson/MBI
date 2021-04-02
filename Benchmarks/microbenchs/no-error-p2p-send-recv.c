@@ -14,7 +14,7 @@
 // P2P: Correct
 // iP2P: Lacking
 // PERS: Lacking
-// COLL: Lacking  
+// COLL: Lacking
 // iCOLL: Lacking
 // TOPO: Lacking
 // IO: Lacking
@@ -50,10 +50,9 @@
 #define MPI_MAX_PROCESSOR_NAME 1024
 #endif
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
   int tag, source, destination, count;
@@ -66,10 +65,10 @@ int main(int argc, char** argv)
   MPI_Get_processor_name(processor_name, &namelen);
   printf("rank %d is alive on %s\n", rank, processor_name);
 
-  tag         = 1234;
-  source      = 0;
+  tag = 1234;
+  source = 0;
   destination = 1;
-  count       = 1;
+  count = 1;
 
   if (nprocs < 2) {
     printf("\033[0;31m! This test requires at least 2 processes \033[0;0m\n");

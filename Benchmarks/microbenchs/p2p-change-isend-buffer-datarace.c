@@ -1,14 +1,15 @@
 ////////////////// MPI bugs collection header //////////////////
 //
-// Origin: PARCOACH 
+// Origin: PARCOACH
 //
-// Description: The buffer message is changed before the communication is complete.
+// Description: The buffer message is changed before the communication is
+// complete.
 //
 //// List of features
 // P2P: Lacking
 // iP2P: Incorrect
 // PERS: Lacking
-// COLL: Lacking 
+// COLL: Lacking
 // iCOLL: Lacking
 // TOPO: Lacking
 // IO: Lacking
@@ -28,7 +29,7 @@
 // mpierr: never
 // resleak: never
 // livelock: never
-// datarace: transient 
+// datarace: transient
 //
 // Test: mpirun -np 2 ${EXE}
 // Expect: datarace
@@ -41,30 +42,27 @@
 #include <string.h>
 #include <unistd.h>
 
+int main(int argc, char *argv[]) {
+  MPI_Init(&argc, &argv);
 
+  int rank;
+  int message = 0;
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-int main(int argc, char* argv[])
-{
-    MPI_Init(&argc, &argv);
+  if (rank == 0) {
+    message = 10;
+    MPI_Request request;
+    MPI_Isend(&message, 1, MPI_INT, 1, 0, MPI_COMM_WORLD, &request);
+    printf("Sent %d to 1\n", message);
+    ++message; // here is the error
+    MPI_Wait(&request, MPI_STATUS_IGNORE);
+  }
+  if (rank == 1) {
+    MPI_Recv(&message, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    printf("Recieved %d from 0\n", message);
+  }
 
-    int rank;
-    int message = 0;
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  MPI_Finalize();
 
-    if (rank == 0) {
-        message = 10;
-        MPI_Request request;
-        MPI_Isend(&message, 1, MPI_INT, 1, 0, MPI_COMM_WORLD, &request);
-        printf("Sent %d to 1\n", message);
-        ++message; // here is the error
-        MPI_Wait(&request, MPI_STATUS_IGNORE);
-    }
-    if (rank == 1) {
-        MPI_Recv(&message, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        printf("Recieved %d from 0\n", message);
-    }
-
-    MPI_Finalize();
-
-    return 0;
+  return 0;
 }

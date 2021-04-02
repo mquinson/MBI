@@ -2,14 +2,14 @@
 //
 // Origin: MUST
 //
-// Description: Complex example that tries to enforce the "deciding" mode of must (if queues become too big). No
-// deadlock, just a late completion.
+// Description: Complex example that tries to enforce the "deciding" mode of
+// must (if queues become too big). No deadlock, just a late completion.
 //
 //// List of features
 // P2P: Correct
 // iP2P: Correct
 // PERS: Lacking
-// COLL: Lacking  
+// COLL: Lacking
 // iCOLL: Lacking
 // TOPO: Lacking
 // IO: Lacking
@@ -44,10 +44,9 @@
 #define MPI_MAX_PROCESSOR_NAME 1024
 #endif
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
   int buf, buf2, buf3, i;
@@ -72,7 +71,8 @@ int main(int argc, char** argv)
 
   // Lots of other comm.
   for (i = 0; i < 50000; i++) {
-    MPI_Irecv(&buf2, 1, MPI_INT, (rank - 1 + nprocs) % nprocs, 666, MPI_COMM_WORLD, &request2);
+    MPI_Irecv(&buf2, 1, MPI_INT, (rank - 1 + nprocs) % nprocs, 666,
+              MPI_COMM_WORLD, &request2);
     MPI_Send(&buf, 1, MPI_INT, (rank + 1) % nprocs, 666, MPI_COMM_WORLD);
     MPI_Wait(&request2, &status);
   }

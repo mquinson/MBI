@@ -2,7 +2,8 @@
 //
 // Origin: Hermes
 //
-// Description: This code deadlocks if P0 receives from P2 first and depending on the buffer mode. We force that with sleep functions.  
+// Description: This code deadlocks if P0 receives from P2 first and depending
+// on the buffer mode. We force that with sleep functions.
 //
 // Communication pattern:
 //
@@ -16,13 +17,14 @@
 //   P0         P1        P2       P3      P4
 //  recv(any) send(0)  recv(any)         send(2)
 //            send(3)             recv(1)
-//  send(3)                       recv(0)   
+//  send(3)                       recv(0)
 //  recv(any)          send(0)
 //
 // Erroneous situation:
 //
 //   P0         P1        P2       P3      P4
-//										  recv(any)         send(2)
+//										  recv(any)
+//send(2)
 //  recv(any)           send(0)
 //  send(3)    send(0)            recv(1)
 //
@@ -65,7 +67,6 @@
 #include <unistd.h>
 //#include <string.h>
 
-
 int main(int argc, char **argv) {
   int nprocs = -1;
   int rank = -1;
@@ -101,7 +102,7 @@ int main(int argc, char **argv) {
   } else if (rank == 1) {
     // memset (buf0, 0, buf_size);
 
-      sleep (30);
+    sleep(30);
 
     MPI_Send(&buf0, buf_size, MPI_INT, 0, 0, MPI_COMM_WORLD);
 

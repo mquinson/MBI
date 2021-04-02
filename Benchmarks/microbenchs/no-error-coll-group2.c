@@ -2,13 +2,14 @@
 //
 // Origin: MUST
 //
-// Description: This code creates a group with MPI_Group_range_excl without any error or warning
+// Description: This code creates a group with MPI_Group_range_excl without any
+// error or warning
 //
 //// List of features
 // P2P: Lacking
 // iP2P: Lacking
 // PERS: Lacking
-// COLL: Correct  
+// COLL: Correct
 // iCOLL: Lacking
 // TOPO: Lacking
 // IO: Lacking
@@ -43,10 +44,9 @@
 #define MPI_MAX_PROCESSOR_NAME 1024
 #endif
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
 

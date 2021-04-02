@@ -2,13 +2,14 @@
 //
 // Origin: MUST
 //
-// Description: All processes execute an MPI_Allgatherv with matching and valid arguments
+// Description: All processes execute an MPI_Allgatherv with matching and valid
+// arguments
 //
 //// List of features
 // P2P: Lacking
 // iP2P: Lacking
 // PERS: Lacking
-// COLL: Correct  
+// COLL: Correct
 // iCOLL: Lacking
 // TOPO: Lacking
 // IO: Lacking
@@ -44,10 +45,9 @@
 #define MPI_MAX_PROCESSOR_NAME 1024
 #endif
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
   int *temp = NULL, *rcounts = NULL, *rdispls = NULL, i, root;
@@ -64,16 +64,17 @@ int main(int argc, char** argv)
     return 1;
   }
 
-  temp    = (int*)malloc(sizeof(int) * nprocs * 2);
-  rcounts = (int*)malloc(sizeof(int) * nprocs);
-  rdispls = (int*)malloc(sizeof(int) * nprocs);
+  temp = (int *)malloc(sizeof(int) * nprocs * 2);
+  rcounts = (int *)malloc(sizeof(int) * nprocs);
+  rdispls = (int *)malloc(sizeof(int) * nprocs);
 
   for (i = 0; i < nprocs; i++) {
     rcounts[i] = 1;
     rdispls[i] = 2 * (nprocs - (i + 1));
   }
 
-  MPI_Allgatherv(&rank, 1, MPI_INT, temp, rcounts, rdispls, MPI_INT, MPI_COMM_WORLD);
+  MPI_Allgatherv(&rank, 1, MPI_INT, temp, rcounts, rdispls, MPI_INT,
+                 MPI_COMM_WORLD);
 
   if (temp)
     free(temp);

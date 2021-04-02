@@ -2,14 +2,16 @@
 //
 // Origin: MUST
 //
-// Description: The waitall waits for 4 persistent requests, of which 3 can complete and one cant,
-//               the one that can't complete is associated with a wildcard receive.
+// Description: The waitall waits for 4 persistent requests, of which 3 can
+// complete and one cant,
+//               the one that can't complete is associated with a wildcard
+//               receive.
 //
 //// List of features
 // P2P: Correct
 // iP2P: Lacking
 // PERS: Incorrect
-// COLL: Lacking  
+// COLL: Lacking
 // iCOLL: Lacking
 // TOPO: Lacking
 // IO: Lacking
@@ -44,10 +46,9 @@
 #define MPI_MAX_PROCESSOR_NAME 1024
 #endif
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
   int flag;
@@ -73,10 +74,14 @@ int main(int argc, char** argv)
   }
 
   if (rank == 1) {
-    MPI_Recv_init(&(buf[0]), 1, MPI_INT, 0, 666, MPI_COMM_WORLD, &(requests[0]));
-    MPI_Send_init(&(buf[1]), 1, MPI_INT, 0, 666, MPI_COMM_WORLD, &(requests[1]));
-    MPI_Recv_init(&(buf[2]), 1, MPI_INT, 2, 123, MPI_COMM_WORLD, &(requests[2]));
-    MPI_Recv_init(&(buf[3]), 1, MPI_INT, MPI_ANY_SOURCE, 444, MPI_COMM_WORLD, &(requests[3]));
+    MPI_Recv_init(&(buf[0]), 1, MPI_INT, 0, 666, MPI_COMM_WORLD,
+                  &(requests[0]));
+    MPI_Send_init(&(buf[1]), 1, MPI_INT, 0, 666, MPI_COMM_WORLD,
+                  &(requests[1]));
+    MPI_Recv_init(&(buf[2]), 1, MPI_INT, 2, 123, MPI_COMM_WORLD,
+                  &(requests[2]));
+    MPI_Recv_init(&(buf[3]), 1, MPI_INT, MPI_ANY_SOURCE, 444, MPI_COMM_WORLD,
+                  &(requests[3]));
     MPI_Startall(4, requests);
     MPI_Waitall(4, requests, statuses);
     MPI_Request_free(&(requests[0]));

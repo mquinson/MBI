@@ -2,7 +2,8 @@
 //
 // Origin: ISP (http://formalverification.cs.utah.edu/ISP_Tests/)
 //
-// Description: Collective mismatch. P0 calls MPI_Bcast followed by MPI_Barrier while the others call MPI_Barrier followed by MPI_Bcast
+// Description: Collective mismatch. P0 calls MPI_Bcast followed by MPI_Barrier
+// while the others call MPI_Barrier followed by MPI_Bcast
 //
 //// List of features
 // P2P: Lacking
@@ -46,10 +47,9 @@
 
 #define buf_size 128
 
-int main(int argc, char** argv)
-{
-  int nprocs    = -1;
-  int rank      = -1;
+int main(int argc, char **argv) {
+  int nprocs = -1;
+  int rank = -1;
   MPI_Comm comm = MPI_COMM_WORLD;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
@@ -68,15 +68,15 @@ int main(int argc, char** argv)
   MPI_Barrier(comm);
 
   switch (rank) {
-    case 0:
-      MPI_Bcast(buf0, buf_size, MPI_INT, 1, comm);
-      MPI_Barrier(comm);
-      break;
+  case 0:
+    MPI_Bcast(buf0, buf_size, MPI_INT, 1, comm);
+    MPI_Barrier(comm);
+    break;
 
-    default:
-      MPI_Barrier(comm);
-      MPI_Bcast(buf0, buf_size, MPI_INT, 1, comm);
-      break;
+  default:
+    MPI_Barrier(comm);
+    MPI_Bcast(buf0, buf_size, MPI_INT, 1, comm);
+    break;
   }
   MPI_Barrier(comm);
 

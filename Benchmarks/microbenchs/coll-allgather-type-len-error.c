@@ -2,7 +2,8 @@
 //
 // Origin: MUST (collAllgatherTypeLenError.cpp)
 //
-// Description: Performs a MPI_Allgather collective with a type error that occurs when nprocs = 3
+// Description: Performs a MPI_Allgather collective with a type error that
+// occurs when nprocs = 3
 //
 //// List of features
 // P2P: Lacking
@@ -36,8 +37,6 @@
 ////////////////// End of MPI bugs collection header //////////////////
 //////////////////       original file begins        //////////////////
 
-
-
 #include <mpi.h>
 #include <stdio.h>
 
@@ -45,10 +44,9 @@
 #define MPI_MAX_PROCESSOR_NAME 1024
 #endif
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
   int i;
@@ -75,10 +73,12 @@ int main(int argc, char** argv)
   MPI_Type_commit(&conti);
 
   int size_in, size_ints;
-  MPI_Type_size(conti,&size_in);
+  MPI_Type_size(conti, &size_in);
   MPI_Type_size(MPI_INT, &size_ints);
-  fprintf(stderr, "Rank %d sends %d x %d INTS and receive %d INTS\n", rank, 6 / (3 - rank), size_in/size_ints, 6 + rank % 2);
-  MPI_Allgather(outbuf, 6 / (3 - rank), conti, inbuf, 6 + rank % 2, MPI_INT, MPI_COMM_WORLD);
+  fprintf(stderr, "Rank %d sends %d x %d INTS and receive %d INTS\n", rank,
+          6 / (3 - rank), size_in / size_ints, 6 + rank % 2);
+  MPI_Allgather(outbuf, 6 / (3 - rank), conti, inbuf, 6 + rank % 2, MPI_INT,
+                MPI_COMM_WORLD);
 
   MPI_Type_free(&conti);
 

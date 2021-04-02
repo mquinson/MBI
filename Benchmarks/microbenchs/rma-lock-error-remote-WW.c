@@ -2,7 +2,8 @@
 //
 // Origin: MC-Checker
 //
-// Description: Consistency error accross processes for passive mode, window location accessed concurrently
+// Description: Consistency error accross processes for passive mode, window
+// location accessed concurrently
 //
 //// List of features
 // P2P: Lacking
@@ -43,14 +44,13 @@
 #define MPI_MAX_PROCESSOR_NAME 1024
 #endif
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
   MPI_Win win;
-  int X; // Window buffer
+  int X;        // Window buffer
   int localbuf; // Local buffer
 
   MPI_Init(&argc, &argv);
@@ -59,8 +59,8 @@ int main(int argc, char** argv)
   MPI_Get_processor_name(processor_name, &namelen);
   printf("rank %d is alive on %s\n", rank, processor_name);
 
-  localbuf=rank;
-  X=4;
+  localbuf = rank;
+  X = 4;
 
   if (nprocs < 3) {
     printf("\033[0;31m! This test needs at least 3 processes !\033[0;0m\n");
@@ -68,16 +68,17 @@ int main(int argc, char** argv)
     return 1;
   }
 
-  MPI_Win_create(&X, sizeof(int),sizeof(int),MPI_INFO_NULL, MPI_COMM_WORLD, &win);
+  MPI_Win_create(&X, sizeof(int), sizeof(int), MPI_INFO_NULL, MPI_COMM_WORLD,
+                 &win);
 
   MPI_Barrier(MPI_COMM_WORLD);
 
-  if(rank == 0 || rank == 2){
+  if (rank == 0 || rank == 2) {
     MPI_Win_lock(MPI_LOCK_SHARED, 1, 0, win);
 
-    if(rank == 0){
+    if (rank == 0) {
       MPI_Put(&localbuf, 1, MPI_INT, 1, 0, 1, MPI_INT, win);
-    }else{
+    } else {
       MPI_Get(&localbuf, 1, MPI_INT, 1, 0, 1, MPI_INT, win);
     }
 

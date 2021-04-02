@@ -2,7 +2,8 @@
 //
 // Origin: mcs.anl.gov
 //
-// Description: Two processes execute broadcast operations in reverse order. Example described in
+// Description: Two processes execute broadcast operations in reverse order.
+// Example described in
 // http://www.mcs.anl.gov/research/projects/mpi/mpi-standard/mpi-report-1.1/node86.htm#Node86
 //
 //// List of features
@@ -37,18 +38,17 @@
 ////////////////// End of MPI bugs collection header //////////////////
 //////////////////       original file begins        //////////////////
 
-#include <mpi.h>
 #include <assert.h>
+#include <mpi.h>
 #include <stdio.h>
 
 #ifndef MPI_MAX_PROCESSOR_NAME
 #define MPI_MAX_PROCESSOR_NAME 1024
 #endif
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
   int buf1, buf2;
@@ -67,14 +67,14 @@ int main(int argc, char** argv)
     buf2 = rank;
 
     switch (rank) {
-      case 0:
-        MPI_Bcast(&buf1, 1, MPI_INT, 0, MPI_COMM_WORLD);
-        MPI_Bcast(&buf2, 1, MPI_INT, 1, MPI_COMM_WORLD);
-        break;
-      case 1:
-        MPI_Bcast(&buf2, 1, MPI_INT, 1, MPI_COMM_WORLD);
-        MPI_Bcast(&buf1, 1, MPI_INT, 0, MPI_COMM_WORLD);
-        break;
+    case 0:
+      MPI_Bcast(&buf1, 1, MPI_INT, 0, MPI_COMM_WORLD);
+      MPI_Bcast(&buf2, 1, MPI_INT, 1, MPI_COMM_WORLD);
+      break;
+    case 1:
+      MPI_Bcast(&buf2, 1, MPI_INT, 1, MPI_COMM_WORLD);
+      MPI_Bcast(&buf1, 1, MPI_INT, 0, MPI_COMM_WORLD);
+      break;
     }
     printf("process %d: buf1=%d, buf2=%d\n", rank, buf1, buf2);
   }

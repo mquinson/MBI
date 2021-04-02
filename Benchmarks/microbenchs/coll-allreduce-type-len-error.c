@@ -2,7 +2,8 @@
 //
 // Origin: MUST
 //
-// Description: Performs a MPI_Allreduce collective with an error that occurs when nprocs = 3
+// Description: Performs a MPI_Allreduce collective with an error that occurs
+// when nprocs = 3
 //
 //// List of features
 // P2P: Lacking
@@ -43,10 +44,9 @@
 #define MPI_MAX_PROCESSOR_NAME 1024
 #endif
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
   int i;

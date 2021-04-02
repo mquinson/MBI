@@ -2,13 +2,14 @@
 //
 // Origin: MUST
 //
-// Description: All processes execute a MPI_Reduce with a root of 0, except for rank 1 which uses 1 as its root
+// Description: All processes execute a MPI_Reduce with a root of 0, except for
+// rank 1 which uses 1 as its root
 //
 //// List of features
 // P2P: Lacking
 // iP2P: Lacking
 // PERS: Lacking
-// COLL: Incorrect  
+// COLL: Incorrect
 // iCOLL: Lacking
 // TOPO: Lacking
 // IO: Lacking
@@ -43,10 +44,9 @@
 #define MPI_MAX_PROCESSOR_NAME 1024
 #endif
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
   int temp, root;

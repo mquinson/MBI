@@ -8,7 +8,7 @@
 // P2P: Lacking
 // iP2P: Lacking
 // PERS: Lacking
-// COLL: Incorrect  
+// COLL: Incorrect
 // iCOLL: Lacking
 // TOPO: Lacking
 // IO: Lacking
@@ -43,10 +43,9 @@
 #define MPI_MAX_PROCESSOR_NAME 1024
 #endif
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
   int i;
@@ -72,9 +71,11 @@ int main(int argc, char** argv)
   MPI_Type_commit(&conti);
 
   if (rank == 1)
-    MPI_Scatter(NULL, 0, MPI_DATATYPE_NULL, inbuf, 5, MPI_INT, 2, MPI_COMM_WORLD);
+    MPI_Scatter(NULL, 0, MPI_DATATYPE_NULL, inbuf, 5, MPI_INT, 2,
+                MPI_COMM_WORLD);
   else
-    MPI_Scatter(outbuf, 6, MPI_INT, inbuf, 6 / (3 - rank), conti, 2, MPI_COMM_WORLD);
+    MPI_Scatter(outbuf, 6, MPI_INT, inbuf, 6 / (3 - rank), conti, 2,
+                MPI_COMM_WORLD);
 
   MPI_Type_free(&conti);
 

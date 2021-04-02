@@ -2,7 +2,8 @@
 //
 // Origin: MPI Bug Collection suite
 //
-// Description: Collective mismatch. Some processes call MPI_Barrier followed by MPI_Reduce while others call MPI_Reduce followed by MPI_Barrier
+// Description: Collective mismatch. Some processes call MPI_Barrier followed by
+// MPI_Reduce while others call MPI_Reduce followed by MPI_Barrier
 //
 //// List of features
 // P2P: Lacking
@@ -43,10 +44,9 @@
 #define MPI_MAX_PROCESSOR_NAME 1024
 #endif
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
   int localsum, sum;
@@ -58,7 +58,8 @@ int main(int argc, char** argv)
   printf("rank %d is alive on %s\n", rank, processor_name);
 
   if (nprocs < 2)
-    printf("\033[0;31m! This test needs at least 2 processes to produce a bug !\033[0;0m\n");
+    printf("\033[0;31m! This test needs at least 2 processes to produce a bug "
+           "!\033[0;0m\n");
 
   localsum = 0;
   for (int i = 0; i <= rank; i++) {

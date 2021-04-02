@@ -2,8 +2,8 @@
 //
 // Origin: ISP (http://formalverification.cs.utah.edu/ISP_Tests/)
 //
-// Description: Correct use of blocking and nonblocking point to point communications. Use assignment of handles to
-// confuse address checking.
+// Description: Correct use of blocking and nonblocking point to point
+// communications. Use assignment of handles to confuse address checking.
 //
 //			 Communication pattern:
 //
@@ -20,7 +20,7 @@
 // P2P: Correct
 // iP2P: Correct
 // PERS: Lacking
-// COLL: Correct  
+// COLL: Correct
 // iCOLL: Lacking
 // TOPO: Lacking
 // IO: Lacking
@@ -58,10 +58,9 @@
 
 #define buf_size 128
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
   int buf0[buf_size];

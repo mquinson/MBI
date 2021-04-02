@@ -2,7 +2,8 @@
 //
 // Origin: MUST
 //
-// Description: Creates a cartesian communicator, and tries to get information with Cart_get without triggering any errors or warnings
+// Description: Creates a cartesian communicator, and tries to get information
+// with Cart_get without triggering any errors or warnings
 //
 //// List of features
 // P2P: Lacking
@@ -25,7 +26,7 @@
 // deadlock: never
 // numstab: never
 // segfault: never
-// mpierr: never 
+// mpierr: never
 // resleak: never
 // livelock: never
 // datarace: never
@@ -39,18 +40,15 @@
 #include <mpi.h>
 #include <stdio.h>
 
+int main(int argc, char **argv) {
 
-int main(int argc, char** argv)
-{
-
-	int size, rank;
+  int size, rank;
 
   MPI_Init(&argc, &argv);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   MPI_Comm_size(MPI_COMM_WORLD, &size);
- 
+
   MPI_Status status;
- 
 
   if (size < 2) {
     printf("\033[0;31m! This test needs at 2 processes !\033[0;0m\n");
@@ -58,15 +56,15 @@ int main(int argc, char** argv)
     return 1;
   }
 
-  //Say hello
-  printf("Hello, I am rank %d of %d processes\n",rank,size);
+  // Say hello
+  printf("Hello, I am rank %d of %d processes\n", rank, size);
 
   // create a cartesian communicator
   MPI_Comm comm;
   int dims[2], periods[2], coords[2];
   int source, dest;
-  dims[0]    = 2;
-  dims[1]    = 1;
+  dims[0] = 2;
+  dims[1] = 1;
   periods[0] = 1;
   periods[1] = 1;
 

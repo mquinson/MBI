@@ -2,7 +2,8 @@
 //
 // Origin: Parcoach
 //
-// Description: Collective mismatch. Some processes call 9 barriers while others call 10 barriers. A deadlock occurs if nprocs > 1
+// Description: Collective mismatch. Some processes call 9 barriers while others
+// call 10 barriers. A deadlock occurs if nprocs > 1
 //
 // List of features
 // P2P: Lacking
@@ -43,10 +44,9 @@
 #define MPI_MAX_PROCESSOR_NAME 1024
 #endif
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
   int i = 1, j = 10;
@@ -58,7 +58,8 @@ int main(int argc, char** argv)
   printf("rank %d is alive on %s\n", rank, processor_name);
 
   if (nprocs < 2)
-    printf("\033[0;31m! This test needs at least 2 processes to produce a bug !\033[0;0m\n");
+    printf("\033[0;31m! This test needs at least 2 processes to produce a bug "
+           "!\033[0;0m\n");
 
   if (rank % 2) {
     while (i < 10) {

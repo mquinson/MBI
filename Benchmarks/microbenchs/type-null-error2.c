@@ -2,13 +2,14 @@
 //
 // Origin: MUST (NotValidForCreate_MPIDatatypeNull.cpp)
 //
-// Description: Performs a type creation with DatatypeNull, what results in an error
+// Description: Performs a type creation with DatatypeNull, what results in an
+// error
 //
 //// List of features
 // P2P: Lacking
 // iP2P: Lacking
 // PERS: Lacking
-// COLL: Lacking  
+// COLL: Lacking
 // iCOLL: Lacking
 // TOPO: Lacking
 // IO: Lacking
@@ -43,12 +44,11 @@
 #define MPI_MAX_PROCESSOR_NAME 1024
 #endif
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
-  int namelen        = 128;
+  int namelen = 128;
   MPI_Datatype type1 = MPI_DATATYPE_NULL, type2;
 
   MPI_Init(&argc, &argv);

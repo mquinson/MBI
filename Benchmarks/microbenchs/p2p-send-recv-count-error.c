@@ -2,13 +2,14 @@
 //
 // Origin: MUST
 //
-// Description: Performs a send, recv where the send uses a count of -1, which is a usage error.
+// Description: Performs a send, recv where the send uses a count of -1, which
+// is a usage error.
 //
 //// List of features
 // P2P: Incorrect
 // iP2P: Lacking
 // PERS: Lacking
-// COLL: Lacking  
+// COLL: Lacking
 // iCOLL: Lacking
 // TOPO: Lacking
 // IO: Lacking
@@ -43,10 +44,9 @@
 #define MPI_MAX_PROCESSOR_NAME 1024
 #endif
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
   MPI_Status status;

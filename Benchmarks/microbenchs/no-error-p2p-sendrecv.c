@@ -17,7 +17,7 @@
 // P2P: Correct
 // iP2P: Lacking
 // PERS: Lacking
-// COLL: Lacking  
+// COLL: Lacking
 // iCOLL: Lacking
 // TOPO: Lacking
 // IO: Lacking
@@ -55,10 +55,9 @@
 
 #define buf_size 128
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
   int buf0[buf_size];
@@ -77,20 +76,26 @@ int main(int argc, char** argv)
     if (rank == 0) {
       memset(buf0, 0, buf_size * sizeof(int));
 
-      MPI_Sendrecv(buf0, buf_size, MPI_INT, 1, 0, buf1, buf_size, MPI_INT, 1, 0, MPI_COMM_WORLD, &status);
+      MPI_Sendrecv(buf0, buf_size, MPI_INT, 1, 0, buf1, buf_size, MPI_INT, 1, 0,
+                   MPI_COMM_WORLD, &status);
 
-      MPI_Sendrecv(buf1, buf_size, MPI_INT, 1, 0, buf0, buf_size, MPI_INT, 1, 0, MPI_COMM_WORLD, &status);
+      MPI_Sendrecv(buf1, buf_size, MPI_INT, 1, 0, buf0, buf_size, MPI_INT, 1, 0,
+                   MPI_COMM_WORLD, &status);
 
-      MPI_Sendrecv(buf0, buf_size, MPI_INT, 1, 0, buf1, buf_size, MPI_INT, 1, 0, MPI_COMM_WORLD, &status);
+      MPI_Sendrecv(buf0, buf_size, MPI_INT, 1, 0, buf1, buf_size, MPI_INT, 1, 0,
+                   MPI_COMM_WORLD, &status);
     } else {
       if (rank == 1) {
         memset(buf1, 1, buf_size * sizeof(int));
 
-        MPI_Sendrecv(buf1, buf_size, MPI_INT, 0, 0, buf0, buf_size, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
+        MPI_Sendrecv(buf1, buf_size, MPI_INT, 0, 0, buf0, buf_size, MPI_INT, 0,
+                     0, MPI_COMM_WORLD, &status);
 
-        MPI_Sendrecv(buf0, buf_size, MPI_INT, 0, 0, buf1, buf_size, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
+        MPI_Sendrecv(buf0, buf_size, MPI_INT, 0, 0, buf1, buf_size, MPI_INT, 0,
+                     0, MPI_COMM_WORLD, &status);
 
-        MPI_Sendrecv(buf1, buf_size, MPI_INT, 0, 0, buf0, buf_size, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
+        MPI_Sendrecv(buf1, buf_size, MPI_INT, 0, 0, buf0, buf_size, MPI_INT, 0,
+                     0, MPI_COMM_WORLD, &status);
       }
     }
   }

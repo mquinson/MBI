@@ -2,7 +2,8 @@
 //
 // Origin: ISP (http://formalverification.cs.utah.edu/ISP_Tests/)
 //
-// Description: The buffer buf0 used in send is changed before the communication is complete.
+// Description: The buffer buf0 used in send is changed before the communication
+// is complete.
 //
 //					 Communication pattern:
 //
@@ -21,7 +22,7 @@
 // P2P: Lacking
 // iP2P: Incorrect
 // PERS: Lacking
-// COLL: Correct  
+// COLL: Correct
 // iCOLL: Lacking
 // TOPO: Lacking
 // IO: Lacking
@@ -58,12 +59,11 @@
 #define MPI_MAX_PROCESSOR_NAME 1024
 #endif
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
-  int tag1   = 0;
-  int tag2   = 0;
+  int rank = -1;
+  int tag1 = 0;
+  int tag2 = 0;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
   int buf0[128];
@@ -86,37 +86,37 @@ int main(int argc, char** argv)
   MPI_Barrier(MPI_COMM_WORLD);
 
   switch (rank) {
-    case 0:
-      MPI_Isend(buf0, 128, MPI_INT, 1, tag1, MPI_COMM_WORLD, &aReq[0]);
-      MPI_Isend(buf1, 128, MPI_INT, 1, tag2, MPI_COMM_WORLD, &aReq[1]);
-      /* do some work here */
+  case 0:
+    MPI_Isend(buf0, 128, MPI_INT, 1, tag1, MPI_COMM_WORLD, &aReq[0]);
+    MPI_Isend(buf1, 128, MPI_INT, 1, tag2, MPI_COMM_WORLD, &aReq[1]);
+    /* do some work here */
 
-      buf0[64] = 1000000;
+    buf0[64] = 1000000;
 
-      MPI_Wait(&aReq[0], &aStatus[0]);
-      MPI_Wait(&aReq[1], &aStatus[1]);
+    MPI_Wait(&aReq[0], &aStatus[0]);
+    MPI_Wait(&aReq[1], &aStatus[1]);
 
-      break;
+    break;
 
-    case 1:
-      sleep(20);
-      MPI_Irecv(buf0, 128, MPI_INT, 0, tag1, MPI_COMM_WORLD, &aReq[0]);
-      MPI_Irecv(buf1, 128, MPI_INT, 0, tag2, MPI_COMM_WORLD, &aReq[1]);
-      /* do some work here ... */
-      MPI_Wait(&aReq[0], &aStatus[0]);
-      MPI_Wait(&aReq[1], &aStatus[1]);
-      for (i = 0; i < 128; i++) {
-        if (i == 0)
-          printf("buf0 =");
-        printf(" %d ", buf0[i]);
-        if (i == 127)
-          printf("\n");
-      }
-      break;
+  case 1:
+    sleep(20);
+    MPI_Irecv(buf0, 128, MPI_INT, 0, tag1, MPI_COMM_WORLD, &aReq[0]);
+    MPI_Irecv(buf1, 128, MPI_INT, 0, tag2, MPI_COMM_WORLD, &aReq[1]);
+    /* do some work here ... */
+    MPI_Wait(&aReq[0], &aStatus[0]);
+    MPI_Wait(&aReq[1], &aStatus[1]);
+    for (i = 0; i < 128; i++) {
+      if (i == 0)
+        printf("buf0 =");
+      printf(" %d ", buf0[i]);
+      if (i == 127)
+        printf("\n");
+    }
+    break;
 
-    default:
-      /* do nothing */
-      break;
+  default:
+    /* do nothing */
+    break;
   }
 
   MPI_Barrier(MPI_COMM_WORLD);
@@ -127,27 +127,27 @@ int main(int argc, char** argv)
   }
 
   switch (rank) {
-    case 0:
-      MPI_Isend(buf0, 128, MPI_INT, 1, tag1, MPI_COMM_WORLD, &aReq[0]);
-      MPI_Isend(buf1, 128, MPI_INT, 1, tag2, MPI_COMM_WORLD, &aReq[1]);
-      /* do some work here */
+  case 0:
+    MPI_Isend(buf0, 128, MPI_INT, 1, tag1, MPI_COMM_WORLD, &aReq[0]);
+    MPI_Isend(buf1, 128, MPI_INT, 1, tag2, MPI_COMM_WORLD, &aReq[1]);
+    /* do some work here */
 
-      buf0[64] = 1000000;
+    buf0[64] = 1000000;
 
-      MPI_Waitall(2, aReq, aStatus);
+    MPI_Waitall(2, aReq, aStatus);
 
-      break;
+    break;
 
-    case 1:
-      MPI_Irecv(buf0, 128, MPI_INT, 0, tag1, MPI_COMM_WORLD, &aReq[0]);
-      MPI_Irecv(buf1, 128, MPI_INT, 0, tag2, MPI_COMM_WORLD, &aReq[1]);
-      /* do some work here ... */
-      MPI_Waitall(2, aReq, aStatus);
-      break;
+  case 1:
+    MPI_Irecv(buf0, 128, MPI_INT, 0, tag1, MPI_COMM_WORLD, &aReq[0]);
+    MPI_Irecv(buf1, 128, MPI_INT, 0, tag2, MPI_COMM_WORLD, &aReq[1]);
+    /* do some work here ... */
+    MPI_Waitall(2, aReq, aStatus);
+    break;
 
-    default:
-      /* do nothing */
-      break;
+  default:
+    /* do nothing */
+    break;
   }
 
   MPI_Finalize();

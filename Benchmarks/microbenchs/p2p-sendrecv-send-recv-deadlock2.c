@@ -2,13 +2,14 @@
 //
 // Origin: MUST
 //
-// Description: A sendrecv deadlocks here, it uses a wildcard for the receive part.
+// Description: A sendrecv deadlocks here, it uses a wildcard for the receive
+// part.
 //
 //// List of features
 // P2P: Incorrect
 // iP2P: Lacking
 // PERS: Lacking
-// COLL: Lacking 
+// COLL: Lacking
 // iCOLL: Lacking
 // TOPO: Lacking
 // IO: Lacking
@@ -43,10 +44,9 @@
 #define MPI_MAX_PROCESSOR_NAME 1024
 #endif
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
   int sbuf, rbuf;
@@ -68,8 +68,8 @@ int main(int argc, char** argv)
     MPI_Send(&sbuf, 1, MPI_INT, 1, 123, MPI_COMM_WORLD);
 
   if (rank == 1)
-    MPI_Sendrecv(&sbuf, 1, MPI_INT, 2, 123, &rbuf, 1, MPI_INT, MPI_ANY_SOURCE, 789, MPI_COMM_WORLD,
-                 &status); /*ERROR: recv tag is wrong*/
+    MPI_Sendrecv(&sbuf, 1, MPI_INT, 2, 123, &rbuf, 1, MPI_INT, MPI_ANY_SOURCE,
+                 789, MPI_COMM_WORLD, &status); /*ERROR: recv tag is wrong*/
 
   if (rank == 2) {
     MPI_Recv(&rbuf, 1, MPI_INT, 1, 123, MPI_COMM_WORLD, &status);

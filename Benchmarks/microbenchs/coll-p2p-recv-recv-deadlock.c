@@ -2,7 +2,8 @@
 //
 // Origin: http://formalverification.cs.utah.edu/ISP_Tests/
 //
-// Description: Blocking recveive functions are called by P0 and P1. MPI_COMM_WORLD is duplicated.
+// Description: Blocking recveive functions are called by P0 and P1.
+// MPI_COMM_WORLD is duplicated.
 //
 //			 Communication pattern:
 //
@@ -17,7 +18,7 @@
 // P2P: Incorrect
 // iP2P: Lacking
 // PERS: Lacking
-// COLL: Correct  
+// COLL: Correct
 // iCOLL: Lacking
 // TOPO: Lacking
 // IO: Lacking
@@ -55,10 +56,9 @@
 
 #define buf_size 128
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
   int buf0[buf_size];

@@ -2,13 +2,14 @@
 //
 // Origin: MUST
 //
-// Description: All processes execute an MPI_Alltoallv with matching and valid arguments
+// Description: All processes execute an MPI_Alltoallv with matching and valid
+// arguments
 //
 //// List of features
 // P2P: Lacking
 // iP2P: Lacking
 // PERS: Lacking
-// COLL: Correct  
+// COLL: Correct
 // iCOLL: Lacking
 // TOPO: Lacking
 // IO: Lacking
@@ -44,13 +45,13 @@
 #define MPI_MAX_PROCESSOR_NAME 1024
 #endif
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
-  int *sbuf = NULL, *rbuf = NULL, *scounts = NULL, *rcounts = NULL, *sdispls = NULL, *rdispls = NULL, i, root;
+  int *sbuf = NULL, *rbuf = NULL, *scounts = NULL, *rcounts = NULL,
+      *sdispls = NULL, *rdispls = NULL, i, root;
 
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
@@ -64,12 +65,12 @@ int main(int argc, char** argv)
     return 1;
   }
 
-  sbuf    = (int*)malloc(sizeof(int) * nprocs * 2);
-  rbuf    = (int*)malloc(sizeof(int) * nprocs * 2);
-  scounts = (int*)malloc(sizeof(int) * nprocs);
-  rcounts = (int*)malloc(sizeof(int) * nprocs);
-  sdispls = (int*)malloc(sizeof(int) * nprocs);
-  rdispls = (int*)malloc(sizeof(int) * nprocs);
+  sbuf = (int *)malloc(sizeof(int) * nprocs * 2);
+  rbuf = (int *)malloc(sizeof(int) * nprocs * 2);
+  scounts = (int *)malloc(sizeof(int) * nprocs);
+  rcounts = (int *)malloc(sizeof(int) * nprocs);
+  sdispls = (int *)malloc(sizeof(int) * nprocs);
+  rdispls = (int *)malloc(sizeof(int) * nprocs);
 
   for (i = 0; i < nprocs; i++) {
     scounts[i] = 2; // Mathias corrected this to 1, why?
@@ -78,7 +79,8 @@ int main(int argc, char** argv)
     rdispls[i] = i * 2;
   }
 
-  MPI_Alltoallv(sbuf, scounts, sdispls, MPI_INT, rbuf, rcounts, rdispls, MPI_INT, MPI_COMM_WORLD);
+  MPI_Alltoallv(sbuf, scounts, sdispls, MPI_INT, rbuf, rcounts, rdispls,
+                MPI_INT, MPI_COMM_WORLD);
 
   if (sbuf)
     free(sbuf);

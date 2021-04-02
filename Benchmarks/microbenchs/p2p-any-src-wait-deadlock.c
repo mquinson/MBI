@@ -2,7 +2,8 @@
 //
 // Origin: MUST
 //
-// Description: Complex example where a deadlock happens while wildcard source updates won't arrive
+// Description: Complex example where a deadlock happens while wildcard source
+// updates won't arrive
 //
 //				 Communication pattern:
 //
@@ -18,7 +19,7 @@
 // P2P: Incorrect
 // iP2P: Incorrect
 // PERS: Lacking
-// COLL: Lacking 
+// COLL: Lacking
 // iCOLL: Lacking
 // TOPO: Lacking
 // IO: Lacking
@@ -53,10 +54,9 @@
 #define MPI_MAX_PROCESSOR_NAME 1024
 #endif
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
   int buf;
@@ -76,31 +76,38 @@ int main(int argc, char** argv)
   }
 
   if (rank == 0) {
-    MPI_Irecv(&nprocs, 1, MPI_INT, MPI_ANY_SOURCE, 666, MPI_COMM_WORLD, &request);
+    MPI_Irecv(&nprocs, 1, MPI_INT, MPI_ANY_SOURCE, 666, MPI_COMM_WORLD,
+              &request);
     // This is the error, would also have to provide a send
 
-    MPI_Recv(&buf, 1, MPI_INT, 3, 123, MPI_COMM_WORLD, &status); // This will hang
+    MPI_Recv(&buf, 1, MPI_INT, 3, 123, MPI_COMM_WORLD,
+             &status); // This will hang
 
     MPI_Wait(&request, &status);
   }
   if (rank == 1) {
-    MPI_Irecv(&nprocs, 1, MPI_INT, MPI_ANY_SOURCE, 666, MPI_COMM_WORLD, &request);
+    MPI_Irecv(&nprocs, 1, MPI_INT, MPI_ANY_SOURCE, 666, MPI_COMM_WORLD,
+              &request);
     MPI_Send(&buf, 1, MPI_INT, 0, 666, MPI_COMM_WORLD);
 
-    MPI_Recv(&buf, 1, MPI_INT, 3, 123, MPI_COMM_WORLD, &status); // This will hang
+    MPI_Recv(&buf, 1, MPI_INT, 3, 123, MPI_COMM_WORLD,
+             &status); // This will hang
 
     MPI_Wait(&request, &status);
   }
   if (rank == 2) {
-    MPI_Irecv(&nprocs, 1, MPI_INT, MPI_ANY_SOURCE, 666, MPI_COMM_WORLD, &request);
+    MPI_Irecv(&nprocs, 1, MPI_INT, MPI_ANY_SOURCE, 666, MPI_COMM_WORLD,
+              &request);
     MPI_Send(&buf, 1, MPI_INT, 1, 666, MPI_COMM_WORLD);
 
-    MPI_Recv(&buf, 1, MPI_INT, 3, 123, MPI_COMM_WORLD, &status); // This will hang
+    MPI_Recv(&buf, 1, MPI_INT, 3, 123, MPI_COMM_WORLD,
+             &status); // This will hang
 
     MPI_Wait(&request, &status);
   }
   if (rank == 3) {
-    MPI_Irecv(&nprocs, 1, MPI_INT, MPI_ANY_SOURCE, 666, MPI_COMM_WORLD, &request);
+    MPI_Irecv(&nprocs, 1, MPI_INT, MPI_ANY_SOURCE, 666, MPI_COMM_WORLD,
+              &request);
     MPI_Send(&buf, 1, MPI_INT, 2, 666, MPI_COMM_WORLD);
     MPI_Wait(&request, &status); // This will hang
 

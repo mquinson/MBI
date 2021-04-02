@@ -2,13 +2,14 @@
 //
 // Origin: CIVL
 //
-// Description: Correct use of MPI_Probe and MPI_Get_count to find the size of an incomming message
+// Description: Correct use of MPI_Probe and MPI_Get_count to find the size of
+// an incomming message
 //
 //// List of features
 // P2P: Correct
 // iP2P: Lacking
 // PERS: Lacking
-// COLL: Lacking  
+// COLL: Lacking
 // iCOLL: Lacking
 // TOPO: Lacking
 // IO: Lacking
@@ -44,10 +45,9 @@
 #define MPI_MAX_PROCESSOR_NAME 1024
 #endif
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
   MPI_Status status;
@@ -65,14 +65,14 @@ int main(int argc, char** argv)
 
   mytag = 123;
   if (rank == 0) {
-    j      = 200;
+    j = 200;
     icount = 1;
-    ierr   = MPI_Send(&j, icount, MPI_INT, 1, mytag, MPI_COMM_WORLD);
+    ierr = MPI_Send(&j, icount, MPI_INT, 1, mytag, MPI_COMM_WORLD);
   }
   if (rank == 1) {
     ierr = MPI_Probe(0, mytag, MPI_COMM_WORLD, &status);
     ierr = MPI_Get_count(&status, MPI_INT, &icount);
-    i    = (int*)malloc(icount * sizeof(int));
+    i = (int *)malloc(icount * sizeof(int));
     printf("getting %d\n", icount);
     ierr = MPI_Recv(i, icount, MPI_INT, 0, mytag, MPI_COMM_WORLD, &status);
     printf("i= ");

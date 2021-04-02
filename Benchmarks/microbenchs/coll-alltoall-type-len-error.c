@@ -2,7 +2,8 @@
 //
 // Origin: MUST (collAlltoallTypeLenError.cpp)
 //
-// Description: Performs a MPI_Alltoall collective with an error that occurs when nprocs = 3
+// Description: Performs a MPI_Alltoall collective with an error that occurs
+// when nprocs = 3
 //
 //// List of features
 // P2P: Lacking
@@ -43,10 +44,9 @@
 #define MPI_MAX_PROCESSOR_NAME 1024
 #endif
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
   int i;
@@ -72,7 +72,8 @@ int main(int argc, char** argv)
   MPI_Type_contiguous(3 - rank, MPI_INT, &conti);
   MPI_Type_commit(&conti);
 
-  MPI_Alltoall(outbuf, 6 / (3 - rank), conti, inbuf, 6 + rank % 2, MPI_INT, MPI_COMM_WORLD);
+  MPI_Alltoall(outbuf, 6 / (3 - rank), conti, inbuf, 6 + rank % 2, MPI_INT,
+               MPI_COMM_WORLD);
 
   MPI_Type_free(&conti);
   printf("Signing off, rank %d\n", rank);

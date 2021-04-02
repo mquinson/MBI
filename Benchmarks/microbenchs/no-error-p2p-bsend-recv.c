@@ -2,14 +2,14 @@
 //
 // Origin: MUST
 //
-// Description: There is no deadlock in this test, we call a send and a matching recv. One of the sends is in buffered
-// mode.
+// Description: There is no deadlock in this test, we call a send and a matching
+// recv. One of the sends is in buffered mode.
 //
 //// List of features
 // P2P: Correct
 // iP2P: Lacking
 // PERS: Lacking
-// COLL: Lacking  
+// COLL: Lacking
 // iCOLL: Lacking
 // TOPO: Lacking
 // IO: Lacking
@@ -45,14 +45,13 @@
 #define MPI_MAX_PROCESSOR_NAME 1024
 #endif
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
   MPI_Status status;
-  void* buffer;
+  void *buffer;
 
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &nprocs);

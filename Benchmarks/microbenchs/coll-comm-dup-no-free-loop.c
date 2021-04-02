@@ -48,10 +48,9 @@
 #define COMMS_PER_ITERATION 3
 #define COMMS_LOST_PER_ITERATION 1
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   int i, j;
   MPI_Comm newcomm[COMMS_PER_ITERATION];
   char processor_name[MPI_MAX_PROCESSOR_NAME];

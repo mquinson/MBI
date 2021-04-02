@@ -2,7 +2,8 @@
 //
 // Origin: ISP (http://formalverification.cs.utah.edu/ISP_Tests/)
 //
-// Description: Mismatch communicators in MPI_Bcast. A deadlock occurs with nprocs > 3
+// Description: Mismatch communicators in MPI_Bcast. A deadlock occurs with
+// nprocs > 3
 //
 //// List of features
 // P2P: Lacking
@@ -46,10 +47,9 @@
 
 #define buf_size 128
 
-int main(int argc, char** argv)
-{
-  int nprocs    = -1;
-  int rank      = -1;
+int main(int argc, char **argv) {
+  int nprocs = -1;
+  int rank = -1;
   MPI_Comm comm = MPI_COMM_WORLD;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
@@ -68,13 +68,14 @@ int main(int argc, char** argv)
     printf("Creating first new comm\n");
 
   int color = rank % 2;
-  int key   = 1;
+  int key = 1;
   int nrank;
   int nsize;
   MPI_Comm_split(comm, color, key, &nc1);
   MPI_Comm_size(nc1, &nsize);
   MPI_Comm_rank(nc1, &nrank);
-  printf("world task %d/%d maps to new comm task %d/%d\n", nprocs, rank, nsize, nrank);
+  printf("world task %d/%d maps to new comm task %d/%d\n", nprocs, rank, nsize,
+         nrank);
 
   MPI_Barrier(comm);
 

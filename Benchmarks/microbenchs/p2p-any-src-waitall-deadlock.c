@@ -2,7 +2,8 @@
 //
 // Origin: ISP(http://formalverification.cs.utah.edu/ISP_Tests/)
 //
-// Description: Processes are blocked in recv calls. recv and send in P2 should be inverted. A deadlock occurs with nprocs > 2
+// Description: Processes are blocked in recv calls. recv and send in P2 should
+// be inverted. A deadlock occurs with nprocs > 2
 //
 //			 Communication pattern:
 //
@@ -19,7 +20,7 @@
 // P2P: Incorrect
 // iP2P: Incorrect
 // PERS: Lacking
-// COLL: Correct  
+// COLL: Correct
 // iCOLL: Lacking
 // TOPO: Lacking
 // IO: Lacking
@@ -57,10 +58,9 @@
 
 #define buf_size 128
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
   int buf0[buf_size];
@@ -79,8 +79,10 @@ int main(int argc, char** argv)
   if (nprocs < 3) {
     printf("\033[0;31m! This test needs at least 3 processes !\033[0;0m\n");
   } else if (rank == 0) {
-    MPI_Irecv(buf0, buf_size, MPI_INT, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &reqs[0]);
-    MPI_Irecv(buf1, buf_size, MPI_INT, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &reqs[1]);
+    MPI_Irecv(buf0, buf_size, MPI_INT, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD,
+              &reqs[0]);
+    MPI_Irecv(buf1, buf_size, MPI_INT, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD,
+              &reqs[1]);
     MPI_Waitall(2, reqs, statuses);
     MPI_Send(buf1, buf_size, MPI_INT, 1, 1, MPI_COMM_WORLD);
     MPI_Send(buf0, buf_size, MPI_INT, 2, 2, MPI_COMM_WORLD);

@@ -2,14 +2,15 @@
 //
 // Origin: ISP(http://formalverification.cs.utah.edu/ISP_Tests/)
 //
-// Description: P0 receives messages from all other processes by calling MPI_Recev with MPI_ANY_SOURCE.
+// Description: P0 receives messages from all other processes by calling
+// MPI_Recev with MPI_ANY_SOURCE.
 //
 //
 //// List of features
 // P2P: Correct
 // iP2P: Lacking
 // PERS: Lacking
-// COLL: Correct  
+// COLL: Correct
 // iCOLL: Lacking
 // TOPO: Lacking
 // IO: Lacking
@@ -47,10 +48,9 @@
 
 #define buf_size 128
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   int i;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
@@ -69,7 +69,8 @@ int main(int argc, char** argv)
     printf("\033[0;31m! This test needs 3 processes !\033[0;0m\n");
   } else if (rank == 0) {
     for (i = 1; i < nprocs; i++) {
-      MPI_Recv(buf, buf_size, MPI_INT, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &status);
+      MPI_Recv(buf, buf_size, MPI_INT, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD,
+               &status);
     }
   } else {
     memset(buf, 1, buf_size * sizeof(int));

@@ -75,8 +75,7 @@ int main(int argc, char **argv) {
 
   if (rank == 0) {
 
-    MPI_Recv(&buf0, buf_size, MPI_INT, 1, 0, MPI_COMM_WORLD,
-             &status);
+    MPI_Recv(&buf0, buf_size, MPI_INT, 1, 0, MPI_COMM_WORLD, &status);
 
     MPI_Send(&buf0, buf_size, MPI_INT, 3, 0, MPI_COMM_WORLD);
     MPI_Recv(&buf0, buf_size, MPI_INT, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD,
@@ -85,7 +84,7 @@ int main(int argc, char **argv) {
   } else if (rank == 1) {
     // memset (buf0, 0, buf_size);
 
-     // sleep (30);
+    // sleep (30);
 
     MPI_Send(&buf0, buf_size, MPI_INT, 0, 0, MPI_COMM_WORLD);
 

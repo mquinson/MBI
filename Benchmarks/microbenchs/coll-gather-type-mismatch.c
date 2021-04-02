@@ -2,7 +2,8 @@
 //
 // Origin: CIVL
 //
-// Description: Type mismatch in MPI_Gather. P0 calls MPI_Gather with MPI_INT while others call MPI_Gather with MPI_FLOAT
+// Description: Type mismatch in MPI_Gather. P0 calls MPI_Gather with MPI_INT
+// while others call MPI_Gather with MPI_FLOAT
 //
 //// List of features
 // P2P: Lacking
@@ -44,13 +45,12 @@
 #define MPI_MAX_PROCESSOR_NAME 1024
 #endif
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
-  int* values;
+  int *values;
 
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
@@ -59,9 +59,9 @@ int main(int argc, char** argv)
   printf("rank %d is alive on %s\n", rank, processor_name);
 
   if (rank == 0 || rank == 2) {
-    values = (int*)malloc(sizeof(int) * nprocs);
+    values = (int *)malloc(sizeof(int) * nprocs);
   } else {
-    values = (int*)malloc(sizeof(int));
+    values = (int *)malloc(sizeof(int));
   }
 
   *values = nprocs + rank;

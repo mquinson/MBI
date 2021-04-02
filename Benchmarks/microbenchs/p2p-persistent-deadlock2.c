@@ -2,28 +2,26 @@
 //
 // Origin: ISP (http://formalverification.cs.utah.edu/ISP_Tests/)
 //
-// Description: Do some MPI persistent calls, including freeing an active request - the effect of which is
-// implementation dependent
+// Description: Do some MPI persistent calls, including freeing an active
+// request - the effect of which is implementation dependent
 //
 //				 Communication pattern:
 //
-//				   P0           				 P1
-//				 barrier       			barrier
+//				   P0 P1 				 barrier       			barrier
 //				 send_init(1,req0)  recv_init(0,req0)
 //				 recv_init(0,req1)  send_init(0,req1)
 //				 start(req0)     		start(req0)
 //				 start(req1)    		start(req1)
-//				 waitall   		 			waitall
-//				 startall  		 			startall
-//				 waitall   		 			waitall
-//				 barrier   		 			barrier
+//				 waitall waitall 				 startall
+//startall 				 waitall   		 			waitall 				 barrier
+//barrier
 //
 //
 //// List of features
 // P2P: Lacking
 // iP2P: Lacking
 // PERS: Incorrect
-// COLL: Correct  
+// COLL: Correct
 // iCOLL: Lacking
 // TOPO: Lacking
 // IO: Lacking
@@ -61,10 +59,9 @@
 
 #define buf_size 128
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
   int buf0[buf_size];

@@ -2,19 +2,18 @@
 //
 // Origin: ISP(http://formalverification.cs.utah.edu/ISP_Tests/)
 //
-// Description: A deadlock occurs if P0 receives from P2 first. Uncomment sleeps to force the deadlock
-//      				(sleeps generally make order 2 before 1 with all task, 0 ops being posted after
-//      both 1 and 2)
+// Description: A deadlock occurs if P0 receives from P2 first. Uncomment sleeps
+// to force the deadlock
+//      				(sleeps generally make order 2 before 1
+//      with all task, 0 ops being posted after both 1 and 2)
 //
 //				 Communication pattern:
 //
 //				  P0         P1        P2
 //         barrier     barrier  barrier
 //				 Irecv(any)  send(0)  send(0)
-//				 recv(2)     					recv(0)
-//				 send(2)     					send(0)
-//				 recv(any)
-//				 wait
+//				 recv(2) recv(0) 				 send(2)
+//send(0) 				 recv(any) 				 wait
 //         barrier     barrier  barrier
 //
 //
@@ -22,7 +21,7 @@
 // P2P: Incorrect
 // iP2P: Incorrect
 // PERS: Lacking
-// COLL: Correct  
+// COLL: Correct
 // iCOLL: Lacking
 // TOPO: Lacking
 // IO: Lacking
@@ -61,10 +60,9 @@
 
 #define buf_size 128
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
   int buf0[buf_size];
@@ -87,7 +85,8 @@ int main(int argc, char** argv)
     MPI_Irecv(buf0, buf_size, MPI_INT, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &req);
     MPI_Recv(buf1, buf_size, MPI_INT, 2, 0, MPI_COMM_WORLD, &status);
     MPI_Send(buf1, buf_size, MPI_INT, 2, 0, MPI_COMM_WORLD);
-    MPI_Recv(buf1, buf_size, MPI_INT, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &status);
+    MPI_Recv(buf1, buf_size, MPI_INT, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD,
+             &status);
     MPI_Wait(&req, &status);
   } else if (rank == 2) {
     memset(buf0, 0, buf_size * sizeof(int));

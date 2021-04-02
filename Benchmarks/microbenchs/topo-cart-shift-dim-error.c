@@ -2,7 +2,8 @@
 //
 // Origin: MUST
 //
-// Description: This code creates a cartesian communicator and do a shift on this communicator
+// Description: This code creates a cartesian communicator and do a shift on
+// this communicator
 //  with using a direction that is greater then the number of dimensions in the
 //  communicator. This will cause an error if nprocs > 2.
 //
@@ -45,10 +46,9 @@
 #define MPI_MAX_PROCESSOR_NAME 1024
 #endif
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
 
@@ -68,8 +68,8 @@ int main(int argc, char** argv)
   MPI_Comm comm;
   int dims[2], periods[2];
   int source, dest;
-  dims[0]    = 2;
-  dims[1]    = 1;
+  dims[0] = 2;
+  dims[1] = 1;
   periods[0] = 1;
   periods[1] = 1;
 

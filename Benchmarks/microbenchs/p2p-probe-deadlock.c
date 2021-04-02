@@ -2,8 +2,9 @@
 //
 // Origin: ISP (http://formalverification.cs.utah.edu/ISP_Tests/)
 //
-// Description: MPI_Probe is a blocking call that returns only after a matching message has been found. By calling
-// MPI_Probe before MPI_Recv, a deadlock is created.
+// Description: MPI_Probe is a blocking call that returns only after a matching
+// message has been found. By calling MPI_Probe before MPI_Recv, a deadlock is
+// created.
 //
 //				 Communication pattern:
 //
@@ -18,7 +19,7 @@
 // P2P: Incorrect
 // iP2P: Lacking
 // PERS: Lacking
-// COLL: Correct  
+// COLL: Correct
 // iCOLL: Lacking
 // TOPO: Lacking
 // IO: Lacking
@@ -53,10 +54,9 @@
 #define MPI_MAX_PROCESSOR_NAME 1024
 #endif
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
   int i, j;

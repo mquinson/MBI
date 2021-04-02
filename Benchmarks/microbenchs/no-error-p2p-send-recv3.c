@@ -9,7 +9,7 @@
 // P2P: Correct
 // iP2P: Lacking
 // PERS: Lacking
-// COLL: Lacking  
+// COLL: Lacking
 // iCOLL: Lacking
 // TOPO: Lacking
 // IO: Lacking
@@ -47,10 +47,9 @@
 
 #define buf_size 128
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
   int i, left, right;
@@ -62,9 +61,9 @@ int main(int argc, char** argv)
   MPI_Get_processor_name(processor_name, &namelen);
   printf("rank %d is alive on %s\n", rank, processor_name);
 
-  left  = (rank + nprocs - 1) % nprocs;
+  left = (rank + nprocs - 1) % nprocs;
   right = (rank + nprocs + 1) % nprocs;
-  i     = 0;
+  i = 0;
   if (rank % 2 == 0) {
     MPI_Send(&data, 0, MPI_INT, right, 0, MPI_COMM_WORLD);
     MPI_Recv(&data, 0, MPI_INT, left, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);

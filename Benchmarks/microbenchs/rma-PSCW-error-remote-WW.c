@@ -2,8 +2,8 @@
 //
 // Origin: MC-Checker
 //
-// Description: Consistency error accross processes for active mode. P0 and P2 may access the
-// window location in P1 concurrently
+// Description: Consistency error accross processes for active mode. P0 and P2
+// may access the window location in P1 concurrently
 //
 //// List of features
 // P2P: Lacking
@@ -44,17 +44,16 @@
 #define MPI_MAX_PROCESSOR_NAME 1024
 #endif
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
   MPI_Win win;
-  int X; // Window buffer
+  int X;        // Window buffer
   int localbuf; // Local buffer
   MPI_Group world_group;
-  MPI_Group gp1; // group containing P1
+  MPI_Group gp1;  // group containing P1
   MPI_Group gp02; // group containing P0 and P2
   const int ranks02[2] = {0, 2};
   const int ranks1[1] = {1};
@@ -65,10 +64,9 @@ int main(int argc, char** argv)
   MPI_Get_processor_name(processor_name, &namelen);
   printf("rank %d is alive on %s\n", rank, processor_name);
 
-  localbuf=rank;
-  X=4;
+  localbuf = rank;
+  X = 4;
 
-  
   MPI_Comm_group(MPI_COMM_WORLD, &world_group);
   MPI_Group_incl(world_group, 2, ranks02, &gp02);
   MPI_Group_incl(world_group, 1, ranks1, &gp1);
@@ -79,14 +77,15 @@ int main(int argc, char** argv)
     return 1;
   }
 
-  MPI_Win_create(&X, sizeof(int),sizeof(int),MPI_INFO_NULL, MPI_COMM_WORLD, &win);
+  MPI_Win_create(&X, sizeof(int), sizeof(int), MPI_INFO_NULL, MPI_COMM_WORLD,
+                 &win);
 
-  if(rank == 0 || rank == 2){
+  if (rank == 0 || rank == 2) {
     MPI_Win_start(gp1, 0, win);
     MPI_Put(&localbuf, 1, MPI_INT, 1, 0, 1, MPI_INT, win);
     MPI_Win_complete(win);
-  }else{
-    if(rank == 1){
+  } else {
+    if (rank == 1) {
       MPI_Win_post(gp02, 0, win);
       MPI_Win_wait(win);
     }

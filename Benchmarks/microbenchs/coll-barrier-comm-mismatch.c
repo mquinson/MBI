@@ -2,7 +2,9 @@
 //
 // Origin: Parcoach
 //
-// Description: Communicator mismatch. Some processes call MPI_Barrier on MPI_COMM_WORLD while others call a barrier on newcomm (communicator created with MPI_Comm_split). A deadlock occurs if nprocs > 1.
+// Description: Communicator mismatch. Some processes call MPI_Barrier on
+// MPI_COMM_WORLD while others call a barrier on newcomm (communicator created
+// with MPI_Comm_split). A deadlock occurs if nprocs > 1.
 //
 /// List of features
 // P2P: Lacking
@@ -43,10 +45,9 @@
 #define MPI_MAX_PROCESSOR_NAME 1024
 #endif
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   MPI_Comm comm;
   MPI_Comm newcomm;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
@@ -62,7 +63,8 @@ int main(int argc, char** argv)
   MPI_Comm_split(comm, rank % 2, rank, &newcomm);
 
   if (nprocs < 2)
-    printf("\033[0;31m! This test needs at least 2 processes to produce a bug !\033[0;0m\n");
+    printf("\033[0;31m! This test needs at least 2 processes to produce a bug "
+           "!\033[0;0m\n");
 
   if (rank % 3)
     MPI_Barrier(comm);

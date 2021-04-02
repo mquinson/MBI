@@ -2,7 +2,8 @@
 //
 // Origin: MUST
 //
-// Description: Root mismatch in Bcast. All processes execute a Bcast with a root of 0, except for rank 1 which uses 1 as its root.
+// Description: Root mismatch in Bcast. All processes execute a Bcast with a
+// root of 0, except for rank 1 which uses 1 as its root.
 //
 //// List of features
 // P2P: Lacking
@@ -43,13 +44,12 @@
 #define MPI_MAX_PROCESSOR_NAME 1024
 #endif
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
-  int temp    = 0, root;
+  int temp = 0, root;
 
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &nprocs);

@@ -2,14 +2,16 @@
 //
 // Origin: ISP (http://formalverification.cs.utah.edu/ISP_Tests/)
 //
-// Description: Send-Recv messages. A deadlock may occur, depending on the eager-limit.
-//     Eager limit: term used to describe a method of sending short messages used by many MPI implementation
+// Description: Send-Recv messages. A deadlock may occur, depending on the
+// eager-limit.
+//     Eager limit: term used to describe a method of sending short messages
+//     used by many MPI implementation
 //
 //// List of features
 // P2P: Incorrect
 // iP2P: Lacking
 // PERS: Lacking
-// COLL: Lacking 
+// COLL: Lacking
 // iCOLL: Lacking
 // TOPO: Lacking
 // IO: Lacking
@@ -56,10 +58,9 @@
 
 #define buf_size 32000
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
   float data[buf_size];
@@ -73,10 +74,11 @@ int main(int argc, char** argv)
   printf("rank %d is alive on %s\n", rank, processor_name);
 
   if (rank == 0)
-    printf("\033[0;31m WARNING: This test depends on the MPI's eager limit. Set it appropriately.\033[0;0m\n");
+    printf("\033[0;31m WARNING: This test depends on the MPI's eager limit. "
+           "Set it appropriately.\033[0;0m\n");
 
   int dest = (rank == nprocs - 1) ? (0) : (rank + 1);
-  data[0]  = rank;
+  data[0] = rank;
   MPI_Send(data, buf_size, MPI_FLOAT, dest, tag, MPI_COMM_WORLD);
   printf("(%d) sent data %f\n", rank, data[0]);
 

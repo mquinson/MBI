@@ -8,7 +8,7 @@
 // P2P: Lacking
 // iP2P: Correct
 // PERS: Lacking
-// COLL: Correct  
+// COLL: Correct
 // iCOLL: Lacking
 // TOPO: Lacking
 // IO: Lacking
@@ -51,10 +51,9 @@
 
 #define buf_size 128
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   int i, j, partner, buf_j;
   int buf[buf_size * TYPES_TO_COMMIT];
   char processor_name[MPI_MAX_PROCESSOR_NAME];
@@ -87,9 +86,11 @@ int main(int argc, char** argv)
             MPI_Type_commit(&newtype[j]);
 
             if (rank % 2) {
-              MPI_Irecv(&buf[buf_j * buf_size], 1, newtype[j], partner, buf_j, MPI_COMM_WORLD, &reqs[buf_j]);
+              MPI_Irecv(&buf[buf_j * buf_size], 1, newtype[j], partner, buf_j,
+                        MPI_COMM_WORLD, &reqs[buf_j]);
             } else {
-              MPI_Isend(&buf[buf_j * buf_size], 1, newtype[j], partner, buf_j, MPI_COMM_WORLD, &reqs[buf_j]);
+              MPI_Isend(&buf[buf_j * buf_size], 1, newtype[j], partner, buf_j,
+                        MPI_COMM_WORLD, &reqs[buf_j]);
             }
           }
 

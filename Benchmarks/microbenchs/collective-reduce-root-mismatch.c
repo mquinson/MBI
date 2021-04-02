@@ -1,14 +1,15 @@
 ////////////////// MPI bugs collection header //////////////////
 //
-// Origin: 
+// Origin:
 //
-// Description: Root mismatch in MPI_Reduce. In this code, processes call MPI_Reduce with their ID as root
+// Description: Root mismatch in MPI_Reduce. In this code, processes call
+// MPI_Reduce with their ID as root
 //
 //// List of features
 // P2P: Lacking
 // iP2P: Lacking
 // PERS: Lacking
-// COLL: Incorrect  
+// COLL: Incorrect
 // iCOLL: Lacking
 // TOPO: Lacking
 // IO: Lacking
@@ -43,10 +44,9 @@
 #define MPI_MAX_PROCESSOR_NAME 1024
 #endif
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
   int localsum, sum;
@@ -58,7 +58,8 @@ int main(int argc, char** argv)
   printf("rank %d is alive on %s\n", rank, processor_name);
 
   if (nprocs < 2)
-    printf("\033[0;31m! This test needs at least 2 processes to produce a bug !\033[0;0m\n");
+    printf("\033[0;31m! This test needs at least 2 processes to produce a bug "
+           "!\033[0;0m\n");
 
   localsum = 0;
   for (int i = 0; i <= rank; i++) {

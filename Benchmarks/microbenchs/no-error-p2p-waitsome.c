@@ -2,14 +2,16 @@
 //
 // Origin: MUST
 //
-// Description: There is no deadlock in this test, we call correct and matching MPI calls.
-//               We execute 1 to 3 calls to MPI_Waitsome depending on the interleaving.
+// Description: There is no deadlock in this test, we call correct and matching
+// MPI calls.
+//               We execute 1 to 3 calls to MPI_Waitsome depending on the
+//               interleaving.
 //
 //// List of features
 // P2P: Correct
 // iP2P: Correct
 // PERS: Lacking
-// COLL: Lacking  
+// COLL: Lacking
 // iCOLL: Lacking
 // TOPO: Lacking
 // IO: Lacking
@@ -44,10 +46,9 @@
 #define MPI_MAX_PROCESSOR_NAME 1024
 #endif
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
   int i, outcount, indices[3], num;
@@ -77,7 +78,7 @@ int main(int argc, char** argv)
     MPI_Isend(&(buf[1]), 1, MPI_INT, 0, 666, MPI_COMM_WORLD, &(requests[1]));
     MPI_Irecv(&(buf[2]), 2, MPI_INT, 2, 123, MPI_COMM_WORLD, &(requests[2]));
 
-    i   = 0;
+    i = 0;
     num = 0;
     while (i < 3) {
       MPI_Waitsome(3, requests, &outcount, indices, statuses);

@@ -2,7 +2,8 @@
 //
 // Origin: ISP (http://formalverification.cs.utah.edu/ISP_Tests/)
 //
-// Description: Mismatch communicators in MPI_Bcast. A deadlock occurs with nprocs = 3
+// Description: Mismatch communicators in MPI_Bcast. A deadlock occurs with
+// nprocs = 3
 //
 //// List of features
 // P2P: Lacking
@@ -46,10 +47,9 @@
 
 #define buf_size 128
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
   MPI_Comm inverted_comm;

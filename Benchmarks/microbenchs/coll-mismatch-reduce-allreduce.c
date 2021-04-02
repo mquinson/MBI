@@ -2,13 +2,14 @@
 //
 // Origin: ISP (http://formalverification.cs.utah.edu/ISP_Tests/)
 //
-// Description: Collective mismatch. Process 0 calls MPI_Reduce while others call MPI_Allreduce
+// Description: Collective mismatch. Process 0 calls MPI_Reduce while others
+// call MPI_Allreduce
 //
 //// List of features
 // P2P: Lacking
 // iP2P: Lacking
 // PERS: Lacking
-// COLL: Incorrect  
+// COLL: Incorrect
 // iCOLL: Lacking
 // TOPO: Lacking
 // IO: Lacking
@@ -47,10 +48,9 @@
 
 #define buf_size 128
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
   int sbuf[buf_size];
@@ -63,7 +63,8 @@ int main(int argc, char** argv)
   printf("rank %d is alive on %s\n", rank, processor_name);
 
   if (nprocs < 2) {
-    printf("\033[0;31m! This test needs at least 2 processes to produce a bug !\033[0;0m\n");
+    printf("\033[0;31m! This test needs at least 2 processes to produce a bug "
+           "!\033[0;0m\n");
   } else {
     memset(sbuf, 0, buf_size * sizeof(int));
     memset(rbuf, 1, buf_size * sizeof(int));
@@ -71,12 +72,12 @@ int main(int argc, char** argv)
     MPI_Barrier(MPI_COMM_WORLD);
 
     switch (rank) {
-      case 0:
-        MPI_Reduce(sbuf, rbuf, 1, MPI_INT, MPI_MAX, 0, MPI_COMM_WORLD);
-        break;
-      default:
-        MPI_Allreduce(sbuf, rbuf, 1, MPI_INT, MPI_MAX, MPI_COMM_WORLD);
-        break;
+    case 0:
+      MPI_Reduce(sbuf, rbuf, 1, MPI_INT, MPI_MAX, 0, MPI_COMM_WORLD);
+      break;
+    default:
+      MPI_Allreduce(sbuf, rbuf, 1, MPI_INT, MPI_MAX, MPI_COMM_WORLD);
+      break;
     }
 
     MPI_Barrier(MPI_COMM_WORLD);

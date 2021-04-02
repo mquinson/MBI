@@ -2,13 +2,14 @@
 //
 // Origin: MUST
 //
-// Description: This code performs a MPI_Reduce_scatter_block with a type match error (incompatible lengths)
+// Description: This code performs a MPI_Reduce_scatter_block with a type match
+// error (incompatible lengths)
 //
 //// List of features
 // P2P: Lacking
 // iP2P: Lacking
 // PERS: Lacking
-// COLL: Incorrect  
+// COLL: Incorrect
 // iCOLL: Lacking
 // TOPO: Lacking
 // IO: Lacking
@@ -43,10 +44,9 @@
 #define MPI_MAX_PROCESSOR_NAME 1024
 #endif
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
   int i;
@@ -72,7 +72,8 @@ int main(int argc, char** argv)
   MPI_Type_contiguous(3 - rank, MPI_INT, &conti);
   MPI_Type_commit(&conti);
 
-  MPI_Reduce_scatter_block(outbuf, inbuf, 6 + rank % 2, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
+  MPI_Reduce_scatter_block(outbuf, inbuf, 6 + rank % 2, MPI_INT, MPI_SUM,
+                           MPI_COMM_WORLD);
 
   MPI_Type_free(&conti);
 

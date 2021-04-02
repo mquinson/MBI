@@ -2,13 +2,14 @@
 //
 // Origin: MPI Bug Collection
 //
-// Description: P0 sends a message to P1. There is no matching receive in P1. An error is reported by the MPI runtime if nprocs = 1 (invalid rank in MPI_Send)
+// Description: P0 sends a message to P1. There is no matching receive in P1. An
+// error is reported by the MPI runtime if nprocs = 1 (invalid rank in MPI_Send)
 //
 //// List of features
 // P2P: Incorrect
 // iP2P: Lacking
 // PERS: Lacking
-// COLL: Lacking  
+// COLL: Lacking
 // iCOLL: Lacking
 // TOPO: Lacking
 // IO: Lacking
@@ -46,10 +47,9 @@
 
 #define buf_size 128
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
   int buf0[buf_size];

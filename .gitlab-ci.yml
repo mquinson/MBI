@@ -254,8 +254,8 @@ test-civl100:
     needs:
         - job: build-civl
           artifacts: false
-    before_script:
-        - apt-get install -y psmisc
+    # before_script:
+    #     - apt-get install -y psmisc
     script:
         - cd Benchmarks
         - for file in $(ls microbenchs/*.c | head -100); do python3.8 runner.py -x civl -o bench_civl100.csv -t 300 --job $CI_JOB_ID $file; uptime;killall java||true;done
@@ -271,8 +271,8 @@ test-civl200:
     needs:
         - job: build-civl
           artifacts: false
-    before_script:
-        - apt-get install -y psmisc
+    # before_script:
+    #     - apt-get install -y psmisc
     script:
         - cd Benchmarks
         - for file in $(ls microbenchs/*.c | tail -n +101); do python3.8 runner.py -x civl -o bench_civl200.csv -t 300 --job $CI_JOB_ID $file; uptime;killall java||true;done
@@ -289,9 +289,9 @@ test-civl200:
 build-parcoach:
     stage: build
     needs : []
-    before_script:
-        - apt-get update
-        - apt-get install -y git
+    # before_script:
+    #     - apt-get update
+    #     - apt-get install -y git
     script:
         - ln -s $(which clang) /usr/lib/llvm-9/bin/clang
         - if [ -e Parcoach/parcoach/.git ] ; then (cd Parcoach/parcoach ; git pull); else rm -rf Parcoach/parcoach; git clone --depth=1 https://github.com/parcoach/parcoach.git Parcoach/parcoach; fi
@@ -331,9 +331,9 @@ test-parcoach:
 build-simgrid:
     stage: build
     needs : []
-    before_script:
-        - apt-get update
-        - apt-get install -y git
+    # before_script:
+    #     - apt-get update
+    #     - apt-get install -y git
     script:
         - if [ -e SimGrid/simgrid/.git ] ; then (cd SimGrid/simgrid ; git pull); else rm -rf SimGrid/simgrid; git clone --depth=1 https://framagit.org/simgrid/simgrid.git SimGrid/simgrid; fi
         - cd SimGrid/simgrid
@@ -392,9 +392,9 @@ test-isp:
     needs:
         - job: build-isp
           artifacts: true
-    before_script:
-        - apt-get update
-        - apt-get install -y lsof
+    # before_script:
+    #     - apt-get update
+    #     - apt-get install -y lsof
     script:
         - export PATH=$PATH:/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/ISP/isp-0.3.1/BUILD/bin/
         - cd Benchmarks
@@ -412,83 +412,76 @@ simgrid-svg:
     needs:
         - job: test-simgrid
           artifacts: true
-    before_script:
-      - apt-get update
-      - apt-get install -y python3-pip libcairo2
-      - pip3 install drawSvg
+    # before_script:
+    #   - apt-get update
+    #   - apt-get install -y python3-pip libcairo2
+    #   - pip3 install drawSvg
     script:
       - cd Data
       - python3.8 gen_svg.py -i /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Benchmarks/bench_simgrid.csv -o simgrid_result_LOG --header false --mode log
-      - python3.8 gen_svg.py -i /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Benchmarks/bench_simgrid.csv -o simgrid_result_SRC --header false --mode src
     artifacts:
         untracked: false
         expire_in: 30 days
         when: always
         paths:
             - Data/simgrid_result_LOG.svg
-            - Data/simgrid_result_SRC.svg
 
 parcoach-svg:
     stage: svg
     needs:
         - job: test-parcoach
           artifacts: true
-    before_script:
-      - apt-get update
-      - apt-get install -y python3-pip libcairo2
-      - pip3 install drawSvg
+    # before_script:
+    #   - apt-get update
+    #   - apt-get install -y python3-pip libcairo2
+    #   - pip3 install drawSvg
     script:
       - cd Data
       - python3.8 gen_svg.py -i /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Benchmarks/bench_parcoach.csv -o parcoach_result_LOG --header false --mode log
-      - python3.8 gen_svg.py -i /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Benchmarks/bench_parcoach.csv -o parcoach_result_SRC --header false --mode src
     artifacts:
         untracked: false
         expire_in: 30 days
         when: always
         paths:
             - Data/parcoach_result_LOG.svg
-            - Data/parcoach_result_SRC.svg
+
 isp-svg:
     stage: svg
     needs:
         - job: test-isp
           artifacts: true
-    before_script:
-      - apt-get update
-      - apt-get install -y python3-pip libcairo2
-      - pip3 install drawSvg
+    # before_script:
+    #   - apt-get update
+    #   - apt-get install -y python3-pip libcairo2
+    #   - pip3 install drawSvg
     script:
       - cd Data
       - python3.8 gen_svg.py -i /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Benchmarks/bench_isp.csv -o isp_result_LOG --header false --mode log
-      - python3.8 gen_svg.py -i /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Benchmarks/bench_isp.csv -o isp_result_SRC --header false --mode src
     artifacts:
         untracked: false
         expire_in: 30 days
         when: always
         paths:
             - Data/isp_result_LOG.svg
-            - Data/isp_result_SRC.svg
 
 aislinn-svg:
     stage: svg
     needs:
         - job: test-aislinn
           artifacts: true
-    before_script:
-      - apt-get update
-      - apt-get install -y python3-pip libcairo2
-      - pip3 install drawSvg
+    # before_script:
+    #   - apt-get update
+    #   - apt-get install -y python3-pip libcairo2
+    #   - pip3 install drawSvg
     script:
       - cd Data
       - python3.8 gen_svg.py -i /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Benchmarks/bench_aislinn.csv -o aislinn_result_LOG --header false --mode log
-      - python3.8 gen_svg.py -i /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Benchmarks/bench_aislinn.csv -o aislinn_result_SRC --header false --mode src
     artifacts:
         untracked: false
         expire_in: 30 days
         when: always
         paths:
             - Data/aislinn_result_LOG.svg
-            - Data/aislinn_result_SRC.svg
 
 civl-svg:
     stage: svg
@@ -497,22 +490,20 @@ civl-svg:
           artifacts: true
         - job: test-civl200
           artifacts: true
-    before_script:
-      - apt-get update
-      - apt-get install -y python3-pip libcairo2
-      - pip3 install drawSvg
+    # before_script:
+    #   - apt-get update
+    #   - apt-get install -y python3-pip libcairo2
+    #   - pip3 install drawSvg
     script:
       - cat ./Benchmarks/*.csv > result.csv
       - cd Data
       - python3.8 gen_svg.py -i ../result.csv -o civl_result_LOG --header false --mode log
-      - python3.8 gen_svg.py -i ../result.csv -o civl_result_SRC --header false --mode src
     artifacts:
         untracked: false
         expire_in: 30 days
         when: always
         paths:
             - Data/civl_result_LOG.svg
-            - Data/civl_result_SRC.svg
 
 must-svg:
     stage: svg
@@ -533,22 +524,20 @@ must-svg:
           artifacts: true
         - job: test-must-200
           artifacts: true
-    before_script:
-      - apt-get update
-      - apt-get install -y python3-pip libcairo2
-      - pip3 install drawSvg
+    # before_script:
+    #   - apt-get update
+    #   - apt-get install -y python3-pip libcairo2
+    #   - pip3 install drawSvg
     script:
       - cat ./Benchmarks/*.csv > result.csv
       - cd Data
       - python3.8 gen_svg.py -i /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/result.csv -o must_result_LOG --header false --mode log
-      - python3.8 gen_svg.py -i /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/result.csv -o must_result_SRC --header false --mode src
     artifacts:
         untracked: false
         expire_in: 30 days
         when: always
         paths:
             - Data/must_result_LOG.svg
-            - Data/must_result_SRC.svg
             
 data-collect:
     stage: gather
@@ -593,12 +582,12 @@ data-collect:
           artifacts: true
         - job: aislinn-svg
           artifacts: true
-    before_script:
-        - apt-get update
-        - apt-get install -y python3-pip libcairo2
-        - pip3 install drawSvg
+    # before_script:
+    #     - apt-get update
+    #     - apt-get install -y python3-pip libcairo2
+    #     - pip3 install drawSvg
     script:
-        - echo "filename;id;tool;TO;NP;buff;expected;result;jobid" > result.csv
+        - echo "filename;id;tool;TO;NP;buff;expected;result;time(s);jobid" > result.csv
         - cat Benchmarks/*.csv >> result.csv
         - cd Data
         - python3.8 gen_svg.py -i ../result.csv -o all_result_LOG --header true --mode log

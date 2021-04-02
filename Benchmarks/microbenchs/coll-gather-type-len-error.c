@@ -2,7 +2,8 @@
 //
 // Origin: MUST
 //
-// Description:  All processes execute an MPI_Gather. Each rank sends 3 ints using a count of 3,
+// Description:  All processes execute an MPI_Gather. Each rank sends 3 ints
+// using a count of 3,
 //  while the root only receives 2 ints from each rank by using a derived type.
 //
 //// List of features
@@ -26,7 +27,7 @@
 // deadlock: never
 // numstab: never
 // segfault: never
-// mpierr: transient 
+// mpierr: transient
 // resleak: never
 // livelock: never
 // datarace: never
@@ -45,13 +46,12 @@
 #define MPI_MAX_PROCESSOR_NAME 1024
 #endif
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
-  int *temp   = NULL, sendBuf[3], root;
+  int *temp = NULL, sendBuf[3], root;
   MPI_Status status;
   MPI_Datatype rType;
 
@@ -68,7 +68,7 @@ int main(int argc, char** argv)
   }
 
   if (rank == 0) {
-    temp = (int*)malloc(sizeof(int) * nprocs * 2);
+    temp = (int *)malloc(sizeof(int) * nprocs * 2);
     MPI_Type_contiguous(2, MPI_INT, &rType);
     MPI_Type_commit(&rType);
   }

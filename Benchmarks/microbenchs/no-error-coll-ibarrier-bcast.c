@@ -2,13 +2,14 @@
 //
 // Origin: Parcoach
 //
-// Description: This code is correct as the Ibarrier and Bcast functions are called on different communicators
+// Description: This code is correct as the Ibarrier and Bcast functions are
+// called on different communicators
 //
 //// List of features
 // P2P: Lacking
 // iP2P: Lacking
 // PERS: Lacking
-// COLL: Correct  
+// COLL: Correct
 // iCOLL: Correct
 // TOPO: Lacking
 // IO: Lacking
@@ -46,10 +47,9 @@
 
 #define buf_size 128
 
-int main(int argc, char** argv)
-{
-  int nprocs    = -1;
-  int rank      = -1;
+int main(int argc, char **argv) {
+  int nprocs = -1;
+  int rank = -1;
   MPI_Comm comm = MPI_COMM_WORLD;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
@@ -71,21 +71,21 @@ int main(int argc, char** argv)
   MPI_Barrier(comm);
 
   switch (rank) {
-    case 0:
-      MPI_Bcast(buf0, buf_size, MPI_INT, 1, dupcomm);
-      MPI_Ibarrier(comm, &req);
-      MPI_Wait(&req, MPI_STATUS_IGNORE);
-      break;
+  case 0:
+    MPI_Bcast(buf0, buf_size, MPI_INT, 1, dupcomm);
+    MPI_Ibarrier(comm, &req);
+    MPI_Wait(&req, MPI_STATUS_IGNORE);
+    break;
 
-    default:
-      MPI_Ibarrier(comm, &req);
-      MPI_Bcast(buf0, buf_size, MPI_INT, 1, dupcomm);
-      MPI_Wait(&req, MPI_STATUS_IGNORE);
-      break;
+  default:
+    MPI_Ibarrier(comm, &req);
+    MPI_Bcast(buf0, buf_size, MPI_INT, 1, dupcomm);
+    MPI_Wait(&req, MPI_STATUS_IGNORE);
+    break;
   }
 
   MPI_Comm_free(&dupcomm);
-  
+
   MPI_Finalize();
   printf("\033[0;32mrank %d Finished normally\033[0;0m\n", rank);
   return 0;

@@ -8,7 +8,7 @@
 // P2P: Correct
 // iP2P: Lacking
 // PERS: Lacking
-// COLL: Lacking  
+// COLL: Lacking
 // iCOLL: Lacking
 // TOPO: Lacking
 // IO: Lacking
@@ -46,10 +46,9 @@
 #define FROMRIGHT 0
 #define FROMLEFT 1
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
   int recv, left, right;
@@ -66,12 +65,12 @@ int main(int argc, char** argv)
     return 1;
   }
 
-  left  = (rank == 0) ? nprocs - 1 : rank - 1;
+  left = (rank == 0) ? nprocs - 1 : rank - 1;
   right = (rank == (nprocs - 1)) ? 0 : rank + 1;
-  MPI_Sendrecv(&rank, 1, MPI_INT, left, FROMRIGHT, &recv, 1, MPI_INT, right, FROMRIGHT, MPI_COMM_WORLD,
-               MPI_STATUS_IGNORE);
-  MPI_Sendrecv(&rank, 1, MPI_INT, right, FROMLEFT, &recv, 1, MPI_INT, left, FROMLEFT, MPI_COMM_WORLD,
-               MPI_STATUS_IGNORE);
+  MPI_Sendrecv(&rank, 1, MPI_INT, left, FROMRIGHT, &recv, 1, MPI_INT, right,
+               FROMRIGHT, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+  MPI_Sendrecv(&rank, 1, MPI_INT, right, FROMLEFT, &recv, 1, MPI_INT, left,
+               FROMLEFT, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
   MPI_Finalize();
   printf("\033[0;32mrank %d Finished normally\033[0;0m\n", rank);

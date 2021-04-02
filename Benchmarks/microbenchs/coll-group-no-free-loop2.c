@@ -47,10 +47,9 @@
 #define GROUPS_PER_ITERATION 3
 #define GROUPS_LOST_PER_ITERATION 1
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   int i, j;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;

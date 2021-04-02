@@ -1,12 +1,14 @@
 ////////////////// MPI bugs collection header //////////////////
 //
-// Description: Operator mismatch in MPI_Reduce. In this code, processes call MPI_Reduce with a different operator which causes a wrong result. This error is visible when using nprocs > 2
+// Description: Operator mismatch in MPI_Reduce. In this code, processes call
+// MPI_Reduce with a different operator which causes a wrong result. This error
+// is visible when using nprocs > 2
 //
 //// List of features
 // P2P: Lacking
 // iP2P: Lacking
 // PERS: Lacking
-// COLL: Incorrect  
+// COLL: Incorrect
 // iCOLL: Lacking
 // TOPO: Lacking
 // IO: Lacking
@@ -41,10 +43,9 @@
 #define MPI_MAX_PROCESSOR_NAME 1024
 #endif
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
   int localsum, sum;

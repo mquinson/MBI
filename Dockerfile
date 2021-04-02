@@ -37,6 +37,11 @@ RUN apt-get -y -qq install libelf-dev
 RUN apt-get -y -qq install libevent-dev
 RUN apt-get -y -qq install libllvm9
 RUN apt-get -y -qq install llvm-9
+RUN apt-get -y -qq install psmisc
+RUN apt-get -y -qq install lsof
+RUN apt-get -y -qq install python3-pip
+RUN apt-get -y -qq install libcairo2
+RUN pip3 install drawSvg
 RUN apt-get autoremove -yq
 RUN apt-get clean -yq
 COPY . /sources

@@ -547,7 +547,7 @@ for filename in args.filenames:
             buff = 'NA'
         
         with open("./" + args.o, "a") as result_file:
-            result_file.write("{};{};{};{};{};{};{};{};{}\n".format(
+            result_file.write("{};{};{};{};{};{};{};{};{};{}\n".format(
                 binary,
                 test_count,
                 args.x,
@@ -556,6 +556,7 @@ for filename in args.filenames:
                 buff,
                 outcome,
                 ans,
+                curr_time-start_time,
                 args.job))
 
 ########################

@@ -2,7 +2,8 @@
 //
 // Origin: Parcoach
 //
-// Description: Collective mismatch. P0 calls MPI_Barrier while the others call nothing
+// Description: Collective mismatch. P0 calls MPI_Barrier while the others call
+// nothing
 //
 //// List of features
 // P2P: Lacking
@@ -43,15 +44,11 @@
 #define MPI_MAX_PROCESSOR_NAME 1024
 #endif
 
-void mybarrier(MPI_Comm comm)
-{
-  MPI_Barrier(comm);
-}
+void mybarrier(MPI_Comm comm) { MPI_Barrier(comm); }
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
 
@@ -62,7 +59,8 @@ int main(int argc, char** argv)
   printf("rank %d is alive on %s\n", rank, processor_name);
 
   if (nprocs < 2)
-    printf("\033[0;31m! This test needs at least 2 processes to produce a bug !\033[0;0m\n");
+    printf("\033[0;31m! This test needs at least 2 processes to produce a bug "
+           "!\033[0;0m\n");
 
   if (rank == 0)
     mybarrier(MPI_COMM_WORLD);

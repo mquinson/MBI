@@ -2,13 +2,14 @@
 //
 // Origin: MUST
 //
-// Description: All processes execute an MPI_Alltoall with matching and valid arguments
+// Description: All processes execute an MPI_Alltoall with matching and valid
+// arguments
 //
 //// List of features
 // P2P: Lacking
 // iP2P: Lacking
 // PERS: Lacking
-// COLL: Correct  
+// COLL: Correct
 // iCOLL: Lacking
 // TOPO: Lacking
 // IO: Lacking
@@ -44,10 +45,9 @@
 #define MPI_MAX_PROCESSOR_NAME 1024
 #endif
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
   int *sbuf = NULL, *rbuf = NULL, i, root;
@@ -64,8 +64,8 @@ int main(int argc, char** argv)
     return 1;
   }
 
-  sbuf = (int*)malloc(sizeof(int) * nprocs);
-  rbuf = (int*)malloc(sizeof(int) * nprocs * 2);
+  sbuf = (int *)malloc(sizeof(int) * nprocs);
+  rbuf = (int *)malloc(sizeof(int) * nprocs * 2);
 
   MPI_Alltoall(sbuf, 1, MPI_INT, rbuf, 1, MPI_INT, MPI_COMM_WORLD);
 

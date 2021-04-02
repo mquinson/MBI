@@ -2,8 +2,9 @@
 //
 // Origin: ISP (http://formalverification.cs.utah.edu/ISP_Tests/)
 //
-// Description: Point to point operations with three processes. Recv(0) and Send(0) functions in rank 1 should be inverted. A
-// deadlock occurs because both rank 0 is waiting in waitall and rank 1 is waiting on recv(0).
+// Description: Point to point operations with three processes. Recv(0) and
+// Send(0) functions in rank 1 should be inverted. A deadlock occurs because
+// both rank 0 is waiting in waitall and rank 1 is waiting on recv(0).
 //
 //				 Communications pattern:
 //
@@ -21,7 +22,7 @@
 // P2P: Incorrect
 // iP2P: Incorrect
 // PERS: Lacking
-// COLL: Correct  
+// COLL: Correct
 // iCOLL: Lacking
 // TOPO: Lacking
 // IO: Lacking
@@ -59,10 +60,9 @@
 
 #define buf_size 128
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
   int buf0[buf_size];

@@ -2,8 +2,8 @@
 //
 // Origin: MUST
 //
-// Description: Process 1 issues a barrier while all other processes will not, when they issue MPI_Finalize the mismatch
-// occurs.
+// Description: Process 1 issues a barrier while all other processes will not,
+// when they issue MPI_Finalize the mismatch occurs.
 //
 //// List of features
 // P2P: Lacking
@@ -44,10 +44,9 @@
 #define MPI_MAX_PROCESSOR_NAME 1024
 #endif
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
 

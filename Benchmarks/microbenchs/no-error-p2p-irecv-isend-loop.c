@@ -8,7 +8,7 @@
 // P2P: Lacking
 // iP2P: Correct
 // PERS: Lacking
-// COLL: Correct  
+// COLL: Correct
 // iCOLL: Lacking
 // TOPO: Lacking
 // IO: Lacking
@@ -47,10 +47,9 @@
 #define buf_size 128
 #define req_count 5
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
   int buf0[buf_size];
@@ -72,7 +71,7 @@ int main(int argc, char** argv)
     printf("\033[0;31m! This test needs at least 2 processes !\033[0;0m\n");
   } else {
     int dest = (rank == nprocs - 1) ? (0) : (rank + 1);
-    int src  = (rank == 0) ? (nprocs - 1) : (rank - 1);
+    int src = (rank == 0) ? (nprocs - 1) : (rank - 1);
     memset(buf0, rank, buf_size * sizeof(int));
     memset(buf1, rank, buf_size * sizeof(int));
 

@@ -43,10 +43,9 @@
 #define MPI_MAX_PROCESSOR_NAME 1024
 #endif
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
   MPI_Comm comm;
@@ -64,7 +63,7 @@ int main(int argc, char** argv)
   }
 
   // create a second intracommunicator
-  comm    = MPI_COMM_NULL;
+  comm = MPI_COMM_NULL;
   int res = 0;
   MPI_Comm_compare(MPI_COMM_WORLD, comm, &res);
 

@@ -2,8 +2,8 @@
 //
 // Origin: ISP (http://formalverification.cs.utah.edu/ISP_Tests/)
 //
-// Description: Send/Recv communication on a new communicator created with MPI_Comm_split. Blocking recv-recv causing a
-// deadlock.
+// Description: Send/Recv communication on a new communicator created with
+// MPI_Comm_split. Blocking recv-recv causing a deadlock.
 //
 //             Communication pattern:
 //
@@ -16,7 +16,7 @@
 // P2P: Incorrect
 // iP2P: Lacking
 // PERS: Lacking
-// COLL: Correct  
+// COLL: Correct
 // iCOLL: Lacking
 // TOPO: Lacking
 // IO: Lacking
@@ -54,10 +54,9 @@
 
 #define buf_size 128
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
   int buf0[buf_size];
@@ -94,7 +93,8 @@ int main(int argc, char** argv)
           MPI_Send(buf1, buf_size, MPI_INT, 0, 0, comm);
         }
       } else {
-        printf("(%d) Derived communicator too small (size = %d)\n", rank, dnprocs);
+        printf("(%d) Derived communicator too small (size = %d)\n", rank,
+               dnprocs);
       }
 
       MPI_Comm_free(&comm);

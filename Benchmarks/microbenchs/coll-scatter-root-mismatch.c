@@ -2,13 +2,14 @@
 //
 // Origin: MUST
 //
-// Description: Root mismatch in MPI_Scatter. All processes execute a scatter with a root of 0, except for rank 1 which uses 1 as its root
+// Description: Root mismatch in MPI_Scatter. All processes execute a scatter
+// with a root of 0, except for rank 1 which uses 1 as its root
 //
 //// List of features
 // P2P: Lacking
 // iP2P: Lacking
 // PERS: Lacking
-// COLL: Incorrect  
+// COLL: Incorrect
 // iCOLL: Lacking
 // TOPO: Lacking
 // IO: Lacking
@@ -44,10 +45,9 @@
 #define MPI_MAX_PROCESSOR_NAME 1024
 #endif
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int nprocs = -1;
-  int rank   = -1;
+  int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
   int temp, root, *tempArray;
@@ -68,7 +68,7 @@ int main(int argc, char** argv)
   if (rank == 1)
     root = 1; /*ERROR, rank 1 uses root of 1 instead of 0*/
 
-  tempArray = (int*)malloc(sizeof(int) * nprocs);
+  tempArray = (int *)malloc(sizeof(int) * nprocs);
 
   MPI_Scatter(&tempArray, 1, MPI_INT, &temp, 1, MPI_INT, root, MPI_COMM_WORLD);
 
