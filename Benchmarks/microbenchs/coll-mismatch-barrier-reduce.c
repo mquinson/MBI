@@ -1,6 +1,6 @@
 ////////////////// MPI bugs collection header //////////////////
 //
-// Origin: MPI Bug Collection suite
+// Origin: MPICorrectnessBenchmark
 //
 // Description: Collective mismatch. Some processes call MPI_Barrier followed by
 // MPI_Reduce while others call MPI_Reduce followed by MPI_Barrier
