@@ -207,11 +207,11 @@ def print_result(top_left_x, top_left_y, i, j, row):
     r.append(draw.Title(desc))
 
     if tool == tools[0]:
-        for expects in expected:
-            if not expects in nb_error_type:
-                nb_error_type[expects] = 1
-            else:
-                nb_error_type[expects] += 1
+        expects = expected[0]
+        if not expects in nb_error_type:
+            nb_error_type[expects] = 1
+        else:
+            nb_error_type[expects] += 1
     
     return r
 
