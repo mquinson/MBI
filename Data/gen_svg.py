@@ -54,8 +54,8 @@ class Group(draw.DrawingDef):
 ## GLOBAL CONSTANT
 #############################
 
-WIDTH = 800
-HEIGHT = 600
+WIDTH = 900
+HEIGHT = 1200
 HEADER_SIZE = 15
 
 
@@ -85,7 +85,7 @@ d = draw.Drawing(WIDTH, HEIGHT, origin='center', displayInline=True)
 tools = list(set([row[2] for row in data]))
 tools.sort()
 
-width_per_tool = WIDTH / (len(tools) + 1)
+width_per_tool = WIDTH / (len(tools))
 
 error_type_not_sorted = list(set([ast.literal_eval(row[6])[0] for row in data]))
 error_type_not_sorted.sort()
@@ -96,14 +96,14 @@ height_per_error = HEIGHT / (len(error_type) + 1)
 
 nb_uniq_testcase = len([R for R in data if R[2]==tools[0]])
 
-CASE_HEIGHT = HEIGHT / ((nb_uniq_testcase // 5)*1.1 + len(error_type) + 1)
+CASE_HEIGHT = HEIGHT / (((nb_uniq_testcase // 5)*1.1 + len(error_type)*2 + 1))
 CASE_WIDTH = width_per_tool / (5.7)
 
 case_per_error = []
 for error in error_type:
     case_per_error.append([row for row in data if ast.literal_eval(row[6])[0] == error])
 
-nb_error = {}
+nb_error_type = {}
 
 nb_FP = {}
 nb_TP = {}
@@ -208,10 +208,10 @@ def print_result(top_left_x, top_left_y, i, j, row):
 
     if tool == tools[0]:
         for expects in expected:
-            if not expects in nb_error:
-                nb_error[expects] = 1
+            if not expects in nb_error_type:
+                nb_error_type[expects] = 1
             else:
-                nb_error[expects] += 1
+                nb_error_type[expects] += 1
     
     return r
 
@@ -222,15 +222,29 @@ def print_result(top_left_x, top_left_y, i, j, row):
 
 
 for i in range(len(tools)):
-    d.append(draw.Text(tools[i], HEADER_SIZE, -(WIDTH/2) + (i+1)*width_per_tool,  (HEIGHT/2) - 15, fill='black'))
+    name = ""
+    if tools[i]=="aislinn":
+        name = "Aislinn"
+    if tools[i]=="isp":
+        name = "ISP"
+    if tools[i]=="civl":
+        name = "CIVL"
+    if tools[i]=="parcoach":
+        name = "Parcoach"
+    if tools[i]=="must" or tools[i]=="mustdist":
+        name = "MUST"
+    if tools[i]=="simgrid":
+        name = "McSimGrid"
+        
+    d.append(draw.Text(name, HEADER_SIZE+5, -(WIDTH/2) + (i)*width_per_tool + 5,  (HEIGHT/2) - 20, fill='black'))
 
 
-adjust_height = 50
+adjust_height = 70
     
 for i in range(len(error_type)):
 
     # Print the error name
-    d.append(draw.Text(error_type[i], HEADER_SIZE, -(WIDTH/2) + 5,  (HEIGHT/2) - adjust_height, fill='black'))
+    d.append(draw.Text(error_type[i], HEADER_SIZE-2, -(WIDTH/2) + 5,  (HEIGHT/2) - adjust_height + 25, fill='black'))
     
     
     for j in range(len(tools)):
@@ -240,7 +254,7 @@ for i in range(len(error_type)):
         
         for k in range(len(to_print)):
             row = to_print[k]
-            d.append(print_result(-(WIDTH/2) + (j+1)*width_per_tool,
+            d.append(print_result(-(WIDTH/2) + (j)*width_per_tool,
                                   (HEIGHT/2) - adjust_height,
                                   k%5,
                                   k//5,
@@ -250,6 +264,7 @@ for i in range(len(error_type)):
     if len(to_print)%5!=0:
         to_add+=1
     adjust_height += (to_add)*CASE_HEIGHT*1.1
+    adjust_height += 30
           
 
 
@@ -422,9 +437,9 @@ for filename in feature_per_file:
                                 len(feature_per_file[filename]))
 
 
-CASE_WIDTH = WIDTH / 6.7
+CASE_WIDTH = WIDTH / 5.7
 width_per_feature = CASE_WIDTH / most_feature_per_file
-CASE_HEIGHT = HEIGHT / ((nb_uniq_testcase // 5)*1.1 + len(error_type) + 1)
+CASE_HEIGHT = HEIGHT / ((nb_uniq_testcase // 5)*1.1 + len(error_type)*2 + 1)
 
 
 nb_features = {}
@@ -479,7 +494,7 @@ adjust_height = 50
 for i in range(len(error_type)):
 
     # Print the error name
-    feature_drawing.append(draw.Text(error_type[i], HEADER_SIZE, -(WIDTH/2) + 5,  (HEIGHT/2) - adjust_height, fill='black'))
+    feature_drawing.append(draw.Text(error_type[i], HEADER_SIZE, -(WIDTH/2) + 5,  (HEIGHT/2) - adjust_height + 30, fill='black'))
 
     to_print = [cases for cases in case_per_error[i] if cases[2]==tools[0]]
     to_print.sort()
@@ -493,7 +508,7 @@ for i in range(len(error_type)):
         
         list_feature = feature_per_file[filename]
 
-        feature_drawing.append(print_box(-(WIDTH/2) + CASE_WIDTH,
+        feature_drawing.append(print_box(-(WIDTH/2),
                                          (HEIGHT/2) - adjust_height,
                                          k%5,
                                          k//5))
@@ -510,7 +525,7 @@ for i in range(len(error_type)):
                     nb_features[list_feature[j]][1] += 1
 
                 #printing
-                feature_drawing.append(print_feature(-(WIDTH/2) + CASE_WIDTH,
+                feature_drawing.append(print_feature(-(WIDTH/2),
                                                      (HEIGHT/2) - adjust_height,
                                                      k%5,
                                                      k//5,
@@ -521,6 +536,7 @@ for i in range(len(error_type)):
     if len(to_print)%5!=0:
         to_add+=1
     adjust_height += (to_add)*CASE_HEIGHT*1.1
+    adjust_height += 30
 
 d.setPixelScale(2)  # Set number of pixels per geometry unit
 #d.setRenderSize(400,200)  # Alternative to setPixelScale
@@ -541,7 +557,7 @@ for feat in nb_features:
 ## Printing error count
 #############################
 
-for error in nb_error:
+for error in nb_error_type:
     print("ERROR : {}\n  Number : {}\n".
-          format(error, nb_error[error]))
+          format(error, nb_error_type[error]))
 

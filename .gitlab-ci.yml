@@ -155,7 +155,7 @@ test-must-175:
     script:
         - export PATH=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Must/MUST-v1.6/bin:$PATH
         - cd Benchmarks
-        - for file in $(ls microbenchs/*.c | tail -n +151); do python3.8 runner.py -x must -o bench_must175.csv -t 300 --job $CI_JOB_ID $file; uptime;killall mpirun||true; done
+        - for file in $(ls microbenchs/*.c | tail -n +151 | head -25); do python3.8 runner.py -x must -o bench_must175.csv -t 300 --job $CI_JOB_ID $file; uptime;killall mpirun||true; done
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -165,44 +165,27 @@ test-must-175:
             - Benchmarks/*.txt
             - Benchmarks/*.html
             
-# There is only 174 tests so far
-#test-must-200:
-#    stage: test
-#    needs:
-#        - job: build-must
-#          artifacts: true
-#    before_script:
-#        - apt-get install -y psmisc
-#    script:
-#        - export PATH=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Must/MUST-v1.6/bin:$PATH
-#        - cd Benchmarks
-#        - for file in $(ls microbenchs/*.c | tail -n +175 | head -25); do python3.8 runner.py -x must -o bench_must200.csv -t 300 --job $CI_JOB_ID $file;uptime;killall mpirun||true; done
-#    artifacts:
-#        untracked: false
-#        expire_in: 30 days
-#        when: always
-#        paths:
-#            - Benchmarks/*.csv
-#            - Benchmarks/*.txt
-#            - Benchmarks/*.html
+test-must-200:
+   stage: test
+   needs:
+       - job: build-must
+         artifacts: true
+   before_script:
+       - apt-get install -y psmisc
+   script:
+       - export PATH=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Must/MUST-v1.6/bin:$PATH
+       - cd Benchmarks
+       - for file in $(ls microbenchs/*.c | tail -n +176); do python3.8 runner.py -x must -o bench_must200.csv -t 300 --job $CI_JOB_ID $file;uptime;killall mpirun||true; done
+   artifacts:
+       untracked: false
+       expire_in: 30 days
+       when: always
+       paths:
+           - Benchmarks/*.csv
+           - Benchmarks/*.txt
+           - Benchmarks/*.html
             
-test-must-medium:
-    stage: test
-    needs:
-        - job: build-must
-          artifacts: true
-    script:
-        - export PATH=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Must/MUST-v1.6/bin:$PATH
-        - cd Benchmarks
-        - for file in $(ls mediumbenchs/*.c); do python3.8 runner.py -x must -o bench_must_med.csv -t 600 $file;uptime;killall mpirun||true; done
-    artifacts:
-        untracked: false
-        expire_in: 30 days
-        when: always
-        paths:
-            - Benchmarks/*.csv
-            - Benchmarks/*.txt
-            - Benchmarks/*.html
+
 
 build-aislinn:
     stage: build
@@ -301,21 +284,7 @@ test-civl200:
             - Benchmarks/*.csv
             - Benchmarks/*.txt
             
-test-civl-medium:
-    stage: test
-    needs:
-        - job: build-civl
-          artifacts: false
-    script:
-        - cd Benchmarks
-        - for file in $(ls /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Benchmarks/mediumbenchs/*.c); do python3.8 runner.py -x civl -o bench_civl_med.csv -t 600 $file; done
-    artifacts:
-        untracked: false
-        expire_in: 30 days
-        when: always
-        paths:
-            - Benchmarks/bench_civl_med.csv
-            - Benchmarks/*.txt
+
             
 build-parcoach:
     stage: build
@@ -358,22 +327,6 @@ test-parcoach:
             - Benchmarks/bench_parcoach.csv
             - Benchmarks/*.txt
             
-test-parcoach-medium:
-    stage: test
-    needs:
-        - job: build-parcoach
-          artifacts: true
-    script:
-        - cd Benchmarks
-        - for file in $(ls /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Benchmarks/mediumbenchs/*.c); do python3.8 runner.py -x parcoach -o bench_parcoach_med.csv -t 600 $file; done    
-    artifacts:
-        untracked: false
-        expire_in: 30 days
-        when: always
-        paths:
-            - Benchmarks/bench_parcoach_med.csv
-            - Benchmarks/*.txt
-            
 
 build-simgrid:
     stage: build
@@ -414,25 +367,7 @@ test-simgrid:
         paths:
             - Benchmarks/bench_simgrid.csv
             - Benchmarks/*.txt
-            
-test-simgrid-medium:
-    stage: test
-    needs:
-        - job: build-simgrid
-          artifacts: true
-    script:
-        - export PATH=$PATH:/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/SimGrid/build/bin/
-        - cp SimGrid/simgrid/examples/platforms/cluster_backbone.xml Benchmarks/cluster.xml
-        - cd Benchmarks
-        - for file in $(ls /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Benchmarks/mediumbenchs/*.c); do python3.8 runner.py -x simgrid -o bench_simgrid_med.csv -t 600 $file; done
-    artifacts:
-        untracked: false
-        expire_in: 30 days
-        when: always
-        paths:
-            - Benchmarks/bench_simgrid_med.csv
-            - Benchmarks/*.txt
-            
+          
 build-isp:
     stage: build
     needs : []
@@ -596,8 +531,8 @@ must-svg:
           artifacts: true
         - job: test-must-175
           artifacts: true
-#        - job: test-must-200
-#          artifacts: true
+        - job: test-must-200
+          artifacts: true
     before_script:
       - apt-get update
       - apt-get install -y python3-pip libcairo2
@@ -632,8 +567,8 @@ data-collect:
           artifacts: true
         - job: test-must-175
           artifacts: true
-#        - job: test-must-200
-#          artifacts: true
+        - job: test-must-200
+          artifacts: true
         - job: test-civl100
           artifacts: true
         - job: test-civl200
@@ -667,7 +602,6 @@ data-collect:
         - cat Benchmarks/*.csv >> result.csv
         - cd Data
         - python3.8 gen_svg.py -i ../result.csv -o all_result_LOG --header true --mode log
-        - python3.8 gen_svg.py -i ../result.csv -o all_result_SRC --header true --mode src
     artifacts:
         untracked: false
         expire_in: 30 days
