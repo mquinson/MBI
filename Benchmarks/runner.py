@@ -347,7 +347,7 @@ def simgridrun(execcmd, filename, binary, id, timeout, jobid):
         return 'mpierr'
     if re.search('Not yet implemented', output):
         return 'CUN'
-    if re.search('leak detected', output):
+    if re.search('Leaked handle of type ', output):
         return 'resleak'
     if re.search('CRASH IN THE PROGRAM', output):
         return 'segfault'
