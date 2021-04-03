@@ -509,12 +509,18 @@ for filename in args.filenames:
             else:
                 ans = 'RSF'
         
+        if ans in outcome: # set res_category for all the elif that are 10 lines below
+            if 'noerror' in outcome:
+                res_category = 'TRUE_POS'
+            else:
+                res_category = 'TRUE_NEG'
 
-        curr_time = time.time()
-        print("\nThe tool {} returned {} (expected: {}; elapsed: {:f} sec) on {}\n\n".format(args.x, ans, outcome, curr_time-start_time, binary))
-            
         if ans not in outcome:    
             failed.append("{} (expected {} but returned {})".format(binary, outcome, ans))
+            if 'noerror' in outcome:
+                res_category = 'FALSE_NEG'
+            else:
+                res_category = 'FALSE_POS'
         elif 'noerror' in outcome:
             ok_noerror.append(binary)    
         elif 'deadlock' in outcome:
@@ -533,6 +539,9 @@ for filename in args.filenames:
             ok_various.append(binary)
         elif 'datarace' in outcome:
             ok_datarace.append(binary)
+
+        curr_time = time.time()
+        print("\nTest '{}' result: {}: {} returned {} while {} was expected. Elapsed: {:f} sec\n\n".format(binary, res_category, args.x, ans, outcome, curr_time-start_time))
         
         np = re.search(r"(?:-np) [0-9]+", cmd)
         np = int(re.sub(r"-np ", "", np.group(0)))
