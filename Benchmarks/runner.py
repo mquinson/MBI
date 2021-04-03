@@ -339,6 +339,8 @@ def simgridrun(execcmd, filename, binary, id, timeout, jobid):
         
     if res != None:
         return res
+    if re.search('Leaked handle of type', output):
+        return 'resleak'
     if re.search('No property violation found', output):
         return 'noerror'
     if re.search('DEADLOCK DETECTED', output):
@@ -347,8 +349,6 @@ def simgridrun(execcmd, filename, binary, id, timeout, jobid):
         return 'mpierr'
     if re.search('Not yet implemented', output):
         return 'CUN'
-    if re.search('Leaked handle of type ', output):
-        return 'resleak'
     if re.search('CRASH IN THE PROGRAM', output):
         return 'segfault'
 
