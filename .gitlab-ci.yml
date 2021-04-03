@@ -587,7 +587,7 @@ data-collect:
     #     - apt-get install -y python3-pip libcairo2
     #     - pip3 install drawSvg
     script:
-        - echo "filename;id;tool;TO;NP;buff;expected;result;time(s);jobid" > result.csv
+        - echo "filename;id;tool;TO;NP;buff;expected;result;elapsed_time;jobid" > result.csv
         - cat Benchmarks/*.csv >> result.csv
         - cd Data
         - python3.8 gen_svg.py -i ../result.csv -o all_result_LOG --header true --mode log

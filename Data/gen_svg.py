@@ -134,7 +134,8 @@ def print_result(top_left_x, top_left_y, i, j, row):
     buf = row[5]
     expected = ast.literal_eval(row[6])
     result = row[7]
-    job_id = row[8]
+    elapsed = row[8]
+    job_id = row[9]
 
     if DEBUG:
         link = "https://gitlab.com/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/-/jobs/{}/artifacts/raw/Benchmarks/{}_{}.txt".format(job_id,name,id)
