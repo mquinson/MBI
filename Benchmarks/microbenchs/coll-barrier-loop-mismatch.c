@@ -5,7 +5,7 @@
 // Description: Collective mismatch. Some processes call 9 barriers while others
 // call 10 barriers. A deadlock occurs if nprocs > 1
 //
-// List of features
+//// List of features
 // P2P: Lacking
 // iP2P: Lacking
 // PERS: Lacking
@@ -20,7 +20,7 @@
 // DATA: Lacking
 // OP: Lacking
 //
-// List of errors
+//// List of errors
 // error_deadlock: transient
 // error_numstab: never
 // error_segfault: never

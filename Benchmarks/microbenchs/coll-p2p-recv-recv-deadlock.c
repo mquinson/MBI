@@ -14,7 +14,7 @@
 //			 barrier   barrier
 //
 //
-/// List of features
+//// List of features
 // P2P: Incorrect
 // iP2P: Lacking
 // PERS: Lacking

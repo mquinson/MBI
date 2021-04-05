@@ -6,7 +6,7 @@
 // MPI_COMM_WORLD while others call a barrier on newcomm (communicator created
 // with MPI_Comm_split). A deadlock occurs if nprocs > 1.
 //
-/// List of features
+//// List of features
 // P2P: Lacking
 // iP2P: Lacking
 // PERS: Lacking

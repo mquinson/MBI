@@ -9,7 +9,7 @@
 // P2P: Lacking
 // iP2P: Lacking
 // PERS: Correct
-// COLL: Laking
+// COLL: Lacking
 // iCOLL: Lacking
 // TOPO: Lacking
 // IO: Lacking
@@ -18,7 +18,7 @@
 // COM: Lacking
 // GRP: Lacking
 // DATA: Lacking
-// OP: Laking
+// OP: Lacking
 //
 //// List of errors
 // deadlock: never
