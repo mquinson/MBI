@@ -324,6 +324,8 @@ def parcoachrun(execcmd, filename, binary, id, timeout, jobid):
 def simgridrun(execcmd, filename, binary, id, timeout, jobid):
 
     execcmd = re.sub("mpirun", "smpirun -wrapper simgrid-mc -platform ./cluster.xml --cfg=smpi/list-leaks:10", execcmd)
+    if re.search("rma", binary): # DPOR reduction in simgrid cannot deal with RMA calls as they contain mutexes
+        execcmd = re.sub("smpirun", "smpirun --cfg=model-check/reduction:none")
     execcmd = re.sub('\${EXE}', binary, execcmd)
     execcmd = re.sub('\$zero_buffer', "--cfg=smpi/buffering:zero", execcmd)
     execcmd = re.sub('\$infty_buffer', "--cfg=smpi/buffering:infty", execcmd)
