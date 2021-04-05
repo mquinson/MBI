@@ -18,8 +18,6 @@
 // GRP: Lacking
 // DATA: Lacking
 // OP: Incorrect
-// LOOP: Correct
-// SP: Correct
 //
 //// List of errors
 // deadlock: never

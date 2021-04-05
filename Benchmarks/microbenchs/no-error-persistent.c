@@ -19,8 +19,6 @@
 // GRP: Lacking
 // DATA: Lacking
 // OP: Laking
-// LOOP: Laking
-// SP: Lacking
 //
 //// List of errors
 // deadlock: never
