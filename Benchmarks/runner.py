@@ -509,13 +509,13 @@ for filename in args.filenames:
             else:
                 ans = 'RSF'
         
-        if ans in outcome: # set res_category for all the elif that are 10 lines below
+        if ans in outcome or ('various' in expected and (ans == 'deadlock' or ans == 'numstab')): # set res_category for all the elif that are 10 lines below
             if 'noerror' in outcome:
                 res_category = 'TRUE_POS'
             else:
                 res_category = 'TRUE_NEG'
 
-        if ans not in outcome:    
+        if ans not in outcome and not ('various' in expected and (ans == 'deadlock' or ans == 'numstab')):
             failed.append("{} (expected {} but returned {})".format(binary, outcome, ans))
             if 'noerror' in outcome:
                 res_category = 'FALSE_NEG'
