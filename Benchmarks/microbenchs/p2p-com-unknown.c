@@ -31,7 +31,7 @@
 // datarace: never
 //
 // Test: mpirun -np 2 ${EXE}
-// Expect: segfault|mpierr
+// Expect: mpierr
 //
 ////////////////// End of MPI bugs collection header //////////////////
 //////////////////       original file begins        //////////////////
