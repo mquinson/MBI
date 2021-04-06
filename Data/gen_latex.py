@@ -102,11 +102,12 @@ def generate_features(files, outfile):
             output.write(f" \\draw(0,{line*lineheight}) node {{{expected}}};\n")
             line -= 1
             cell = 0 # Position of this file on the line
+            # Draw the boxes
+            initial_line = line
             for (file,test) in files_per_expected[expected]:
                 (features, incorrect_feat, _) = parse_file_features(file)
-                file = filename_to_binary(file)
+                file = f'{filename_to_binary(file)}\\#{test}'
                 output.write(f" \\draw ({cell*cell_width-(0.4*feat_width)}, {(line+0.4)*lineheight}) rectangle ({cell*cell_width+(3.45*feat_width)}, {(line-0.4)*lineheight});\n")
-                # Draw the boxes
                 xpos = 0
                 for feat in incorrect_feat:
                     output.write(f"  \\draw [fill={feat_to_color[feat]}] ({cell*cell_width + xpos-(0.4*feat_width)}, {(line-0.4)*lineheight}) rectangle ({cell*cell_width + xpos + (0.45*feat_width)}, {(line+0.4)*lineheight});\n")
@@ -114,7 +115,20 @@ def generate_features(files, outfile):
                 for feat in features:
                     output.write(f"  \\draw [fill={feat_to_color[feat]}] ({cell*cell_width + xpos-(0.4*feat_width)}, {(line-0.4)*lineheight}) rectangle ({cell*cell_width + xpos + (0.45*feat_width)}, {(line+0.4)*lineheight});\n")
                     xpos += feat_width
-                # Put the texts (must come after all boxes for the tooltip to not be hidden behind)
+                if cell+1 == cell_per_line:
+                    cell = 0
+                    line -= 1
+                    if line < 0:
+                        raise Exception("Too much lines. Please increase the initial value of line")
+                else :
+                    cell += 1
+
+            # Put the texts (must come after all boxes for the tooltip to not be hidden behind)
+            cell = 0
+            line = initial_line
+            for (file,test) in files_per_expected[expected]:
+                (features, incorrect_feat, _) = parse_file_features(file)
+                file = f'{filename_to_binary(file)}\\#{test}'
                 xpos = 0
                 for feat in incorrect_feat:
                     output.write(f"  \\draw ({cell*cell_width + xpos}, {line*lineheight}) node {{\\scriptsize{{\\tooltip****[{feat_to_bgcolor[feat]}]{{\\sout{{{feat}}}}}{{{file} -- incorrect: {feat}}}}}}};\n")
