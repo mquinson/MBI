@@ -44,4 +44,4 @@ RUN apt-get -y -qq install libcairo2
 RUN pip3 install drawSvg
 RUN apt-get autoremove -yq
 RUN apt-get clean -yq
-COPY . /sources
+COPY . /sources/MBI
