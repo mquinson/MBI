@@ -1,6 +1,6 @@
 ////////////////// MPI bugs collection header //////////////////
 //
-// Origin: MPICorrectnessBenchmark
+// Origin: MPI Correctness Benchmark
 //
 // Description: Potential deadlock that manifests if standard mode send is not
 // buffered.

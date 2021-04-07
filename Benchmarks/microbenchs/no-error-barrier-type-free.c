@@ -1,13 +1,11 @@
 ////////////////// MPI bugs collection header //////////////////
 //
-// Origin: ISP(http://formalverification.cs.utah.edu/ISP_Tests/)
+// Origin: MPI Correctness Benchmark 
 //
-// Description: P0 receives messages from all other processes by calling
-// MPI_Recev with MPI_ANY_SOURCE.
-//
+// Description: Type commit with a free
 //
 //// List of features
-// P2P: Correct
+// P2P: Lacking
 // iP2P: Lacking
 // PERS: Lacking
 // COLL: Correct
@@ -18,7 +16,7 @@
 // PROB: Lacking
 // COM: Lacking
 // GRP: Lacking
-// DATA: Lacking
+// DATA: Correct
 // OP: Lacking
 //
 //// List of errors
@@ -30,7 +28,7 @@
 // livelock: never
 // datarace: never
 //
-// Test: mpirun -np 4 ${EXE}
+// Test: mpirun -np 2 ${EXE}
 // Expect: noerror
 //
 ////////////////// End of MPI bugs collection header //////////////////
@@ -49,11 +47,9 @@
 int main(int argc, char **argv) {
   int nprocs = -1;
   int rank = -1;
-  int i;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
-  int buf[buf_size];
-  MPI_Status status;
+  MPI_Datatype newtype;
 
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
@@ -62,20 +58,11 @@ int main(int argc, char **argv) {
   printf("rank %d is alive on %s\n", rank, processor_name);
 
   MPI_Barrier(MPI_COMM_WORLD);
-
-  if (nprocs < 2) {
-    printf("\033[0;31m! This test needs 3 processes !\033[0;0m\n");
-  } else if (rank == 0) {
-    for (i = 1; i < nprocs; i++) {
-      MPI_Recv(buf, buf_size, MPI_INT, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD,
-               &status);
-    }
-  } else {
-    memset(buf, 1, buf_size * sizeof(int));
-    MPI_Send(buf, buf_size, MPI_INT, 0, 0, MPI_COMM_WORLD);
-  }
-
+  MPI_Type_contiguous(128, MPI_INT, &newtype);
+  MPI_Type_commit(&newtype);
   MPI_Barrier(MPI_COMM_WORLD);
+
+	MPI_Type_free(&newtype);
 
   MPI_Finalize();
   printf("\033[0;32mrank %d Finished normally\033[0;0m\n", rank);

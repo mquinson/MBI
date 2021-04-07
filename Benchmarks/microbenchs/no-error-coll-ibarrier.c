@@ -1,21 +1,21 @@
 ////////////////// MPI bugs collection header //////////////////
 //
-// Origin: MUST
+// Origin: MPI Correctness Benchmark
 //
-// Description: This test leaks a communicator.
+// Description: All processes call a nonblocking MPI_Barrier
 //
 //// List of features
 // P2P: Lacking
 // iP2P: Lacking
 // PERS: Lacking
-// COLL: Correct
-// iCOLL: Lacking
+// COLL: Lacking
+// iCOLL: Correct
 // TOPO: Lacking
 // IO: Lacking
 // RMA: Lacking
 // PROB: Lacking
-// COM: Incorrect
-// GRP: Correct
+// COM: Lacking
+// GRP: Lacking
 // DATA: Lacking
 // OP: Lacking
 //
@@ -24,12 +24,12 @@
 // numstab: never
 // segfault: never
 // mpierr: never
-// resleak: always
+// resleak: never
 // livelock: never
 // datarace: never
 //
 // Test: mpirun -np 2 ${EXE}
-// Expect: resleak
+// Expect: noerror
 //
 ////////////////// End of MPI bugs collection header //////////////////
 //////////////////       original file begins        //////////////////
@@ -46,8 +46,7 @@ int main(int argc, char **argv) {
   int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
-  MPI_Group group;
-  MPI_Comm comm;
+	MPI_Request req;
 
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
@@ -55,16 +54,14 @@ int main(int argc, char **argv) {
   MPI_Get_processor_name(processor_name, &namelen);
   printf("rank %d is alive on %s\n", rank, processor_name);
 
-  if (nprocs < 2) {
-    printf("\033[0;31m! This test needs at least 2 processes !\033[0;0m\n");
-    MPI_Finalize();
-    return 1;
-  }
+  if (rank % 2)
+    MPI_Ibarrier(MPI_COMM_WORLD, &req);
 
-  MPI_Comm_group(MPI_COMM_WORLD, &group);
-  MPI_Comm_create(MPI_COMM_WORLD, group, &comm);
-  MPI_Group_free(&group);
-  /*MISSING: MPI_Comm_free (&comm); */
+  if (!(rank % 2))
+    MPI_Ibarrier(MPI_COMM_WORLD, &req);
+
+
+  MPI_Wait(&req, MPI_STATUS_IGNORE);
 
   MPI_Finalize();
   printf("\033[0;32mrank %d Finished normally\033[0;0m\n", rank);

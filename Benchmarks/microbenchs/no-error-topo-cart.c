@@ -1,6 +1,6 @@
 ////////////////// MPI bugs collection header //////////////////
 //
-// Origin: MPICorrectnessBenchmark
+// Origin: MPI Correctness Benchmark
 //
 // Description: Creates a cartesian communicator, and creates new communicators
 // for lines and columns

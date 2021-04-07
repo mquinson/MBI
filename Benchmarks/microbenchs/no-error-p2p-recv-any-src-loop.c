@@ -2,23 +2,13 @@
 //
 // Origin: ISP (http://formalverification.cs.utah.edu/ISP_Tests/)
 //
-// Description: Correct use of blocking and nonblocking point to point
-// communications. Use assignment of handles to confuse address checking.
-//
-//			 Communication pattern:
-//
-// Feat_persistent: Lacking
-//			   P0        P1
-//			 barrier   barrier
-//			 Irecv(1)  Irecv(0)
-//			 send(1)   wait
-//			 wait      send(0)
-//			 barrier   barrier
+// Description: P0 receives messages from all other processes by calling
+// MPI_Recev with MPI_ANY_SOURCE.
 //
 //
 //// List of features
 // P2P: Correct
-// iP2P: Correct
+// iP2P: Lacking
 // PERS: Lacking
 // COLL: Correct
 // iCOLL: Lacking
@@ -40,7 +30,7 @@
 // livelock: never
 // datarace: never
 //
-// Test: mpirun -np 2 ${EXE}
+// Test: mpirun -np 4 ${EXE}
 // Expect: noerror
 //
 ////////////////// End of MPI bugs collection header //////////////////
@@ -59,12 +49,11 @@
 int main(int argc, char **argv) {
   int nprocs = -1;
   int rank = -1;
+  int i;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
-  int buf0[buf_size];
-  int buf1[buf_size];
+  int buf[buf_size];
   MPI_Status status;
-  MPI_Request req, req2;
 
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
@@ -74,20 +63,16 @@ int main(int argc, char **argv) {
 
   MPI_Barrier(MPI_COMM_WORLD);
 
-  if (nprocs != 2) {
-    printf("\033[0;31m! This test needs 2 processes !\033[0;0m\n");
+  if (nprocs < 2) {
+    printf("\033[0;31m! This test needs 3 processes !\033[0;0m\n");
   } else if (rank == 0) {
-    memset(buf0, 0, buf_size * sizeof(int));
-    MPI_Irecv(buf1, buf_size, MPI_INT, 1, 0, MPI_COMM_WORLD, &req);
-    req2 = req;
-    MPI_Send(buf0, buf_size, MPI_INT, 1, 0, MPI_COMM_WORLD);
-    MPI_Wait(&req2, &status);
-  } else if (rank == 1) {
-    memset(buf1, 1, buf_size * sizeof(int));
-    MPI_Irecv(buf0, buf_size, MPI_INT, 0, 0, MPI_COMM_WORLD, &req);
-    req2 = req;
-    MPI_Wait(&req2, &status);
-    MPI_Send(buf1, buf_size, MPI_INT, 0, 0, MPI_COMM_WORLD);
+    for (i = 1; i < nprocs; i++) {
+      MPI_Recv(buf, buf_size, MPI_INT, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD,
+               &status);
+    }
+  } else {
+    memset(buf, 1, buf_size * sizeof(int));
+    MPI_Send(buf, buf_size, MPI_INT, 0, 0, MPI_COMM_WORLD);
   }
 
   MPI_Barrier(MPI_COMM_WORLD);

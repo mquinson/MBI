@@ -5,9 +5,8 @@
 // Description: Correct use of blocking and nonblocking point to point
 // communications
 //
-//				 Communication pattern:
+// Communication pattern:
 //
-// Feat_persistent: Lacking
 //				  P0       P1
 //				 barrier  barrier
 //				 Irec(1)  Irecv(0)

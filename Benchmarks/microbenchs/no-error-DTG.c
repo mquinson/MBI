@@ -1,6 +1,6 @@
 ////////////////// MPI bugs collection header //////////////////
 //
-// Origin: MPICorrectnessBenchmark
+// Origin: MPI Correctness Benchmark
 //
 // Description: This code is correct as we force P0 to receive from P1 first.
 //

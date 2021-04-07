@@ -1,6 +1,6 @@
 ////////////////// MPI bugs collection header //////////////////
 //
-// Origin: PARCOACH
+// Origin: Parcoach
 //
 // Description: The buffer message is changed before the communication is
 // complete.

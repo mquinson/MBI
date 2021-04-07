@@ -1,6 +1,6 @@
 ////////////////// MPI bugs collection header //////////////////
 //
-// Origin: MPICorrectnessBenchmark
+// Origin: MPI Correctness Benchmark
 //
 // Description: P0 sends a message to P1. There is no matching receive in P1. An
 // error is reported by the MPI runtime if nprocs = 1 (invalid rank in MPI_Send)

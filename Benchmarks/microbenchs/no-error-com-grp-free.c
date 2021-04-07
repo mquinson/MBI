@@ -1,36 +1,26 @@
 ////////////////// MPI bugs collection header //////////////////
 //
-// Origin: ISP (http://formalverification.cs.utah.edu/ISP_Tests/)
+// Origin: MPI Correctness Benchmark
 //
-// Description: Blocking recveive functions are called by P0 and P1.
-// MPI_COMM_WORLD is duplicated.
-//
-//			 Communication pattern:
-//
-//			   P0        P1
-//			 barrier   barrier
-//			 recv(1)   recv(0)
-//			 send(1)   send(0)
-//			 barrier   barrier
-//
+// Description: This test creates a communicator and a group and frees them.
 //
 //// List of features
-// P2P: Incorrect
+// P2P: Lacking
 // iP2P: Lacking
 // PERS: Lacking
-// COLL: Correct
+// COLL: Lacking
 // iCOLL: Lacking
 // TOPO: Lacking
 // IO: Lacking
 // RMA: Lacking
 // PROB: Lacking
 // COM: Correct
-// GRP: Lacking
+// GRP: Correct
 // DATA: Lacking
 // OP: Lacking
 //
 //// List of errors
-// deadlock: transient
+// deadlock: never
 // numstab: never
 // segfault: never
 // mpierr: never
@@ -39,29 +29,24 @@
 // datarace: never
 //
 // Test: mpirun -np 2 ${EXE}
-// Expect: deadlock
+// Expect: noerror
 //
 ////////////////// End of MPI bugs collection header //////////////////
 //////////////////       original file begins        //////////////////
 
 #include <mpi.h>
 #include <stdio.h>
-#include <string.h>
 
 #ifndef MPI_MAX_PROCESSOR_NAME
 #define MPI_MAX_PROCESSOR_NAME 1024
 #endif
-
-#define buf_size 128
 
 int main(int argc, char **argv) {
   int nprocs = -1;
   int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
-  int buf0[buf_size];
-  int buf1[buf_size];
-  MPI_Status status;
+  MPI_Group group;
   MPI_Comm comm;
 
   MPI_Init(&argc, &argv);
@@ -70,25 +55,16 @@ int main(int argc, char **argv) {
   MPI_Get_processor_name(processor_name, &namelen);
   printf("rank %d is alive on %s\n", rank, processor_name);
 
-  MPI_Barrier(MPI_COMM_WORLD);
-
   if (nprocs < 2) {
     printf("\033[0;31m! This test needs at least 2 processes !\033[0;0m\n");
-  } else {
-    MPI_Comm_dup(MPI_COMM_WORLD, &comm);
-    if (rank == 0) {
-      memset(buf0, 0, buf_size * sizeof(int));
-      MPI_Recv(buf1, buf_size, MPI_INT, 1, 0, comm, &status);
-      MPI_Send(buf0, buf_size, MPI_INT, 1, 0, comm);
-    } else if (rank == 1) {
-      memset(buf1, 1, buf_size * sizeof(int));
-      MPI_Recv(buf0, buf_size, MPI_INT, 0, 0, comm, &status);
-      MPI_Send(buf1, buf_size, MPI_INT, 0, 0, comm);
-    }
-    MPI_Comm_free(&comm);
+    MPI_Finalize();
+    return 1;
   }
 
-  MPI_Barrier(MPI_COMM_WORLD);
+  MPI_Comm_group(MPI_COMM_WORLD, &group);
+  MPI_Comm_create(MPI_COMM_WORLD, group, &comm);
+  MPI_Group_free(&group);
+  MPI_Comm_free (&comm);
 
   MPI_Finalize();
   printf("\033[0;32mrank %d Finished normally\033[0;0m\n", rank);

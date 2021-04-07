@@ -1,6 +1,6 @@
 ////////////////// MPI bugs collection header //////////////////
 //
-// Origin:
+// Origin: MPI Correctness Benchmark
 //
 // Description: This is potential correction for rma-fence-error-local-RW.c
 //
