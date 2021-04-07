@@ -29,7 +29,7 @@
 // datarace: never
 //
 // Test: mpirun -np 3 ${EXE}
-// Expect: various
+// Expect: numstab
 //
 ////////////////// End of MPI bugs collection header //////////////////
 //////////////////       original file begins        //////////////////
