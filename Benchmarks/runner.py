@@ -64,6 +64,10 @@ def run_cmd(buildcmd, execcmd, binary, timeout, read_line_lambda=None):
         pass # OK, it's gone now
 
     rc = process.poll()
+    if rc < 0:
+        output += f"Command killed by signal {-rc}\n"
+    else
+        output += f"Command return code: {-rc}\n"
 
     return ans, rc, output
 
