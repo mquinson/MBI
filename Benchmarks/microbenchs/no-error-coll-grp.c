@@ -1,9 +1,8 @@
 ////////////////// MPI bugs collection header //////////////////
 //
-// Origin: MUST
+// Origin: ISP (http://formalverification.cs.utah.edu/ISP_Tests/)
 //
-// Description: This code creates a group with MPI_Group_range_excl without any
-// error or warning
+// Description: This code constructs a group and frees it
 //
 //// List of features
 // P2P: Lacking
@@ -47,6 +46,7 @@ int main(int argc, char **argv) {
   int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
+  MPI_Group newgroup, newgroup2;
 
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
@@ -54,25 +54,15 @@ int main(int argc, char **argv) {
   MPI_Get_processor_name(processor_name, &namelen);
   printf("rank %d is alive on %s\n", rank, processor_name);
 
-  if (nprocs < 2) {
-    printf("\033[0;31m! This test needs at least 2 processes !\033[0;0m\n");
-    MPI_Finalize();
-    return 1;
-  }
-
-  MPI_Group group1, group2;
-  int range[1][3];
-  MPI_Comm_group(MPI_COMM_WORLD, &group1);
-
-  range[0][0] = 0;
-  range[0][1] = 1;
-  range[0][2] = 1;
-
-  // create a second group
-  MPI_Group_range_excl(group1, 1, range, &group2);
-
-  MPI_Group_free(&group1);
-  MPI_Group_free(&group2);
+  MPI_Barrier(MPI_COMM_WORLD);
+  MPI_Comm_group(MPI_COMM_WORLD, &newgroup);
+  MPI_Group_free(&newgroup);
+  MPI_Barrier(MPI_COMM_WORLD);
+  /* now with an alias... */
+  MPI_Comm_group(MPI_COMM_WORLD, &newgroup);
+  newgroup2 = newgroup;
+  MPI_Group_free(&newgroup2);
+  MPI_Barrier(MPI_COMM_WORLD);
 
   MPI_Finalize();
   printf("\033[0;32mrank %d Finished normally\033[0;0m\n", rank);

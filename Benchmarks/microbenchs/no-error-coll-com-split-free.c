@@ -1,8 +1,8 @@
 ////////////////// MPI bugs collection header //////////////////
 //
-// Origin: ISP (http://formalverification.cs.utah.edu/ISP_Tests/)
+// Origin: MPI Correctness Benchmark
 //
-// Description: This code constructs a group and free it
+// Description: A split function is used to create a communicator
 //
 //// List of features
 // P2P: Lacking
@@ -14,8 +14,8 @@
 // IO: Lacking
 // RMA: Lacking
 // PROB: Lacking
-// COM: Lacking
-// GRP: Correct
+// COM: Correct
+// GRP: Lacking
 // DATA: Lacking
 // OP: Lacking
 //
@@ -44,9 +44,9 @@
 int main(int argc, char **argv) {
   int nprocs = -1;
   int rank = -1;
+  MPI_Comm newcomm;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
-  MPI_Group newgroup, newgroup2;
 
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
@@ -55,14 +55,15 @@ int main(int argc, char **argv) {
   printf("rank %d is alive on %s\n", rank, processor_name);
 
   MPI_Barrier(MPI_COMM_WORLD);
-  MPI_Comm_group(MPI_COMM_WORLD, &newgroup);
-  MPI_Group_free(&newgroup);
-  MPI_Barrier(MPI_COMM_WORLD);
-  /* now with an alias... */
-  MPI_Comm_group(MPI_COMM_WORLD, &newgroup);
-  newgroup2 = newgroup;
-  MPI_Group_free(&newgroup2);
-  MPI_Barrier(MPI_COMM_WORLD);
+
+  int color = rank % 2;
+  int key = 1;
+  MPI_Comm_split(MPI_COMM_WORLD, color, key, &newcomm);
+
+  MPI_Barrier(newcomm);
+
+	if(newcomm != MPI_COMM_NULL)
+		MPI_Comm_free(&newcomm);
 
   MPI_Finalize();
   printf("\033[0;32mrank %d Finished normally\033[0;0m\n", rank);
