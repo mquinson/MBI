@@ -8,13 +8,13 @@
 // P2P: Lacking
 // iP2P: Lacking
 // PERS: Lacking
-// COLL: Incorrect
+// COLL: Lacking
 // iCOLL: Lacking
 // TOPO: Lacking
 // IO: Lacking
 // RMA: Lacking
 // PROB: Lacking
-// COM: Correct
+// COM: Incorrect
 // GRP: Lacking
 // DATA: Lacking
 // OP: Lacking

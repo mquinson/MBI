@@ -1,20 +1,20 @@
 ////////////////// MPI bugs collection header //////////////////
 //
-// Origin: Aislinn
+// Origin: MPI Correctness Benchmark
 //
-// Description: Color mismatch in MPI_Comm_split
+// Description: This code performs a MPI_Comm_compare
 //
 //// List of features
 // P2P: Lacking
 // iP2P: Lacking
 // PERS: Lacking
-// COLL: Incorrect
+// COLL: Lacking
 // iCOLL: Lacking
 // TOPO: Lacking
 // IO: Lacking
 // RMA: Lacking
 // PROB: Lacking
-// COM: Incorrect
+// COM: Correct
 // GRP: Lacking
 // DATA: Lacking
 // OP: Lacking
@@ -23,13 +23,13 @@
 // deadlock: never
 // numstab: never
 // segfault: never
-// mpierr: transient
+// mpierr: never
 // resleak: never
 // livelock: never
 // datarace: never
 //
 // Test: mpirun -np 2 ${EXE}
-// Expect: mpierr
+// Expect: noerror
 //
 ////////////////// End of MPI bugs collection header //////////////////
 //////////////////       original file begins        //////////////////
@@ -46,7 +46,7 @@ int main(int argc, char **argv) {
   int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
-  MPI_Comm c2;
+  MPI_Comm comm;
 
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
@@ -60,13 +60,10 @@ int main(int argc, char **argv) {
     return 1;
   }
 
-  if (rank == 1) {
-    MPI_Comm_split(MPI_COMM_WORLD, -10, 0, &c2);
-  } else {
-    MPI_Comm_split(MPI_COMM_WORLD, 10, 0, &c2);
-  }
-
-  MPI_Comm_free(&c2);
+  // create a second intracommunicator
+  comm = MPI_COMM_WORLD;
+  int res = 0;
+  MPI_Comm_compare(MPI_COMM_WORLD, comm, &res);
 
   MPI_Finalize();
   printf("\033[0;32mrank %d Finished normally\033[0;0m\n", rank);
