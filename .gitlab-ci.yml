@@ -381,7 +381,7 @@ build-isp:
         expire_in: 30 days
         when: always
         paths:
-            - /build/ISP
+            - /builds/ISP
 
 test-isp:
     stage: test
