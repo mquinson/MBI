@@ -1,0 +1,10 @@
+#! /bin/sh
+
+set -e # Fail on error
+
+# Go to the MBI root directory
+cd "$(dirname "$0")"
+
+export PATH=$PATH:/builds/ISP/bin/
+cd Benchmarks
+for file in $(ls /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Benchmarks/microbenchs/*.c); do python3.8 runner.py -x isp -o bench_isp.csv -t 300 --job $CI_JOB_ID $file; done

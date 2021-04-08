@@ -371,15 +371,14 @@ test-simgrid:
 build-isp:
     stage: build
     needs : []
+    before_script:
+        - apt-get update
+        - apt-get install -y quilt
     script:
-        - cd ISP/isp-0.3.1
-        - mkdir -p BUILD 
-        - ./configure --prefix=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/ISP/isp-0.3.1/BUILD --with-mpi-inc-dir=/usr/lib/x86_64-linux-gnu/mpich/include
-        - sed -i "s/-source 1.5 -target 1.5 -classpath/-source 1.7 -target 1.7 -classpath/" UI/Makefile*
-        - make -j$(nproc) install
+        - /sources/MBI/ISP-build
     cache:
         paths:
-            - ./ISP/*    
+            - /builds/ISP    
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -392,13 +391,8 @@ test-isp:
     needs:
         - job: build-isp
           artifacts: true
-    # before_script:
-    #     - apt-get update
-    #     - apt-get install -y lsof
     script:
-        - export PATH=$PATH:/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/ISP/isp-0.3.1/BUILD/bin/
-        - cd Benchmarks
-        - for file in $(ls /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Benchmarks/microbenchs/*.c); do python3.8 runner.py -x isp -o bench_isp.csv -t 300 --job $CI_JOB_ID $file; done
+        - /sources/MBI/ISP-run
     artifacts:
         untracked: false
         expire_in: 30 days
