@@ -375,7 +375,7 @@ build-isp:
         - apt-get update
         - apt-get install -y quilt
     script:
-        - ./ISP-build
+        - sh -x ./ISP-build
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -389,7 +389,7 @@ test-isp:
         - job: build-isp
           artifacts: true
     script:
-        - ./ISP-run
+        - sh -x ./ISP-run
     artifacts:
         untracked: false
         expire_in: 30 days
