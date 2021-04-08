@@ -376,15 +376,12 @@ build-isp:
         - apt-get install -y quilt
     script:
         - ./ISP-build
-    cache:
-        paths:
-            - /builds/ISP    
     artifacts:
         untracked: false
         expire_in: 30 days
         when: always
         paths:
-            - ./ISP/*    
+            - /build/ISP
 
 test-isp:
     stage: test
