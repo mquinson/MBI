@@ -7,6 +7,6 @@ cd "$(dirname "$0")"
 
 cd ISP/isp-0.3.1
 quilt push -a # Install our patches
-./configure --prefix=/builds/ISP --with-mpi-inc-dir=/usr/lib/x86_64-linux-gnu/mpich/include
+./configure --prefix="$(dirname "$0")"/builds/ISP --with-mpi-inc-dir=/usr/lib/x86_64-linux-gnu/mpich/include
 sed -i "s/-source 1.5 -target 1.5 -classpath/-source 1.7 -target 1.7 -classpath/" UI/Makefile*
 make -j$(nproc) install
