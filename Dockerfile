@@ -11,7 +11,7 @@ RUN apt-get update
 RUN apt-get -y -qq install gcc-10
 RUN apt-get -y -qq install mpich
 RUN apt-get -y -qq install build-essential
-RUN apt-get -y -qq install git
+RUN apt-get -y -qq install git quilt
 RUN apt-get -y -qq install python2.7
 RUN apt-get -y -qq install cmake
 RUN apt-get -y -qq install libxml2-dev

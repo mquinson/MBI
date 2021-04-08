@@ -1,0 +1,30 @@
+ISP sometimes segfaults when displaying the trace leading to a
+deadlock (about 3/10 of times), so display the DEADLOCK string before
+displaying that trace, so that the runner finds it before the tool
+crash.
+
+---
+ isp-0.3.1/scheduler/InterleavingTree.cpp |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+Index: b/isp-0.3.1/scheduler/InterleavingTree.cpp
+===================================================================
+--- a/isp-0.3.1/scheduler/InterleavingTree.cpp
++++ b/isp-0.3.1/scheduler/InterleavingTree.cpp
+@@ -1260,13 +1260,14 @@ std::cout << "======== don't care size :
+         sock.ExitMpiProcessAndWait (true);
+ 
+         if (!Scheduler::_quiet && !Scheduler::_limit_output) {
++            std::cout << "Detected a DEADLOCK in interleaving " << 
++                      Scheduler::interleavings << std::endl;
++	   std::cout.flush();
+             std::cout << "-----------------------------------------" << std::endl;
+             if (n->getTotalMpiCalls() < CONSOLE_OUTPUT_THRESHOLD)
+               std::cout << *n << std::endl;
+ 
+             std::cout << "No matching MPI call found!" << std::endl;
+-            std::cout << "Detected a DEADLOCK in interleaving " << 
+-                      Scheduler::interleavings << std::endl;
+ //          std::cout << "Killing program " << pname << std::endl;
+             
+             std::cout << "-----------------------------------------" << std::endl;
