@@ -65,9 +65,11 @@ def run_cmd(buildcmd, execcmd, binary, timeout, read_line_lambda=None):
 
     rc = process.poll()
     if rc < 0:
-        output += f"Command killed by signal {-rc}\n"
-    else
-        output += f"Command return code: {-rc}\n"
+        status = f"Command killed by signal {-rc}\n"
+    else:
+        status = f"Command return code: {rc}\n"
+    print(status)
+    output += status
 
     return ans, rc, output
 
@@ -214,6 +216,8 @@ def isprun(execcmd, filename, binary, id, timeout, jobid):
         return res
     
     if re.search('ISP detected deadlock!!!', output):
+        return 'deadlock'
+    if re.search('Detected a DEADLOCK in interleaving', output):
         return 'deadlock'
 
     if re.search('resource leaks detected', output):
