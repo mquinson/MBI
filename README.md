@@ -1,24 +1,31 @@
-# MpiCorrectnessBenchmark
+# The MPI Bug Initiative
 
-Source code and CI of the MPI Correctness Benchmark.
+The MPI Bug Initiative is a collection of MPI codes that aims at assessing the status of MPI verification tools.
 
-## Result
-  
-Every figure in this section uses those notations :
+## Authors
 
-![graph](Data/caption.svg)
-  
-First figure links to the job logs, second to the C source code.
+The MBI was created by Mathieu Laurent, Martin Quinson and Emmanuelle Saillard.
 
-### Parcoach Results
+
+## Feature and Errors Labels
+
+
+## List of Programs
+
+
+## Tools Information
+
+Tool | Version | Compiler 
+-----|---------|---------
+Aislinn | v3.12 | GCC 7.4.0
+CIVL | v1.20 | used with JDK-14
+ISP | 0.3.1 | GCC 10.2.0
+MUST | v1.6 | GCC 10.2.0
+PARCOACH | v1 | LLVM 9
+McSimGrid | v3.27 |  GCC 10.2.0
+
+## Latest Tools Evaluation Results
+
  
-![graph](https://gitlab.com/Mwapl/benchmarking-mpi/-/jobs/1039864676/artifacts/raw/Data/parcoach_result_LOG.svg)
-
-![graph](https://gitlab.com/Mwapl/benchmarking-mpi/-/jobs/1039864676/artifacts/raw/Data/parcoach_result_SRC.svg)
-
-### Simgrid Results
-
-![graph](https://gitlab.com/Mwapl/benchmarking-mpi/-/jobs/1039864671/artifacts/raw/Data/simgrid_result_LOG.svg)
-
-![graph](https://gitlab.com/Mwapl/benchmarking-mpi/-/jobs/1039864671/artifacts/raw/Data/simgrid_result_SRC.svg)
+Tool 	| TP | TN | FP | FN | Error | Recall | Specificity | Precision | Accurracy | F1 Score  
 
