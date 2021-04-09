@@ -3,20 +3,21 @@
 set -e # Fail on error
 
 # Go to the MBI root directory
-cd "$(dirname "$0")"/../../
+cd "$(dirname "$0")"/../
 rootdir=$(pwd)
 
 # Check for updates
-if [ -e Aislinn/aislinn-git/.git ]
+if [ -e tools/aislinn-git/.git ]
 then
-    cd Aislinn/aislinn-git
+    cd tools/aislinn-git
     git pull
+    cd ../..
 else
-    rm -rf Aislinn/aislinn-git
-    git clone --depth=1 https://github.com/spirali/aislinn.git Aislinn/aislinn-git
+    rm -rf tools/aislinn-git
+    git clone --depth=1 https://github.com/spirali/aislinn.git tools/aislinn-git
 fi
-cp -r ./Aislinn/aislinn-valgrind-312 ./Aislinn/aislinn-git/valgrind  
-cd Aislinn/aislinn-git/valgrind
+cp -r ./tools/aislinn-valgrind-312 ./tools/aislinn-git/valgrind  
+cd tools/aislinn-git/valgrind
 sh autogen.sh
 ./configure
 make -j$(nproc)

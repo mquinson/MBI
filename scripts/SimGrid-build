@@ -3,19 +3,20 @@
 set -e # Fail on error
 
 # Go to the MBI root directory
-cd "$(dirname "$0")"/../../
+cd "$(dirname "$0")"/../
 rootdir=$(pwd)
 
 # Check for updates
-if [ -e SimGrid/simgrid/.git ]
+if [ -e tools/simgrid/.git ]
 then
-    cd SimGrid/simgrid
+    cd tools/simgrid
     git pull
+    cd ../..
 else
-    rm -rf SimGrid/simgrid
-    git clone --depth=1 https://framagit.org/simgrid/simgrid.git SimGrid/simgrid
+    rm -rf tools/simgrid
+    git clone --depth=1 https://framagit.org/simgrid/simgrid.git tools/simgrid
 fi
 
-cd ${rootdir}/Simgrid/simgrid
-cmake -DCMAKE_INSTALL_PREFIX=${rootdir}/SimGrid/build -Denable_model-checking=ON .
+cd ${rootdir}/tools/simgrid
+cmake -DCMAKE_INSTALL_PREFIX=${rootdir}/SimGrid-install -Denable_model-checking=ON .
 make -j$(nproc) install VERBOSE=1

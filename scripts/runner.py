@@ -140,7 +140,7 @@ def aislinnrun(execcmd, filename, binary, id, timeout, jobid):
 ##########################
 def civlrun(execcmd, filename, binary, id, timeout, jobid):
 
-    execcmd = re.sub("mpirun", "java -jar ../CIVL/CIVL-1.20_5259/lib/civl-1.20_5259.jar verify", execcmd)
+    execcmd = re.sub("mpirun", "java -jar ../../tools/CIVL-1.20_5259/lib/civl-1.20_5259.jar verify", execcmd)
     execcmd = re.sub('-np ', "-input_mpi_nprocs=", execcmd)
     execcmd = re.sub('\${EXE}', filename, execcmd)
     execcmd = re.sub('\$zero_buffer', "", execcmd)
@@ -308,7 +308,7 @@ def parcoachrun(execcmd, filename, binary, id, timeout, jobid):
 
     res, rc, output = run_cmd(
         buildcmd="clang -c -g -emit-llvm {} -I/usr/lib/x86_64-linux-gnu/mpich/include/ -o {}.bc".format(filename,binary),
-        execcmd = "opt-9 -load ../Parcoach/parcoach/build/src/aSSA/aSSA.so -parcoach -check-mpi {}.bc ".format(binary,binary,id),
+        execcmd = "opt-9 -load ../../tools/parcoach/build/src/aSSA/aSSA.so -parcoach -check-mpi {}.bc ".format(binary,binary,id),
         binary=binary,
         timeout=timeout)
 

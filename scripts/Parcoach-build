@@ -3,24 +3,25 @@
 set -e # Fail on error
 
 # Go to the MBI root directory
-cd "$(dirname "$0")"/../../
+cd "$(dirname "$0")"/../
 rootdir=$(pwd)
 
 ln -s $(which clang) /usr/lib/llvm-9/bin/clang
 
 # Check for updates
-if [ -e Parcoach/parcoach/.git ]
+if [ -e tools/parcoach/.git ]
 then
-    cd Parcoach/parcoach
+    cd tools/parcoach
     git pull
+    cd ../..
 else
-    rm -rf Parcoach/parcoach
-    git clone --depth=1 https://github.com/parcoach/parcoach.git Parcoach/parcoach
+    rm -rf tools/parcoach
+    git clone --depth=1 https://github.com/parcoach/parcoach.git tools/parcoach
 fi
 
-cd ${rootdir}/Parcoach/parcoach
+cd ${rootdir}/tools/parcoach
 mkdir -p build
 cd build
-cmake .. -DCMAKE_C_COMPILER=clang -DLLVM_DIR=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Parcoach/llvm-project/build
+cmake .. -DCMAKE_C_COMPILER=clang -DLLVM_DIR=${rootdir}/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Parcoach/llvm-project/build
 make -j$(nproc) VERBOSE=1
 ctest --output-on-failure

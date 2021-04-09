@@ -2,6 +2,9 @@
 
 set -e # Fail on error
 
+# Go to the MBI scripts/ directory
+cd "$(dirname "$0")"
+
 ./CIVL-build
 ./CIVL-run
 ./ISP-build

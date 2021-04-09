@@ -1,7 +1,7 @@
 # Rebuild the docker image:
-#      docker build -f Dockerfile -t benchmarking-mpi:latest .
-# Start it locally (the local repo is copied under /sources):
-#      docker run -it benchmarking-mpi bash
+#      docker build -f Dockerfile -t mpi-bugs-initiative:latest .
+# Start it locally (the local repo is copied under /MBI/):
+#      docker run -it mpi-bugs-initiative bash
 FROM ubuntu:20.04
 USER root
 RUN apt-get update
@@ -37,6 +37,7 @@ RUN apt-get -y -qq install llvm-9-dev
 RUN apt-get -y -qq install lsof
 RUN apt-get -y -qq install openjdk-14-jdk
 RUN apt-get -y -qq install psmisc
+RUN apt-get -y -qq install python-is-python2
 RUN apt-get -y -qq install python-jinja2
 RUN apt-get -y -qq install python2.7
 RUN apt-get -y -qq install python3-pip
@@ -46,4 +47,4 @@ RUN apt-get -y -qq install zlib1g-dev
 RUN pip3 install drawSvg
 RUN apt-get autoremove -yq
 RUN apt-get clean -yq
-COPY . /sources/MBI
+COPY . /MBI
