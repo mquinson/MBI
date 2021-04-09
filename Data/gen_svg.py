@@ -141,7 +141,7 @@ def print_result(top_left_x, top_left_y, i, j, row):
         link = "https://gitlab.com/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/-/jobs/{}/artifacts/raw/Benchmarks/{}_{}.txt".format(job_id,name,id)
 
     else:
-        link = "https://gitlab.com/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/-/tree/master/Benchmarks/microbenchs/{}.c".format(name)
+        link = "https://gitlab.com/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/-/tree/master/codes/{}.c".format(name)
     
     r = Hyperlink(link)
     
@@ -392,7 +392,7 @@ if 'aislinn' in tools and 'isp' in tools and 'civl' in tools and 'must' in tools
 feature_data = [["Name", "Origin", "P2P", "iP2P", "PERS", "COLL", "iCOLL", "TOPO", "IO", "RMA", "PROB",
 	 "COM", "GRP", "DATA", "OP", "LOOP", "SP", "deadlock", "numstab", "segfault", "mpierr",
 	 "resleak", "livelock", "datarace"]]
-directory = "../Benchmarks/microbenchs/"
+directory = "../codes/"
 for filename in os.listdir(directory):
     if filename.endswith(".c"):
         row = [0]*len(feature_data[0])
