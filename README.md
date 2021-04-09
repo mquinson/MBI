@@ -6,14 +6,14 @@ The MPI Bugs Initiative is a collection of MPI codes that aims at assessing the 
 ## Quick Start
 
 Docker is used to facilitate the benchmark modifications and the installation of the tools we have selected.
-The docker image can be created and build with the following commands:
-
+You can create a docker image containing all dependencies needed to evaluate the tools using the provided Dockerfile.
+The following commands will create and run the image:
 ```bash
 docker build -f Dockerfile -t mbi:latest .
 docker run -it mbi bash 
 ```
-Once in the docker container, clone the MBI repository and run the runner. All tools are installed and the tests are executed.
 
+Once inside the docker, you will the scripts you need under /MBI/scripts. Two scripts are provided for each tool. /MBI/scripts/{tool}-build can be used to build and install the selected tool, while /MBI/scripts/{tool}-run will run that tool on all MBI code sample. The result can then be explored under /MBI/log/{tool}-{date} (a new such directory is created each time you launch a {tool}-run script)
 
 
 ## Feature and Errors Labels
