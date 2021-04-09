@@ -15,9 +15,6 @@ docker run -it bench-env bash
  ```
 
 
-## Authors
-
-The MBI was created by Mathieu Laurent, Martin Quinson and Emmanuelle Saillard.
 
 
 ## Feature and Errors Labels
