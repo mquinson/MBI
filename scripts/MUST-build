@@ -8,5 +8,5 @@ rootdir=$(pwd)
 
 cd tools/MUST-v1.6
 cmake --version
-CC=$(which gcc) CXX=$(which gcc++) FC=$(which gfortran) cmake . -DCMAKE_INSTALL_PREFIX=${rootdir}/tools/MUST-install -DCMAKE_BUILD_TYPE=Release
+CC=$(which gcc) CXX=$(which gcc++) FC=$(which gfortran) cmake . -DCMAKE_INSTALL_PREFIX=${rootdir}/builds/MUST -DCMAKE_BUILD_TYPE=Release
 make -j$(nproc) install VERBOSE=1

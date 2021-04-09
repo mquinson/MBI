@@ -18,7 +18,7 @@ build-must:
         untracked: false
         expire_in: 30 days
         paths:
-            - tools/MUST-v1.6/*
+            - builds/MUST
             
 test-must-25:
     stage: test

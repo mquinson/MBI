@@ -6,7 +6,7 @@ set -e # Fail on error
 cd "$(dirname "$0")"/../
 rootdir=$(pwd)
 
-export PATH=${rootdir}/tools/MUST-install/bin:$PATH
+export PATH=${rootdir}/builds/MUST/bin:$PATH
 
 # If this was not run with gilab-ci, we provide a meaningless value
 if [ -z "$CI_JOB_ID" ]
