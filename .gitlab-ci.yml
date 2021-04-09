@@ -319,13 +319,14 @@ simgrid-svg:
     #   - pip3 install drawSvg
     script:
       - cd Data
-      - python3.8 gen_svg.py -i /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/codes/bench_simgrid.csv -o simgrid_result_LOG --header false --mode log
+      - python3.8 gen_svg.py -i ../log/simgrid-*/bench_simgrid.csv -o simgrid_result_LOG --header false --mode log
+      - cp *svg ../log/simgrid-*/
     artifacts:
         untracked: false
         expire_in: 30 days
         when: always
         paths:
-            - Data/simgrid_result_LOG.svg
+            - log/*
 
 parcoach-svg:
     stage: svg
@@ -338,13 +339,14 @@ parcoach-svg:
     #   - pip3 install drawSvg
     script:
       - cd Data
-      - python3.8 gen_svg.py -i /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/codes/bench_parcoach.csv -o parcoach_result_LOG --header false --mode log
+      - python3.8 gen_svg.py -i ../log/parcoach-*/bench_parcoach.csv -o parcoach_result_LOG --header false --mode log
+      - cp *svg ../log/parcoach-*/
     artifacts:
         untracked: false
         expire_in: 30 days
         when: always
         paths:
-            - Data/parcoach_result_LOG.svg
+            - log/*
 
 isp-svg:
     stage: svg
@@ -357,13 +359,14 @@ isp-svg:
     #   - pip3 install drawSvg
     script:
       - cd Data
-      - python3.8 gen_svg.py -i /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/codes/bench_isp.csv -o isp_result_LOG --header false --mode log
+      - python3.8 gen_svg.py -i ../log/isp-*/bench_isp.csv -o isp_result_LOG --header false --mode log
+      - cp *svg ../log/isp-*/
     artifacts:
         untracked: false
         expire_in: 30 days
         when: always
         paths:
-            - Data/isp_result_LOG.svg
+            - log/*
 
 aislinn-svg:
     stage: svg
@@ -376,13 +379,14 @@ aislinn-svg:
     #   - pip3 install drawSvg
     script:
       - cd Data
-      - python3.8 gen_svg.py -i /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/codes/bench_aislinn.csv -o aislinn_result_LOG --header false --mode log
+      - python3.8 gen_svg.py -i ../log/aislinn-*/bench_aislinn.csv -o aislinn_result_LOG --header false --mode log
+      - cp *svg ../log/aislinn-*/
     artifacts:
         untracked: false
         expire_in: 30 days
         when: always
         paths:
-            - Data/aislinn_result_LOG.svg
+            - log/*
 
 civl-svg:
     stage: svg
@@ -396,15 +400,16 @@ civl-svg:
     #   - apt-get install -y python3-pip libcairo2
     #   - pip3 install drawSvg
     script:
-      - cat ./codes/*.csv > result.csv
       - cd Data
-      - python3.8 gen_svg.py -i ../result.csv -o civl_result_LOG --header false --mode log
+      - cat ../log/civl-*/*.csv > result.csv
+      - python3.8 gen_svg.py -i result.csv -o civl_result_LOG --header false --mode log
+      - cp *svg ../log/civl-*/
     artifacts:
         untracked: false
         expire_in: 30 days
         when: always
         paths:
-            - Data/civl_result_LOG.svg
+            - log/*
 
 must-svg:
     stage: svg
@@ -430,15 +435,16 @@ must-svg:
     #   - apt-get install -y python3-pip libcairo2
     #   - pip3 install drawSvg
     script:
-      - cat ./codes/*.csv > result.csv
       - cd Data
-      - python3.8 gen_svg.py -i /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/result.csv -o must_result_LOG --header false --mode log
+      - cat ../log/must-*/*.csv > result.csv
+      - python3.8 gen_svg.py -i result.csv -o must_result_LOG --header false --mode log
+      - cp *svg ../log/must-*/
     artifacts:
         untracked: false
         expire_in: 30 days
         when: always
         paths:
-            - Data/must_result_LOG.svg
+            - log/*
             
 data-collect:
     stage: gather
@@ -488,14 +494,14 @@ data-collect:
     #     - apt-get install -y python3-pip libcairo2
     #     - pip3 install drawSvg
     script:
-        - echo "filename;id;tool;TO;NP;buff;expected;result;elapsed_time;jobid" > result.csv
-        - cat codes/*.csv >> result.csv
+        - echo "#filename;id;tool;TO;NP;buff;expected;result;elapsed_time;jobid" > result.csv
         - cd Data
-        - python3.8 gen_svg.py -i ../result.csv -o all_result_LOG --header true --mode log
+        - cat ../log/*/*.csv >> result.csv
+        - python3.8 gen_svg.py -i result.csv -o all_result_LOG --header true --mode log
+	- cp *svg ../log
     artifacts:
         untracked: false
         expire_in: 30 days
         when: always
         paths:
-            - ./result.csv
-            - Data/*.svg
+            - log
