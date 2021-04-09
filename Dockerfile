@@ -7,7 +7,7 @@ USER root
 RUN apt-get update
 RUN apt-get -y -qq install software-properties-common
 RUN add-apt-repository ppa:ubuntu-toolchain-r/test
-RUN apt-get update
+RUN apt-get update --fix-missing
 RUN apt-get -y -qq install autoconf
 RUN apt-get -y -qq install automake
 RUN apt-get -y -qq install autotools-dev

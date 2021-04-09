@@ -1,0 +1,41 @@
+#! /bin/sh
+
+set -e # Fail on error
+
+# Go to the MBI root directory
+cd "$(dirname "$0")"/../../
+rootdir=$(pwd)
+
+export PATH=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Must/MUST-v1.6/bin:$PATH
+
+# If this was not run with gilab-ci, we provide a meaningless value
+if [ -z "$CI_JOB_ID" ]
+then
+    CI_JOB_ID=0
+fi
+
+cd Src
+# Clean potential logs from previous failed executions
+rm -f -r *.html *.csv *.txt *.bc
+
+# Run the script on each code
+for file in $(ls ${rootdir}/Src/Benchmarks/*.c)
+do
+    python3.8 runner.py -x must -o bench_must.csv -t 300 --job $CI_JOB_ID $file
+    killall mpirun||true
+done
+
+# Create log directories
+cd ${rootdir}
+mkdir -p Log
+cd Log
+ident=$(date +%s)
+mkdir MUST-${ident}
+
+# Move every logs at the right location
+cd ${rootdir}
+cp ./Src/*.html ./Log/MUST-${ident}
+cp ./Src/*.csv ./Log/MUST-${ident}
+cp ./Src/*.txt ./Log/MUST-${ident}
+cd ../
+rm -f -r *.html *.csv *.txt *.bc

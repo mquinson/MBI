@@ -1,0 +1,25 @@
+#! /bin/sh
+
+set -e # Fail on error
+
+# Go to the MBI root directory
+cd "$(dirname "$0")"/../../
+rootdir=$(pwd)
+
+# Check for updates
+if [ -e Aislinn/aislinn-git/.git ]
+then
+    cd Aislinn/aislinn-git
+    git pull
+else
+    rm -rf Aislinn/aislinn-git
+    git clone --depth=1 https://github.com/spirali/aislinn.git Aislinn/aislinn-git
+fi
+cp -r ./Aislinn/aislinn-valgrind-312 ./Aislinn/aislinn-git/valgrind  
+cd Aislinn/aislinn-git/valgrind
+sh autogen.sh
+./configure
+make -j$(nproc)
+cd ../
+./waf configure
+./waf

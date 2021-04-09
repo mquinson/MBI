@@ -1,0 +1,41 @@
+#! /bin/sh
+
+set -e # Fail on error
+
+# Go to the MBI root directory
+cd "$(dirname "$0")"/../../
+rootdir=$(pwd)
+
+export PATH=$PATH:${rootdir}/SimGrid/build/bin/
+export VERBOSE=1
+cp SimGrid/simgrid/examples/platforms/cluster_backbone.xml Src/cluster.xml
+
+# If this was not run with gilab-ci, we provide a meaningless value
+if [ -z "$CI_JOB_ID" ]
+then
+    CI_JOB_ID=0
+fi
+
+cd Src
+# Clean potential logs from previous failed executions
+rm -f -r *.html *.csv *.txt *.bc
+
+# Run the script on each code
+for file in $(ls ${rootdir}/Src/Benchmarks/*.c)
+do
+    python3.8 runner.py -x simgrid -o bench_simgrid.csv -t 300 --job $CI_JOB_ID $file
+done
+
+# Create log directories
+cd ${rootdir}
+mkdir -p Log
+cd Log
+ident=$(date +%s)
+mkdir SimGrid-${ident}
+
+# Move every logs at the right location
+cd ${rootdir}
+cp ./Src/*.csv ./Log/SimGrid-${ident}
+cp ./Src/*.txt ./Log/SimGrid-${ident}
+cd Src
+rm -f -r *.html *.csv *.txt *.bc

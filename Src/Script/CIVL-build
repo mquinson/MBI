@@ -1,0 +1,9 @@
+#! /bin/sh
+
+set -e # Fail on error
+
+# Go to the MBI root directory
+cd "$(dirname "$0")"/../../
+
+cd CIVL/CIVL-1.20_5259/lib
+java -jar civl-1.20_5259.jar config 

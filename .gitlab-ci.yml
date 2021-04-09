@@ -356,7 +356,7 @@ test-simgrid:
           artifacts: true
     script:
         - export PATH=$PATH:/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/SimGrid/build/bin/
-        - export VERBOSE=1 # Please smpicc, talk to me
+        - export VERBOSE=1
         - cp SimGrid/simgrid/examples/platforms/cluster_backbone.xml Benchmarks/cluster.xml
         - cd Benchmarks
         - for file in $(ls microbenchs/*.c); do python3.8 runner.py -x simgrid -o bench_simgrid.csv -t 300 --job $CI_JOB_ID $file;done

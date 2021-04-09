@@ -3,7 +3,7 @@
 set -e # Fail on error
 
 # Go to the MBI root directory
-cd "$(dirname "$0")"
+cd "$(dirname "$0")"/../../
 rootdir=$(pwd)
 
 cd ISP/isp-0.3.1

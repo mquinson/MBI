@@ -1,0 +1,14 @@
+#! /bin/sh
+
+set -e # Fail on error
+
+./CIVL-build
+./CIVL-run
+./ISP-build
+./ISP-run
+./MUST-build
+./MUST-run
+./Parcoach-build
+./Parcoach-run
+./SimGrid-build
+./SimGrid-run
