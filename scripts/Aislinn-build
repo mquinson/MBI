@@ -6,9 +6,9 @@ if [ "$VERSION_ID" == "18.04" ] && [ "$ID" == "ubuntu" ]
 then 
    echo "This is an Ubuntu 18.04 OS. Good."
 else
-   echo "Please run this script in a ubuntu:18.04 image"
-   echo "docker image pull ubuntu:18.04"
-   echo "docker -it --rm --name MIB --volume .:/MBI ubuntu:18.04 bash"
+   echo "Please run this script in a ubuntu:18.04 image. Run these commands:"
+   echo "  docker image pull ubuntu:18.04"
+   echo '  docker run -it --rm --name MIB --volume $(pwd):/MBI ubuntu:18.04 bash'
    exit 1
 fi
 
