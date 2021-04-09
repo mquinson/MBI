@@ -1,19 +1,17 @@
-# The MPI Bug Initiative
+# The MPI Bugs Initiative
 
-The MPI Bug Initiative is a collection of MPI codes that aims at assessing the status of MPI verification tools.
+The MPI Bugs Initiative is a collection of MPI codes that aims at assessing the status of MPI verification tools.
 
 
 ## Quick Start
 
-TODO: How to use the docker image, test the tools,...
+A Docker image is available to test our benchmark and reproduce the results.
 
+To create and build the docker container, use the following commands:
 ```bash
-instructions like:
-docker build --tag bench-env .
-docker run -d -p 6379:6379 --name cont bench-env
-docker run -it bench-env bash
+docker build -f Dockerfile -t MBI:latest .
+docker run -it MBI bash
  ```
-
 
 
 
@@ -58,8 +56,7 @@ set each error label either to never (the error never occurs), always (the error
 ## List of Programs
 
 Our benchmark contains 194 programs including 188 micro codes (with less than 100 lines of code) and 6 medium codes (with more than 100 lines of code). 112 programs have errors and 82 are known to be error-free.
-
-TODO: link to all programs (with a description,...)
+All programs are in the Src directory.
 
 
 ## Tools Information
@@ -75,6 +72,7 @@ ISP | 0.3.1 | GCC 10.2.0
 MUST | v1.6 | GCC 10.2.0
 PARCOACH | v1 | LLVM 9
 McSimGrid | v3.27 |  GCC 10.2.0
+
 
 ## Latest Tools Evaluation Results
 
