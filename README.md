@@ -9,10 +9,10 @@ Docker is used to facilitate the benchmark modifications and the installation of
 The docker image can be created and build with the following commands:
 
 ```bash
-docker build -f Dockerfile -t MBI:latest .
-docker run -it MBI bash 
+docker build -f Dockerfile -t mbi:latest .
+docker run -it mbi bash 
 ```
-
+Once in the docker container, clone the MBI repository and run the runner. All tools are installed and the tests are executed.
 
 
 
@@ -62,7 +62,7 @@ Our benchmark contains 194 programs including 188 micro codes (with less than 10
 
 ## Tools Information
 
-We use the benchmark to compare Aislinn, CIVL, ISP, MUST, PARCOACH and McSimGrid.
+We use the MBI to compare Aislinn, CIVL, ISP, MUST, PARCOACH and McSimGrid.
 
 
 Tool | Version | Compiler 
@@ -73,6 +73,7 @@ ISP | 0.3.1 | GCC 10.2.0
 MUST | v1.6 | GCC 10.2.0
 PARCOACH | v1 | LLVM 9
 McSimGrid | v3.27 |  GCC 10.2.0
+
 
 ## Latest Tools Evaluation Results
 
@@ -85,4 +86,12 @@ ISP | 69 | 70 | 32 | 20 | 8  | 0. 7753 | 172 | 0.6832 | 0.7277 | 0.7263
  MUST | 83 | 79 | 10 | 15 | 12 | 0.8469 | 168 | 0.8925 | 0.8663 | 0.8691
 PARCOACH | 18 | 80 | {8 | 90 | 3 | 0.1667 | 168 | 0.6923 |0.5000 | 0.287
 McSimGrid | 77 | 76 | 16 | 17 | 13 | 0.8191 | 168 | 0.8280 | 0.8226 | 0.8235 
+
+
+Metrics used: 
+- Recall: TP / ( TP + FN) 
+- Specificity: TN / ( TN + FP)
+- Precision: TP / ( TP + FP)
+- Accuracy: (TP+TN) / (TP + FP + TN+ FN)
+- F1 Score: 2 * (P * R) / (P + R)
 
