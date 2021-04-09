@@ -3,7 +3,7 @@ image: registry.gitlab.com/mwapl/benchmarking-mpi:latest
 variables:
     GIT_SUBMODULE_STRATEGY: none
 
-stages: 
+stages:
     - build
     - test
     - svg
@@ -19,7 +19,7 @@ build-must:
         expire_in: 30 days
         paths:
             - builds/MUST
-            
+
 test-must-25:
     stage: test
     needs:
@@ -51,7 +51,7 @@ test-must-50:
         when: always
         paths:
             - log/*/*
-            
+
 test-must-75:
     stage: test
     needs:
@@ -67,7 +67,7 @@ test-must-75:
         when: always
         paths:
             - log/*/*
-            
+
 test-must-100:
     stage: test
     needs:
@@ -83,7 +83,7 @@ test-must-100:
         when: always
         paths:
             - log/*/*
-            
+
 test-must-125:
     stage: test
     needs:
@@ -99,7 +99,7 @@ test-must-125:
         when: always
         paths:
             - log/*/*
-            
+
 test-must-150:
     stage: test
     needs:
@@ -115,7 +115,7 @@ test-must-150:
         when: always
         paths:
             - log/*/*
-            
+
 test-must-175:
     stage: test
     needs:
@@ -131,22 +131,22 @@ test-must-175:
         when: always
         paths:
             - log/*/*
-            
+
 test-must-200:
-   stage: test
-   needs:
-       - job: build-must
-         artifacts: true
-   before_script:
-       - apt-get install -y psmisc
-   script:
-       - scripts/MUST-run $(ls *.c | tail -n +176)
-   artifacts:
-       untracked: false
-       expire_in: 30 days
-       when: always
-       paths:
-           - log/*/*
+    stage: test
+    needs:
+        - job: build-must
+          artifacts: true
+    before_script:
+        - apt-get install -y psmisc
+    script:
+        - scripts/MUST-run $(ls *.c | tail -n +176)
+    artifacts:
+        untracked: false
+        expire_in: 30 days
+        when: always
+        paths:
+            - log/*/*
 
 build-aislinn:
     stage: build
@@ -169,7 +169,7 @@ test-aislinn:
     image: ubuntu:18.04
     needs:
         - job: build-aislinn
-          artifacts: true 
+          artifacts: true
     before_script:
         - apt-get update
         - apt-get install -y gcc python2.7 python3.8 python-jinja2 autotools-dev automake build-essential
@@ -220,10 +220,10 @@ test-civl200:
         when: always
         paths:
             - log/*/*
-            
+
 build-parcoach:
     stage: build
-    needs : []
+    needs: []
     # before_script:
     #     - apt-get update
     #     - apt-get install -y git
@@ -235,7 +235,7 @@ build-parcoach:
         when: always
         paths:
             - tools/Parcoach/*
-            
+
 test-parcoach:
     stage: test
     needs:
@@ -252,7 +252,7 @@ test-parcoach:
 
 build-simgrid:
     stage: build
-    needs : []
+    needs: []
     script:
         - ./scripts/SimGrid-build
     cache:
@@ -278,10 +278,10 @@ test-simgrid:
         when: always
         paths:
             - log/*/*
-          
+
 build-isp:
     stage: build
-    needs : []
+    needs: []
     before_script:
         - apt-get update
         - apt-get install -y quilt
@@ -318,9 +318,9 @@ simgrid-svg:
     #   - apt-get install -y python3-pip libcairo2
     #   - pip3 install drawSvg
     script:
-      - cd Data
-      - python3.8 gen_svg.py -i ../log/simgrid-*/bench_simgrid.csv -o simgrid_result_LOG --header false --mode log
-      - cp *svg ../log/simgrid-*/
+        - cd Data
+        - python3.8 gen_svg.py -i ../log/simgrid-*/bench_simgrid.csv -o simgrid_result_LOG --header false --mode log
+        - cp *svg ../log/simgrid-*/
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -338,9 +338,9 @@ parcoach-svg:
     #   - apt-get install -y python3-pip libcairo2
     #   - pip3 install drawSvg
     script:
-      - cd Data
-      - python3.8 gen_svg.py -i ../log/parcoach-*/bench_parcoach.csv -o parcoach_result_LOG --header false --mode log
-      - cp *svg ../log/parcoach-*/
+        - cd Data
+        - python3.8 gen_svg.py -i ../log/parcoach-*/bench_parcoach.csv -o parcoach_result_LOG --header false --mode log
+        - cp *svg ../log/parcoach-*/
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -358,9 +358,9 @@ isp-svg:
     #   - apt-get install -y python3-pip libcairo2
     #   - pip3 install drawSvg
     script:
-      - cd Data
-      - python3.8 gen_svg.py -i ../log/isp-*/bench_isp.csv -o isp_result_LOG --header false --mode log
-      - cp *svg ../log/isp-*/
+        - cd Data
+        - python3.8 gen_svg.py -i ../log/isp-*/bench_isp.csv -o isp_result_LOG --header false --mode log
+        - cp *svg ../log/isp-*/
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -378,9 +378,9 @@ aislinn-svg:
     #   - apt-get install -y python3-pip libcairo2
     #   - pip3 install drawSvg
     script:
-      - cd Data
-      - python3.8 gen_svg.py -i ../log/aislinn-*/bench_aislinn.csv -o aislinn_result_LOG --header false --mode log
-      - cp *svg ../log/aislinn-*/
+        - cd Data
+        - python3.8 gen_svg.py -i ../log/aislinn-*/bench_aislinn.csv -o aislinn_result_LOG --header false --mode log
+        - cp *svg ../log/aislinn-*/
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -400,10 +400,10 @@ civl-svg:
     #   - apt-get install -y python3-pip libcairo2
     #   - pip3 install drawSvg
     script:
-      - cd Data
-      - cat ../log/civl-*/*.csv > result.csv
-      - python3.8 gen_svg.py -i result.csv -o civl_result_LOG --header false --mode log
-      - cp *svg ../log/civl-*/
+        - cd Data
+        - cat ../log/civl-*/*.csv > result.csv
+        - python3.8 gen_svg.py -i result.csv -o civl_result_LOG --header false --mode log
+        - cp *svg ../log/civl-*/
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -435,17 +435,17 @@ must-svg:
     #   - apt-get install -y python3-pip libcairo2
     #   - pip3 install drawSvg
     script:
-      - cd Data
-      - cat ../log/must-*/*.csv > result.csv
-      - python3.8 gen_svg.py -i result.csv -o must_result_LOG --header false --mode log
-      - cp *svg ../log/must-*/
+        - cd Data
+        - cat ../log/must-*/*.csv > result.csv
+        - python3.8 gen_svg.py -i result.csv -o must_result_LOG --header false --mode log
+        - cp *svg ../log/must-*/
     artifacts:
         untracked: false
         expire_in: 30 days
         when: always
         paths:
             - log/*
-            
+
 data-collect:
     stage: gather
     needs:
@@ -498,7 +498,7 @@ data-collect:
         - cd Data
         - cat ../log/*/*.csv >> result.csv
         - python3.8 gen_svg.py -i result.csv -o all_result_LOG --header true --mode log
-	- cp *svg ../log
+        - cp *svg ../log
     artifacts:
         untracked: false
         expire_in: 30 days
