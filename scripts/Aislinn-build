@@ -1,4 +1,26 @@
-#! /bin/sh
+#! /bin/bash
+
+# Check that we have the right image
+source /etc/os-release
+if [ "$VERSION_ID" == "18.04" ] && [ "$ID" == "ubuntu" ] 
+then 
+   echo "This is an Ubuntu 18.04 OS. Good."
+else
+   echo "Please run this script in a ubuntu:18.04 image"
+   echo "docker image pull ubuntu:18.04"
+   echo "docker -it --rm --name MIB --volume .:/MBI ubuntu:18.04 bash"
+   exit 1
+fi
+
+# Check that we have the dependencies
+git_status=`dpkg -l git|grep git|cut -d' ' -f1`
+if [ ${git_status} = 'ii' ] 
+then
+   echo "git is installed. Good"
+else
+   apt-get update
+   apt-get install -y gcc python2.7 python3.8 python-jinja2 autotools-dev automake build-essential git
+fi
 
 set -e # Fail on error
 
