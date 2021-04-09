@@ -13,12 +13,7 @@ build-must:
     stage: build
     needs: []
     script:
-        - cd tools/MUST-v1.6
-        - mkdir -p BUILD
-        - cd BUILD
-        - cmake --version
-        - CC=$(which gcc) CXX=$(which gcc++) FC=$(which gfortran) cmake ../ -DCMAKE_INSTALL_PREFIX=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Must/MUST-v1.6 -DCMAKE_BUILD_TYPE=Release
-        - make -j$(nproc) install VERBOSE=1
+        - scripts/MUST-build
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -33,17 +28,13 @@ test-must-25:
     before_script:
         - apt-get install -y psmisc
     script:
-        - export PATH=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Must/MUST-v1.6/bin:$PATH
-        - cd codes
-        - for file in $(ls *.c | head -25); do python3.8 runner.py -x must -o bench_must25.csv -t 300 --job $CI_JOB_ID $file; uptime;killall mpirun||true; done
+        - scripts/MUST-run $(ls *.c | head -25)
     artifacts:
         untracked: false
         expire_in: 30 days
         when: always
         paths:
-            - codes/*.csv
-            - codes/*.txt
-            - codes/*.html
+            - log/*/*
 
 test-must-50:
     stage: test
@@ -53,17 +44,13 @@ test-must-50:
     before_script:
         - apt-get install -y psmisc
     script:
-        - export PATH=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Must/MUST-v1.6/bin:$PATH
-        - cd codes
-        - for file in $(ls *.c | tail -n +26 | head -25); do python3.8 runner.py -x must -o bench_must50.csv -t 300 --job $CI_JOB_ID $file; uptime;killall mpirun||true; done
+        - scripts/MUST-run $(ls *.c | tail -n +26 | head -25)
     artifacts:
         untracked: false
         expire_in: 30 days
         when: always
         paths:
-            - codes/*.csv
-            - codes/*.txt
-            - codes/*.html
+            - log/*/*
             
 test-must-75:
     stage: test
@@ -73,17 +60,13 @@ test-must-75:
     before_script:
         - apt-get install -y psmisc
     script:
-        - export PATH=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Must/MUST-v1.6/bin:$PATH
-        - cd codes
-        - for file in $(ls *.c | tail -n +51 | head -25); do python3.8 runner.py -x must -o bench_must75.csv -t 300 --job $CI_JOB_ID $file; uptime;killall mpirun||true; done
+        - scripts/MUST-run $(ls *.c | tail -n +51 | head -25)
     artifacts:
         untracked: false
         expire_in: 30 days
         when: always
         paths:
-            - codes/*.csv
-            - codes/*.txt
-            - codes/*.html
+            - log/*/*
             
 test-must-100:
     stage: test
@@ -93,17 +76,13 @@ test-must-100:
     before_script:
         - apt-get install -y psmisc
     script:
-        - export PATH=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Must/MUST-v1.6/bin:$PATH
-        - cd codes
-        - for file in $(ls *.c | tail -n +76 | head -25); do python3.8 runner.py -x must -o bench_must100.csv -t 300 --job $CI_JOB_ID $file; uptime;killall mpirun||true; done
+        - scripts/MUST-run $(ls *.c | tail -n +76 | head -25)
     artifacts:
         untracked: false
         expire_in: 30 days
         when: always
         paths:
-            - codes/*.csv
-            - codes/*.txt
-            - codes/*.html
+            - log/*/*
             
 test-must-125:
     stage: test
@@ -113,17 +92,13 @@ test-must-125:
     before_script:
         - apt-get install -y psmisc
     script:
-        - export PATH=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Must/MUST-v1.6/bin:$PATH
-        - cd codes
-        - for file in $(ls *.c | tail -n +101 | head -25); do python3.8 runner.py -x must -o bench_must125.csv -t 300 --job $CI_JOB_ID $file; uptime;killall mpirun||true; done
+        - scripts/MUST-run $(ls *.c | tail -n +101 | head -25)
     artifacts:
         untracked: false
         expire_in: 30 days
         when: always
         paths:
-            - codes/*.csv
-            - codes/*.txt
-            - codes/*.html
+            - log/*/*
             
 test-must-150:
     stage: test
@@ -133,17 +108,13 @@ test-must-150:
     before_script:
         - apt-get install -y psmisc
     script:
-        - export PATH=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Must/MUST-v1.6/bin:$PATH
-        - cd codes
-        - for file in $(ls *.c | tail -n +126 | head -25); do python3.8 runner.py -x must -o bench_must150.csv -t 300 --job $CI_JOB_ID $file; uptime;killall mpirun||true;done
+        - scripts/MUST-run $(ls *.c | tail -n +126 | head -25)
     artifacts:
         untracked: false
         expire_in: 30 days
         when: always
         paths:
-            - codes/*.csv
-            - codes/*.txt
-            - codes/*.html
+            - log/*/*
             
 test-must-175:
     stage: test
@@ -153,17 +124,13 @@ test-must-175:
     before_script:
         - apt-get install -y psmisc
     script:
-        - export PATH=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Must/MUST-v1.6/bin:$PATH
-        - cd codes
-        - for file in $(ls *.c | tail -n +151 | head -25); do python3.8 runner.py -x must -o bench_must175.csv -t 300 --job $CI_JOB_ID $file; uptime;killall mpirun||true; done
+        - scripts/MUST-run $(ls *.c | tail -n +151 | head -25)
     artifacts:
         untracked: false
         expire_in: 30 days
         when: always
         paths:
-            - codes/*.csv
-            - codes/*.txt
-            - codes/*.html
+            - log/*/*
             
 test-must-200:
    stage: test
@@ -173,19 +140,13 @@ test-must-200:
    before_script:
        - apt-get install -y psmisc
    script:
-       - export PATH=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Must/MUST-v1.6/bin:$PATH
-       - cd codes
-       - for file in $(ls *.c | tail -n +176); do python3.8 runner.py -x must -o bench_must200.csv -t 300 --job $CI_JOB_ID $file;uptime;killall mpirun||true; done
+       - scripts/MUST-run $(ls *.c | tail -n +176)
    artifacts:
        untracked: false
        expire_in: 30 days
        when: always
        paths:
-           - codes/*.csv
-           - codes/*.txt
-           - codes/*.html
-            
-
+           - log/*/*
 
 build-aislinn:
     stage: build
@@ -196,9 +157,6 @@ build-aislinn:
         - apt-get install -y gcc python2.7 python3.8 python-jinja2 autotools-dev automake build-essential git
     script:
         - ./scripts/Aislinn-build
-    cache:
-        paths:
-            - tools/aislinn-git/*
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -222,9 +180,7 @@ test-aislinn:
         expire_in: 30 days
         when: always
         paths:
-            - ./codes/bench_aislinn.csv
-            - codes/*.txt
-            - codes/*.html
+            - log/*/*
 
 build-civl:
     stage: build
@@ -236,43 +192,34 @@ build-civl:
         expire_in: 30 days
         when: always
         paths:
-            - ./CIVL/*
+            - tools/CIVL/*
 
 test-civl100:
     stage: test
     needs:
         - job: build-civl
           artifacts: false
-    # before_script:
-    #     - apt-get install -y psmisc
     script:
-        - cd codes
-        - for file in $(ls *.c | head -100); do python3.8 runner.py -x civl -o bench_civl100.csv -t 300 --job $CI_JOB_ID $file; uptime;killall java||true;done
+        - ./scripts/CIVL-run $(ls *.c | head -100)
     artifacts:
         untracked: false
         expire_in: 30 days
         when: always
         paths:
-            - codes/*.csv
-            - codes/*.txt
+            - log/*/*
 test-civl200:
     stage: test
     needs:
         - job: build-civl
           artifacts: false
-    # before_script:
-    #     - apt-get install -y psmisc
     script:
-        - cd codes
-        - for file in $(ls *.c | tail -n +101); do python3.8 runner.py -x civl -o bench_civl200.csv -t 300 --job $CI_JOB_ID $file; uptime;killall java||true;done
+        - ./scripts/CIVL-run $(ls *.c | tail -n +101)
     artifacts:
         untracked: false
         expire_in: 30 days
         when: always
         paths:
-            - codes/*.csv
-            - codes/*.txt
-            
+            - log/*/*
             
 build-parcoach:
     stage: build
@@ -282,9 +229,6 @@ build-parcoach:
     #     - apt-get install -y git
     script:
         - ./scripts/Parcoach-build
-    cache:
-        paths:
-            - Parcoach/*
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -304,9 +248,7 @@ test-parcoach:
         expire_in: 30 days
         when: always
         paths:
-            - codes/bench_parcoach.csv
-            - codes/*.txt
-            
+            - log/*/*
 
 build-simgrid:
     stage: build
@@ -335,8 +277,7 @@ test-simgrid:
         expire_in: 30 days
         when: always
         paths:
-            - codes/bench_simgrid.csv
-            - codes/*.txt
+            - log/*/*
           
 build-isp:
     stage: build

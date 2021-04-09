@@ -18,8 +18,16 @@ ident=$(date +%s)
 rm -rf log/must-${ident} ; mkdir -p log/must-${ident}
 cd log/must-${ident}
 
+# Get the list of codes from the command line, if it was provided
+if [ $# -eq 0 ] 
+then
+  codes_list=$(ls ${rootdir}/codes/*.c)
+else
+  codes_list=$@
+fi
+
 # Run the script on each code
-for file in $(ls ${rootdir}/codes/*.c)
+for file in ${codes_list}
 do
     python3.8 ${rootdir}/scripts/runner.py -x must -o bench_must.csv -t 300 --job $CI_JOB_ID $file
     killall mpirun || true
