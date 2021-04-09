@@ -22,6 +22,6 @@ fi
 cd ${rootdir}/tools/parcoach
 mkdir -p build
 cd build
-cmake .. -DCMAKE_C_COMPILER=clang -DLLVM_DIR=${rootdir}/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Parcoach/llvm-project/build
+cmake .. -DCMAKE_C_COMPILER=clang -DLLVM_DIR=${rootdir}/tools/Parcoach/llvm-project/build
 make -j$(nproc) VERBOSE=1
 ctest --output-on-failure

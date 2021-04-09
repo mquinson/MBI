@@ -195,24 +195,16 @@ build-aislinn:
         - apt-get update
         - apt-get install -y gcc python2.7 python3.8 python-jinja2 autotools-dev automake build-essential git
     script:
-        - if [ -e Aislinn/aislinn-git/.git ] ; then (cd Aislinn/aislinn-git ; git pull); else rm -rf Aislinn/aislinn-git; git clone --depth=1 https://github.com/spirali/aislinn.git Aislinn/aislinn-git; fi
-        - cp -r ./Aislinn/aislinn-valgrind-312 ./Aislinn/aislinn-git/valgrind  
-        - cd Aislinn/aislinn-git/valgrind
-        - sh autogen.sh
-        - ./configure
-        - make -j$(nproc)
-        - cd ../
-        - ./waf configure
-        - ./waf
+        - ./scripts/Aislinn-build
     cache:
         paths:
-            - Aislinn/aislinn-git/*
+            - tools/aislinn-git/*
     artifacts:
         untracked: false
         expire_in: 30 days
         when: always
         paths:
-            - Aislinn/aislinn-git/*
+            - tools/aislinn-git/*
 
 test-aislinn:
     stage: test
@@ -224,9 +216,7 @@ test-aislinn:
         - apt-get update
         - apt-get install -y gcc python2.7 python3.8 python-jinja2 autotools-dev automake build-essential
     script:
-        - export PATH=$PATH:/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Aislinn/aislinn-git/bin/
-        - cd Benchmarks
-        - for file in $(ls /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Benchmarks/microbenchs/*.c); do python3.8 runner.py -x aislinn -o bench_aislinn.csv -t 300 --job $CI_JOB_ID $file; done
+        - ./scripts/Aislinn-run
     artifacts:
         untracked: false
         expire_in: 30 days
