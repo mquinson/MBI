@@ -320,7 +320,7 @@ simgrid-svg:
     script:
         - cd Data
         - python3.8 gen_svg.py -i ../log/simgrid-*/bench_simgrid.csv -o simgrid_result_LOG --header false --mode log
-        - cp *svg ../log/simgrid-*/
+        - cp *svg ../log/
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -340,7 +340,7 @@ parcoach-svg:
     script:
         - cd Data
         - python3.8 gen_svg.py -i ../log/parcoach-*/bench_parcoach.csv -o parcoach_result_LOG --header false --mode log
-        - cp *svg ../log/parcoach-*/
+        - cp *svg ../log/
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -360,7 +360,7 @@ isp-svg:
     script:
         - cd Data
         - python3.8 gen_svg.py -i ../log/isp-*/bench_isp.csv -o isp_result_LOG --header false --mode log
-        - cp *svg ../log/isp-*/
+        - cp *svg ../log/
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -380,7 +380,7 @@ aislinn-svg:
     script:
         - cd Data
         - python3.8 gen_svg.py -i ../log/aislinn-*/bench_aislinn.csv -o aislinn_result_LOG --header false --mode log
-        - cp *svg ../log/aislinn-*/
+        - cp *svg ../log/
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -403,7 +403,7 @@ civl-svg:
         - cd Data
         - cat ../log/civl-*/*.csv > result.csv
         - python3.8 gen_svg.py -i result.csv -o civl_result_LOG --header false --mode log
-        - cp *svg ../log/civl-*/
+        - cp *svg ../log/
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -438,7 +438,7 @@ must-svg:
         - cd Data
         - cat ../log/must-*/*.csv > result.csv
         - python3.8 gen_svg.py -i result.csv -o must_result_LOG --header false --mode log
-        - cp *svg ../log/must-*/
+        - cp *svg ../log/
     artifacts:
         untracked: false
         expire_in: 30 days
