@@ -230,8 +230,7 @@ build-civl:
     stage: build
     needs: []
     script:
-        - cd CIVL/CIVL-1.20_5259/lib
-        - java -jar civl-1.20_5259.jar config 
+        - ./scripts/CIVL-build
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -274,7 +273,6 @@ test-civl200:
             - Benchmarks/*.csv
             - Benchmarks/*.txt
             
-
             
 build-parcoach:
     stage: build
@@ -283,14 +281,7 @@ build-parcoach:
     #     - apt-get update
     #     - apt-get install -y git
     script:
-        - ln -s $(which clang) /usr/lib/llvm-9/bin/clang
-        - if [ -e Parcoach/parcoach/.git ] ; then (cd Parcoach/parcoach ; git pull); else rm -rf Parcoach/parcoach; git clone --depth=1 https://github.com/parcoach/parcoach.git Parcoach/parcoach; fi
-        - cd Parcoach/parcoach
-        - mkdir -p build
-        - cd build
-        - cmake .. -DCMAKE_C_COMPILER=clang -DLLVM_DIR=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Parcoach/llvm-project/build
-        - make -j$(nproc) VERBOSE=1
-        - ctest --output-on-failure
+        - ./scripts/Parcoach-build
     cache:
         paths:
             - Parcoach/*
@@ -299,7 +290,7 @@ build-parcoach:
         expire_in: 30 days
         when: always
         paths:
-            - Parcoach/*
+            - tools/Parcoach/*
             
 test-parcoach:
     stage: test
@@ -307,8 +298,7 @@ test-parcoach:
         - job: build-parcoach
           artifacts: true
     script:
-        - cd Benchmarks
-        - for file in $(ls /builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/Benchmarks/microbenchs/*.c); do python3.8 runner.py -x parcoach -o bench_parcoach.csv -t 300 --job $CI_JOB_ID $file; done    
+        - ./script/Parcoach-run
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -321,14 +311,8 @@ test-parcoach:
 build-simgrid:
     stage: build
     needs : []
-    # before_script:
-    #     - apt-get update
-    #     - apt-get install -y git
     script:
-        - if [ -e SimGrid/simgrid/.git ] ; then (cd SimGrid/simgrid ; git pull); else rm -rf SimGrid/simgrid; git clone --depth=1 https://framagit.org/simgrid/simgrid.git SimGrid/simgrid; fi
-        - cd SimGrid/simgrid
-        - cmake -DCMAKE_INSTALL_PREFIX=/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/SimGrid/build -Denable_model-checking=ON .
-        - make -j$(nproc) install VERBOSE=1
+        - ./script/SimGrid-build
     cache:
         paths:
             - SimGrid/*
@@ -337,7 +321,7 @@ build-simgrid:
         expire_in: 30 days
         when: always
         paths:
-            - SimGrid/*
+            - SimGrid-install/*
 
 test-simgrid:
     stage: test
@@ -345,11 +329,7 @@ test-simgrid:
         - job: build-simgrid
           artifacts: true
     script:
-        - export PATH=$PATH:/builds/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/SimGrid/build/bin/
-        - export VERBOSE=1
-        - cp SimGrid/simgrid/examples/platforms/cluster_backbone.xml Benchmarks/cluster.xml
-        - cd Benchmarks
-        - for file in $(ls microbenchs/*.c); do python3.8 runner.py -x simgrid -o bench_simgrid.csv -t 300 --job $CI_JOB_ID $file;done
+        - ./script/SimGrid-run
     artifacts:
         untracked: false
         expire_in: 30 days
