@@ -6,7 +6,7 @@ set -e # Fail on error
 cd "$(dirname "$0")"/../
 rootdir=$(pwd)
 
-export PATH=$PATH:${rootdir}/SimGrid-install/bin
+export PATH=$PATH:${rootdir}/builds/SimGrid/bin
 export VERBOSE=1
 
 # If this was not run with gilab-ci, we provide a meaningless value
@@ -18,7 +18,8 @@ fi
 ident=$(date +%s)
 rm -rf log/simgrid-${ident} ; mkdir -p log/simgrid-${ident}
 cd log/simgrid-${ident}
-cp ${rootdir}/tools/simgrid/examples/platforms/cluster_backbone.xml cluster.xml
+
+cp ${rootdir}/builds/SimGrid/cluster.xml .
 
 # Run the script on each code
 for file in $(ls ${rootdir}/codes/*.c)

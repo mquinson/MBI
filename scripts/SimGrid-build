@@ -18,5 +18,7 @@ else
 fi
 
 cd ${rootdir}/tools/simgrid
-cmake -DCMAKE_INSTALL_PREFIX=${rootdir}/SimGrid-install -Denable_model-checking=ON .
+cmake -DCMAKE_INSTALL_PREFIX=${rootdir}/builds/SimGrid -Denable_model-checking=ON .
 make -j$(nproc) install VERBOSE=1
+
+cp ${rootdir}/tools/simgrid/examples/platforms/cluster_backbone.xml ${rootdir}/builds/SimGrid/cluster.xml

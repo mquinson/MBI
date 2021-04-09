@@ -263,7 +263,7 @@ build-simgrid:
         expire_in: 30 days
         when: always
         paths:
-            - SimGrid-install/*
+            - builds/SimGrid
 
 test-simgrid:
     stage: test
