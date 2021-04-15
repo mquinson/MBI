@@ -433,16 +433,19 @@ def extract_todo(filename):
                 m = re.match('\s+\$ ?(.*)', line)
                 cmd = m.group(1)
                 nextline = next(input)
-                m = re.match('[ |]*ERROR: *(.*)', nextline)
-                if not m:
-                    print(f"\n{filename}:{line_num}: Test '{cmd}' not followed by a proper 'ERROR' line:\n{line}{nextline}")
-                expect = [expects for expects in m.groups() if expects!=None]
-                # TODO: enforce that the error message is valid
-                #if not expect[0] in ["noerror", "deadlock",  "numstab", "segfault", "mpierr", "resleak", "livelock", "various", "datarace"]:
-                #    print("\n{}:{}: expectation >>{}<< not understood."
-                #          .format(filename, line_num, expect))
-                #    continue
-                res.append((cmd, expect, test_count))
+                if re.match('[ |]*OK *', nextline):
+                    res.append((cmd, 'noerror', test_count))
+                else:
+                    m = re.match('[ |]*ERROR: *(.*)', nextline)
+                    if not m:
+                        print(f"\n{filename}:{line_num}: MBI parse error: Test not followed by a proper 'ERROR' line:\n{line}{nextline}")
+                    expect = [expects for expects in m.groups() if expects!=None]
+                    # TODO: enforce that the error message is valid
+                    #if not expect[0] in ["noerror", "deadlock",  "numstab", "segfault", "mpierr", "resleak", "livelock", "various", "datarace"]:
+                    #    print("\n{}:{}: expectation >>{}<< not understood."
+                    #          .format(filename, line_num, expect))
+                    #    continue
+                    res.append((cmd, expect, test_count))
                 test_count+=1
                 line_num+=1
 
