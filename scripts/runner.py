@@ -417,39 +417,40 @@ def extract_todo(filename):
         state = 0 # 0: before header; 1: in header; 2; after header
         line_num=1
         for line in input:
-            if re.match(".*End of MPI bugs collection header.*", line):
-                if state == 1:
-                    state = 2
-                else:
-                    print("\nUnexpected end of header at line {}: \n{}".format(line_num,line))
-                    sys.exit(1)
-            elif re.match(".*MPI bugs collection header.*", line):
+            if re.match(".*BEGIN_MBI_TESTS.*", line):
                 if state == 0:
                     state = 1
                 else:
-                    print("\nBug header appears more than once at line {}: \n{}".format(line_num,line))
+                    print("\nMBI_TESTS header appears a second time at line {}: \n{}".format(line_num,line))
                     sys.exit(1)
-            if state == 1 and re.match(".*Test:.*", line):
-                m = re.match('.*Test: (.*)', line)
+            elif re.match(".*END_MBI_TESTS.*", line):
+                if state == 1:
+                    state = 2
+                else:
+                    print("\nUnexpected end of MBI_TESTS header at line {}: \n{}".format(line_num,line))
+                    sys.exit(1)
+            if state == 1 and re.match("\s+\$ ?.*", line):
+                m = re.match('\s+\$ ?(.*)', line)
                 cmd = m.group(1)
                 nextline = next(input)
-                m = re.match('.*Expect: (\w+)\|?(\w+)?', nextline)
+                m = re.match('[ |]*ERROR: *(.*)', nextline)
                 if not m:
-                    print("\n{}:{}: 'Test' line not followed by a proper 'Expect' line:\n{}{}".format(filename,line_num, line, nextline))
+                    print(f"\n{filename}:{line_num}: Test '{cmd}' not followed by a proper 'ERROR' line:\n{line}{nextline}")
                 expect = [expects for expects in m.groups() if expects!=None]
-                if not expect[0] in ["noerror", "deadlock",  "numstab", "segfault", "mpierr", "resleak", "livelock", "various", "datarace"]:
-                    print("\n{}:{}: expectation >>{}<< not understood."
-                          .format(filename, line_num, expect))
-                    continue
+                # TODO: enforce that the error message is valid
+                #if not expect[0] in ["noerror", "deadlock",  "numstab", "segfault", "mpierr", "resleak", "livelock", "various", "datarace"]:
+                #    print("\n{}:{}: expectation >>{}<< not understood."
+                #          .format(filename, line_num, expect))
+                #    continue
                 res.append((cmd, expect, test_count))
                 test_count+=1
                 line_num+=1
 
     if state == 0:
-        print("\nBug header not found in file '{}'.".format(filename))
+        print("\nMBI_TESTS header not found in file '{}'.".format(filename))
         sys.exit(1)
     if state == 1:
-        print("\nNo end of bug header found in file '{}'.".format(filename))
+        print("\nMBI_TESTS header not properly ended in file '{}'.".format(filename))
         sys.exit(1)
 
     return res
