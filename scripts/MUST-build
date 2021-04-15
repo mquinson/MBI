@@ -6,7 +6,7 @@ set -e # Fail on error
 cd "$(dirname "$0")"/../
 rootdir=$(pwd)
 
-cd tools/MUST-v1.6
+cd tools/MUST-v1.7
 cmake --version
 CC=$(which gcc) CXX=$(which gcc++) FC=$(which gfortran) cmake . -DCMAKE_INSTALL_PREFIX=${rootdir}/builds/MUST -DCMAKE_BUILD_TYPE=Release
 make -j$(nproc) install VERBOSE=1
