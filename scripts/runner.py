@@ -308,7 +308,7 @@ def parcoachrun(execcmd, filename, binary, id, timeout, jobid):
 
     res, rc, output = run_cmd(
         buildcmd="clang -c -g -emit-llvm {} -I/usr/lib/x86_64-linux-gnu/mpich/include/ -o {}.bc".format(filename,binary),
-        execcmd = "opt-9 -load ../../tools/parcoach/build/src/aSSA/aSSA.so -parcoach -check-mpi {}.bc ".format(binary,binary,id),
+        execcmd = "opt-9 -load ../../builds/parcoach/src/aSSA/aSSA.so -parcoach -check-mpi {}.bc ".format(binary,binary,id),
         binary=binary,
         timeout=timeout)
 

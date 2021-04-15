@@ -239,7 +239,7 @@ build-parcoach:
         expire_in: 30 days
         when: always
         paths:
-            - tools/Parcoach/*
+            - builds/parcoach/*
 
 test-parcoach:
     stage: test
