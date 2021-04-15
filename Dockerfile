@@ -2,6 +2,10 @@
 #      docker build -f Dockerfile -t mpi-bugs-initiative:latest .
 # Start it locally (the local repo is copied under /MBI/):
 #      docker run -it mpi-bugs-initiative bash
+#
+# Personal notes: Push the image to the public Docker Hub
+#      docker image tag mpi-bugs-initiative:latest registry.hub.docker.com/mquinson/mbi
+#      docker push registry.hub.docker.com/mquinson/mbi
 FROM ubuntu:20.04
 USER root
 RUN apt-get update
