@@ -1,0 +1,79 @@
+#! /bin/bash
+
+# This file is part of GTI (Generic Tool Infrastructure)
+#
+# Copyright (C)
+#   2008-2019 ZIH, Technische Universitaet Dresden, Federal Republic of Germany
+#   2008-2019 Lawrence Livermore National Laboratories, United States of America
+#   2013-2019 RWTH Aachen University, Federal Republic of Germany
+#
+# See the LICENSE file in the package base directory for details
+
+port=3460
+port2=$(($port+1))
+ip=127.0.0.1
+
+#Set up P^nMPI module files
+echo -e "module libtest_cstrat_b\n"\
+        "argument moduleName test_cstrat_b\n"\
+        "argument numInstances 1\n"\
+        "argument instance0 instance0\n"\
+        "argument instance0Data otf_proc_id=100\n"\
+        "argument instance0SubMods CStratSimpleUp:instance0\n"\
+        "module libcStratSimpleUp\n"\
+        "argument moduleName CStratSimpleUp\n"\
+        "argument numInstances 1\n"\
+        "argument instance0 instance0\n"\
+        "argument instance0SubMods cProtSimpleTcp:instance0\n"\
+        "module libcProtSimpleTcp\n"\
+        "argument moduleName cProtSimpleTcp\n"\
+        "argument numInstances 1\n"\
+        "argument instance0 instance0\n"\
+        "argument instance0Data comm_id=1,side=b,tier_size=4,server_port=$port,server_ip=$ip\n"\
+  > ${PROJECT_BINARY_DIR}/bin/bottom-pnmpi.conf
+  
+echo -e "module libtest_cstrat_t\n"\
+		"argument moduleName test_cstrat_t\n"\
+        "argument numInstances 1\n"\
+        "argument instance0 instance0\n"\
+        "argument instance0Data otf_proc_id=200\n"\
+        "argument instance0SubMods CStratSimpleDown:instance0\n"\
+        "module libcStratSimpleDown\n" \
+        "argument moduleName CStratSimpleDown\n"\
+        "argument numInstances 1\n"\
+        "argument instance0 instance0\n"\
+        "argument instance0SubMods cProtSimpleTcp:instance0\n"\
+        "module libcProtSimpleTcp\n" \
+        "argument moduleName cProtSimpleTcp\n"\
+        "argument numInstances 1\n"\
+        "argument instance0 instance0\n"\
+        "argument instance0Data comm_id=1,side=t,tier_size=2,server_port=$port,server_ip=$ip\n"\
+  > ${PROJECT_BINARY_DIR}/bin/top-pnmpi.conf
+  
+${PROJECT_BINARY_DIR}/bin/SimpleTcpServer $port $port2 &
+pid1=$!
+
+export PNMPI_LIB_PATH=${CMAKE_INSTALL_PREFIX}/modules 
+export LD_LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/modules:$LD_LIBRARY_PATH 
+export DYLD_LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/modules:$DYLD_LIBRARY_PATH 
+export PNMPI_CONF=${PROJECT_BINARY_DIR}/bin/bottom-pnmpi.conf
+    
+mpirun \
+    -np 4 \
+    ${PROJECT_BINARY_DIR}/bin/hello_pnmpi &
+pid2=$!
+
+export PNMPI_LIB_PATH=${CMAKE_INSTALL_PREFIX}/modules
+export LD_LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/modules:${PnMPI_LIBRARY_DIR}:$LD_LIBRARY_PATH
+export DYLD_LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/modules:${PnMPI_LIBRARY_DIR}:$DYLD_LIBRARY_PATH
+export PNMPI_CONF=${PROJECT_BINARY_DIR}/bin/top-pnmpi.conf
+    
+mpirun \
+    -np 2 \
+    ${PROJECT_BINARY_DIR}/bin/hello_pnmpi &
+pid3=$!
+
+#Clean up
+wait $pid2
+wait $pid3
+kill $pid1

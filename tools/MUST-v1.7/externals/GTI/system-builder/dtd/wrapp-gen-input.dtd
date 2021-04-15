@@ -1,0 +1,330 @@
+<!--
+  This file is part of GTI (Generic Tool Infrastructure)
+
+  Copyright (C)
+    2008-2019 ZIH, Technische Universitaet Dresden, Federal Republic of Germany
+    2008-2019 Lawrence Livermore National Laboratories, United States of America
+    2013-2019 RWTH Aachen University, Federal Republic of Germany
+
+  See the LICENSE file in the package base directory for details
+-->
+
+<!--
+	Root node for wrapper generation input.
+	"order": order of the level to which this wrapper belongs.
+-->
+<!ELEMENT wrapper-specification (settings, headers, communications, analyses, calls)>
+<!ATTLIST wrapper-specification
+	order CDATA #REQUIRED
+>
+
+<!-- The settings used for the wrapper generation. -->
+<!ELEMENT settings (output-dir, source-filename-out, header-filename-out, log-filename-out)>
+
+<!-- Path to the directory which is used for the output files of the trace cutter. -->
+<!ELEMENT output-dir (#PCDATA)>
+
+<!-- Name of the output source file that implements the cuts. -->
+<!ELEMENT source-filename-out (#PCDATA)>
+
+<!-- Name of the output header file that declares the cut functions. -->
+<!ELEMENT header-filename-out (#PCDATA)>
+
+<!-- Name of the log file that stores the trace cutter output. -->
+<!ELEMENT log-filename-out (#PCDATA)>
+
+<!--
+	List of headers needed for this wrapper.
+	Additional headers may be returned by the used record generation implementation.
+-->
+<!ELEMENT headers (header*)>
+
+<!--
+	Name of a header to include, e.g. mpi.h.
+	"is-system": optional attribute, if set to "yes" header is system header, otherwise it is assumed to be a user header.
+-->
+<!ELEMENT header (#PCDATA)>
+<!ATTLIST header
+	is-system CDATA #IMPLIED
+>
+
+<!--
+	List of communication modules used in the wrapper.
+-->
+<!ELEMENT communications (communication*)>
+
+<!--
+	A communication module, content of the node is the registered
+	module name for the module.
+	"id": number, identificator used to refer to this module in other parts of the specification.
+	"is-intra": "yes" if this is an intra communication strategy. (Optional, default is "no")
+	"is-down": "yes" if this is a downwards directed communication strategy. (Optional, default is "no")
+-->
+<!ELEMENT communication (#PCDATA)>
+<!ATTLIST communication
+	id CDATA #REQUIRED
+	is-intra CDATA #IMPLIED
+	is-down CDATA #IMPLIED
+>
+
+<!--
+	List of analysis modules run directly in the wrapper.
+-->
+<!ELEMENT analyses (analysis*)>
+
+<!--
+	An analysis module description.
+	Note: one module may offer multiple analysis functions, so one registered 
+	      module may have multiple id's.
+	The touple (analysis-name, analysis-datatype) is used to distinguish determine 
+	whether two analysis specifications refer to the same module.
+	
+	"reduction": either "yes" or "no"; no is the default. If set to yes the analysis is
+	                   handled as a reduction.  Reduction may cause channels to be 
+	                   blocked and forwards to be suspended. [Optional]
+	               !This should not be set to yes for the wrapper, as no reduction 
+	                must run on a wrapper !
+	"needs-channel-id": wither "yes" or "no"; no is the default. If set to yes the
+									 analysis function needs an extra channel id argument.
+									 For wrappers this is set to NULL, for receival it is the 
+									 channel id provided to the receival interface. The type
+									 of the argument is "I_ChannelId*". [Optional]
+    "listens-to-timeouts": either "yes" or "no"; no is the default. If set to yes, this
+                                       analysis will be notified of timeouts even though it is 
+                                       not a reduction. THIS IS NOT A VALID OPTION FOR
+                                       WRAPP GEN, but is used to keeo DTD of wrapp and 
+                                       receival gen equal  [Optional]
+    "continuous": either "yes" or "no"; no is the default. If set, this module
+	              will be triggered regularily by its placement drivers, even if no input
+	              events for its analyses are available. THIS IS NOT A VALID OPTION FOR
+                  WRAPP GEN, but is used to keeo DTD of wrapp and 
+                  receival gen equal  [Optional]
+-->
+<!ELEMENT analysis (analysis-id, analysis-name, analysis-datatype, analysis-function)>
+<!ATTLIST analysis
+	reduction CDATA #IMPLIED
+	needs-channel-id CDATA #IMPLIED
+	listens-to-timeouts CDATA #IMPLIED
+	continuous CDATA #IMPLIED
+>
+
+<!--
+	Textual id used to refer to an analysis.
+-->
+<!ELEMENT analysis-id (#PCDATA)>
+
+<!--
+	Registered module name of an analysis.
+-->
+<!ELEMENT analysis-name (#PCDATA)>
+
+<!--
+	Datatype of an analysis module instance.
+-->
+<!ELEMENT analysis-datatype (#PCDATA)>
+
+<!--
+	Member name of an analysis evoking function.
+-->
+<!ELEMENT analysis-function (#PCDATA)>
+
+<!--
+	List of calls to generate wrappers for.
+-->
+<!ELEMENT calls (call*)>
+
+<!--
+	Description of a call to wrapp.
+		"is-finalizer": if set to "yes" this receival is used to shutdown the tool once
+		                it was received from all directly connected places in downwards
+		                direction. It will only be forwarded if it will shutdown this 
+		                place. [optional]
+	    "is-local-finalizer": if set to "yes" this event shuts down the module associated
+	                                  with the wrapper, but not the whole TBON (a seperate
+	                                  tool generated "is-finalizer" event needs to be called for that. [optional]
+	    "is-wrap-across": set to "yes" if this wrapper is for a wrapp-across call,
+		                            if so all forwardings mapped to this call must use 
+		                            an intra communication strategy and are transfered
+		                            to a different place of this layer. Further, the call is assumed
+		                            to have an additional argument that is not listed in its arguments,
+		                            which is of type "int" and is the id of the place to send to.
+		                            [optional, default is "no"]
+	    "is-wrap-down": set to "yes" if this wrapper is for a wrapp-down call,
+		                            if so all forwardings mapped to this call must use 
+		                            an downwards communication strategy and are transfered
+		                            to an ancestor layer.
+		                            [optional, default is "no"]
+		                            
+	Rational: There is no "is-init" as places are initialized by the first intercepted
+	          event (see rational in the api-specification.dtd).
+-->
+
+<!ELEMENT call (return-type, call-name, arguments, pre, post, cleanup)>
+<!ATTLIST call
+	is-finalizer CDATA #IMPLIED
+	is-local-finalizer CDATA #IMPLIED
+	is-wrap-across CDATA #IMPLIED
+	is-wrap-down CDATA #IMPLIED
+        callback CDATA #IMPLIED
+	hook CDATA #IMPLIED
+>
+
+<!--
+	Return datatype of a wrapped call.
+-->
+<!ELEMENT return-type (#PCDATA)>
+
+<!--
+	Name of a wrapped call.
+-->
+<!ELEMENT call-name (#PCDATA)>
+
+<!--
+	List of call arguments.
+-->
+<!ELEMENT arguments (argument*)>
+
+<!--
+	A call argument.
+	- "typeAfterArg": extra type string to append after the argument name for declarations, e.g. "int array[3]".
+-->
+<!ELEMENT argument (type, arg)>
+<!ATTLIST argument
+	typeAfterArg CDATA #IMPLIED
+>
+
+<!--
+	Name of an argument .
+-->
+<!ELEMENT arg (#PCDATA)>
+
+<!--
+	The actions for the pre phase (phase before calling the actual call).
+	The source pieces and analyses are executed in the specified order.
+-->
+<!ELEMENT pre ((source-piece|exec-analysis)*, forwarding)>
+
+<!--
+	The actions for the post phase (phase after calling the actual call).
+	The source pieces and analyses are executed in the specified order.
+-->
+<!ELEMENT post ((source-piece|exec-analysis)*, forwarding)>
+
+<!--
+	A single analysis to execute.
+	   "supports-reduction": if set to "yes" there is a reduction module in the list of exec-analysis
+	                                     nodes for this actions node, and this analysis supports it. 
+	                                     This is used to influence execution of analyses. An analysis that supports
+	                                     a reduction being run for this receival node will only be executed if the
+	                                     reduction fails to reduce the record, as in that case the analysis will be
+	                                     called for the reduced record anyways. Analyses that do not support
+	                                     a reduction will be called independent of the return status of 
+	                                     the reduction. [optional, assumed default "no"]
+	               IMPORTANT: This attribute has no effect for the wrapper generator, it is only evaluated on
+	                                   the wrapper generator. It is listed only here to keep the specifications of both
+	                                   the wrapper and receival generators as equal as possible.
+-->
+<!ELEMENT exec-analysis (analysis-id, inputs)>
+<!ATTLIST exec-analysis
+	supports-reduction CDATA #IMPLIED
+>
+
+<!--
+	List of inputs to an analysis.
+-->
+<!ELEMENT inputs (input*)>
+
+<!--
+	Name of an input argument for an analysis.
+	May also be the result name of an operation.
+-->
+<!ELEMENT input (#PCDATA)>
+
+<!--
+	Lists for records and their forwarding behavior.
+-->
+<!ELEMENT forwarding (records, forwards)>
+
+<!--
+	List of records.
+-->
+<!ELEMENT records (record*)>
+
+<!--
+	A specification for a record.
+	"uid": unique id of the record, used for routing purposes.
+-->
+<!ELEMENT record ((element|array-element)*)>
+<!ATTLIST record
+   uid CDATA #REQUIRED
+>
+
+<!--
+	List of record to communication module mappings.
+-->
+<!ELEMENT forwards (forward*)>
+
+<!--
+	A mapping of a record to a communication module.
+	
+	"reducable": Either "yes" or "no"; "no" is the default. If set to "yes"
+	                    the forward may be dropped if the single reduction
+	                    that was mapped to the incomming record-uid was
+	                    successfull. It has to be suspeneded if that reduction
+	                    returns waiting. Forward the original record if the
+	                    reduction was inapplicable or timed out. [Optional] 
+	                    Should never be used in wrapper forwards, as no 
+	                    reductions run on wrappers. Just here to make specs.
+	                    for receival and wrapper as equal as possible.
+-->
+<!ELEMENT forward (record-uid, comm-id)>
+<!ATTLIST forward
+   reducable CDATA #IMPLIED
+>
+
+<!--
+	Unique id of a record.
+-->
+<!ELEMENT record-uid (#PCDATA)>
+
+<!--
+	Identificator of a communication module.
+-->
+<!ELEMENT comm-id (#PCDATA)>
+
+<!--
+	A list of source pieces for cleanup of a wrapped call.
+-->
+<!ELEMENT cleanup (source-piece*)>
+
+<!--
+	Code to embedd into the generated wrapper.
+-->
+<!ELEMENT source-piece (#PCDATA)>
+
+<!-- 
+    =========================================================
+	IMPORTANT:
+		These specifications are from trace-cutter-input.dtd.
+	=========================================================
+-->
+<!-- A single element in a record. -->
+<!ELEMENT element (name, type, from-call, as-arg)>
+
+<!-- A single array element in a record. -->
+<!ELEMENT array-element (name, type, from-call, as-arg, length-argument)>
+
+<!-- The name of an argument. -->
+<!ELEMENT name (#PCDATA)>
+
+<!-- The data type of an argument. -->
+<!ELEMENT type (#PCDATA)>
+
+<!-- The API call from which the argument was created. -->
+<!ELEMENT from-call (#PCDATA)>
+
+<!-- The argument name in the API default header that is used for this argument in the given call. -->
+<!ELEMENT as-arg (#PCDATA)>
+
+<!-- Name of a the argument that specifies the length of this array argument, must be defined before this array-argument. -->
+<!ELEMENT length-argument (#PCDATA)>

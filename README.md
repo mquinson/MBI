@@ -70,7 +70,7 @@ Tool | Version | Compiler
 Aislinn | v3.12 | GCC 7.4.0
 CIVL | v1.20 | used with JDK-14
 ISP | 0.3.1 | GCC 10.2.0
-MUST | v1.6 | GCC 10.2.0
+MUST | v1.7 | GCC 10.2.0
 PARCOACH | v1 | LLVM 9
 McSimGrid | v3.27 |  GCC 10.2.0
 

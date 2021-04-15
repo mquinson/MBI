@@ -1,0 +1,555 @@
+! This file is part of MUST (Marmot Umpire Scalable Tool)
+!
+! Copyright (C)
+!   2010-2016 ZIH, Technische Universitaet Dresden, Federal Republic of Germany
+!   2010-2018 Lawrence Livermore National Laboratories, United States of America
+!   2013-2018 RWTH Aachen University, Federal Republic of Germany
+!
+! See the LICENSE file in the package base directory for details
+
+      subroutine GET_MPI_INTEGER_CODE___ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_INTEGER_CODE (CODE)
+      END
+      subroutine GET_MPI_INTEGER_CODE__ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_INTEGER_CODE (CODE)
+      END
+      subroutine GET_MPI_INTEGER_CODE_ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_INTEGER_CODE (CODE)
+      END
+      subroutine GET_MPI_INTEGER_CODE (CODE)
+      INCLUDE "mpif.h"
+      INTEGER CODE
+      CODE = MPI_INTEGER
+      RETURN
+      END
+
+      subroutine GET_MPI_REAL_CODE___ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_REAL_CODE (CODE)
+      END
+      subroutine GET_MPI_REAL_CODE__ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_REAL_CODE (CODE)
+      END
+      subroutine GET_MPI_REAL_CODE_ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_REAL_CODE (CODE)
+      END
+      subroutine GET_MPI_REAL_CODE (CODE)
+      INCLUDE "mpif.h"
+      INTEGER CODE
+      CODE = MPI_REAL
+      RETURN
+      END
+
+      subroutine GET_MPI_DOUBLE_PRECISION_CODE___ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_DOUBLE_PRECISION_CODE (CODE)
+      END
+      subroutine GET_MPI_DOUBLE_PRECISION_CODE__ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_DOUBLE_PRECISION_CODE (CODE)
+      END
+      subroutine GET_MPI_DOUBLE_PRECISION_CODE_ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_DOUBLE_PRECISION_CODE (CODE)
+      END
+      subroutine GET_MPI_DOUBLE_PRECISION_CODE (CODE)
+      INCLUDE "mpif.h"
+      INTEGER CODE
+      CODE = MPI_DOUBLE_PRECISION
+      RETURN
+      END
+
+      subroutine GET_MPI_COMPLEX_CODE___ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_COMPLEX_CODE (CODE)
+      END
+      subroutine GET_MPI_COMPLEX_CODE__ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_COMPLEX_CODE (CODE)
+      END
+      subroutine GET_MPI_COMPLEX_CODE_ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_COMPLEX_CODE (CODE)
+      END
+      subroutine GET_MPI_COMPLEX_CODE (CODE)
+      INCLUDE "mpif.h"
+      INTEGER CODE
+      CODE = MPI_COMPLEX
+      RETURN
+      END
+
+      subroutine GET_MPI_LOGICAL_CODE___ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_LOGICAL_CODE (CODE)
+      END
+      subroutine GET_MPI_LOGICAL_CODE__ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_LOGICAL_CODE (CODE)
+      END
+      subroutine GET_MPI_LOGICAL_CODE_ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_LOGICAL_CODE (CODE)
+      END
+      subroutine GET_MPI_LOGICAL_CODE (CODE)
+      INCLUDE "mpif.h"
+      INTEGER CODE
+      CODE = MPI_LOGICAL
+      RETURN
+      END
+
+      subroutine GET_MPI_CHARACTER_CODE___ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_CHARACTER_CODE (CODE)
+      END
+      subroutine GET_MPI_CHARACTER_CODE__ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_CHARACTER_CODE (CODE)
+      END
+      subroutine GET_MPI_CHARACTER_CODE_ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_CHARACTER_CODE (CODE)
+      END
+      subroutine GET_MPI_CHARACTER_CODE (CODE)
+      INCLUDE "mpif.h"
+      INTEGER CODE
+      CODE = MPI_CHARACTER
+      RETURN
+      END
+
+      subroutine GET_MPI_DOUBLE_COMPLEX_CODE___ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_DOUBLE_COMPLEX_CODE (CODE)
+      END
+      subroutine GET_MPI_DOUBLE_COMPLEX_CODE__ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_DOUBLE_COMPLEX_CODE (CODE)
+      END
+      subroutine GET_MPI_DOUBLE_COMPLEX_CODE_ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_DOUBLE_COMPLEX_CODE (CODE)
+      END
+      subroutine GET_MPI_DOUBLE_COMPLEX_CODE (CODE)
+      INCLUDE "mpif.h"
+      INTEGER CODE
+      CODE = @F_MPI_DOUBLE_COMPLEX@
+      END
+
+      subroutine GET_MPI_REAL2_CODE___ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_REAL2_CODE (CODE)
+      END
+      subroutine GET_MPI_REAL2_CODE__ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_REAL2_CODE (CODE)
+      END
+      subroutine GET_MPI_REAL2_CODE_ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_REAL2_CODE (CODE)
+      END
+      subroutine GET_MPI_REAL2_CODE (CODE)
+      INCLUDE "mpif.h"
+      INTEGER CODE
+      CODE = @F_MPI_REAL2@
+      END
+
+      subroutine GET_MPI_REAL4_CODE___ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_REAL4_CODE (CODE)
+      END
+      subroutine GET_MPI_REAL4_CODE__ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_REAL4_CODE (CODE)
+      END
+      subroutine GET_MPI_REAL4_CODE_ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_REAL4_CODE (CODE)
+      END
+      subroutine GET_MPI_REAL4_CODE (CODE)
+      INCLUDE "mpif.h"
+      INTEGER CODE
+      CODE = @F_MPI_REAL4@
+      END
+
+      subroutine GET_MPI_REAL8_CODE___ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_REAL8_CODE (CODE)
+      END
+      subroutine GET_MPI_REAL8_CODE__ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_REAL8_CODE (CODE)
+      END
+      subroutine GET_MPI_REAL8_CODE_ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_REAL8_CODE (CODE)
+      END
+      subroutine GET_MPI_REAL8_CODE (CODE)
+      INCLUDE "mpif.h"
+      INTEGER CODE
+      CODE = @F_MPI_REAL8@
+      END
+
+      subroutine GET_MPI_REAL16_CODE___ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_REAL16_CODE (CODE)
+      END
+      subroutine GET_MPI_REAL16_CODE__ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_REAL16_CODE (CODE)
+      END
+      subroutine GET_MPI_REAL16_CODE_ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_REAL16_CODE (CODE)
+      END
+      subroutine GET_MPI_REAL16_CODE (CODE)
+      INCLUDE "mpif.h"
+      INTEGER CODE
+      CODE = @F_MPI_REAL16@
+      END
+
+      subroutine GET_MPI_INTEGER1_CODE___ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_INTEGER1_CODE (CODE)
+      END
+      subroutine GET_MPI_INTEGER1_CODE__ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_INTEGER1_CODE (CODE)
+      END
+      subroutine GET_MPI_INTEGER1_CODE_ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_INTEGER1_CODE (CODE)
+      END
+      subroutine GET_MPI_INTEGER1_CODE (CODE)
+      INCLUDE "mpif.h"
+      INTEGER CODE
+      CODE = @F_MPI_INTEGER1@
+      RETURN
+      END
+
+      subroutine GET_MPI_INTEGER2_CODE___ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_INTEGER2_CODE (CODE)
+      END
+      subroutine GET_MPI_INTEGER2_CODE__ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_INTEGER2_CODE (CODE)
+      END
+      subroutine GET_MPI_INTEGER2_CODE_ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_INTEGER2_CODE (CODE)
+      END
+      subroutine GET_MPI_INTEGER2_CODE (CODE)
+      INCLUDE "mpif.h"
+      INTEGER CODE
+      CODE = @F_MPI_INTEGER2@
+      END
+
+      subroutine GET_MPI_INTEGER4_CODE___ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_INTEGER4_CODE (CODE)
+      END
+      subroutine GET_MPI_INTEGER4_CODE__ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_INTEGER4_CODE (CODE)
+      END
+      subroutine GET_MPI_INTEGER4_CODE_ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_INTEGER4_CODE (CODE)
+      END
+      subroutine GET_MPI_INTEGER4_CODE (CODE)
+      INCLUDE "mpif.h"
+      INTEGER CODE
+      CODE = @F_MPI_INTEGER4@
+      END
+
+      subroutine GET_MPI_INTEGER8_CODE___ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_INTEGER8_CODE (CODE)
+      END
+      subroutine GET_MPI_INTEGER8_CODE__ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_INTEGER8_CODE (CODE)
+      END
+      subroutine GET_MPI_INTEGER8_CODE_ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_INTEGER8_CODE (CODE)
+      END
+      subroutine GET_MPI_INTEGER8_CODE (CODE)
+      INCLUDE "mpif.h"
+      INTEGER CODE
+      CODE = @F_MPI_INTEGER8@
+      END
+
+      subroutine GET_MPI_INTEGER16_CODE___ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_INTEGER16_CODE (CODE)
+      END
+      subroutine GET_MPI_INTEGER16_CODE__ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_INTEGER16_CODE (CODE)
+      END
+      subroutine GET_MPI_INTEGER16_CODE_ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_INTEGER16_CODE (CODE)
+      END
+      subroutine GET_MPI_INTEGER16_CODE (CODE)
+      INCLUDE "mpif.h"
+      INTEGER CODE
+      CODE = @F_MPI_INTEGER16@
+      END
+
+      subroutine GET_MPI_COMPLEX8_CODE___ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_COMPLEX8_CODE (CODE)
+      END
+      subroutine GET_MPI_COMPLEX8_CODE__ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_COMPLEX8_CODE (CODE)
+      END
+      subroutine GET_MPI_COMPLEX8_CODE_ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_COMPLEX8_CODE (CODE)
+      END
+      subroutine GET_MPI_COMPLEX8_CODE (CODE)
+      INCLUDE "mpif.h"
+      INTEGER CODE
+      CODE = @F_MPI_COMPLEX8@
+      END
+
+      subroutine GET_MPI_COMPLEX16_CODE___ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_COMPLEX16_CODE (CODE)
+      END
+      subroutine GET_MPI_COMPLEX16_CODE__ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_COMPLEX16_CODE (CODE)
+      END
+      subroutine GET_MPI_COMPLEX16_CODE_ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_COMPLEX16_CODE (CODE)
+      END
+      subroutine GET_MPI_COMPLEX16_CODE (CODE)
+      INCLUDE "mpif.h"
+      INTEGER CODE
+      CODE = @F_MPI_COMPLEX16@
+      END
+
+      subroutine GET_MPI_COMPLEX32_CODE___ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_COMPLEX32_CODE (CODE)
+      END
+      subroutine GET_MPI_COMPLEX32_CODE__ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_COMPLEX32_CODE (CODE)
+      END
+      subroutine GET_MPI_COMPLEX32_CODE_ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_COMPLEX32_CODE (CODE)
+      END
+      subroutine GET_MPI_COMPLEX32_CODE (CODE)
+      INCLUDE "mpif.h"
+      INTEGER CODE
+      CODE = @F_MPI_COMPLEX32@
+      END
+
+      subroutine GET_MPI_LOGICAL1_CODE___ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_LOGICAL1_CODE (CODE)
+      END
+      subroutine GET_MPI_LOGICAL1_CODE__ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_LOGICAL1_CODE (CODE)
+      END
+      subroutine GET_MPI_LOGICAL1_CODE_ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_LOGICAL1_CODE (CODE)
+      END
+      subroutine GET_MPI_LOGICAL1_CODE (CODE)
+      INCLUDE "mpif.h"
+      INTEGER CODE
+      CODE = @F_MPI_LOGICAL1@
+      END
+
+      subroutine GET_MPI_LOGICAL2_CODE___ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_LOGICAL2_CODE (CODE)
+      END
+      subroutine GET_MPI_LOGICAL2_CODE__ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_LOGICAL2_CODE (CODE)
+      END
+      subroutine GET_MPI_LOGICAL2_CODE_ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_LOGICAL2_CODE (CODE)
+      END
+      subroutine GET_MPI_LOGICAL2_CODE (CODE)
+      INCLUDE "mpif.h"
+      INTEGER CODE
+      CODE = @F_MPI_LOGICAL2@
+      END
+
+      subroutine GET_MPI_LOGICAL4_CODE___ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_LOGICAL4_CODE (CODE)
+      END
+      subroutine GET_MPI_LOGICAL4_CODE__ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_LOGICAL4_CODE (CODE)
+      END
+      subroutine GET_MPI_LOGICAL4_CODE_ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_LOGICAL4_CODE (CODE)
+      END
+      subroutine GET_MPI_LOGICAL4_CODE (CODE)
+      INCLUDE "mpif.h"
+      INTEGER CODE
+      CODE = @F_MPI_LOGICAL4@
+      END
+
+      subroutine GET_MPI_LOGICAL8_CODE___ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_LOGICAL8_CODE (CODE)
+      END
+      subroutine GET_MPI_LOGICAL8_CODE__ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_LOGICAL8_CODE (CODE)
+      END
+      subroutine GET_MPI_LOGICAL8_CODE_ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_LOGICAL8_CODE (CODE)
+      END
+      subroutine GET_MPI_LOGICAL8_CODE (CODE)
+      INCLUDE "mpif.h"
+      INTEGER CODE
+      CODE = @F_MPI_LOGICAL8@
+      END
+
+      subroutine GET_MPI_LOGICAL16_CODE___ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_LOGICAL16_CODE (CODE)
+      END
+      subroutine GET_MPI_LOGICAL16_CODE__ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_LOGICAL16_CODE (CODE)
+      END
+      subroutine GET_MPI_LOGICAL16_CODE_ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_LOGICAL16_CODE (CODE)
+      END
+      subroutine GET_MPI_LOGICAL16_CODE (CODE)
+      INCLUDE "mpif.h"
+      INTEGER CODE
+      CODE = @F_MPI_LOGICAL16@
+      END
+
+      subroutine GET_MPI_2REAL_CODE___ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_2REAL_CODE (CODE)
+      END
+      subroutine GET_MPI_2REAL_CODE__ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_2REAL_CODE (CODE)
+      END
+      subroutine GET_MPI_2REAL_CODE_ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_2REAL_CODE (CODE)
+      END
+      subroutine GET_MPI_2REAL_CODE (CODE)
+      INCLUDE "mpif.h"
+      INTEGER CODE
+      CODE = MPI_2REAL
+      END
+
+      subroutine GET_MPI_2DOUBLE_PRECISION_CODE___ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_2DOUBLE_PRECISION_CODE (CODE)
+      END
+      subroutine GET_MPI_2DOUBLE_PRECISION_CODE__ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_2DOUBLE_PRECISION_CODE (CODE)
+      END
+      subroutine GET_MPI_2DOUBLE_PRECISION_CODE_ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_2DOUBLE_PRECISION_CODE (CODE)
+      END
+      subroutine GET_MPI_2DOUBLE_PRECISION_CODE (CODE)
+      INCLUDE "mpif.h"
+      INTEGER CODE
+      CODE = MPI_2DOUBLE_PRECISION
+      END
+
+      subroutine GET_MPI_2INTEGER_CODE___ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_2INTEGER_CODE (CODE)
+      END
+      subroutine GET_MPI_2INTEGER_CODE__ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_2INTEGER_CODE (CODE)
+      END
+      subroutine GET_MPI_2INTEGER_CODE_ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_2INTEGER_CODE (CODE)
+      END
+      subroutine GET_MPI_2INTEGER_CODE (CODE)
+      INCLUDE "mpif.h"
+      INTEGER CODE
+      CODE = MPI_2INTEGER
+      END
+
+      subroutine GET_MPI_2COMPLEX_CODE___ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_2COMPLEX_CODE (CODE)
+      END
+      subroutine GET_MPI_2COMPLEX_CODE__ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_2COMPLEX_CODE (CODE)
+      END
+      subroutine GET_MPI_2COMPLEX_CODE_ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_2COMPLEX_CODE (CODE)
+      END
+      subroutine GET_MPI_2COMPLEX_CODE (CODE)
+      INCLUDE "mpif.h"
+      INTEGER CODE
+      CODE = @F_MPI_2COMPLEX@
+      END
+
+      subroutine GET_MPI_2DOUBLE_COMPLEX_CODE___ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_2DOUBLE_COMPLEX_CODE (CODE)
+      END
+      subroutine GET_MPI_2DOUBLE_COMPLEX_CODE__ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_2DOUBLE_COMPLEX_CODE (CODE)
+      END
+      subroutine GET_MPI_2DOUBLE_COMPLEX_CODE_ (CODE)
+      INTEGER CODE
+      CALL GET_MPI_2DOUBLE_COMPLEX_CODE (CODE)
+      END
+      subroutine GET_MPI_2DOUBLE_COMPLEX_CODE (CODE)
+      INCLUDE "mpif.h"
+      INTEGER CODE
+      CODE = @F_MPI_2DOUBLE_COMPLEX@
+      END
+
+      subroutine GET_MPI_STATUS_SIZE___ (SIZE)
+      INTEGER SIZE
+      CALL GET_MPI_STATUS_SIZE (SIZE)
+      END
+      subroutine GET_MPI_STATUS_SIZE__ (SIZE)
+      INTEGER SIZE
+      CALL GET_MPI_STATUS_SIZE (SIZE)
+      END
+      subroutine GET_MPI_STATUS_SIZE_ (SIZE)
+      INTEGER SIZE
+      CALL GET_MPI_STATUS_SIZE (SIZE)
+      END
+      subroutine GET_MPI_STATUS_SIZE (SIZE)
+      INCLUDE "mpif.h"
+      INTEGER SIZE
+      SIZE = MPI_STATUS_SIZE
+      END

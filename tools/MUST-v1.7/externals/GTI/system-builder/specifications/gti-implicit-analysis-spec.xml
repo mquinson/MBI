@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  This file is part of GTI (Generic Tool Infrastructure)
+
+  Copyright (C)
+    2008-2019 ZIH, Technische Universitaet Dresden, Federal Republic of Germany
+    2008-2019 Lawrence Livermore National Laboratories, United States of America
+    2013-2019 RWTH Aachen University, Federal Republic of Germany
+
+  See the LICENSE file in the package base directory for details
+-->
+
+<!DOCTYPE analysis-specification PUBLIC "must_base" "/Users/hilbrich/workspace/gti/system-builder/dtd/analysis-specification.dtd">
+<analysis-specification group-name="GTI_IMPLICIT" include-path="@CMAKE_INSTALL_PREFIX@/include" path-to-libs="@CMAKE_INSTALL_PREFIX@/modules">
+    <analyses>
+        <analysis name="ShutdownHandler">
+            <registered-name>ShutdownHandler</registered-name>
+            <module-name>libshutdownHandler</module-name>
+            <header-name>I_ShutdownHandler.h</header-name>
+            <interface-type>I_ShutdownHandler</interface-type>
+            <is-global>0</is-global>
+            <is-process-global>0</is-process-global>
+            <dependencies>
+            </dependencies>
+            <analysis-function name="notifyShutdown"
+            	needs-channel-id="yes">
+            </analysis-function>
+        </analysis>
+    <analysis name="ShutdownReceiver">
+            <registered-name>ShutdownReceiver</registered-name>
+            <module-name>libshutdownReceiver</module-name>
+            <header-name>I_ShutdownReceiver.h</header-name>
+            <interface-type>I_ShutdownReceiver</interface-type>
+            <is-global>0</is-global>
+            <is-process-global>0</is-process-global>
+            <dependencies>
+            </dependencies>
+            <analysis-function name="receive">
+            </analysis-function>
+        </analysis><analysis name="PanicHandler">
+            <registered-name>PanicHandler</registered-name>
+            <module-name>libpanicHandler</module-name>
+            <header-name>I_PanicHandler.h</header-name>
+            <interface-type>I_PanicHandler</interface-type>
+            <is-global>0</is-global>
+            <is-process-global>0</is-process-global>
+            <dependencies>
+            </dependencies>
+            <reductions>
+            	<analysis-depend>PanicFilter</analysis-depend></reductions>
+            <analysis-function name="raisePanic">
+            </analysis-function>
+        </analysis><analysis name="PanicReceiver">
+            <registered-name>PanicReceiver</registered-name>
+            <module-name>libpanicReceiver</module-name>
+            <header-name>I_PanicReceiver.h</header-name>
+            <interface-type>I_PanicReceiver</interface-type>
+            <is-global>0</is-global>
+            <is-process-global>0</is-process-global>
+            <dependencies>
+            </dependencies><reductions>
+            	<analysis-depend>PanicFilter</analysis-depend></reductions>
+            <analysis-function name="notifyPanic">
+            </analysis-function>
+        <analysis-function name="notifyFlush">
+            </analysis-function><analysis-function name="notifyRaisePanic">
+            </analysis-function></analysis>
+    	<analysis name="PanicFilter" reduction="yes">
+    		<registered-name>PanicFilter</registered-name>
+    		<module-name>libpanicFilter</module-name>
+    		<header-name>I_PanicFilter.h</header-name>
+    		<interface-type>I_PanicFilter</interface-type>
+    		<is-global>0</is-global>
+    		<is-process-global>0</is-process-global>
+    		<dependencies></dependencies>
+    		<analysis-function name="propagate"></analysis-function>
+    	</analysis><analysis name="ProfilerMpi">
+    		<registered-name>ProfilerMpi</registered-name>
+    		<module-name>libprofilerMpi</module-name>
+    		<header-name>I_Profiler.h</header-name>
+    		<interface-type>I_Profiler</interface-type>
+    		<is-global>0</is-global>
+    		<is-process-global>0</is-process-global>
+    		<dependencies></dependencies>
+    		<analysis-function name=""></analysis-function></analysis><analysis name="FloodControl">
+    		<registered-name>FloodControl</registered-name>
+    		<module-name>libfloodControl</module-name>
+    		<header-name>I_FloodControl.h</header-name>
+    		<interface-type>I_FloodControl</interface-type>
+    		<is-global>0</is-global>
+    		<is-process-global>0</is-process-global>
+    		<dependencies></dependencies>
+    		<analysis-function name=""></analysis-function></analysis>
+    	<analysis name="BreakEnforcer" sub-group="GTI_Break">
+    		<registered-name>BreakEnforcer</registered-name>
+    		<module-name>libbreakEnforcer</module-name>
+    		<header-name>I_BreakEnforcer.h</header-name>
+    		<interface-type>I_BreakEnforcer</interface-type>
+    		<is-global>0</is-global>
+    		<is-process-global>0</is-process-global>
+    		<dependencies></dependencies>
+    		<analysis-function name="test">
+    		</analysis-function>
+    	<analysis-function name="handleBroadcastBreak">
+    			<analysis-argument order="0" type="int" name="code" />
+    		</analysis-function></analysis>
+    	<analysis name="BreakReduction" sub-group="GTI_Break"
+    		reduction="yes">
+    		<registered-name>BreakReduction</registered-name>
+    		<module-name>libbreakReduction</module-name>
+    		<header-name>I_BreakReduction.h</header-name>
+    		<interface-type>I_BreakReduction</interface-type>
+    		<is-global>0</is-global>
+    		<is-process-global>0</is-process-global>
+    		<dependencies></dependencies>
+    		<analysis-function name="addBreakRequest">
+    		</analysis-function>
+    	<analysis-function name="removeBreakRequest">
+    		</analysis-function></analysis><analysis name="BreakManager" sub-group="GTI_Break">
+    		<registered-name>BreakManager</registered-name>
+    		<module-name>libbreakManager</module-name>
+    		<header-name>I_BreakManager.h</header-name>
+    		<interface-type>I_BreakManager</interface-type>
+    		<is-global>0</is-global>
+    		<is-process-global>0</is-process-global>
+    		<dependencies></dependencies>
+    		<reductions>
+    			<analysis-depend>BreakReduction</analysis-depend></reductions>
+    		<analysis-function name="requestBreak"
+    			needs-channel-id="yes">
+    		</analysis-function>
+    		<analysis-function name="removeBreak" needs-channel-id="yes">
+    		</analysis-function></analysis></analyses>
+    <operations>
+    </operations>
+</analysis-specification>

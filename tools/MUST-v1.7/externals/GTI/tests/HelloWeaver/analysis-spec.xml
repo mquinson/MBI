@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  This file is part of GTI (Generic Tool Infrastructure)
+
+  Copyright (C)
+    2008-2019 ZIH, Technische Universitaet Dresden, Federal Republic of Germany
+    2008-2019 Lawrence Livermore National Laboratories, United States of America
+    2013-2019 RWTH Aachen University, Federal Republic of Germany
+
+  See the LICENSE file in the package base directory for details
+-->
+
+<!DOCTYPE analysis-specification SYSTEM "/Users/hilbrich/workspace/must/system-builder/dtd/analysis-specification.dtd">
+<analysis-specification path-to-libs="@CMAKE_INSTALL_PREFIX@/modules" include-path="@CMAKE_INSTALL_PREFIX@/include" group-name="HelloWeaver">
+	<analyses>
+		<analysis name="PrintSendRecv" reduction="no">
+			<registered-name>PrintSendRecv</registered-name>
+			<module-name>libprintSendRecv</module-name>
+			<header-name>I_PrintSendRecv.h</header-name>
+			<interface-type>I_PrintSendRecv</interface-type>
+			<is-global>0</is-global>
+			<is-process-global>0</is-process-global>
+			<dependencies></dependencies>
+			<analysis-function name="print">
+				<analysis-argument order="0" type="int" name="count" /><analysis-argument
+					order="1" type="int" name="rank" /><analysis-argument
+					order="2" type="int" name="sourceDest" /><analysis-argument
+					order="3" type="int" name="isSend" /></analysis-function>
+		</analysis></analyses>
+	<operations>
+		<operation return-type="int" name="return1">
+			<extra-headers></extra-headers>
+			<operation-arguments></operation-arguments>
+			<source-template>int RETURN = 1;</source-template>
+		</operation>
+		<operation return-type="int" name="return0">
+			<extra-headers></extra-headers>
+			<operation-arguments></operation-arguments>
+			<source-template>int RETURN = 0;</source-template>
+		</operation>
+		<operation return-type="int" name="getRank">
+			<extra-headers></extra-headers>
+			<operation-arguments>
+				<operation-argument order="0" type="MPI_Comm" /></operation-arguments>
+			<source-template>int RETURN; PMPI_Comm_rank (ARG0, &amp;RETURN);</source-template>
+		</operation></operations></analysis-specification>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  This file is part of MUST (Marmot Umpire Scalable Tool)
+
+  Copyright (C)
+    2010-2016 ZIH, Technische Universitaet Dresden, Federal Republic of Germany
+    2010-2018 Lawrence Livermore National Laboratories, United States of America
+    2013-2018 RWTH Aachen University, Federal Republic of Germany
+
+  See the LICENSE file in the package base directory for details
+-->
+
+<!DOCTYPE analysis-specification SYSTEM "@MUST_SPECIFICATION_DTD_PATH@/analysis-specification.dtd">
+<analysis-specification path-to-libs="@CMAKE_INSTALL_PREFIX@/modules" include-path="@CMAKE_INSTALL_PREFIX@/include" group-name="TestRequestTrack">
+	<analyses>
+		<analysis name="PrintRequest">
+			<registered-name>PrintRequest</registered-name>
+			<module-name>libprintRequest</module-name>
+			<header-name>I_PrintRequest.h</header-name>
+			<interface-type>I_PrintRequest</interface-type>
+			<is-global>0</is-global>
+			<is-process-global>0</is-process-global>
+			<dependencies>
+				<analysis-depend group="MUST_Base">LocationAnalysis</analysis-depend>
+				<analysis-depend group="MUST_Base">CreateMessage</analysis-depend>
+				<analysis-depend group="MUST_Resource">RequestTrack</analysis-depend></dependencies>
+			<analysis-function name="print">
+				<analysis-argument order="0" type="uint64_t" name="pId" /><analysis-argument
+					order="1" type="uint64_t" name="lId" /><analysis-argument
+					order="2" type="@REQUEST_F_TYPE@" name="" /></analysis-function>
+		</analysis></analyses>
+	<operations></operations></analysis-specification>

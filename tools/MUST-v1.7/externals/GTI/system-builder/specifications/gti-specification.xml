@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  This file is part of GTI (Generic Tool Infrastructure)
+
+  Copyright (C)
+    2008-2019 ZIH, Technische Universitaet Dresden, Federal Republic of Germany
+    2008-2019 Lawrence Livermore National Laboratories, United States of America
+    2013-2019 RWTH Aachen University, Federal Republic of Germany
+
+  See the LICENSE file in the package base directory for details
+-->
+
+<!DOCTYPE gti-specification SYSTEM "/Users/hilbrich/workspace/gti/system-builder/dtd/gti-specification.dtd">
+<gti-specification path-to-libs="@CMAKE_INSTALL_PREFIX@/modules" include-path="@CMAKE_INSTALL_PREFIX@/include" path-to-execs="@CMAKE_INSTALL_PREFIX@/bin">
+	<comm-protocols>
+        <comm-protocol name="CProtMpiSplited" supports-intra="yes">
+            <module-name>libcProtMpiSplited</module-name>
+            <settings>
+                <setting name="mpi-supports-intercomm-collectives">
+                    <description>Set this argument to TRUE if the MPI supports intercommunicators in collective calls (MPI-2)</description>
+                    <value type="bool">
+                        <default>0</default>
+                    </value>
+                </setting>
+                </settings>
+            <prepend-modules></prepend-modules>
+            <required-apis>
+                <required-api>MPI</required-api>
+            </required-apis>
+        </comm-protocol>
+        <comm-protocol name="CProtIpcSM">
+            <module-name>libcProtIpcSM</module-name>
+            <settings>
+                </settings>
+            <prepend-modules></prepend-modules>
+            <required-apis>
+                <required-api>SystemV</required-api>
+            </required-apis>
+        </comm-protocol>
+        <comm-protocol name="CProtSharedMemory">
+            <module-name>libcProtSharedMemory</module-name>
+            <settings>
+                </settings>
+            <prepend-modules></prepend-modules>
+            <required-apis>
+                <required-api>SystemV</required-api>
+            </required-apis>
+        </comm-protocol>
+        <comm-protocol name="CProtSMQueue">
+            <module-name>libcProtSMQueue</module-name>
+            <settings>
+                </settings>
+            <prepend-modules></prepend-modules>
+            <required-apis>
+                <required-api>SystemV</required-api>
+            </required-apis>
+        </comm-protocol>
+        <comm-protocol name="CProtTcp">
+            <module-name>libcProtSimpleTcp</module-name>
+            <settings>
+            </settings>
+            <prepend-modules></prepend-modules>
+            <required-apis>
+                <required-api>Sockets</required-api>
+            </required-apis>
+        </comm-protocol>
+    </comm-protocols>
+	<comm-strategies>
+		<comm-strategy name-up="CStratThreadedUp" name-down="CStratThreadedDown">
+			<module-name-up>libcStratThreadedUp</module-name-up>
+			<module-name-down>libcStratThreadedDown</module-name-down>
+			<settings>
+				<setting name="aggregate-size">
+					<description>Maximum size for aggregation of trace records (in bytes)</description>
+					<value type="integer">
+						<default>5120</default>
+						<range max="*" min="0" ></range>
+					</value>
+				</setting></settings>
+		</comm-strategy>
+		<comm-strategy name-up="CStratSimpleUp" name-down="CStratSimpleDown">
+			<module-name-up>libcStratSimpleUp</module-name-up>
+			<module-name-down>libcStratSimpleDown</module-name-down>
+			<settings></settings>
+		</comm-strategy>
+		<comm-strategy name-up="CStratIsendUp" name-down="CStratIsendDown">
+			<module-name-up>libcStratIsendUp</module-name-up>
+			<module-name-down>libcStratIsendDown</module-name-down>
+			<settings></settings>
+		</comm-strategy><comm-strategy-intra name="CStratIsendIntra">
+			<module-name>libcStratIsendIntra</module-name>
+			<settings></settings>
+		</comm-strategy-intra><comm-strategy-intra name="CStratThreadedIntra">
+			<module-name>libcStratThreadedIntra</module-name>
+			<settings></settings>
+		</comm-strategy-intra><comm-strategy name-up="CStratPRecvUp" name-down="CStratPRecvDown">
+			<module-name-up>libcStratPRecvUp</module-name-up>
+			<module-name-down>libcStratPRecvDown</module-name-down>
+			<settings></settings>
+		</comm-strategy><comm-strategy-intra name="CStratPRecvIntra">
+			<module-name>libcStratPRecvIntra</module-name>
+			<settings></settings>
+		</comm-strategy-intra></comm-strategies>
+	<places>
+		<place name="mpi_app">
+			<prepend-modules></prepend-modules>
+			<instance type="module">
+				<module-name>libappPlace</module-name>
+			</instance>
+			<required-apis>
+				<required-api>MPI</required-api>
+			</required-apis>
+			<settings></settings>
+		</place>
+		<place name="thread_app">
+			<prepend-modules></prepend-modules>
+			<instance type="module">
+				<module-name>libappPlace</module-name>
+			</instance>
+			<required-apis>
+			</required-apis>
+			<settings></settings>
+		</place>
+		<place name="mpi_place">
+			<prepend-modules></prepend-modules>
+			<instance type="module">
+				<module-name>libthreadedMpiPlace</module-name>
+			</instance>
+			<required-apis>
+				<required-api>MPI</required-api>
+			</required-apis>
+			<settings></settings>
+		</place>
+        <place name="thread_place">
+            <prepend-modules></prepend-modules>
+            <instance type="module">
+                <module-name>libthreadedAppPlace</module-name></instance>
+            <required-apis>
+                <required-api>MPI</required-api>
+            </required-apis>
+            <settings></settings>
+        </place>
+	</places>
+	<enums></enums>
+</gti-specification>

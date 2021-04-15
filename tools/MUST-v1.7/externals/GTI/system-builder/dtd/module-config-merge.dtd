@@ -1,0 +1,35 @@
+<!--
+  This file is part of GTI (Generic Tool Infrastructure)
+
+  Copyright (C)
+    2008-2019 ZIH, Technische Universitaet Dresden, Federal Republic of Germany
+    2008-2019 Lawrence Livermore National Laboratories, United States of America
+    2013-2019 RWTH Aachen University, Federal Republic of Germany
+
+  See the LICENSE file in the package base directory for details
+-->
+
+<!--
+	Root node for level merge description.
+	
+	Usage:
+	To combine the module configuration of multiple
+	levels into one configuration with multiple stacks.
+	
+	All levels that are listed in one set will be merged
+	into one module configuration. 
+	
+	Modules that do not need to be merged do not necessarily
+	be put into a set with just that module. 	
+-->
+<!ELEMENT level-merge (set*)>
+
+<!--
+	A set of levels to merge.
+-->
+<!ELEMENT set (order*)>
+
+<!--
+	Order of a level that is supposed to be in a set.
+-->
+<!ELEMENT order (#PCDATA)>

@@ -1,0 +1,160 @@
+# This file is part of GTI (Generic Tool Infrastructure)
+#
+# Copyright (C)
+#   2008-2019 ZIH, Technische Universitaet Dresden, Federal Republic of Germany
+#   2008-2019 Lawrence Livermore National Laboratories, United States of America
+#   2013-2019 RWTH Aachen University, Federal Republic of Germany
+#
+# See the LICENSE file in the package base directory for details
+
+# Search for dependencies required by GTI. These are required for compiling code
+# which uses GTI.
+#
+# NOTE: Other packages need to be searched before this package is initialized,
+#       as other packages may overwrite the PACKAGE_PREFIX_DIR of this package.
+#
+# NOTE: Dependencies which have a fallback import don't need to be located, if
+#       GTI is imported via 'ADD_SUBDIRECTORY()' as these have already been
+#       located in 'externals/CMakeLists.txt', which is processed before
+#       including this file.
+IF (NOT GTI_IS_SUBPROJECT)
+    FIND_PACKAGE(PnMPI REQUIRED
+        HINTS
+            "@PnMPI_DIR@"
+            "@CMAKE_INSTALL_PREFIX@"
+            "@PnMPI_INSTALL_PREFIX@"
+        )
+ENDIF ()
+
+
+@PACKAGE_INIT@
+
+
+# Basic GTI configuration.
+#
+# The following variables store the basic GTI configuration and may be used to
+# check if basic conditions are met or where to find dependencies.
+
+SET(GTI_VERSION       "@GTI_VERSION@"       CACHE INTERNAL "")
+SET(GTI_VERSION_MAJOR "@GTI_VERSION_MAJOR@" CACHE INTERNAL "")
+SET(GTI_VERSION_MINOR "@GTI_VERSION_MINOR@" CACHE INTERNAL "")
+SET(GTI_VERSION_PATCH "@GTI_VERSION_PATCH@" CACHE INTERNAL "")
+SET(GTI_VERSION_TWEAK "@GTI_VERSION_TWEAK@" CACHE INTERNAL "")
+
+
+# Set dependent GTI configuration.
+#
+# Some of GTI's configuration variables depend on how GTI is included into other
+# projects (via FIND_PACKAGE() or ADD_SUBDIRECTORY()). These variables will be
+# set depending on the include mode and cached later if neccessary.
+IF (NOT GTI_IS_SUBPROJECT)
+    SET_AND_CHECK(GTI_INCLUDE_DIR "@CMAKE_INSTALL_FULL_INCLUDEDIR@")
+    SET_AND_CHECK(GTI_SOURCE_DIR  "@CMAKE_INSTALL_PREFIX@/src")
+ELSE ()
+    SET(GTI_INCLUDE_DIR
+        "@CMAKE_CURRENT_SOURCE_DIR@/modules/common"
+        "@CMAKE_CURRENT_BINARY_DIR@/modules/common"
+        "@CMAKE_CURRENT_SOURCE_DIR@/modules/gti-internal"
+        "@CMAKE_CURRENT_SOURCE_DIR@/modules/interfaces")
+    SET(GTI_SOURCE_DIR  "@CMAKE_CURRENT_SOURCE_DIR@/modules/utility")
+ENDIF ()
+
+SET(GTI_MODULES_DIR "@CMAKE_INSTALL_PREFIX@/modules")
+SET(GTI_SPECIFICATION_FILE
+                  "@CMAKE_INSTALL_PREFIX@/specifications/gti-specification.xml")
+SET(GTI_INCLUDE_PATH
+        ${GTI_INCLUDE_DIR}
+        ${PnMPI_INCLUDE_PATH}
+    CACHE PATH "GTI include paths")
+SET(GTI_MODULES_PATH ${GTI_MODULES_DIR} CACHE PATH "GTI module location" FORCE)
+SET(GTI_SOURCE_PATH  ${GTI_SOURCE_DIR}  CACHE PATH "GTI source path" FORCE)
+SET(GTI_SPECIFICATION ${GTI_SPECIFICATION_FILE}
+                      CACHE PATH "The main GTI specification" FORCE)
+SET(GTI_HOME "@CMAKE_INSTALL_PREFIX@"
+             CACHE PATH "The GTI install directory" FORCE)
+
+# Component configuration.
+#
+# GTI has optional components, which will be configured in the following
+# section. FIND_PACKAGE() provides capabilities to check wheter a module has a
+# specific component or not.
+
+set(GTI_OMPT_FOUND @OMPT_FOUND@)
+
+
+# Handle arguments of 'FIND_PACKAGE()'.
+#
+# If 'FIND_PACKAGE()' is used to find PnMPI, check its arguments and required
+# components.
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(GTI
+    REQUIRED_VARS
+        GTI_VERSION
+        GTI_INCLUDE_PATH
+        GTI_MODULES_PATH
+        GTI_SOURCE_PATH
+        GTI_SPECIFICATION
+)
+
+mark_as_advanced(
+    GTI_VERSION
+    GTI_INCLUDE_PATH
+    GTI_MODULES_PATH
+    GTI_SOURCE_PATH
+    GTI_SPECIFICATION
+)
+
+
+# Include GTI targets as imported targets.
+#
+# By including the following files, GTI targets will be imported to be used by
+# the project including this file.
+#
+# NOTE: This is not neccessary, if PnMPI is included via 'add_subdirectory()',
+#       as PnMPI's native targets are available.
+IF (NOT GTI_IS_SUBPROJECT)
+    INCLUDE(${PACKAGE_PREFIX_DIR}/buildgen.cmake)
+    INCLUDE(${PACKAGE_PREFIX_DIR}/modconfgen.cmake)
+    INCLUDE(${PACKAGE_PREFIX_DIR}/recvgen.cmake)
+    INCLUDE(${PACKAGE_PREFIX_DIR}/weaver.cmake)
+    INCLUDE(${PACKAGE_PREFIX_DIR}/wrappgen.cmake)
+ENDIF ()
+
+# Set aliasses for GTI executables.
+#
+# These variables may be used to use the GTI targets. However, the path to the
+# executable itself is not stored in these variables, but the names of the
+# targets imported above.
+SET(GTI_BUILDGEN   "buildgen"   CACHE INTERNAL "")
+SET(GTI_MODCONFGEN "modconfgen" CACHE INTERNAL "")
+SET(GTI_RECVGEN    "recvgen"    CACHE INTERNAL "")
+SET(GTI_WEAVER     "weaver"     CACHE INTERNAL "")
+SET(GTI_WRAPPGEN   "wrappgen"   CACHE INTERNAL "")
+
+
+# Include GTI specific CMake functions.
+#
+# GTI uses additional CMake functions to easily add targets for GTI modules.
+# These will be installed along with the GTI configuration and included with
+# this package configuration.
+IF (NOT GTI_IS_SUBPROJECT)
+    INCLUDE(${PACKAGE_PREFIX_DIR}/HelperMacros.cmake)
+ELSE ()
+    INCLUDE(cmakemodules/HelperMacros.cmake)
+ENDIF ()
+
+
+# Additional tweaks for MUST.
+#
+# The following variables are NOT part of the GTI CMake API, but required by
+# MUST (Marmot Umpire Scalable Tool).
+SET(GTI_IS_THREAD_SAFE @GTI_THREAD_SAFETY@  CACHE INTERNAL "")
+SET(GTI_ENABLE_FORTRAN @GTI_ENABLE_FORTRAN@ CACHE INTERNAL "")
+
+# If GTI is built with thread safety, MUST also needs to be build with C++11
+# standard for compatibility with GTI's headers.
+IF (GTI_IS_THREAD_SAFE)
+    CMAKE_MINIMUM_REQUIRED(VERSION 3.1)
+    SET(CMAKE_CXX_STANDARD          11)
+    SET(CMAKE_CXX_STANDARD_REQUIRED true)
+ENDIF ()

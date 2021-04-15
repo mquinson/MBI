@@ -1,0 +1,265 @@
+<!--
+  This file is part of GTI (Generic Tool Infrastructure)
+
+  Copyright (C)
+    2008-2019 ZIH, Technische Universitaet Dresden, Federal Republic of Germany
+    2008-2019 Lawrence Livermore National Laboratories, United States of America
+    2013-2019 RWTH Aachen University, Federal Republic of Germany
+
+  See the LICENSE file in the package base directory for details
+-->
+
+<!--unique-name specifies the name of this API-->
+<!ELEMENT api-specification (api-headers, functions)>
+<!ATTLIST api-specification
+   unique-name CDATA #REQUIRED
+>
+
+<!-- List of headers for this API. -->
+<!ELEMENT api-headers (header)*>
+
+<!-- A header for this API, must be a portable name, e.g. mpi.h. -->
+<!ELEMENT header (#PCDATA)>
+
+<!-- List of functions in this API (and the analyses that may be applied to them). -->
+<!ELEMENT functions (function)*>
+
+<!--Function of the API
+	"Name": specifies the name of the function.
+	"return-type": the datatype returned by the function (use "void" for no type).
+	"wrapp-everywhere": set this attribute to "yes" (without quotes) if this
+	                    API should be wrapped on the application as well on
+	                    ALL(!) tool places (Be careful not to wrapp APIs 
+	                    used by the tool places to implement their own 
+	                    functionality). 
+	                    A wrapp-everywhere call must not be marked as wrapp-across or wrapp-down. 
+	                    [optional, default "no"]
+	"wrapp-across": set this attribute to "yes" (without quotes) if this
+	                    API is a so called wrap-across function. If a module calls a 
+	                    wrap-across function it provides as the last implicit argument
+	                    that is not listed in the function-arguments a place id. GTI
+	                    sends the information for this API call to the tool place with the
+	                    given id within the same tool layer. 
+	                    Modules mapped to this call will be called on the 
+	                    receiver side, not on the sender side! However, operations will
+	                    be called on the sender side and not on the receiver side.
+	                    Further, this event will not be forwarded to adjacent tool 
+	                    layers on the remote (receiver) side nor on the sender side!
+                        If information about this event should be forwarded to other layers,
+                        one should create a new event to do so.
+	                    A wrapp-across call must not be marked as wrapp-everywhere or wrapp-down. 
+	                    [optional, default "no"]
+	"wrapp-down": set this attribute to "yes" (without quotes) if this API is a 
+	                    so called wrapp-down function. If a module calls a wrapp-down
+	                    function, its arguments are broadcasted towards the application processes.
+	                    However, only to the last tool level, not to the application itself. This
+	                    can be used to drive hierachic computations or notify all tool places of
+	                    some event. Modules mapped to such a call will be executed both on the 
+	                    initiator and receiver sides. Such an event should not be created by the 
+	                    application, as it will ONLY be communicated downwards and never
+	                    upwards, i.e. never towards the root.
+	                    A wrapp-down call must not be marked as wrapp-across or wrapp-everywhere. 
+	                    [optional, default "no"]
+    "is-finalizer": set this attribute to "yes" if this call should start a shutdown
+                    of the tool once called on all application processes. 
+                    Any analysis mapped to such an event must not perform any
+                    intra layer communication! Further, forwarding and execution of analyses
+                    is only triggered for the last of this event that arrives on a certain tool node.
+                    I.e. if a place receives a shutdown event from two other places,
+                    analyses and forwarding will only be triggered when the second
+                    shutdown arrives. 
+                    IMPORTANT: this is not directly shutting down the tool, the tool is only shut down
+                                        once that the root/highest layer of the tool broadcasts a notify-finalize
+                                        event, which is started once the last is-finalizer call arrived there.
+                   [optional, default is "no"]
+    "is-local-finalizer": if set to "yes" this event shuts down the module associated
+	                                  with the wrapper, but not the whole TBON (a seperate
+	                                  tool generated "is-finalizer" event needs to be called for that. [optional]
+    "notify-finalize": When this event is received by a place, the placement driver is informed that
+                              the tool place can be shut down. [optional, default is "no"]
+    "out-of-order": If this is set to "yes", the event must be processed by any TBON node where it 
+                             arrives irrespective of any ongoing event aggregation. [optional, default is "no"]
+    "callback": if set to "yes" this event will not generate a call to the MPI runtime and only accept PRE order analyses
+                                                                                                            [optional]
+    "hook": If set to "yes" this event will not generate a call to the MPI runtime, but call the hook recursively.
+	        [optional, default is "no"]
+    Rational: there is no such thing as a "is-init" option the first intercepted event
+              will initialize the tool. If some communication mechanism is not yet
+              available at this time a lazy initialization mechanism allows the 
+              execusion to continue and events to be forwarded at a later point in time.
+-->
+<!ELEMENT function (function-arguments, analyses, operations, created-by?)>
+<!ATTLIST function
+   name CDATA #REQUIRED
+   return-type CDATA #REQUIRED
+   wrapp-everywhere CDATA #IMPLIED
+   wrapp-across CDATA #IMPLIED
+   wrapp-down CDATA #IMPLIED
+   is-finalizer CDATA #IMPLIED
+   is-local-finalizer CDATA #IMPLIED
+   notify-finalize CDATA #IMPLIED
+   out-of-order CDATA #IMPLIED
+   callback CDATA #IMPLIED
+   hook CDATA #IMPLIED
+>
+
+<!--Arguments of a function.-->
+<!ELEMENT function-arguments (function-argument | function-array-argument)*>
+
+<!--Argument of a function:
+	"name": Attribute name (from default header)
+	"type": Type of attribute
+	"intent": Optional: "in"/"out"/"inout" - helps for generation of superset wrappers and records, default is "inout"
+	"order": index (starting with 0 of the argument in the call) e.g., 0 for first arg, 1 for second, ...
+	"typeAfterArg": extra typestring to append after the argument name in declarations, e.g. for "int array[3]" to define the "[3]", optional, default is ""	.
+	                        IMPORTANT: arguments with this extension must not be transfered, so eigther process them locally or convert them in an operation.
+-->
+<!ELEMENT function-argument (#PCDATA)>
+<!ATTLIST function-argument
+	name CDATA #REQUIRED
+	type CDATA #REQUIRED
+	intent CDATA #REQUIRED
+	order CDATA #REQUIRED
+	typeAfterArg CDATA #IMPLIED
+>
+			
+<!--An array argument to a function.
+	"name": Attribute name (from default header)
+	"type": Type of attribute
+	"intent": Optional: "in"/"out"/"inout" - helps for generation of superset wrappers and records, default is "inout"
+	"order": index (starting with 0 of the argument in the call) e.g., 0 for first arg, 1 for second, ...
+-->
+<!ELEMENT function-array-argument (length-argument)>
+<!ATTLIST function-array-argument
+	name CDATA #REQUIRED
+	type CDATA #REQUIRED
+	intent CDATA #REQUIRED
+	order CDATA #REQUIRED			   
+	typeAfterArg CDATA #IMPLIED
+>
+				
+<!-- The length argument for an array argument.
+	"type": either "argument" or "operation"
+		- for argument specify the name of the argument that specifies the array length
+		 for operation specify the name of the operation (see operations) that specifies the array length
+-->
+<!ELEMENT length-argument (call-arg-name | op-name)>
+<!ATTLIST length-argument
+	type CDATA #REQUIRED
+>
+				
+<!-- 
+   An argument name from this call
+   For analysis/operation inputs you may specify:
+   - "USE_CALLNAME" (without quotes) here to refer 
+      to the name of the API call instead of to one of 
+      its arguments.
+   - "USE_CALLID" (without quotes) here to refer to 
+      a unique integer (type is int (C)) that identifies
+      this call, the id is built by the weaver and no 
+      assumptions about its value should be made 
+      except that it will b unique for all API calls. 
+-->
+<!ELEMENT call-arg-name (#PCDATA)>
+
+<!--a name of a operation that can be applied to this call (see operations)
+	"group": analysis group of the operation
+	"id": if of the operation which is specified in the operation node for this operation
+	      (used to distinguish multiple mappings of one operation to one function) 
+-->
+<!ELEMENT op-name (#PCDATA)>
+<!ATTLIST op-name
+	group CDATA #REQUIRED
+	id CDATA #REQUIRED
+>
+				
+<!--
+	List of all the analyses.
+	
+	The analyses are executed (if multiple of them are present)
+	in the specified order. Only exception is when a reduction
+	is present in the list of analyses. The reduction will be executed
+	first, all remaining analyses will be executed in their specified order
+	afterwards.
+		
+-->
+<!ELEMENT analyses (analysis)*>
+		
+<!--A single analysis:
+	"group": Name of the analysis group this analysis comes from
+	"name": name of this analysis (must be in the named group)
+	             Syntax is: [MODULE_NAME]:[ANALYSIS_NAME]
+	             (MODULE_NAME is the name of the analysis module and ANALYSIS_NAME
+	              is the name of the analysis function to use)
+	"order": "pre"/"post" (pre=before calling actual call, post=after calling actual call)
+-->
+<!ELEMENT analysis (analysis-arguments)>
+<!ATTLIST analysis
+	group CDATA #REQUIRED
+	name CDATA #REQUIRED
+	order CDATA #REQUIRED
+>
+			
+<!-- argument list of this analysis -->
+<!ELEMENT analysis-arguments (analysis-argument)*>
+					
+<!-- An  argument of an analysis.
+	"type": "mapped"/"operation"/"operation-len" 
+	    - "mapped" is an argument of the call mapped to an argument of the analysis function, 
+	    - "operation" uses a process local operation to calculate some information from the inputs of the call and use it as input for the analysis
+	    - "operation-len" uses an operation as for the operation type, however receives the array length return of the operation instead of the actual return value of the operation; only valid for operations that return an array
+	"analysis-arg-order": Specifies which(0-N) argument of the analysis will get the value of the specified argument/operation-value
+-->
+<!ELEMENT analysis-argument ((call-arg-name|op-name))>
+<!ATTLIST analysis-argument
+	type CDATA #REQUIRED
+	analysis-arg-order CDATA #REQUIRED
+>
+						
+<!-- 
+	List of all operations that can be applied to this call. 
+
+    The operations are executed (if multiple of them are used)
+	in the specified order.	
+-->
+<!ELEMENT operations (operation)*>
+				
+<!-- A single operation.
+	"group": Name of the analysis group this analysis comes from
+	"name": name of this analysis (must be in the named group)
+	"order": "pre"/"post" (pre=before calling actual call, post=after calling actual call)
+	"id": id of this mapping of the operation to the call, used to refer to a particular mapping when reading an array argument which uses an operation for its length argument 
+-->
+<!ELEMENT operation (operation-arguments)>
+<!ATTLIST operation
+	group CDATA #REQUIRED
+	name CDATA #REQUIRED
+	order CDATA #REQUIRED
+	id CDATA #REQUIRED
+>
+			
+<!--List of arguments needed for the operation.-->
+<!ELEMENT operation-arguments (operation-argument)*>
+				
+<!--A single argument to an operation.
+	"op-arg-order": Specifies which(0-N) argument of the operation will get the value of the specified call argument.
+-->
+<!ELEMENT operation-argument (call-arg-name)>
+<!ATTLIST operation-argument
+	op-arg-order CDATA #REQUIRED
+>
+
+<!-- Specification of modules that call this wrapp-everywhere or wrap-across call.
+	For wrapp-everywhere calls this is optional, for wrapp-across calls not.
+	This information is used to check the availability of the right intra communication
+	modules for wrapp-across functions.
+-->
+<!ELEMENT created-by (by)*>
+					
+<!-- A single module (used in created-by).
+-->
+<!ELEMENT by EMPTY>
+<!ATTLIST by
+	group CDATA #REQUIRED
+	name CDATA #REQUIRED
+>

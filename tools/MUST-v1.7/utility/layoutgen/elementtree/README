@@ -1,0 +1,6 @@
+This copy of the elementtree library is intended as fallback when a system
+installation of the etree library is missed.
+
+For more information on this library, see:
+
+    http://effbot.org/zone/element.htm

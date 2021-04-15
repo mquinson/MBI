@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  This file is part of MUST (Marmot Umpire Scalable Tool)
+
+  Copyright (C)
+    2010-2016 ZIH, Technische Universitaet Dresden, Federal Republic of Germany
+    2010-2018 Lawrence Livermore National Laboratories, United States of America
+    2013-2018 RWTH Aachen University, Federal Republic of Germany
+
+  See the LICENSE file in the package base directory for details
+-->
+
+<!DOCTYPE api-specification SYSTEM "@MUST_SPECIFICATION_DTD_PATH@/api-specification.dtd">
+<api-specification unique-name="MPI">
+    <api-headers>
+        <header>mpi.h</header>
+    </api-headers>
+    <functions>
+        <!-- This version lets DWaitState finalize the tool  -->
+        <function name="MPI_Finalize" return-type="int" is-local-finalizer="yes" wrapp-everywhere="no">
+            <function-arguments>
+            </function-arguments>
+            <analyses>
+                <analysis order="pre" name="InitParallelId:init" group="MUST_Base">
+                    <analysis-arguments>
+                        <analysis-argument type="operation" analysis-arg-order="0">
+                            <op-name group="MUST_Base" id="1">provideParallelIdStorage</op-name>
+                        </analysis-argument>
+                    </analysis-arguments>
+                </analysis>
+                <analysis order="pre" name="InitLocationId:init" group="MUST_Base">
+                    <analysis-arguments>
+                        <analysis-argument type="operation" analysis-arg-order="0">
+                            <op-name group="MUST_Base" id="1">provideLocationIdStorage</op-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="1">
+                            <call-arg-name>USE_CALLNAME</call-arg-name>
+                        </analysis-argument>
+                        <analysis-argument type="mapped" analysis-arg-order="2">
+                            <call-arg-name>USE_CALLID</call-arg-name>
+                        </analysis-argument>
+                    </analysis-arguments>
+                </analysis>
+                <analysis order="pre" name="MessageReproducer:testForMatch" group="MUST_Base">
+                    <analysis-arguments>
+                        <analysis-argument type="operation-len" analysis-arg-order="0">
+                            <op-name group="MUST_Base" id="1">provideParallelIdStorage</op-name>
+                        </analysis-argument>
+                        <analysis-argument type="operation-len" analysis-arg-order="1">
+                            <op-name group="MUST_Base" id="1">provideLocationIdStorage</op-name>
+                        </analysis-argument>
+                    </analysis-arguments>
+                </analysis>
+                <analysis order="pre" name="CollectiveCondition:noTransfer" group="MUST_CollectiveCondition">
+                    <analysis-arguments>
+                        <analysis-argument type="operation-len" analysis-arg-order="0">
+                            <op-name group="MUST_Base" id="1">provideParallelIdStorage</op-name>
+                        </analysis-argument>
+                        <analysis-argument type="operation-len" analysis-arg-order="1">
+                            <op-name group="MUST_Base" id="1">provideLocationIdStorage</op-name>
+                        </analysis-argument>
+                        <analysis-argument type="operation" analysis-arg-order="2">
+                            <op-name group="MUST_CollectiveCondition" id="1">getCollIdMPI_Finalize</op-name>
+                        </analysis-argument>
+                        <analysis-argument type="operation" analysis-arg-order="3">
+                            <op-name group="MUST_CollectiveCondition" id="1">getCommWorld</op-name>
+                        </analysis-argument>
+                        <analysis-argument type="operation" analysis-arg-order="4">
+                            <op-name group="MUST_CollectiveCondition" id="1">hasNoRequest</op-name>
+                        </analysis-argument>
+                        <analysis-argument type="operation" analysis-arg-order="5">
+                            <op-name group="MUST_CollectiveCondition" id="1">fillRequestValue</op-name>
+                        </analysis-argument>
+                    </analysis-arguments>
+                </analysis>
+                <analysis order="pre" name="FinalizeNotify:notify" group="MUST_Base">
+                    <analysis-arguments>
+                    </analysis-arguments>
+                </analysis>
+                <analysis order="pre" name="TestLocation:print" group="Basic">
+                    <analysis-arguments>
+                        <analysis-argument type="operation-len" analysis-arg-order="0">
+                            <op-name group="MUST_Base" id="1">
+                                provideParallelIdStorage 
+                            </op-name>
+                        </analysis-argument>
+                        <analysis-argument type="operation-len" analysis-arg-order="1">
+                            <op-name group="MUST_Base" id="1">
+                                provideLocationIdStorage 
+                            </op-name>
+                        </analysis-argument>
+                    </analysis-arguments>
+                </analysis>
+            </analyses>
+            <operations>
+                <operation group="MUST_CollectiveCondition" name="fillRequestValue" order="pre" id="1">
+                    <operation-arguments/>
+                </operation>
+                <operation group="MUST_CollectiveCondition" name="hasRequest" order="pre" id="1">
+                    <operation-arguments/>
+                </operation>
+                <operation group="MUST_CollectiveCondition" name="hasNoRequest" order="pre" id="1">
+                    <operation-arguments/>
+                </operation>
+                <operation group="MUST_Base" name="provideLocationIdStorage" order="pre" id="1">
+                    <operation-arguments>
+                        <operation-argument op-arg-order="0">
+                            <call-arg-name>USE_CALLNAME</call-arg-name>
+                        </operation-argument>
+                        <operation-argument op-arg-order="1">
+                            <call-arg-name>USE_CALLID</call-arg-name>
+                        </operation-argument>
+                    </operation-arguments>
+                </operation>
+                <operation group="MUST_Base" name="provideParallelIdStorage" order="pre" id="1">
+                    <operation-arguments>
+                    </operation-arguments>
+                </operation>
+                <operation group="MUST_Base" name="provideLocationIdStorage" order="pre" id="1">
+                    <operation-arguments>
+                        <operation-argument op-arg-order="0">
+                            <call-arg-name>USE_CALLNAME</call-arg-name>
+                        </operation-argument>
+                        <operation-argument op-arg-order="1">
+                            <call-arg-name>USE_CALLID</call-arg-name>
+                        </operation-argument>
+                    </operation-arguments>
+                </operation>
+                <operation group="MUST_Base" name="provideParallelIdStorage" order="pre" id="1">
+                    <operation-arguments>
+                    </operation-arguments>
+                </operation>
+                <operation order="pre" name="getCommWorld" group="MUST_CollectiveCondition" id="1">
+                    <operation-arguments>
+                    </operation-arguments>
+                </operation>
+                <operation order="pre" name="getCollIdMPI_Finalize" group="MUST_CollectiveCondition" id="1">
+                    <operation-arguments>
+                    </operation-arguments>
+                </operation>
+            </operations>
+        </function>
+    </functions>
+</api-specification>

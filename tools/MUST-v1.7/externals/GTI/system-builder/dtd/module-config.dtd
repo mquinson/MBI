@@ -1,0 +1,114 @@
+<!--
+  This file is part of GTI (Generic Tool Infrastructure)
+
+  Copyright (C)
+    2008-2019 ZIH, Technische Universitaet Dresden, Federal Republic of Germany
+    2008-2019 Lawrence Livermore National Laboratories, United States of America
+    2013-2019 RWTH Aachen University, Federal Republic of Germany
+
+  See the LICENSE file in the package base directory for details
+-->
+
+<!--
+	Root node for module configuration generation input.
+-->
+<!ELEMENT module-configuration (settings, levels)>
+
+<!-- The settings used for the wrapper generation. -->
+<!ELEMENT settings (output-dir, config-file-base-name)>
+
+<!-- Path to the directory which is used for the output files. -->
+<!ELEMENT output-dir (#PCDATA)>
+
+<!-- 
+    Base file name for the configuration files to generate. 
+    Output files will use <BASE-FILE-NAME>.<N1>.<N2>.[...].<Ni>
+    where <Nk> is the index of a level for which the 
+    generated configuration file applies.
+    E.g: <BASE-FILE-NAME>.0 #for level 0
+         <BASE-FILE-NAME>.0.5 #for a configuration used for levels 0 and 5
+    Rational:
+         Using one configuration file for multiple levels makes sense 
+         if MPI processes are hijckaed for tool place purposes or if
+         threads are used. 
+-->
+<!ELEMENT config-file-base-name (#PCDATA)>
+
+<!--
+	Node for all levels.
+-->
+<!ELEMENT levels (level*)>
+
+<!--
+	Node for a single level.
+	"index": index used to identify the level
+	"size": number of places in this level
+-->
+<!ELEMENT level (modules, relationships)>
+<!ATTLIST level
+	index CDATA #REQUIRED
+	size  CDATA #REQUIRED
+>
+
+<!--
+	List of modules, order is used in the generated
+	configuration file.
+-->
+<!ELEMENT modules (module*)>
+
+<!--
+    A used module.
+    The order of modules will be respected.
+    I.e. a module that comes before another
+    module in the XML must also be listed
+    first in the generated configuration.
+    "type": type of the module, valid are:
+            "analysis", "wrapper", "receival", "place", "protocol-up", "protocol-down", "strategy"
+    "name": Identifier used to refer to this module (see relationship node) 
+            (Necessary as a certain module may be used multiple times)  
+    "pnmpi-module-name": Name of the module in the pnmpi configuration, e.g. "libmymodule"
+    "to-level": Only for protocols, index of the level to which this protocol is connected. 
+                [Must be specified for all protocols]
+-->
+<!ELEMENT module (data)>
+<!ATTLIST module
+	type CDATA #REQUIRED
+	name CDATA #REQUIRED
+	pnmpi-module-name CDATA #REQUIRED
+	to-level CDATA #IMPLIED
+>
+
+<!--
+    List of settings used for a module.
+-->
+<!ELEMENT data (setting*)>
+
+<!--
+    Content of the node is the value of the setting.
+    "key": key for the setting
+-->
+<!ELEMENT setting (#PCDATA)>
+<!ATTLIST setting
+	key CDATA #REQUIRED
+>
+
+<!--
+    List of module usage relationships.
+    The order of the relationships is considered.
+    E.g.: If one module has a relationship with two modules,
+          its first child will be the module for which the 
+          relationship came first in the XML.  
+-->
+<!ELEMENT relationships (relationship*)>
+
+<!--
+    A module usage relationship.
+    Content of the node is the module name
+    of the module being used.
+    "user": name of the module using the module 
+            named in this node.
+-->
+<!ELEMENT relationship (#PCDATA)>
+<!ATTLIST relationship
+	user CDATA #REQUIRED
+>

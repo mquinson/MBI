@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  This file is part of MUST (Marmot Umpire Scalable Tool)
+
+  Copyright (C)
+    2010-2016 ZIH, Technische Universitaet Dresden, Federal Republic of Germany
+    2010-2018 Lawrence Livermore National Laboratories, United States of America
+    2013-2018 RWTH Aachen University, Federal Republic of Germany
+
+  See the LICENSE file in the package base directory for details
+-->
+
+<!DOCTYPE analysis-specification PUBLIC "must_base" "@MUST_SPECIFICATION_DTD_PATH@/analysis-specification.dtd">
+<analysis-specification group-name="MUST_ELPBasicChecks" include-path="" path-to-libs="@CMAKE_INSTALL_PREFIX@/modules">
+    <analyses>
+        <analysis name="OMPTIntegration">
+            <registered-name>OMPTIntegration</registered-name>
+            <module-name>libOMPTStartup</module-name>
+            <header-name>I_OMPTIntegration.h</header-name>
+            <interface-type>I_OMPTIntegration</interface-type>
+            <is-global>0</is-global>
+            <is-process-global>0</is-process-global>
+            <dependencies>
+                <analysis-depend group="MUST_Base">CreateMessage</analysis-depend>
+                <analysis-depend group="MUST_Base">InitLocationId</analysis-depend>
+                <analysis-depend group="MUST_Base">InitParallelId</analysis-depend>
+            </dependencies>
+            <analysis-function name="getLookUpFunction">
+                <analysis-argument order="0" type="ompt_function_lookup_t*" name="func" />
+            </analysis-function>
+        </analysis>
+        <analysis name="ThreadSanity">
+            <registered-name>ThreadSanity</registered-name>
+            <module-name>libthreadSanity</module-name>
+            <header-name>I_ThreadSanity.h</header-name>
+            <interface-type>I_ThreadSanity</interface-type>
+            <is-global>0</is-global>
+            <is-process-global>0</is-process-global>
+            <dependencies>
+                <analysis-depend group="MUST_Base">CreateMessage</analysis-depend>
+                <analysis-depend group="MUST_Base">InitLocationId</analysis-depend>
+                <analysis-depend group="MUST_Base">InitParallelId</analysis-depend>
+                <analysis-depend group="MUST_ELPBasicChecks">OMPTIntegration</analysis-depend>
+                <analysis-depend group="MUST_Base">ParallelIdAnalysis</analysis-depend>
+            </dependencies>
+            <analysis-function name="notifyInitThreaded">
+                <analysis-argument order="0" type="uint64_t" name="pId" />
+                <analysis-argument order="1" type="uint64_t" name="lId" />
+                <analysis-argument order="2" type="int" name="providedLevel" />
+            </analysis-function>
+            <analysis-function name="enterMPICall">
+                <analysis-argument order="0" type="uint64_t" name="pId" />
+                <analysis-argument order="1" type="uint64_t" name="lId" />
+            </analysis-function>
+            <analysis-function name="leaveMPICall">
+                <analysis-argument order="0" type="uint64_t" name="pId" />
+                <analysis-argument order="1" type="uint64_t" name="lId" />
+            </analysis-function>
+@HAVE_OMPT_H_PREFIX@            <analysis-function name="notifyParallelBegin">
+                <analysis-argument order="0" type="ompt_task_id_t" name="parent_task_id" />
+                <analysis-argument order="1" type="ompt_frame_t*" name="parent_task_frame" />
+                <analysis-argument order="2" type="ompt_parallel_id_t" name="parallel_id" />
+                <analysis-argument order="3" type="uint32_t" name="requested_team_size" />
+                <analysis-argument order="4" type="void*" name="parallel_function" />
+            </analysis-function>
+            <analysis-function name="notifyParallelEnd">
+                <analysis-argument order="0" type="ompt_parallel_id_t" name="parallel_id" />
+                <analysis-argument order="1" type="ompt_task_id_t" name="task_id" />
+            </analysis-function>
+            <analysis-function name="notifyBarrierBegin">
+                <analysis-argument order="0" type="ompt_parallel_id_t" name="parallel_id" />
+                <analysis-argument order="1" type="ompt_task_id_t" name="task_id" />
+            </analysis-function>
+            <analysis-function name="notifyBarrierEnd">
+                <analysis-argument order="0" type="ompt_parallel_id_t" name="parallel_id" />
+                <analysis-argument order="1" type="ompt_task_id_t" name="task_id" />
+            </analysis-function>
+            <analysis-function name="notifyBarrierWaitBegin">
+                <analysis-argument order="0" type="ompt_parallel_id_t" name="parallel_id" />
+                <analysis-argument order="1" type="ompt_task_id_t" name="task_id" />
+            </analysis-function>
+            <analysis-function name="notifyBarrierWaitEnd">
+                <analysis-argument order="0" type="ompt_parallel_id_t" name="parallel_id" />
+                <analysis-argument order="1" type="ompt_task_id_t" name="task_id" />
+            </analysis-function>
+            <analysis-function name="notifyInitLock">
+                <analysis-argument order="0" type="ompt_wait_id_t" name="wait_id" />
+            </analysis-function>
+            <analysis-function name="notifyInitNestLock">
+                <analysis-argument order="0" type="ompt_wait_id_t" name="wait_id" />
+            </analysis-function>
+                <analysis-function name="notifyAcquiredLock">
+            <analysis-argument order="0" type="ompt_wait_id_t" name="wait_id" />
+            </analysis-function>
+            @HAVE_OMPT_H_POSTFIX@
+        </analysis>
+    </analyses>
+    <operations>
+    </operations>
+</analysis-specification>

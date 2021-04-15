@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  This file is part of GTI (Generic Tool Infrastructure)
+
+  Copyright (C)
+    2008-2019 ZIH, Technische Universitaet Dresden, Federal Republic of Germany
+    2008-2019 Lawrence Livermore National Laboratories, United States of America
+    2013-2019 RWTH Aachen University, Federal Republic of Germany
+
+  See the LICENSE file in the package base directory for details
+-->
+
+<!DOCTYPE analysis-specification SYSTEM "../system-builder/dtd/analysis-specification.dtd">
+<analysis-specification path-to-libs="$HOME/lib" include-path="$HOME/include" group-name="MPI-Check">
+	
+	
+	<analyses><analysis name="check_array_something">
+		<registered-name>check-array-module</registered-name>
+		<module-name>libcheck-array-module</module-name>
+		<header-name>CheckArraySomething.h</header-name><interface-type>CheckArraySomething</interface-type><is-global>0</is-global>
+		<is-process-global>0</is-process-global>
+		<dependencies>
+			<analysis-depend>test</analysis-depend></dependencies>
+		<analysis-function name="checkArraySomething">
+			<analysis-argument order="0" type="int"></analysis-argument>
+			<analysis-argument order="1" type="int*" /></analysis-function>
+		
+		</analysis>
+		<analysis name="test">
+			<registered-name>test</registered-name>
+			<module-name>libtest</module-name>
+			<header-name>test.h</header-name>
+			<interface-type>Test</interface-type>
+			<is-global>0</is-global>
+			<is-process-global>0</is-process-global>
+			<dependencies></dependencies>
+			<analysis-function name="test">
+				<analysis-argument order="0" type="int" />
+			</analysis-function>
+		</analysis>
+		<analysis name="checkRequests">
+			<registered-name>check_requests</registered-name>
+			<module-name>libcheck_requests</module-name>
+			<header-name>CheckRequests.h</header-name>
+			<interface-type>CheckRequests</interface-type>
+			<is-global>0</is-global>
+			<is-process-global>0</is-process-global>
+			<dependencies>
+				<analysis-depend>test</analysis-depend></dependencies>
+			<analysis-function name="check">
+				<analysis-argument order="0" type="int" /><analysis-argument
+					order="1" type="int*" /></analysis-function>
+		</analysis></analyses>
+	<operations><operation name="get_array_length" return-type="int">
+		<extra-headers>
+			<header>mpi_check.h</header></extra-headers>
+		<operation-arguments><operation-argument order="0" type="int"></operation-argument></operation-arguments>
+		
+		<source-template>RETURN = ARG0;</source-template>
+		</operation>
+		<operation return-type="int" name="getCommSize">
+			<extra-headers></extra-headers>
+			<operation-arguments>
+				<operation-argument order="0" type="MPI_Comm" /></operation-arguments>
+			<source-template>source-template</source-template>
+		</operation>
+		<operation return-type="int*" name="requests2int">
+			<extra-headers></extra-headers>
+			<operation-arguments>
+				<operation-argument order="1" type="MPI_Request*" /><operation-argument
+					order="0" type="MPI_Comm" ></operation-argument>
+			</operation-arguments>
+			<source-template>
+int* RETURN=NULL;
+int RETURN_LEN=0;
+MPI_Comm_size(ARG0, &amp;RETURN_LEN);
+requests2int(RETURN_LEN, ARG1, &amp;RETURN);
+</source-template>
+			<cleanup-template >delete [] RETURN;</cleanup-template>
+			<return-is-array>int</return-is-array>
+		</operation></operations></analysis-specification>

@@ -1,0 +1,23 @@
+/* This file is part of GTI (Generic Tool Infrastructure)
+ *
+ * Copyright (C)
+ *  2008-2019 ZIH, Technische Universitaet Dresden, Federal Republic of Germany
+ *  2008-2019 Lawrence Livermore National Laboratories, United States of America
+ *  2013-2019 RWTH Aachen University, Federal Republic of Germany
+ *
+ * See the LICENSE file in the package base directory for details
+ */
+
+/**
+ * @file CProtMpiSplitModule.h
+ *       Header for the MPI split module.
+ *
+ * @author Tobias Hilbrich
+ */
+
+#ifndef CPROT_MPI_SPLIT_MODULE_H_
+#define CPROT_MPI_SPLIT_MODULE_H_
+
+#define PNMPI_LIB "@PnMPI_C_LIBRARIES_REAL@"
+
+#endif /* CPROT_MPI_SPLIT_MODULE_H_ */

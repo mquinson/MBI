@@ -1,0 +1,122 @@
+<!--
+  This file is part of GTI (Generic Tool Infrastructure)
+
+  Copyright (C)
+    2008-2019 ZIH, Technische Universitaet Dresden, Federal Republic of Germany
+    2008-2019 Lawrence Livermore National Laboratories, United States of America
+    2013-2019 RWTH Aachen University, Federal Republic of Germany
+
+  See the LICENSE file in the package base directory for details
+-->
+
+<!-- Root node of the layout specification.
+-->
+<!ELEMENT layout-specification (levels, communications)>
+
+<!-- Node for all level nodes.
+-->
+<!ELEMENT levels (level)*>
+
+<!-- Node for a level.
+  order: Number 0-N, 0 is application level, 1 is level above that and so on
+  place-name: Name of the GTI place to use for this level, for order 0 its always application
+  size: Absolute level size (#of processes)
+-->
+<!ELEMENT level (analyses)>
+<!ATTLIST level
+   order CDATA #REQUIRED
+   place-name CDATA #REQUIRED
+   size CDATA #REQUIRED
+>
+
+<!-- Node for all analyses of a level.
+-->
+<!ELEMENT analyses (analysis)*>
+
+<!-- Node for an analysis.
+     name: name of the analysis
+     group: group name of the analysis group it belongs to
+-->
+<!ELEMENT analysis EMPTY>
+<!ATTLIST analysis
+   name CDATA #REQUIRED
+   group CDATA #REQUIRED
+>
+
+<!-- Node for inter level communication specification.
+-->
+<!ELEMENT communications (default, (connection)*)>
+
+<!-- Node for the default communication mode.
+       (Default mode for inter layer communication)
+-->
+<!ELEMENT default (comm-strategy, comm-protocol)>
+
+<!-- A connection between two levels.
+     If the levels differ it is a inter communication between layers,
+     for equal levels it is an intra communication.
+     Either it specifies a comm strategy and a 
+     comm protocol, or it uses the default 
+     communication mechanism (only for inter communication).
+     Intra communication is not allowed on the application level!
+  - bottom-level: order of the level that
+                  sends information about records.
+  - top-level: order of the level that receives 
+               information about records.
+  - distribution: Either "uniform" or "by-block". Specifies how nodes in the lower
+               level are distributed across the upper level. For uniform, each node
+               in the upper level is mapped to an equal number of lower level ranks.
+               If an exact distribution is not possible, remaining nodes are added to 
+               the first nodes of the upper layer. E.g., distributiong nodes L0-L6 to three 
+               nodes on the upper layer (U0-U2) results in L0,L1,L2 connected to U0; L3,L4 
+               connected to U1; and L5, L6 connected to U2 with the uniform distribution.
+               The "by-block" distribution uses a specified blocksize (blocksize attribute must 
+               be set). In this case each complete block of the lower level is connected with 
+               one node of the upper level. The last block may not be used completely.
+               E.g., distributiong nodes L0-L6 to three 
+               nodes on the upper layer (U0-U2) with a blocksize of 3 results in L0,L1,L2 
+               connected to U0; L3,L4,L5 connected to U1; and L6 connected to U2 with 
+               the by-block distribution. [optional, default uniform]
+  - blocksize: Specifies distribution for distribution="by-block" [optional, must be set if
+                     by-block is used].
+-->
+<!ELEMENT connection (comm-strategy?, comm-protocol?)>
+<!ATTLIST connection
+   bottom-level CDATA #REQUIRED
+   top-level CDATA #REQUIRED
+   distribution CDATA #IMPLIED
+   blocksize CDATA #IMPLIED
+>
+
+<!-- Node for a communication strategy.
+  - name: name of the strategy (module name of the comm up module
+                for inter communication)
+-->
+<!ELEMENT comm-strategy (settings)>
+<!ATTLIST comm-strategy
+   name CDATA #REQUIRED
+>
+
+<!-- Node for a communication protocol.
+  - name: name of the protocol
+-->
+<!ELEMENT comm-protocol (settings)>
+<!ATTLIST comm-protocol
+   name CDATA #REQUIRED
+>
+
+<!-- Settings for a strategy or protocol.
+     Only needed for settings that do not
+     use its default value.
+-->
+<!ELEMENT settings (setting)*>
+
+<!-- Node for a setting.
+     name: name of the setting
+     value: value for the setting
+-->
+<!ELEMENT setting EMPTY>
+<!ATTLIST setting
+   name CDATA #REQUIRED
+   value CDATA #REQUIRED
+>
