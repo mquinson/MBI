@@ -1,10 +1,10 @@
 /***************************************************************************
 /////////////////////////// The MPI Bugs Initiative ////////////////////////
 
-  Origin: MUST (name in MUST test suite: collAllgatherTypeLenError.cpp)
+  Origin: MUST
 
- Description: Performs a MPI_Allgather collective with a type error that
-               occurs when nprocs = 3
+  Description: Colective mismatch. Process 1 encounters a barrier while all 
+							 other processes will not. 
 
 
   List of MPI features:
@@ -20,25 +20,26 @@
        PROB:  Lacking
        COM:   Lacking
        GRP:   Lacking
-       DATA:  Correct
+       DATA:  Lacking
        OP:    Lacking
 
   List of error labels:
 
-       deadlock:  never
+       deadlock:  transient
        numstab:   never
        segfault:  never
-       mpierr:    transient
+       mpierr:    never
        resleak:   never
        livelock:  never
        datarace:  never
 
-  Test: mpirun -np 3 ${EXE}
-  Expected: MPI_Allgather line 84 
+  Test: mpirun -np 2 ${EXE}
+  Expected: Wrong order of MPI calls 
+            Collective mistmatch. MPI_Barrier line 71
+            is not called by all processes
 
 ****************************************************************************/
-//////////////////       original file begins        //////////////////
-
+//////////////////////       original file begins        ///////////////////
 
 
 #include <mpi.h>
@@ -53,8 +54,6 @@ int main(int argc, char **argv) {
   int rank = -1;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
-  int i;
-  int inbuf[30], outbuf[6];
 
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
@@ -62,29 +61,14 @@ int main(int argc, char **argv) {
   MPI_Get_processor_name(processor_name, &namelen);
   printf("rank %d is alive on %s\n", rank, processor_name);
 
-  if (nprocs != 3) {
-    if (rank == 0)
-      printf("\033[0;31m! This test needs exactly 3 processes !\033[0;0m\n");
+  if (nprocs < 2) {
+    printf("\033[0;31m! This test needs at least 2 processes !\033[0;0m\n");
     MPI_Finalize();
     return 1;
   }
 
-  for (i = 0; i < 6; i++)
-    outbuf[i] = rank * 6 + i;
-
-  MPI_Datatype conti;
-  MPI_Type_contiguous(3 - rank, MPI_INT, &conti);
-  MPI_Type_commit(&conti);
-
-  int size_in, size_ints;
-  MPI_Type_size(conti, &size_in);
-  MPI_Type_size(MPI_INT, &size_ints);
-  fprintf(stderr, "Rank %d sends %d x %d INTS and receive %d INTS\n", rank,
-          6 / (3 - rank), size_in / size_ints, 6 + rank % 2);
-  MPI_Allgather(outbuf, 6 / (3 - rank), conti, inbuf, 6 + rank % 2, MPI_INT,
-                MPI_COMM_WORLD);
-
-  MPI_Type_free(&conti);
+  if (rank == 1)
+    MPI_Barrier(MPI_COMM_WORLD);
 
   MPI_Finalize();
   printf("\033[0;32mrank %d Finished normally\033[0;0m\n", rank);
