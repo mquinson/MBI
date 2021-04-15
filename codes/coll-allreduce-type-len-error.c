@@ -28,10 +28,12 @@
 // resleak: never
 // livelock: never
 // datarace: never
-//
-// Test: mpirun -np 3 ${EXE}
-// Expect: mpierr
-//
+/*
+  BEGIN_MBI_TESTS
+   $ mpirun -np 3 ${EXE}
+   | ERROR: mpierr
+  END_MBI_TESTS
+*/
 ////////////////// End of MPI bugs collection header //////////////////
 //////////////////       original file begins        //////////////////
 

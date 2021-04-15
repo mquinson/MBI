@@ -52,10 +52,12 @@
 // resleak: never
 // livelock: never
 // various: transient
-//
-// Test: mpirun -np 5 ${EXE}
-// Expect: deadlock
-//
+/*
+  BEGIN_MBI_TESTS
+   $ mpirun -np 5 ${EXE}
+   | ERROR: deadlock
+  END_MBI_TESTS
+*/
 ////////////////// End of MPI bugs collection header //////////////////
 //////////////////       original file begins        //////////////////
 

@@ -41,13 +41,16 @@
 // resleak: never
 // livelock: never
 // datarace: never
-//
-// Test: mpirun -np 3 $zero_buffer ${EXE}
-// Expect: deadlock
-//
-// Test: mpirun -np 3 $infty_buffer ${EXE}
-// Expect: noerror
-//
+/*
+  BEGIN_MBI_TESTS
+   $ mpirun -np 2 $zero_buffer ${EXE}
+   | ERROR: deadlock
+   $ mpirun -np 3 $zero_buffer ${EXE}
+   | ERROR: deadlock
+   $ mpirun -np 3 $infty_buffer ${EXE}
+   | OK
+  END_MBI_TESTS
+*/
 ////////////////// End of MPI bugs collection header //////////////////
 //////////////////       original file begins        //////////////////
 

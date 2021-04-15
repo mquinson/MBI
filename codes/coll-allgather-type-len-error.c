@@ -33,8 +33,11 @@
        livelock:  never
        datarace:  never
 
-  Test: mpirun -np 3 ${EXE}
-  Expected: MPI_Allgather line 84 
+  BEGIN_MBI_TESTS
+   $ mpirun -np 3 ${EXE}
+   | ERROR: Collective mismatch
+   | Expected: MPI_Allgather line 84 
+  END_MBI_TESTS
 
 ****************************************************************************/
 //////////////////       original file begins        //////////////////

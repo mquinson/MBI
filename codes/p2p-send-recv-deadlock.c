@@ -31,18 +31,18 @@
 // livelock: never
 // datarace: never
 //
-// Test: mpirun -np 2 $zero_buffer ${EXE}
-// Expect: deadlock
-//
-// Test: mpirun -np 4 $zero_buffer ${EXE}
-// Expect: deadlock
-//
-// Test: mpirun -np 2 $infty_buffer ${EXE}
-// Expect: noerror
-//
-// Test: mpirun -np 4 $infty_buffer ${EXE}
-// Expect: noerror
-//
+/*
+  BEGIN_MBI_TESTS
+   $ mpirun -np 2 $zero_buffer ${EXE}
+   | ERROR: deadlock
+   $ mpirun -np 4 $zero_buffer ${EXE}
+   | ERROR: deadlock
+   $ mpirun -np 2 $infty_buffer ${EXE}
+   | OK
+   $ mpirun -np 4 $infty_buffer ${EXE}
+   | OK
+  END_MBI_TESTS
+*/
 ////////////////// End of MPI bugs collection header //////////////////
 //////////////////       original file begins        //////////////////
 
