@@ -197,7 +197,7 @@ build-civl:
         expire_in: 30 days
         when: always
         paths:
-            - tools/CIVL/*
+            - tools/CIVL*
 
 test-civl100:
     stage: test
