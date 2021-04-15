@@ -19,9 +19,9 @@ else
     git clone --depth=1 https://github.com/parcoach/parcoach.git tools/parcoach
 fi
 
-cd ${rootdir}/tools/parcoach
-mkdir -p build
-cd build
-cmake .. -DCMAKE_C_COMPILER=clang -DLLVM_DIR=${rootdir}/tools/Parcoach/llvm-project/build
+rm -rf ${rootdir}/builds/parcoach && mkdir -p ${rootdir}/builds/parcoach
+cd ${rootdir}/builds/parcoach
+
+cmake ${rootdir}/tools/parcoach -DCMAKE_C_COMPILER=clang -DLLVM_DIR=${rootdir}/tools/Parcoach/llvm-project/build
 make -j$(nproc) VERBOSE=1
-ctest --output-on-failure
+ctest --output-on-failure || true
