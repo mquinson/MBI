@@ -1,4 +1,4 @@
- /***************************************************************************
+/***************************************************************************
 /////////////////////////// The MPI Bugs Initiative ////////////////////////
 
   Origin: PARCOACH
@@ -7,36 +7,35 @@
                others call MPI_Ibarrier. 
 
 
-  List of MPI features:
+BEGIN_MPI_FEATURES
+  P2P:   Lacking
+  iP2P:  Lacking
+  PERS:  Lacking
+  COLL:  Incorrect
+  iCOLL: Incorrect
+  TOPO:  Lacking
+  RMA:   Lacking
+  PROB:  Lacking
+  COM:   Lacking
+  GRP:   Lacking
+  DATA:  Lacking
+  OP:    Lacking
+END_MPI_FEATURES
 
-       P2P:   Lacking
-       iP2P:  Lacking
-       PERS:  Lacking
-       COLL:  Incorrect
-       iCOLL: Incorrect
-       TOPO:  Lacking
-       IO:    Lacking
-       RMA:   Lacking
-       PROB:  Lacking
-       COM:   Lacking
-       GRP:   Lacking
-       DATA:  Correct
-       OP:    Lacking
+BEGIN_ERROR_LABELS
+  deadlock:  transient
+  numstab:   never
+  mpierr:    never
+  resleak:   never
+  datarace:  never
+  various:   never
+END_ERROR_LABELS
 
-  List of error labels:
-
-       deadlock:  transient
-       numstab:   never
-       segfault:  never
-       mpierr:    never
-       resleak:   never
-       livelock:  never
-       datarace:  never
-
-  Test: mpirun -np 3 ${EXE}
-  Expected: Wrong order of MPI calls 
-						Collective mistmatch. MPI_Barrier line 65
-						is matched with MPI_Ibarrier line 67 
+BEGIN_TESTS
+  $ mpirun -np 3 ${EXE}
+  | Wrong order of MPI calls
+  | Collective mistmatch. MPI_Barrier line 64 is matched with MPI_Ibarrier line 66 
+END_TESTS
 
 ****************************************************************************/
 //////////////////////       original file begins        ///////////////////

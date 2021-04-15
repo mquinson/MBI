@@ -33,8 +33,9 @@ END_ERROR_LABELS
 
 BEGIN_TESTS
   $ mpirun -np 2 ${EXE}
-  | Wrong order of MPI calls
-  | Collective mistmatch. MPI_Barrier line 70 is not called by all processes 
+  | Wrong order of MPI calls 
+  | Collective mistmatch. MPI_Barrier line 71
+  | is not called by all processes
 END_TESTS
 
 ****************************************************************************/

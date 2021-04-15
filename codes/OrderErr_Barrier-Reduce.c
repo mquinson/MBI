@@ -6,38 +6,38 @@
   Description: Colective mismatch. Some processes call MPI_Barrier followed by
                MPI_Reduce while others call MPI_Reduce followed by MPI_Barrier 
 
-  List of MPI features:
+BEGIN_MPI_FEATURES
+  P2P:   Lacking
+  iP2P:  Lacking
+  PERS:  Lacking
+  COLL:  Incorrect
+  iCOLL: Lacking 
+  TOPO:  Lacking
+  RMA:   Lacking
+  PROB:  Lacking
+  COM:   Lacking
+  GRP:   Lacking
+  DATA:  Lacking
+  OP:    Lacking
+END_MPI_FEATURES
 
-       P2P:   Lacking
-       iP2P:  Lacking
-       PERS:  Lacking
-       COLL:  Incorrect
-       iCOLL: Lacking 
-       TOPO:  Lacking
-       IO:    Lacking
-       RMA:   Lacking
-       PROB:  Lacking
-       COM:   Lacking
-       GRP:   Lacking
-       DATA:  Lacking
-       OP:    Lacking
+BEGIN_ERROR_LABELS
+  deadlock:  transient
+  numstab:   never
+  mpierr:    never
+  resleak:   never
+  datarace:  never
+  various:   never
+END_ERROR_LABELS
 
-  List of error labels:
-
-       deadlock:  transient
-       numstab:   never
-       segfault:  never
-       mpierr:    never
-       resleak:   never
-       livelock:  never
-       datarace:  never
-
-  Test: mpirun -np 2 ${EXE}
-  Expected: Wrong order of MPI calls 
-            Collective mistmatch. MPI_Barrier line 72
-            is matched with MPI_Reduce line 75.
-						Some processes call MPI_Barrier followed by MPI_Reduce
-						while others call MPI_Reduce followed by MPI_Barrier
+BEGIN_TESTS
+  $ mpirun -np 2 ${EXE}
+  | Wrong order of MPI calls 
+  | Collective mistmatch. MPI_Barrier line 72
+  | is matched with MPI_Reduce line 75.
+	|	Some processes call MPI_Barrier followed by MPI_Reduce
+	|	while others call MPI_Reduce followed by MPI_Barrier
+END_TESTS
 
 ****************************************************************************/
 //////////////////////       original file begins        ///////////////////
