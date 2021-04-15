@@ -22,6 +22,6 @@ fi
 rm -rf ${rootdir}/builds/parcoach && mkdir -p ${rootdir}/builds/parcoach
 cd ${rootdir}/builds/parcoach
 
-cmake .. -DCMAKE_C_COMPILER=clang -DLLVM_DIR=${rootdir}/tools/Parcoach/llvm-project/build
+cmake ${rootdir}/tools/parcoach -DCMAKE_C_COMPILER=clang -DLLVM_DIR=${rootdir}/tools/Parcoach/llvm-project/build
 make -j$(nproc) VERBOSE=1
 ctest --output-on-failure
