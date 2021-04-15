@@ -24,4 +24,4 @@ cd ${rootdir}/builds/parcoach
 
 cmake ${rootdir}/tools/parcoach -DCMAKE_C_COMPILER=clang -DLLVM_DIR=${rootdir}/tools/Parcoach/llvm-project/build
 make -j$(nproc) VERBOSE=1
-ctest --output-on-failure
+ctest --output-on-failure || true
