@@ -1,39 +1,46 @@
-////////////////// MPI bugs collection header //////////////////
-//
-// Origin: ISP (http://formalverification.cs.utah.edu/ISP_Tests/)
-//
-// Description: Collective mismatch. Process 0 calls MPI_Reduce while others
-// call MPI_Allreduce
-//
-//// List of features
-// P2P: Lacking
-// iP2P: Lacking
-// PERS: Lacking
-// COLL: Incorrect
-// iCOLL: Lacking
-// TOPO: Lacking
-// IO: Lacking
-// RMA: Lacking
-// PROB: Lacking
-// COM: Lacking
-// GRP: Lacking
-// DATA: Lacking
-// OP: Lacking
-//
-//// List of errors
-// deadlock: transient
-// numstab: never
-// segfault: never
-// mpierr: never
-// resleak: never
-// livelock: never
-// datarace: never
-//
-// Test: mpirun -np 2 ${EXE}
-// Expect: deadlock
-//
-////////////////// End of MPI bugs collection header //////////////////
-//////////////////       original file begins        //////////////////
+/***************************************************************************
+/////////////////////////// The MPI Bugs Initiative ////////////////////////
+
+  Origin: ISP (http://formalverification.cs.utah.edu/ISP_Tests/)
+
+  Description: Collective mismatch. Process 0 calls MPI_Reduce while others 
+               call MPI_Allreduce
+
+
+BEGIN_MPI_FEATURES
+  P2P:   Lacking
+  iP2P:  Lacking
+  PERS:  Lacking
+  COLL:  Incorrect
+  iCOLL: Lacking
+  TOPO:  Lacking
+  RMA:   Lacking
+  PROB:  Lacking
+  COM:   Lacking
+  GRP:   Lacking
+  DATA:  Lacking
+  OP:    Lacking
+END_MPI_FEATURES
+
+BEGIN_ERROR_LABELS
+  deadlock:  transient
+  numstab:   never
+  mpierr:    never
+  resleak:   never
+  datarace:  never
+  various:   never
+END_ERROR_LABELS
+
+BEGIN_TESTS
+  $ mpirun -np 2 ${EXE}
+  | Wrong order of MPI calls 
+  | Collective mistmatch. MPI_Reduce line 81 is matched with
+  | MPI_Allreduce line 84
+END_TESTS
+
+****************************************************************************/
+//////////////////////       original file begins        ///////////////////
+
 
 #include <mpi.h>
 #include <stdio.h>
