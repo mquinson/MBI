@@ -35,7 +35,7 @@ END_ERROR_LABELS
 
 BEGIN_MBI_TESTS
   $ mpirun -np 5 ${EXE}
-	| OK
+  | OK
   $ mpirun -np 6 ${EXE}
   | ERROR: Wrong order of MPI calls 
   | Collective mistmatch. MPI_Reduce line 77 is not called by all processes

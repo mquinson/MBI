@@ -32,7 +32,7 @@ END_ERROR_LABELS
 
 BEGIN_MBI_TESTS
   $ mpirun -np 2 ${EXE}
-  | Wrong order of MPI calls 
+  | ERROR: Wrong order of MPI calls 
   | Collective mistmatch. MPI_Barrier line 74
   | is matched with MPI_Ireduce line 78.
 	| Some processes call MPI_Barrier followed by MPI_Ireduce

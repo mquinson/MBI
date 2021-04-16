@@ -34,8 +34,8 @@ END_ERROR_LABELS
 
 BEGIN_MBI_TESTS
    $ mpirun -np 2 ${EXE}
-   | Root mistmatch
-	 | Process 0 calls MPI_Bcast line 75 with root 0 while process 1 calls
+   | ERROR: Root mistmatch
+   | Process 0 calls MPI_Bcast line 75 with root 0 while process 1 calls
    | MPI_Bacst line 80 with root 1.
 END_MBI_TESTS
 
