@@ -71,7 +71,7 @@ def run_cmd(buildcmd, execcmd, binary, timeout, read_line_lambda=None):
     print(status)
     output += status
 
-    return ans, rc, output
+    return ans, output
 
 ##########################
 ## Aislinn runner
@@ -83,7 +83,7 @@ def aislinnrun(execcmd, filename, binary, id, timeout, jobid):
     execcmd = re.sub('\$infty_buffer', "--send-protocol=eager", execcmd)
     execcmd = re.sub('-np ', '-p=', execcmd)
 
-    res, rc, output = run_cmd(
+    res, output = run_cmd(
         buildcmd="aislinn-cc -g {} -o {}".format(filename,binary,binary,id),
         execcmd=execcmd, 
         binary=binary, 
@@ -146,7 +146,7 @@ def civlrun(execcmd, filename, binary, id, timeout, jobid):
     execcmd = re.sub('\$zero_buffer', "", execcmd)
     execcmd = re.sub('\$infty_buffer', "", execcmd)
 
-    res, rc, output = run_cmd(
+    res, output = run_cmd(
         buildcmd=None,
         execcmd=execcmd, 
         binary=binary,
@@ -203,7 +203,7 @@ def isprun(execcmd, filename, binary, id, timeout, jobid):
     print("\nClearing port before executing ISP\n")
     subprocess.run("kill -9 $(lsof -t -i:9999) 2>/dev/null", shell=True)
 
-    res, rc, output = run_cmd(
+    res, output = run_cmd(
         buildcmd="ispcc -o {} {}".format(binary,filename,binary,id),
         execcmd=execcmd, 
         binary=binary,
@@ -253,7 +253,7 @@ def mustrun(execcmd, filename, binary, id, timeout, jobid):
     execcmd = re.sub('\$zero_buffer', "", execcmd)
     execcmd = re.sub('\$infty_buffer', "", execcmd)	
 
-    res, rc, output = run_cmd(
+    res, output = run_cmd(
         buildcmd="mpicc {} -o {}".format(filename,binary,binary,id),
         execcmd=execcmd, 
         binary=binary,
@@ -306,7 +306,7 @@ def mustrun(execcmd, filename, binary, id, timeout, jobid):
 ##########################
 def parcoachrun(execcmd, filename, binary, id, timeout, jobid):
 
-    res, rc, output = run_cmd(
+    res, output = run_cmd(
         buildcmd="clang -c -g -emit-llvm {} -I/usr/lib/x86_64-linux-gnu/mpich/include/ -o {}.bc".format(filename,binary),
         execcmd = "opt-9 -load ../../builds/parcoach/src/aSSA/aSSA.so -parcoach -check-mpi {}.bc -o /dev/null".format(binary,binary,id),
         binary=binary,
@@ -338,7 +338,7 @@ def simgridrun(execcmd, filename, binary, id, timeout, jobid):
     execcmd = re.sub('\$zero_buffer', "--cfg=smpi/buffering:zero", execcmd)
     execcmd = re.sub('\$infty_buffer', "--cfg=smpi/buffering:infty", execcmd)
     
-    res, rc, output = run_cmd(
+    res, output = run_cmd(
         buildcmd="smpicc {} -g -Wl,-znorelro -Wl,-znoseparate-code -o {}".format(filename,binary,binary,id),
         execcmd=execcmd, 
         binary=binary,
