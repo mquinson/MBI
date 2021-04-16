@@ -472,102 +472,100 @@ for filename in args.filenames:
         notimplemented.append(filename)
         continue
 
-
-
 ########################
 ## Running the tests
 ########################
             
-    for cmd, outcome, test_count in todo:
-        print(f"Test '{binary}_{test_count}'", end=": ")
-        sys.stdout.flush()
+for cmd, outcome, test_count in todo:
+    print(f"Test '{binary}_{test_count}'", end=": ")
+    sys.stdout.flush()
        
-        start_time = time.time()
-        q = mp.Queue()
+    start_time = time.time()
+    q = mp.Queue()
         
-        if args.x == 'mpirun':
-            print("No tool was provided, please retry with -x parameter. (see -h for further information on usage)")
-            sys.exit(1)
+    if args.x == 'mpirun':
+        print("No tool was provided, please retry with -x parameter. (see -h for further information on usage)")
+        sys.exit(1)
             
-        elif args.x == 'must':
-            func = mustrun
-        elif args.x == 'simgrid':
-            func = simgridrun
-        elif args.x == 'civl':
-            func = civlrun
-        elif args.x == 'parcoach':
-            func = parcoachrun
-        elif args.x == 'isp':
-            func = isprun
-        elif args.x == 'aislinn':
-            func = aislinnrun
-        else:
-            print(f"The tool parameter you provided ({args.x}) is either incorect or not yet implemented.")
-            sys.exit(1)
+    elif args.x == 'must':
+        func = mustrun
+    elif args.x == 'simgrid':
+        func = simgridrun
+    elif args.x == 'civl':
+        func = civlrun
+    elif args.x == 'parcoach':
+        func = parcoachrun
+    elif args.x == 'isp':
+        func = isprun
+    elif args.x == 'aislinn':
+        func = aislinnrun
+    else:
+        print(f"The tool parameter you provided ({args.x}) is either incorect or not yet implemented.")
+        sys.exit(1)
             
-        p = mp.Process(target=return_to_queue, args=(q, func, (cmd, filename, binary, test_count, args.timeout, args.job)))
-        p.start()
-        print(f"Wait up to {args.timeout} seconds")
-        sys.stdout.flush()
-        p.join(args.timeout+60)
-        try:
-            ans = q.get(block=False)
-        except queue.Empty:
-            if p.is_alive():
-                print("HARD TIMEOUT! The child process failed to timeout by itself. Sorry for the output.")
-                p.terminate()
-                ans = 'timeout'
-            else:
-                ans = 'RSF'
-        
-        if ans in outcome or ('various' in outcome and (ans == 'deadlock' or ans == 'numstab')): # set res_category for all the elif that are 10 lines below
-            if 'noerror' in outcome:
-                res_category = 'TRUE_POS'
-            else:
-                res_category = 'TRUE_NEG'
-
-        if ans not in outcome and not ('various' in outcome and (ans == 'deadlock' or ans == 'numstab')):
-            failed.append(f"{binary} (expected {outcome} but returned {ans})")
-            if 'noerror' in outcome:
-                res_category = 'FALSE_NEG'
-            else:
-                res_category = 'FALSE_POS'
-        elif 'noerror' in outcome:
-            ok_noerror.append(binary)    
-        elif 'deadlock' in outcome:
-            ok_deadlock.append(binary)
-        elif 'numstab' in outcome:
-            ok_numstab.append(binary)
-        elif 'segfault' in outcome:
-            ok_segfault.append(binary)
-        elif 'mpierr' in outcome:
-            ok_mpierr.append(binary)
-        elif 'resleak' in outcome:
-            ok_resleak.append(binary)
-        elif 'livelock' in outcome:
-            ok_livelock.append(binary)
-        elif 'various' in outcome:
-            ok_various.append(binary)
-        elif 'datarace' in outcome:
-            ok_datarace.append(binary)
-
-        curr_time = time.time()
-        print(f"\nTest '{binary}' result: {res_category}: {args.x} returned {ans} while {outcome} was expected. Elapsed: {curr_time-start_time} sec\n\n")
-        
-        np = re.search(r"(?:-np) [0-9]+", cmd)
-        np = int(re.sub(r"-np ", "", np.group(0)))
-
-        zero_buff = re.search(r"\$zero_buffer", cmd)
-        infty_buff = re.search(r"\$infty_buffer", cmd)
-        if zero_buff != None:
-            buff = '0'
-        elif infty_buff != None:
-            buff = 'inf'
+    p = mp.Process(target=return_to_queue, args=(q, func, (cmd, filename, binary, test_count, args.timeout, args.job)))
+    p.start()
+    print(f"Wait up to {args.timeout} seconds")
+    sys.stdout.flush()
+    p.join(args.timeout+60)
+    try:
+        ans = q.get(block=False)
+    except queue.Empty:
+        if p.is_alive():
+            print("HARD TIMEOUT! The child process failed to timeout by itself. Sorry for the output.")
+            p.terminate()
+            ans = 'timeout'
         else:
-            buff = 'NA'
+            ans = 'RSF'
         
-        with open("./" + args.o, "a") as result_file:
-            result_file.write(f"{binary};{test_count};{args.x};{args.timeout};{np};{buff};{outcome};{ans};{curr_time-start_time};{args.job}\n")
+    if ans in outcome or ('various' in outcome and (ans == 'deadlock' or ans == 'numstab')): # set res_category for all the elif that are 10 lines below
+        if 'noerror' in outcome:
+            res_category = 'TRUE_POS'
+        else:
+            res_category = 'TRUE_NEG'
+
+    if ans not in outcome and not ('various' in outcome and (ans == 'deadlock' or ans == 'numstab')):
+        failed.append(f"{binary} (expected {outcome} but returned {ans})")
+        if 'noerror' in outcome:
+            res_category = 'FALSE_NEG'
+        else:
+            res_category = 'FALSE_POS'
+    elif 'noerror' in outcome:
+        ok_noerror.append(binary)    
+    elif 'deadlock' in outcome:
+        ok_deadlock.append(binary)
+    elif 'numstab' in outcome:
+        ok_numstab.append(binary)
+    elif 'segfault' in outcome:
+        ok_segfault.append(binary)
+    elif 'mpierr' in outcome:
+        ok_mpierr.append(binary)
+    elif 'resleak' in outcome:
+        ok_resleak.append(binary)
+    elif 'livelock' in outcome:
+        ok_livelock.append(binary)
+    elif 'various' in outcome:
+        ok_various.append(binary)
+    elif 'datarace' in outcome:
+        ok_datarace.append(binary)
+
+    curr_time = time.time()
+    print(f"\nTest '{binary}' result: {res_category}: {args.x} returned {ans} while {outcome} was expected. Elapsed: {curr_time-start_time} sec\n\n")
+        
+    np = re.search(r"(?:-np) [0-9]+", cmd)
+    np = int(re.sub(r"-np ", "", np.group(0)))
+
+    zero_buff = re.search(r"\$zero_buffer", cmd)
+    infty_buff = re.search(r"\$infty_buffer", cmd)
+    if zero_buff != None:
+        buff = '0'
+    elif infty_buff != None:
+        buff = 'inf'
+    else:
+        buff = 'NA'
+    
+    with open("./" + args.o, "a") as result_file:
+        result_file.write(f"{binary};{test_count};{args.x};{args.timeout};{np};{buff};{outcome};{ans};{curr_time-start_time};{args.job}\n")
 
 ########################
 ## Termination
