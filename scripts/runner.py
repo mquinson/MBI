@@ -505,12 +505,12 @@ for filename in args.filenames:
         elif args.x == 'aislinn':
             func = aislinnrun
         else:
-            print("The tool parameter you provided ({}) is either incorect or not yet implemented.".format(args.x))
+            print(f"The tool parameter you provided ({args.x}) is either incorect or not yet implemented.")
             sys.exit(1)
             
         p = mp.Process(target=return_to_queue, args=(q, func, (cmd, filename, binary, test_count, args.timeout, args.job)))
         p.start()
-        print("Wait up to {} seconds".format(args.timeout))
+        print(f"Wait up to {args.timeout} seconds")
         sys.stdout.flush()
         p.join(args.timeout+60)
         try:

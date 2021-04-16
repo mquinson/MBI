@@ -1,5 +1,16 @@
 #! /bin/sh
 
+# Check that we have the right image
+if [ -e /MBI ] 
+then 
+   echo "This seems to be a MBI docker image. Good."
+else
+   echo "Please run this script in a MBI docker image. Run these commands:"
+   echo "  docker build -f Dockerfile -t mpi-bugs-initiative:latest . # Only the first time"
+   echo '  docker run -it --rm --name MIB --volume $(pwd):/MBI mpi-bugs-initiative /MBI/scripts/ISP-run'
+   exit 1
+fi
+
 set -e # Fail on error
 
 # Go to the MBI root directory
