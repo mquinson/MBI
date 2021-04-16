@@ -23,9 +23,8 @@ then
     CI_JOB_ID=0
 fi
 
-ident=$(date +%s)
-rm -rf log/parcoach-${ident} ; mkdir -p log/parcoach-${ident}
-cd log/parcoach-${ident}
+test -e ${rootdir}/logs/parcoach || mkdir -p ${rootdir}/logs/parcoach
+cd ${rootdir}/logs/parcoach
 
 # Run the script on each code
 for file in $(ls ${rootdir}/codes/*.c)

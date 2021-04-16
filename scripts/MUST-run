@@ -14,9 +14,8 @@ then
     CI_JOB_ID=0
 fi
 
-ident=$(date +%s)
-rm -rf log/must-${ident} ; mkdir -p log/must-${ident}
-cd log/must-${ident}
+test -e ${rootdir}/logs/must || mkdir -p ${rootdir}/logs/must
+cd ${rootdir}/logs/must
 
 # Get the list of codes from the command line, if it was provided
 if [ $# -eq 0 ] 

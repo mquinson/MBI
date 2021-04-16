@@ -25,10 +25,8 @@ then
     CI_JOB_ID=0
 fi
 
-
-ident=$(date +%s)
-rm -rf log/isp-${ident} ; mkdir -p log/isp-${ident}
-cd log/isp-${ident}
+test -e ${rootdir}/logs/isp || mkdir -p ${rootdir}/logs/isp
+cd ${rootdir}/logs/isp
 
 # Run the script on each code
 for file in $(ls ${rootdir}/codes/*.c)

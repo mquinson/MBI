@@ -24,9 +24,8 @@ then
 fi
 
 
-ident=$(date +%s)
-rm -rf log/civl-${ident} ; mkdir -p log/civl-${ident}
-cd log/civl-${ident}
+test -e ${rootdir}/logs/civl || mkdir -p ${rootdir}/logs/civl
+cd ${rootdir}/logs/civl
 
 # Get the list of codes from the command line, if it was provided
 if [ $# -eq 0 ] 

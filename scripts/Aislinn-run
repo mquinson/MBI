@@ -30,9 +30,8 @@ fi
 
 export PATH=$PATH:${rootdir}/tools/aislinn-git/bin/
 
-ident=$(date +%s)
-rm -rf log/aislinn-${ident} ; mkdir -p log/aislinn-${ident}
-cd log/aislinn-${ident}
+test -e ${rootdir}/logs/aislinn || mkdir -p ${rootdir}/logs/aislinn
+cd ${rootdir}/logs/aislinn
 
 # Run the script on each code
 for file in $(ls ${rootdir}/codes/*.c)
