@@ -32,7 +32,4 @@ cd ${rootdir}/logs/simgrid
 cp ${rootdir}/builds/SimGrid/cluster.xml .
 
 # Run the script on each code
-for file in $(ls ${rootdir}/codes/*.c)
-do
-    python3.8 ${rootdir}/scripts/runner.py -x simgrid -o bench_simgrid.csv -t 300 --job $CI_JOB_ID $file
-done
+python3.8 ${rootdir}/scripts/runner.py -x simgrid -o bench_simgrid.csv -t 300 --job $CI_JOB_ID $(ls ${rootdir}/codes/*.c)

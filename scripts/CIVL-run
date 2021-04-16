@@ -36,9 +36,4 @@ else
 fi
 
 # Run the script on each code
-for file in ${codes_list}
-do
-    python3.8 ${rootdir}/scripts/runner.py -x civl -o bench_civl.csv -t 300 --job $CI_JOB_ID $file
-    killall java || true
-done
-
+python3.8 ${rootdir}/scripts/runner.py -x civl -o bench_civl.csv -t 300 --job $CI_JOB_ID ${codes_list}

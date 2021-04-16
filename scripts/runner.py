@@ -145,6 +145,8 @@ def civlrun(execcmd, filename, binary, id, timeout, jobid):
     execcmd = re.sub('\$zero_buffer', "", execcmd)
     execcmd = re.sub('\$infty_buffer', "", execcmd)
 
+    subprocess.run("killall -9 java 2>/dev/null", shell=True)
+
     res, output = run_cmd(
         buildcmd=None,
         execcmd=execcmd, 
@@ -251,6 +253,8 @@ def mustrun(execcmd, filename, binary, id, timeout, jobid):
     execcmd = re.sub('\${EXE}', binary, execcmd)
     execcmd = re.sub('\$zero_buffer', "", execcmd)
     execcmd = re.sub('\$infty_buffer', "", execcmd)	
+
+    subprocess.run("killall -9 mpirun 2>/dev/null", shell=True)
 
     res, output = run_cmd(
         buildcmd=f"mpicc {filename} -o {binary}",
