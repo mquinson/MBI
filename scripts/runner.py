@@ -13,23 +13,23 @@ os.environ["LC_ALL"] = "C"
 def run_cmd(buildcmd, execcmd, binary, timeout, read_line_lambda=None):
     start_time = time.time()
     if buildcmd == None:
-        output = "No need to compile https://gitlab.com/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/-/tree/master/Benchmarks/microbenchs/{}.c\n\n".format(binary)
+        output = f"No need to compile https://gitlab.com/MbiBugsInitiative/MbiBugsInitiative/-/tree/master/codes/{binary}.c\n\n"
     else:
-        output = "Compiling https://gitlab.com/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/-/tree/master/Benchmarks/microbenchs/{}.c\n\n".format(binary)
-        output += "$ {}\n".format(buildcmd)
+        output = f"Compiling https://gitlab.com/MbiBugsInitiative/MbiBugsInitiative/-/tree/master/codes/{binary}.c\n\n"
+        output += f"$ {buildcmd}\n"
 
         compil = subprocess.run(buildcmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         if compil.stdout is not None:
             output += str(compil.stdout, errors='replace')
         if compil.returncode != 0:
-            output += "Compilation of {}.c raised an error (retcode: {})".format(binary, compil.returncode)
+            output += f"Compilation of {binary}.c raised an error (retcode: {compil.returncode})"
             for line in (output.split('\n')):
-                print ("| {}".format(line), file=sys.stderr)
+                print (f"| {line}", file=sys.stderr)
             return 'CUN', compil.returncode, output
 
-    output += "\n\nExecuting https://gitlab.com/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/-/tree/master/Benchmarks/microbenchs/{}.c\n\n$ {}\n".format(binary,execcmd)
+    output += "\n\nExecuting the command\n"
     for line in (output.split('\n')):
-        print ("| {}".format(line), file=sys.stderr)
+        print (f"| {line}", file=sys.stderr)
 
     # We run the subprocess and parse its output line by line, so that we can kill it as soon as it detects a timeout
     process = subprocess.Popen(shlex.split(execcmd), stdout=subprocess.PIPE, stderr=subprocess.STDOUT, preexec_fn=os.setsid)
@@ -44,7 +44,7 @@ def run_cmd(buildcmd, execcmd, binary, timeout, read_line_lambda=None):
             line = process.stdout.readline()
             line = str(line, errors='replace') # From byte array to string, replacing non-representable strings with question marks
             output = output + line
-            print ("| {}".format(line), end='', file=sys.stderr)
+            print (f"| {line}", end='', file=sys.stderr)
             if read_line_lambda != None:
                 read_line_lambda(line, process)
         if time.time() - start_time > timeout:
@@ -84,18 +84,17 @@ def aislinnrun(execcmd, filename, binary, id, timeout, jobid):
     execcmd = re.sub('-np ', '-p=', execcmd)
 
     res, output = run_cmd(
-        buildcmd="aislinn-cc -g {} -o {}".format(filename,binary,binary,id),
+        buildcmd=f"aislinn-cc -g {filename} -o {binary}",
         execcmd=execcmd, 
         binary=binary, 
         timeout=timeout)
 
     if os.path.exists("./report.html"):
-        os.rename("./report.html", "{}_{}.html".format(binary,id))
-        output += "\n\nHTML output: https://gitlab.com/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/-/jobs/{}/artifacts/raw/Benchmarks/{}_{}.html".format(jobid, binary, id)
+        os.rename("./report.html", f"{binary}_{id}.html")
     else: 
         output += "No html report found"
         
-    with open('{}_{}.txt'.format(binary, id), 'w') as outfile:
+    with open(f'{binary}_{id}.txt', 'w') as outfile:
         outfile.write(output)  
 
     if res != None:
@@ -152,7 +151,7 @@ def civlrun(execcmd, filename, binary, id, timeout, jobid):
         binary=binary,
         timeout=timeout)
 
-    with open('{}_{}.txt'.format(binary, id), 'w') as outfile:
+    with open(f'{binary}_{id}.txt', 'w') as outfile:
         outfile.write(output)  
     
     if res != None:
@@ -196,7 +195,7 @@ def isprun(execcmd, filename, binary, id, timeout, jobid):
 
     execcmd = re.sub("mpirun", "isp.exe", execcmd)
     execcmd = re.sub('-np', '-n', execcmd)
-    execcmd = re.sub('\${EXE}', "./{}".format(binary), execcmd)
+    execcmd = re.sub('\${EXE}', f"./{binary}", execcmd)
     execcmd = re.sub('\$zero_buffer', "-b", execcmd)
     execcmd = re.sub('\$infty_buffer', "-g", execcmd)
 
@@ -204,12 +203,12 @@ def isprun(execcmd, filename, binary, id, timeout, jobid):
     subprocess.run("kill -9 $(lsof -t -i:9999) 2>/dev/null", shell=True)
 
     res, output = run_cmd(
-        buildcmd="ispcc -o {} {}".format(binary,filename,binary,id),
+        buildcmd=f"ispcc -o {binary} {filename}",
         execcmd=execcmd, 
         binary=binary,
         timeout=timeout)
 
-    with open('{}_{}.txt'.format(binary, id), 'w') as outfile:
+    with open(f'{binary}_{id}.txt', 'w') as outfile:
         outfile.write(output)  
     
     if res != None:
@@ -254,7 +253,7 @@ def mustrun(execcmd, filename, binary, id, timeout, jobid):
     execcmd = re.sub('\$infty_buffer', "", execcmd)	
 
     res, output = run_cmd(
-        buildcmd="mpicc {} -o {}".format(filename,binary,binary,id),
+        buildcmd=f"mpicc {filename} -o {binary}",
         execcmd=execcmd, 
         binary=binary,
         timeout=timeout,
@@ -267,10 +266,9 @@ def mustrun(execcmd, filename, binary, id, timeout, jobid):
     with open('MUST_Output.html') as input:
         for line in (input.readlines()):
             html += line
-    os.rename("./MUST_Output.html", "{}_{}.html".format(binary,id))
-    output += "\n\nHTML output: https://gitlab.com/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/-/jobs/{}/artifacts/raw/Benchmarks/{}_{}.html".format(jobid, binary, id)
+    os.rename(f"./MUST_Output.html", "{binary}_{id}.html")
 
-    with open('{}_{}.txt'.format(binary, id), 'w') as outfile:
+    with open(f'{binary}_{id}.txt', 'w') as outfile:
         outfile.write(output)    
     
     if res != None and res != 'timeout':
@@ -307,12 +305,12 @@ def mustrun(execcmd, filename, binary, id, timeout, jobid):
 def parcoachrun(execcmd, filename, binary, id, timeout, jobid):
 
     res, output = run_cmd(
-        buildcmd="clang -c -g -emit-llvm {} -I/usr/lib/x86_64-linux-gnu/mpich/include/ -o {}.bc".format(filename,binary),
-        execcmd = "opt-9 -load ../../builds/parcoach/src/aSSA/aSSA.so -parcoach -check-mpi {}.bc -o /dev/null".format(binary,binary,id),
+        buildcmd= f"clang -c -g -emit-llvm {filename} -I/usr/lib/x86_64-linux-gnu/mpich/include/ -o {binary}.bc",
+        execcmd = f"opt-9 -load ../../builds/parcoach/src/aSSA/aSSA.so -parcoach -check-mpi {binary}.bc -o /dev/null",
         binary=binary,
         timeout=timeout)
 
-    with open('{}_{}.txt'.format(binary, id), 'w') as outfile:
+    with open(f'{binary}_{id}.txt', 'w') as outfile:
         outfile.write(output)  
     
     if res != None:
@@ -339,12 +337,12 @@ def simgridrun(execcmd, filename, binary, id, timeout, jobid):
     execcmd = re.sub('\$infty_buffer', "--cfg=smpi/buffering:infty", execcmd)
     
     res, output = run_cmd(
-        buildcmd="smpicc {} -g -Wl,-znorelro -Wl,-znoseparate-code -o {}".format(filename,binary,binary,id),
+        buildcmd=f"smpicc {filename} -g -Wl,-znorelro -Wl,-znoseparate-code -o {binary}",
         execcmd=execcmd, 
         binary=binary,
         timeout=timeout)
 
-    with open('{}_{}.txt'.format(binary, id), 'w') as outfile:
+    with open(f'{binary}_{id}.txt', 'w') as outfile:
         outfile.write(output)    
         
     if res != None:
@@ -362,7 +360,7 @@ def simgridrun(execcmd, filename, binary, id, timeout, jobid):
     if re.search('No property violation found', output):
         return 'noerror'
 
-    print("Couldn't assign output to specific behaviour (ret: {}) : this will be treated as 'other'".format(rc))
+    print("Couldn't assign output to specific behaviour; This will be treated as 'other'")
     return 'other'
 
 
@@ -421,13 +419,13 @@ def extract_todo(filename):
                 if state == 0:
                     state = 1
                 else:
-                    print("\nMBI_TESTS header appears a second time at line {}: \n{}".format(line_num,line))
+                    print(f"\nMBI_TESTS header appears a second time at line {line_num}: \n{line}")
                     sys.exit(1)
             elif re.match(".*END_MBI_TESTS.*", line):
                 if state == 1:
                     state = 2
                 else:
-                    print("\nUnexpected end of MBI_TESTS header at line {}: \n{}".format(line_num,line))
+                    print(f"\nUnexpected end of MBI_TESTS header at line {line_num}: \n{line}")
                     sys.exit(1)
             if state == 1 and re.match("\s+\$ ?.*", line):
                 m = re.match('\s+\$ ?(.*)', line)
@@ -442,18 +440,17 @@ def extract_todo(filename):
                     expect = [expects for expects in m.groups() if expects!=None]
                     # TODO: enforce that the error message is valid
                     #if not expect[0] in ["noerror", "deadlock",  "numstab", "segfault", "mpierr", "resleak", "livelock", "various", "datarace"]:
-                    #    print("\n{}:{}: expectation >>{}<< not understood."
-                    #          .format(filename, line_num, expect))
+                    #    print(f"\n{filename}:{line_num}: expectation >>{expect}<< not understood.")
                     #    continue
                     res.append((cmd, expect, test_count))
                 test_count+=1
                 line_num+=1
 
     if state == 0:
-        print("\nMBI_TESTS header not found in file '{}'.".format(filename))
+        print(f"\nMBI_TESTS header not found in file '{filename}'.")
         sys.exit(1)
     if state == 1:
-        print("\nMBI_TESTS header not properly ended in file '{}'.".format(filename))
+        print(f"\nMBI_TESTS header not properly ended in file '{filename}'.")
         sys.exit(1)
 
     return res
@@ -482,7 +479,7 @@ for filename in args.filenames:
 ########################
             
     for cmd, outcome, test_count in todo:
-        print("Test {}'{}'".format("" if test_count == 0 else "{} ".format(test_count+1), binary), end=":")
+        print(f"Test '{binary}_{test_count}'", end=": ")
         sys.stdout.flush()
        
         start_time = time.time()
@@ -530,7 +527,7 @@ for filename in args.filenames:
                 res_category = 'TRUE_NEG'
 
         if ans not in outcome and not ('various' in outcome and (ans == 'deadlock' or ans == 'numstab')):
-            failed.append("{} (expected {} but returned {})".format(binary, outcome, ans))
+            failed.append(f"{binary} (expected {outcome} but returned {ans})")
             if 'noerror' in outcome:
                 res_category = 'FALSE_NEG'
             else:
@@ -555,7 +552,7 @@ for filename in args.filenames:
             ok_datarace.append(binary)
 
         curr_time = time.time()
-        print("\nTest '{}' result: {}: {} returned {} while {} was expected. Elapsed: {:f} sec\n\n".format(binary, res_category, args.x, ans, outcome, curr_time-start_time))
+        print(f"\nTest '{binary}' result: {res_category}: {args.x} returned {ans} while {outcome} was expected. Elapsed: {curr_time-start_time} sec\n\n")
         
         np = re.search(r"(?:-np) [0-9]+", cmd)
         np = int(re.sub(r"-np ", "", np.group(0)))
@@ -570,17 +567,7 @@ for filename in args.filenames:
             buff = 'NA'
         
         with open("./" + args.o, "a") as result_file:
-            result_file.write("{};{};{};{};{};{};{};{};{};{}\n".format(
-                binary,
-                test_count,
-                args.x,
-                args.timeout,
-                np,
-                buff,
-                outcome,
-                ans,
-                curr_time-start_time,
-                args.job))
+            result_file.write(f"{binary};{test_count};{args.x};{args.timeout};{np};{buff};{outcome};{ans};{curr_time-start_time};{args.job}\n")
 
 ########################
 ## Termination
