@@ -1,42 +1,47 @@
-////////////////// MPI bugs collection header //////////////////
-//
-// Origin: mcs.anl.gov
-//
-// Description: Two processes execute broadcast operations in reverse order.
-// Example described in
-// http://www.mcs.anl.gov/research/projects/mpi/mpi-standard/mpi-report-1.1/node86.htm#Node86
-//
-//// List of features
-// P2P: Lacking
-// iP2P: Lacking
-// PERS: Lacking
-// COLL: Incorrect
-// iCOLL: Lacking
-// TOPO: Lacking
-// IO: Lacking
-// RMA: Lacking
-// PROB: Lacking
-// COM: Lacking
-// GRP: Lacking
-// DATA: Lacking
-// OP: Lacking
-//
-//// List of errors
-// deadlock: transient
-// numstab: transient
-// segfault: never
-// mpierr: never
-// resleak: never
-// livelock: never
-// datarace: never
-/*
-  BEGIN_MBI_TESTS
+/***************************************************************************
+/////////////////////////// The MPI Bugs Initiative ////////////////////////
+
+  Origin: mcs.anl.gov
+
+  Description: Root mismatch. Two processes execute broadcast operations in reverse order.
+							 Example described in 
+								http://www.mcs.anl.gov/research/projects/mpi/mpi-standard/mpi-report-1.1/node86.htm#Node86 
+
+
+BEGIN_MPI_FEATURES
+  P2P:   Lacking
+  iP2P:  Lacking
+  PERS:  Lacking
+  COLL:  Incorrect
+  iCOLL: Lacking
+  TOPO:  Lacking
+  RMA:   Lacking
+  PROB:  Lacking
+  COM:   Lacking
+  GRP:   Lacking
+  DATA:  Lacking
+  OP:    Lacking
+END_MPI_FEATURES
+
+BEGIN_ERROR_LABELS
+  deadlock:  transient
+  numstab:   transient
+  mpierr:    never
+  resleak:   never
+  datarace:  never
+  various:   never
+END_ERROR_LABELS
+
+BEGIN_MBI_TESTS
    $ mpirun -np 2 ${EXE}
-   | ERROR: various
-  END_MBI_TESTS
-*/
-////////////////// End of MPI bugs collection header //////////////////
-//////////////////       original file begins        //////////////////
+   | Root mistmatch
+	 | Process 0 calls MPI_Bcast line 75 with root 0 while process 1 calls
+   | MPI_Bacst line 80 with root 1.
+END_MBI_TESTS
+
+****************************************************************************/
+//////////////////////       original file begins        ///////////////////
+
 
 #include <assert.h>
 #include <mpi.h>
