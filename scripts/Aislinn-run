@@ -1,6 +1,10 @@
 #! /bin/bash
 
 # Check that we have the right image
+# Go to the MBI root directory
+cd "$(dirname "$0")"/../
+rootdir=$(pwd)
+
 source /etc/os-release
 if [ "$VERSION_ID" == "18.04" ] && [ "$ID" == "ubuntu" ] 
 then 
@@ -8,7 +12,7 @@ then
 else
    echo "Please run this script in a ubuntu:18.04 image. Run these commands:"
    echo "  docker image pull ubuntu:18.04"
-   echo '  docker run -it --rm --name MIB --volume $(pwd):/MBI ubuntu:18.04 /MBI/scripts/Aislinn-run'
+   echo "  docker run -it --rm --name MIB --volume $(pwd):/MBI ubuntu:18.04 /MBI/scripts/Aislinn-run"
    exit 1
 fi
 
@@ -17,10 +21,6 @@ apt-get update
 apt-get install -y python3.8 gcc python2.7 python-jinja2 #autotools-dev automake build-essential git
 
 set -e # Fail on error
-
-# Go to the MBI root directory
-cd "$(dirname "$0")"/../
-rootdir=$(pwd)
 
 # If this was not run with gilab-ci, we provide a meaningless value
 if [ -z "$CI_JOB_ID" ]

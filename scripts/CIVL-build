@@ -1,5 +1,8 @@
 #! /bin/sh
 
+# Go to the MBI root directory
+cd "$(dirname "$0")"/../
+
 # Check that we have the right image
 if [ -e /MBI ] 
 then 
@@ -7,14 +10,11 @@ then
 else
    echo "Please run this script in a MBI docker image. Run these commands:"
    echo "  docker build -f Dockerfile -t mpi-bugs-initiative:latest . # Only the first time"
-   echo '  docker run -it --rm --name MIB --volume $(pwd):/MBI mpi-bugs-initiative /MBI/scripts/CIVL-build'
+   echo "  docker run -it --rm --name MIB --volume $(pwd):/MBI mpi-bugs-initiative /MBI/scripts/CIVL-build"
    exit 1
 fi
 
 set -e # Fail on error
-
-# Go to the MBI root directory
-cd "$(dirname "$0")"/../
 
 cd tools/CIVL-1.20_5259/lib
 java -jar civl-1.20_5259.jar config 

@@ -1,5 +1,9 @@
 #! /bin/sh
 
+# Go to the MBI root directory
+cd "$(dirname "$0")"/../
+rootdir=$(pwd)
+
 # Check that we have the right image
 if [ -e /MBI ] 
 then 
@@ -7,15 +11,11 @@ then
 else
    echo "Please run this script in a MBI docker image. Run these commands:"
    echo "  docker build -f Dockerfile -t mpi-bugs-initiative:latest . # Only the first time"
-   echo '  docker run -it --rm --name MIB --volume $(pwd):/MBI mpi-bugs-initiative /MBI/scripts/CIVL-run'
+   echo "  docker run -it --rm --name MIB --volume $(pwd):/MBI mpi-bugs-initiative /MBI/scripts/CIVL-run"
    exit 1
 fi
 
 set -e # Fail on error
-
-# Go to the MBI root directory
-cd "$(dirname "$0")"/../
-rootdir=$(pwd)
 
 # If this was not run with gilab-ci, we provide a meaningless value
 if [ -z "$CI_JOB_ID" ]
