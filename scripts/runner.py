@@ -290,7 +290,7 @@ def mustrun(execcmd, filename, binary, id, timeout, jobid):
     with open('MUST_Output.html') as input:
         for line in (input.readlines()):
             html += line
-    os.rename(f"./MUST_Output.html", "{binary}_{id}.html")
+    os.rename(f"./MUST_Output.html", f"{binary}_{id}.html")
 
     with open(f'{binary}_{id}.txt', 'w') as outfile:
         outfile.write(output)    
