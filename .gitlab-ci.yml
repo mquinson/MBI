@@ -39,7 +39,7 @@ test-must-25:
         expire_in: 30 days
         when: always
         paths:
-            - log/*/*
+            - logs
 
 test-must-50:
     stage: test
@@ -55,7 +55,7 @@ test-must-50:
         expire_in: 30 days
         when: always
         paths:
-            - log/*/*
+            - logs
 
 test-must-75:
     stage: test
@@ -71,7 +71,7 @@ test-must-75:
         expire_in: 30 days
         when: always
         paths:
-            - log/*/*
+            - logs
 
 test-must-100:
     stage: test
@@ -87,7 +87,7 @@ test-must-100:
         expire_in: 30 days
         when: always
         paths:
-            - log/*/*
+            - logs
 
 test-must-125:
     stage: test
@@ -103,7 +103,7 @@ test-must-125:
         expire_in: 30 days
         when: always
         paths:
-            - log/*/*
+            - logs
 
 test-must-150:
     stage: test
@@ -119,7 +119,7 @@ test-must-150:
         expire_in: 30 days
         when: always
         paths:
-            - log/*/*
+            - logs
 
 test-must-175:
     stage: test
@@ -135,7 +135,7 @@ test-must-175:
         expire_in: 30 days
         when: always
         paths:
-            - log/*/*
+            - logs
 
 test-must-200:
     stage: test
@@ -151,7 +151,7 @@ test-must-200:
         expire_in: 30 days
         when: always
         paths:
-            - log/*/*
+            - logs
 
 build-aislinn:
     stage: build
@@ -185,7 +185,7 @@ test-aislinn:
         expire_in: 30 days
         when: always
         paths:
-            - log/*/*
+            - logs
 
 build-civl:
     stage: build
@@ -211,7 +211,7 @@ test-civl100:
         expire_in: 30 days
         when: always
         paths:
-            - log/*/*
+            - logs
 test-civl200:
     stage: test
     needs:
@@ -224,7 +224,7 @@ test-civl200:
         expire_in: 30 days
         when: always
         paths:
-            - log/*/*
+            - logs
 
 build-parcoach:
     stage: build
@@ -253,7 +253,7 @@ test-parcoach:
         expire_in: 30 days
         when: always
         paths:
-            - log/*/*
+            - logs
 
 build-simgrid:
     stage: build
@@ -282,7 +282,7 @@ test-simgrid:
         expire_in: 30 days
         when: always
         paths:
-            - log/*/*
+            - logs
 
 build-isp:
     stage: build
@@ -311,7 +311,7 @@ test-isp:
         expire_in: 30 days
         when: always
         paths:
-            - log/*/*
+            - logs
 
 simgrid-svg:
     stage: svg
@@ -324,14 +324,14 @@ simgrid-svg:
     #   - pip3 install drawSvg
     script:
         - cd Data
-        - python3.8 gen_svg.py -i ../log/simgrid-*/bench_simgrid.csv -o simgrid_result_LOG --header false --mode log
-        - cp *svg ../log/
+        - python3.8 gen_svg.py -i ../logs/simgrid-*/bench_simgrid.csv -o simgrid_result_LOG --header false --mode log
+        - cp *svg ../logs/
     artifacts:
         untracked: false
         expire_in: 30 days
         when: always
         paths:
-            - log/*
+            - logs/*
 
 parcoach-svg:
     stage: svg
@@ -344,14 +344,14 @@ parcoach-svg:
     #   - pip3 install drawSvg
     script:
         - cd Data
-        - python3.8 gen_svg.py -i ../log/parcoach-*/bench_parcoach.csv -o parcoach_result_LOG --header false --mode log
-        - cp *svg ../log/
+        - python3.8 gen_svg.py -i ../logs/parcoach-*/bench_parcoach.csv -o parcoach_result_LOG --header false --mode log
+        - cp *svg ../logs/
     artifacts:
         untracked: false
         expire_in: 30 days
         when: always
         paths:
-            - log/*
+            - logs/*
 
 isp-svg:
     stage: svg
@@ -364,14 +364,14 @@ isp-svg:
     #   - pip3 install drawSvg
     script:
         - cd Data
-        - python3.8 gen_svg.py -i ../log/isp-*/bench_isp.csv -o isp_result_LOG --header false --mode log
-        - cp *svg ../log/
+        - python3.8 gen_svg.py -i ../logs/isp-*/bench_isp.csv -o isp_result_LOG --header false --mode log
+        - cp *svg ../logs/
     artifacts:
         untracked: false
         expire_in: 30 days
         when: always
         paths:
-            - log/*
+            - logs/*
 
 aislinn-svg:
     stage: svg
@@ -384,14 +384,14 @@ aislinn-svg:
     #   - pip3 install drawSvg
     script:
         - cd Data
-        - python3.8 gen_svg.py -i ../log/aislinn-*/bench_aislinn.csv -o aislinn_result_LOG --header false --mode log
-        - cp *svg ../log/
+        - python3.8 gen_svg.py -i ../logs/aislinn-*/bench_aislinn.csv -o aislinn_result_LOG --header false --mode log
+        - cp *svg ../logs/
     artifacts:
         untracked: false
         expire_in: 30 days
         when: always
         paths:
-            - log/*
+            - logs/*
 
 civl-svg:
     stage: svg
@@ -406,15 +406,15 @@ civl-svg:
     #   - pip3 install drawSvg
     script:
         - cd Data
-        - cat ../log/civl-*/*.csv > result.csv
+        - cat ../logs/civl-*/*.csv > result.csv
         - python3.8 gen_svg.py -i result.csv -o civl_result_LOG --header false --mode log
-        - cp *svg ../log/
+        - cp *svg ../logs/
     artifacts:
         untracked: false
         expire_in: 30 days
         when: always
         paths:
-            - log/*
+            - logs/*
 
 must-svg:
     stage: svg
@@ -441,15 +441,15 @@ must-svg:
     #   - pip3 install drawSvg
     script:
         - cd Data
-        - cat ../log/must-*/*.csv > result.csv
+        - cat ../logs/must-*/*.csv > result.csv
         - python3.8 gen_svg.py -i result.csv -o must_result_LOG --header false --mode log
-        - cp *svg ../log/
+        - cp *svg ../logs/
     artifacts:
         untracked: false
         expire_in: 30 days
         when: always
         paths:
-            - log/*
+            - logs/*
 
 data-collect:
     stage: gather
@@ -501,7 +501,7 @@ data-collect:
     script:
         - echo "#filename;id;tool;TO;NP;buff;expected;result;elapsed_time;jobid" > result.csv
         - cd Data
-        - cat ../log/*/*.csv >> result.csv
+        - cat ../logs/*/*.csv >> result.csv
         - python3.8 gen_svg.py -i result.csv -o all_result_LOG --header true --mode log
         - cp *svg ../log
     artifacts:
@@ -509,4 +509,4 @@ data-collect:
         expire_in: 30 days
         when: always
         paths:
-            - log
+            - logs
