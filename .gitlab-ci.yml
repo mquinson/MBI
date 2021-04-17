@@ -204,7 +204,7 @@ test-aislinn:
 test-mpisv:
     stage: test
     image: mpisv/mpi-sv
-#    needs:
+    needs: []
 #        - job: build-mpisv
 #          artifacts: true
     script:
