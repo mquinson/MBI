@@ -10,7 +10,16 @@ os.environ["LC_ALL"] = "C"
 ## Helper function to run tests
 ##########################
 
-def run_cmd(buildcmd, execcmd, binary, timeout, read_line_lambda=None):
+def run_cmd(buildcmd, execcmd, cachefile, binary, timeout, read_line_lambda=None):
+    if os.path.exists(cachefile):
+        print(f"Result for {binary} found in cache.")
+        ans = None
+        if os.path.exists(f'{cachefile}.timeout'):
+            ans = 'timeout'
+        with open(f'{cachefile}', 'r') as infile:
+            output = infile.read()
+        return ans, output
+
     start_time = time.time()
     if buildcmd == None:
         output = f"No need to compile https://gitlab.com/MbiBugsInitiative/MbiBugsInitiative/-/tree/master/codes/{binary}.c\n\n"
@@ -49,6 +58,7 @@ def run_cmd(buildcmd, execcmd, binary, timeout, read_line_lambda=None):
                 read_line_lambda(line, process)
         if time.time() - start_time > timeout:
             ans = 'timeout'
+            os.open(f'{cachefile}.timeout', 'a').close()
             break
         if process.poll() is not None: # The subprocess ended
             break
@@ -86,6 +96,7 @@ def aislinnrun(execcmd, filename, binary, id, timeout, jobid):
     res, output = run_cmd(
         buildcmd=f"aislinn-cc -g {filename} -o {binary}",
         execcmd=execcmd, 
+        cachefile=f'{binary}_{id}.txt',
         binary=binary, 
         timeout=timeout)
 
@@ -150,6 +161,7 @@ def civlrun(execcmd, filename, binary, id, timeout, jobid):
     res, output = run_cmd(
         buildcmd=None,
         execcmd=execcmd, 
+        cachefile=f'{binary}_{id}.txt',
         binary=binary,
         timeout=timeout)
 
@@ -207,6 +219,7 @@ def isprun(execcmd, filename, binary, id, timeout, jobid):
     res, output = run_cmd(
         buildcmd=f"ispcc -o {binary} {filename}",
         execcmd=execcmd, 
+        cachefile=f'{binary}_{id}.txt',
         binary=binary,
         timeout=timeout)
 
@@ -259,6 +272,7 @@ def mustrun(execcmd, filename, binary, id, timeout, jobid):
     res, output = run_cmd(
         buildcmd=f"mpicc {filename} -o {binary}",
         execcmd=execcmd, 
+        cachefile=f'{binary}_{id}.txt',
         binary=binary,
         timeout=timeout,
         read_line_lambda=must_filter)
@@ -311,6 +325,7 @@ def parcoachrun(execcmd, filename, binary, id, timeout, jobid):
     res, output = run_cmd(
         buildcmd= f"clang -c -g -emit-llvm {filename} -I/usr/lib/x86_64-linux-gnu/mpich/include/ -o {binary}.bc",
         execcmd = f"opt-9 -load ../../builds/parcoach/src/aSSA/aSSA.so -parcoach -check-mpi {binary}.bc -o /dev/null",
+        cachefile=f'{binary}_{id}.txt',
         binary=binary,
         timeout=timeout)
 
@@ -343,6 +358,7 @@ def simgridrun(execcmd, filename, binary, id, timeout, jobid):
     res, output = run_cmd(
         buildcmd=f"smpicc {filename} -g -Wl,-znorelro -Wl,-znoseparate-code -o {binary}",
         execcmd=execcmd, 
+        cachefile=f'{binary}_{id}.txt',
         binary=binary,
         timeout=timeout)
 
