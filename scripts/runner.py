@@ -38,7 +38,7 @@ def run_cmd(buildcmd, execcmd, cachefile, binary, timeout, read_line_lambda=None
                 print (f"| {line}", file=sys.stderr)
             return 'CUN', compil.returncode, output
 
-    output += "\n\nExecuting the command\n"
+    output += f"\n\nExecuting the command\n $ {execcmd}\n"
     for line in (output.split('\n')):
         print (f"| {line}", file=sys.stderr)
 
@@ -252,6 +252,37 @@ def isprun(execcmd, filename, binary, id, timeout, jobid):
         return 'mpierr', elapsed
     
     return 'other', elapsed
+
+def mpisvrun(execcmd, filename, binary, id, timeout, jobid):
+
+    execcmd = re.sub("mpirun", "mpisv", execcmd)
+    execcmd = re.sub('-np ', "", execcmd)
+    execcmd = re.sub('\${EXE}', f'{binary}.bc', execcmd)
+    execcmd = re.sub('\$zero_buffer', "", execcmd)
+    execcmd = re.sub('\$infty_buffer', "", execcmd)	
+
+    res, elapsed, output = run_cmd(
+        buildcmd=f"mpisvcc {filename} -o {binary}.bc",
+        execcmd=execcmd, 
+        cachefile=f'{binary}_{id}',
+        binary=binary,
+        timeout=timeout,
+        read_line_lambda=must_filter)
+
+    with open(f'{binary}_{id}.txt', 'w') as outfile:
+        outfile.write(output)  
+
+    if re.search('failed external call', output):
+        return 'CUN', elapsed
+
+    if re.search('found deadlock', output):
+        return 'deadlock', elapsed
+
+    if re.search('No Violation detected by MPI-SV', output):
+        return 'noerror', elapsed
+
+    return 'other', elapsed
+
 
 ##########################
 ## MUST runner
@@ -519,6 +550,8 @@ for filename, cmd, outcome, test_count in todo:
             
     elif args.x == 'must':
         func = mustrun
+    elif args.x == 'mpisv':
+        func = mpisvrun
     elif args.x == 'simgrid':
         func = simgridrun
     elif args.x == 'civl':

@@ -187,6 +187,35 @@ test-aislinn:
         paths:
             - logs
 
+# MPI-SV is already built on its image file
+#build-mpisv:
+#    stage: build
+#    needs: []
+#    image: mpisv/mpi-sv
+#    script:
+#        - ./scripts/mpisv-build
+#    artifacts:
+#        untracked: false
+#        expire_in: 30 days
+#        when: always
+#        paths:
+#            - tools/mpisv
+
+test-mpisv:
+    stage: test
+    image: mpisv/mpi-sv
+#    needs:
+#        - job: build-mpisv
+#          artifacts: true
+    script:
+        - ./scripts/mpisv-run
+    artifacts:
+        untracked: false
+        expire_in: 30 days
+        when: always
+        paths:
+            - logs
+
 build-civl:
     stage: build
     needs: []
