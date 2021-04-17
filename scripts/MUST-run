@@ -38,3 +38,7 @@ fi
 
 # Run the script on each code
 python3.8 ${rootdir}/scripts/runner.py -x must -o bench_must.csv -t 300 --job $CI_JOB_ID ${codes_list}
+
+# Remove generated cruft (temp files and compiled binaries)
+rm -rf must_temp
+find -executable | xargs rm
