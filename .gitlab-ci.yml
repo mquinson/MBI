@@ -324,7 +324,7 @@ simgrid-svg:
     #   - pip3 install drawSvg
     script:
         - cd Data
-        - python3.8 gen_svg.py -i ../logs/simgrid-*/bench_simgrid.csv -o simgrid_result_LOG --header false --mode log
+        - python3.8 gen_svg.py -i ../logs/simgrid/bench_simgrid.csv -o simgrid_result_LOG --header false --mode log
         - cp *svg ../logs/
     artifacts:
         untracked: false
@@ -344,7 +344,7 @@ parcoach-svg:
     #   - pip3 install drawSvg
     script:
         - cd Data
-        - python3.8 gen_svg.py -i ../logs/parcoach-*/bench_parcoach.csv -o parcoach_result_LOG --header false --mode log
+        - python3.8 gen_svg.py -i ../logs/parcoach/bench_parcoach.csv -o parcoach_result_LOG --header false --mode log
         - cp *svg ../logs/
     artifacts:
         untracked: false
@@ -364,7 +364,7 @@ isp-svg:
     #   - pip3 install drawSvg
     script:
         - cd Data
-        - python3.8 gen_svg.py -i ../logs/isp-*/bench_isp.csv -o isp_result_LOG --header false --mode log
+        - python3.8 gen_svg.py -i ../logs/isp/bench_isp.csv -o isp_result_LOG --header false --mode log
         - cp *svg ../logs/
     artifacts:
         untracked: false
@@ -384,7 +384,7 @@ aislinn-svg:
     #   - pip3 install drawSvg
     script:
         - cd Data
-        - python3.8 gen_svg.py -i ../logs/aislinn-*/bench_aislinn.csv -o aislinn_result_LOG --header false --mode log
+        - python3.8 gen_svg.py -i ../logs/aislinn/bench_aislinn.csv -o aislinn_result_LOG --header false --mode log
         - cp *svg ../logs/
     artifacts:
         untracked: false
@@ -406,7 +406,7 @@ civl-svg:
     #   - pip3 install drawSvg
     script:
         - cd Data
-        - cat ../logs/civl-*/*.csv > result.csv
+        - cat ../logs/civl/*.csv > result.csv
         - python3.8 gen_svg.py -i result.csv -o civl_result_LOG --header false --mode log
         - cp *svg ../logs/
     artifacts:
@@ -441,7 +441,7 @@ must-svg:
     #   - pip3 install drawSvg
     script:
         - cd Data
-        - cat ../logs/must-*/*.csv > result.csv
+        - cat ../logs/must/*.csv > result.csv
         - python3.8 gen_svg.py -i result.csv -o must_result_LOG --header false --mode log
         - cp *svg ../logs/
     artifacts:
