@@ -60,7 +60,8 @@ def run_cmd(buildcmd, execcmd, cachefile, binary, timeout, read_line_lambda=None
                 read_line_lambda(line, process)
         if time.time() - start_time > timeout:
             ans = 'timeout'
-            os.open(f'{cachefile}.timeout', 'a').close()
+            with open(f'{cachefile}.timeout', 'w') as outfile:
+                outfile.write(f'{time.time() - start_time} seconds')
             break
         if process.poll() is not None: # The subprocess ended
             break
