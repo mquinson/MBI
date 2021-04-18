@@ -81,7 +81,7 @@ int main(int argc, char **argv) {
 }
 """
 
-collectives = ['MPI_Barrier', 'MPI_Reduce']#, 'allreduce']
+collectives = ['MPI_Barrier', 'MPI_Bcast', 'MPI_Reduce']
 icollectives = []#'ibarrier', 'ireduce', 'iallreduce']
 
 init = {}
@@ -89,6 +89,9 @@ operation = {}
 
 init['MPI_Barrier'] = lambda n: ""
 operation['MPI_Barrier'] = lambda n: 'MPI_Barrier(MPI_COMM_WORLD);'
+
+init['MPI_Bcast'] = lambda n: f'int buf{n}[buff_size];'
+operation['MPI_Bcast'] = lambda n: f'MPI_Bcast(buf{n}, buff_size, MPI_INT, 0, MPI_COMM_WORLD);'
 
 init['MPI_Reduce'] = lambda n: f"int sum{n}, val{n} = 1;"
 operation['MPI_Reduce'] = lambda n: f"MPI_Reduce(&sum{n}, &val{n}, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);"
