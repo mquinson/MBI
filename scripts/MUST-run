@@ -41,4 +41,4 @@ python3.8 ${rootdir}/scripts/runner.py -x must -o bench_must.csv -t 300 --job $C
 
 # Remove generated cruft (temp files and compiled binaries)
 rm -rf must_temp
-find -executable | xargs rm
+find -type f -a -executable | xargs rm

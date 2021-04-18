@@ -35,5 +35,5 @@ cp ${rootdir}/builds/SimGrid/cluster.xml .
 python3.8 ${rootdir}/scripts/runner.py -x simgrid -o bench_simgrid.csv -t 300 --job $CI_JOB_ID $(ls ${rootdir}/codes/*.c)
 
 # Remove generated cruft (binary files and SMPI temp files)
-find -executable | xargs rm
+find -type f -a -executable | xargs rm
 rm -f smpitmp-*
