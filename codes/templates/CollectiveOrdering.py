@@ -122,7 +122,7 @@ for coll1 in collectives + icollectives:
     	replace['longdesc'] = f'All ranks call {coll1} twice'
     	replace['outcome'] = 'OK'
     	replace['errormsg'] = ''
-    	make_file(template, f'CollectiveOrder_{coll1}_{coll2}_ok.c', replace)
+    	make_file(template, f'CollCallOrder_{coll1}_{coll2}_ok.c', replace)
     else: 
       # Generate the correct ordering
     	replace = patterns
@@ -130,7 +130,7 @@ for coll1 in collectives + icollectives:
     	replace['longdesc'] = f'All ranks call {coll1} and then {coll2}'
     	replace['outcome'] = 'OK'
     	replace['errormsg'] = ''
-    	make_file(template, f'CollectiveOrder_{coll1}_{coll2}_ok.c', replace)
+    	make_file(template, f'CollCallOrder_{coll1}_{coll2}_ok.c', replace)
 
       # Generate the incorrect ordering
     	replace = patterns
@@ -141,4 +141,4 @@ for coll1 in collectives + icollectives:
 
     	replace['operation1b'] = operation[coll2]("1") # Inversion
     	replace['operation2b'] = operation[coll1]("2")
-    	make_file(template, f'CollectiveOrder_{coll1}_{coll2}_nok.c', replace)
+    	make_file(template, f'CollCallOrder_{coll1}_{coll2}_nok.c', replace)

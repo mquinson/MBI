@@ -106,7 +106,7 @@ for coll in collectives + icollectives:
   replace['outcome'] = 'OK'
   replace['errormsg'] = ''
   replace['change_root'] = '/* No error injected here */'
-  make_file(template, f'RootMatching_{coll}_ok.c', replace)
+  make_file(template, f'CollRootMatching_{coll}_ok.c', replace)
 
   # Generate the incorrect ordering
   replace = patterns
@@ -116,4 +116,4 @@ for coll in collectives + icollectives:
   replace['errormsg'] = 'Collective root mistmatch. @{coll}@ at @{filename}@:@{line:MBIERROR}@ has 0 or 1 as a root.'
   replace['change_root'] = 'if (rank % 2)\n    root = 1;'
 
-  make_file(template, f'RootMatching_{coll}_nok.c', replace)
+  make_file(template, f'CollRootMatching_{coll}_nok.c', replace)
