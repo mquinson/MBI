@@ -70,8 +70,8 @@ int main(int argc, char **argv) {
 }
 """
 
-collectives = ['MPI_Reduce', 'MPI_Bcast']
-icollectives = []#'ibarrier', 'ireduce', 'iallreduce']
+collectives = ['MPI_Reduce', 'MPI_Bcast', 'MPI_Gather', 'MPI_Scatter']
+icollectives = []#'ibarrier', 'ireduce']
 
 init = {}
 operation = {}
@@ -81,6 +81,13 @@ operation['MPI_Bcast'] = lambda n: f'MPI_Bcast(buf{n}, buff_size, MPI_INT, root,
 
 init['MPI_Reduce'] = lambda n: f"int sum{n}, val{n} = 1;"
 operation['MPI_Reduce'] = lambda n: f"MPI_Reduce(&sum{n}, &val{n}, 1, MPI_INT, MPI_SUM, root, MPI_COMM_WORLD);"
+
+init['MPI_Gather'] = lambda n: f"int val{n}, buf{n}[buff_size];"
+operation['MPI_Gather'] = lambda n: f"MPI_Gather(&val{n}, 1, MPI_INT, buf{n},1, MPI_INT, root, MPI_COMM_WORLD);"
+
+init['MPI_Scatter'] = lambda n: f"int val{n}, buf{n}[buff_size];"
+operation['MPI_Scatter'] = lambda n: f"MPI_Scatter(&buf{n}, 1, MPI_INT, &val{n}, 1, MPI_INT, root, MPI_COMM_WORLD);"
+
 
 for coll in collectives + icollectives:
   patterns = {}

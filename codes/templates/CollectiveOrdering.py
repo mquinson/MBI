@@ -68,8 +68,8 @@ int main(int argc, char **argv) {
     @{operation1a}@ /* MBIERROR1 */
     @{operation2a}@
   } else {
-    @{operation2b}@ /* MBIERROR2 */
-    @{operation1b}@
+    @{operation1b}@ /* MBIERROR2 */
+    @{operation2b}@
   }
 
   if (rank == 0)
@@ -81,7 +81,7 @@ int main(int argc, char **argv) {
 }
 """
 
-collectives = ['MPI_Barrier', 'MPI_Bcast', 'MPI_Reduce']
+collectives = ['MPI_Barrier', 'MPI_Bcast', 'MPI_Reduce', 'MPI_Allreduce']
 icollectives = []#'ibarrier', 'ireduce', 'iallreduce']
 
 init = {}
@@ -95,6 +95,10 @@ operation['MPI_Bcast'] = lambda n: f'MPI_Bcast(buf{n}, buff_size, MPI_INT, 0, MP
 
 init['MPI_Reduce'] = lambda n: f"int sum{n}, val{n} = 1;"
 operation['MPI_Reduce'] = lambda n: f"MPI_Reduce(&sum{n}, &val{n}, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);"
+
+init['MPI_Allreduce'] = lambda n: f"int sum{n}, val{n} = 1;"
+operation['MPI_Allreduce'] = lambda n: f"MPI_Allreduce(&sum{n}, &val{n}, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);"
+
 
 for coll1 in collectives + icollectives:
   for coll2 in collectives + icollectives:
@@ -113,28 +117,28 @@ for coll1 in collectives + icollectives:
     patterns['operation2b'] = operation[coll2]("2")
 
     if coll1 == coll2:
-      replace = patterns
-      replace['shortdesc'] = 'Correct collective ordering'
-      replace['longdesc'] = f'All ranks call {coll1} twice'
-      replace['outcome'] = 'OK'
-      replace['errormsg'] = ''
-      make_file(template, f'CollectiveOrder_{coll1}_{coll2}.c', replace)
+    	replace = patterns
+    	replace['shortdesc'] = 'Correct collective ordering'
+    	replace['longdesc'] = f'All ranks call {coll1} twice'
+    	replace['outcome'] = 'OK'
+    	replace['errormsg'] = ''
+    	make_file(template, f'CollectiveOrder_{coll1}_{coll2}_ok.c', replace)
     else: 
       # Generate the correct ordering
-      replace = patterns
-      replace['shortdesc'] = 'Correct collective ordering'
-      replace['longdesc'] = f'All ranks call {coll1} and then {coll2}'
-      replace['outcome'] = 'OK'
-      replace['errormsg'] = ''
-      make_file(template, f'CollectiveOrder_{coll1}_{coll2}_ok.c', replace)
+    	replace = patterns
+    	replace['shortdesc'] = 'Correct collective ordering'
+    	replace['longdesc'] = f'All ranks call {coll1} and then {coll2}'
+    	replace['outcome'] = 'OK'
+    	replace['errormsg'] = ''
+    	make_file(template, f'CollectiveOrder_{coll1}_{coll2}_ok.c', replace)
 
       # Generate the incorrect ordering
-      replace = patterns
-      replace['shortdesc'] = 'Incorrect collective ordering'
-      replace['longdesc'] = f'Odd ranks call {coll1} and then {coll2} while even ranks call these collectives in the other order'
-      replace['outcome'] = 'ERROR: CollectiveOrdering'
-      replace['errormsg'] = 'Collective mistmatch. @{coll1}@ at @{filename}@:@{line:MBIERROR1}@ is matched with @{coll2}@ line @{filename}@:@{line:MBIERROR2}@.'
+    	replace = patterns
+    	replace['shortdesc'] = 'Incorrect collective ordering'
+    	replace['longdesc'] = f'Odd ranks call {coll1} and then {coll2} while even ranks call these collectives in the other order'
+    	replace['outcome'] = 'ERROR: CollectiveOrdering'
+    	replace['errormsg'] = 'Collective mistmatch. @{coll1}@ at @{filename}@:@{line:MBIERROR1}@ is matched with @{coll2}@ line @{filename}@:@{line:MBIERROR2}@.'
 
-      replace['operation1b'] = operation[coll1]("2") # Inversion
-      replace['operation2b'] = operation[coll2]("1")
-      make_file(template, f'CollectiveOrder_{coll1}_{coll2}_nok.c', replace)
+    	replace['operation1b'] = operation[coll2]("1") # Inversion
+    	replace['operation2b'] = operation[coll1]("2")
+    	make_file(template, f'CollectiveOrder_{coll1}_{coll2}_nok.c', replace)
