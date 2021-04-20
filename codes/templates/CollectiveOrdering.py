@@ -126,7 +126,7 @@ for coll1 in collectives + icollectives:
       replace['longdesc'] = f'All ranks call {coll1} twice'
       replace['outcome'] = 'OK'
       replace['errormsg'] = ''
-      make_file(template, f'CollCallOrder_{coll1}_{coll2}_ok.c', replace)
+      make_file(template, f'CollCorrect_{coll1}_{coll2}.c', replace)
       # Generate the code using the collective once
       replace = patterns
       replace['shortdesc'] = 'Correct collective ordering'
@@ -136,7 +136,7 @@ for coll1 in collectives + icollectives:
       replace['init2'] = ''
       replace['operation2a'] = ''
       replace['operation2b'] = ''
-      make_file(template, f'CollCallOrder_{coll1}_ok.c', replace)
+      make_file(template, f'CollCorrect_{coll1}.c', replace)
     else: 
       # Generate the correct ordering
     	replace = patterns
@@ -144,7 +144,7 @@ for coll1 in collectives + icollectives:
     	replace['longdesc'] = f'All ranks call {coll1} and then {coll2}'
     	replace['outcome'] = 'OK'
     	replace['errormsg'] = ''
-    	make_file(template, f'CollCallOrder_{coll1}_{coll2}_ok.c', replace)
+    	make_file(template, f'CollCorrect_{coll1}_{coll2}.c', replace)
       # Generate the incorrect ordering
     	replace = patterns
     	replace['shortdesc'] = 'Incorrect collective ordering'
@@ -153,7 +153,7 @@ for coll1 in collectives + icollectives:
     	replace['errormsg'] = 'Collective mistmatch. @{coll1}@ at @{filename}@:@{line:MBIERROR1}@ is matched with @{coll2}@ line @{filename}@:@{line:MBIERROR2}@.'
     	replace['operation1b'] = operation[coll2]("1") # Inversion
     	replace['operation2b'] = operation[coll1]("2")
-    	make_file(template, f'CollCallOrder_{coll1}_{coll2}_nok.c', replace)
+    	make_file(template, f'CollCallOrder_{coll1}_{coll2}.c', replace)
       # Generate the incorrect ordering using one collective
     	replace = patterns
     	replace['shortdesc'] = 'Incorrect collective ordering'
@@ -171,4 +171,4 @@ for coll1 in collectives + icollectives:
     	replace['outcome'] = 'OK'
     	replace['errormsg'] = ''
     	replace['change_cond'] = 'nprocs<56'
-    	make_file(template, f'CollCallOrder_{coll1}_none_ok.c', replace)
+    	make_file(template, f'CollCallOrder2_{coll1}_none_ok.c', replace)

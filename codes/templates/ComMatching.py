@@ -60,7 +60,7 @@ int main(int argc, char **argv) {
   if (nprocs < 2)
     printf("MBI ERROR: This test needs at least 2 processes to produce a bug!\\n");
 
-	MPI_Comm_split(MPI_COMM_WORLD, 0, nprocs - rank, &newcom);
+  MPI_Comm_split(MPI_COMM_WORLD, 0, nprocs - rank, &newcom);
 
   @{change_com}@
 
@@ -126,13 +126,13 @@ for coll in collectives + icollectives:
   replace['outcome'] = 'OK'
   replace['errormsg'] = ''
   replace['change_com'] = '/* No error injected here */'
-  make_file(template, f'CollComMatching_{coll}_ok.c', replace)
+  make_file(template, f'CollCommCorrect_{coll}.c', replace)
 
   # Generate the incorrect matching
   replace = patterns
   replace['shortdesc'] = 'Collective @{coll}@ with a communicator mismatch'
   replace['longdesc'] = f'Odd ranks call the collective on newcom while even ranks call the collective on MPI_COMM_WORLD'
-  replace['outcome'] = 'ERROR: ComMismatch'
+  replace['outcome'] = 'ERROR: CommMismatch'
   replace['errormsg'] = 'Communicator mistmatch in collectives. @{coll}@ at @{filename}@:@{line:MBIERROR}@ has .'
   replace['change_com'] = 'if (rank % 2)\n    newcom = MPI_COMM_WORLD;'
-  make_file(template, f'CollComMatching_{coll}_nok.c', replace)
+  make_file(template, f'CollCommMatching_{coll}_nok.c', replace)
