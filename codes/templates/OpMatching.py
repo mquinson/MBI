@@ -92,14 +92,14 @@ for coll in collectives + icollectives:
   patterns['init'] = init[coll]("1")
   patterns['operation'] = operation[coll]("1")
 
-  # Generate the correct code
-  replace = patterns
-  replace['shortdesc'] = 'Collective @{coll}@ with a correct operator'
-  replace['longdesc'] = f'All ranks call {coll} with the same operator'
-  replace['outcome'] = 'OK'
-  replace['errormsg'] = ''
-  replace['change_op'] = '/* No error injected here */'
-  make_file(template, f'CollOpMatching_{coll}_ok.c', replace)
+  # Generate the correct code => the same code is generated from RootMatching.py
+ # replace = patterns
+ # replace['shortdesc'] = 'Collective @{coll}@ with a correct operator'
+ # replace['longdesc'] = f'All ranks call {coll} with the same operator'
+ # replace['outcome'] = 'OK'
+ # replace['errormsg'] = ''
+ # replace['change_op'] = '/* No error injected here */'
+ # make_file(template, f'CollOpMatching_{coll}_ok.c', replace)
 
   # Generate the incorrect matching
   replace = patterns
