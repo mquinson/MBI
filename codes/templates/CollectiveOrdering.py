@@ -59,8 +59,8 @@ int main(int argc, char **argv) {
     printf("\\033[0;31m! This test needs at least 2 processes to produce a bug "
            "!\\033[0;0m\\n");
 
-	@{init1}@
-	@{init2}@
+  @{init1}@
+  @{init2}@
 
   if (@{change_cond}@) {
     @{operation1a}@ /* MBIERROR1 */
@@ -70,37 +70,49 @@ int main(int argc, char **argv) {
     @{operation2b}@
   }
 
+  @{fini1}@
+  @{fini2}@
+  
   MPI_Finalize();
   printf("\\033[0;32mrank %d Finished normally\\033[0;0m\\n", rank);
   return 0;
 }
 """
 
-collectives = ['MPI_Barrier', 'MPI_Bcast', 'MPI_Reduce', 'MPI_Allreduce', 'MPI_Scatter', 'MPI_Gather']
+collectives = ['MPI_Alltoall', 'MPI_Barrier', 'MPI_Bcast', 'MPI_Reduce', 'MPI_Allreduce', 'MPI_Scatter', 'MPI_Gather']
 icollectives = []#'ibarrier', 'ireduce', 'iallreduce']
 
 init = {}
+fini = {}
 operation = {}
 
 init['MPI_Barrier'] = lambda n: ""
 operation['MPI_Barrier'] = lambda n: 'MPI_Barrier(MPI_COMM_WORLD);'
+fini['MPI_Barrier'] = lambda n: ""
 
 init['MPI_Bcast'] = lambda n: f'int buf{n}[buff_size];'
 operation['MPI_Bcast'] = lambda n: f'MPI_Bcast(buf{n}, buff_size, MPI_INT, 0, MPI_COMM_WORLD);'
+fini['MPI_Bcast'] = lambda n: ""
 
 init['MPI_Reduce'] = lambda n: f"int sum{n}, val{n} = 1;"
 operation['MPI_Reduce'] = lambda n: f"MPI_Reduce(&sum{n}, &val{n}, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);"
+fini['MPI_Reduce'] = lambda n: ""
 
 init['MPI_Allreduce'] = lambda n: f"int sum{n}, val{n} = 1;"
 operation['MPI_Allreduce'] = lambda n: f"MPI_Allreduce(&sum{n}, &val{n}, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);"
+fini['MPI_Allreduce'] = lambda n: ""
 
 init['MPI_Scatter'] = lambda n: f"int val{n}, buf{n}[buff_size];"
 operation['MPI_Scatter'] = lambda n: f"MPI_Scatter(&buf{n}, 1, MPI_INT, &val{n}, 1, MPI_INT, root, MPI_COMM_WORLD);"
+fini['MPI_Scatter'] = lambda n: ""
 
 init['MPI_Gather'] = lambda n: f"int val{n}, buf{n}[buff_size];"
 operation['MPI_Gather'] = lambda n: f"MPI_Gather(&val{n}, 1, MPI_INT, buf{n},1, MPI_INT, root, MPI_COMM_WORLD);"
+fini['MPI_Gather'] = lambda n: ""
 
-
+init['MPI_Alltoall'] = lambda n: f"int *sbuf{n} = malloc(sizeof(int)*nproc), *rbuf{n} = malloc(sizeof(int)*nproc*2);"
+operation['MPI_Alltoall'] = lambda n: f"  MPI_Alltoall(sbuf{n}, 1, MPI_INT, rbuf{n}, root, MPI_INT, MPI_COMM_WORLD);"
+fini['MPI_Alltoall'] = lambda n: f"free(sbuf{n});free(rbuf{n});"
 
 for coll1 in collectives + icollectives:
   for coll2 in collectives + icollectives:
@@ -113,6 +125,8 @@ for coll1 in collectives + icollectives:
     patterns['coll2'] = coll2
     patterns['init1'] = init[coll1]("1")
     patterns['init2'] = init[coll2]("2")
+    patterns['fini1'] = fini[coll1]("1")
+    patterns['fini2'] = fini[coll2]("2")
     patterns['operation1a'] = operation[coll1]("1")
     patterns['operation1b'] = operation[coll1]("1")
     patterns['operation2a'] = operation[coll2]("2")
