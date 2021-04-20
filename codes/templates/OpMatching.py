@@ -92,7 +92,7 @@ for coll in collectives + icollectives:
   patterns['init'] = init[coll]("1")
   patterns['operation'] = operation[coll]("1")
 
-  # Generate the correct code => the same code is generated from RootMatching.py
+  # Generate the correct code => the same code is generated from ComMatching.py
  # replace = patterns
  # replace['shortdesc'] = 'Collective @{coll}@ with a correct operator'
  # replace['longdesc'] = f'All ranks call {coll} with the same operator'

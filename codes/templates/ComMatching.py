@@ -76,7 +76,7 @@ int main(int argc, char **argv) {
 }
 """
 
-collectives = ['MPI_Bcast', 'MPI_Barrier']
+collectives = ['MPI_Bcast', 'MPI_Barrier', 'MPI_Reduce', 'MPI_Gather', 'MPI_Scatter', 'MPI_Scan', 'MPI_Exscan']
 icollectives = []#'ibarrier', 'ireduce']
 
 init = {}
@@ -86,8 +86,28 @@ init['MPI_Bcast'] = lambda n: f'int buf{n}[buff_size];'
 operation['MPI_Bcast'] = lambda n: f'MPI_Bcast(buf{n}, buff_size, MPI_INT, 0, newcom);'
 
 init['MPI_Barrier'] = lambda n: ""
-operation['MPI_Barrier'] = lambda n: 'MPI_Barrier(MPI_COMM_WORLD);'
+operation['MPI_Barrier'] = lambda n: 'MPI_Barrier(newcom);'
 
+init['MPI_Reduce'] = lambda n: f"int sum{n}, val{n} = 1;"
+operation['MPI_Reduce'] = lambda n: f"MPI_Reduce(&sum{n}, &val{n}, 1, MPI_INT, MPI_SUM, root, newcom);"
+
+init['MPI_Gather'] = lambda n: f"int val{n}, buf{n}[buff_size];"
+operation['MPI_Gather'] = lambda n: f"MPI_Gather(&val{n}, 1, MPI_INT, buf{n},1, MPI_INT, root, newcom);"
+
+init['MPI_Scatter'] = lambda n: f"int val{n}, buf{n}[buff_size];"
+operation['MPI_Scatter'] = lambda n: f"MPI_Scatter(&buf{n}, 1, MPI_INT, &val{n}, 1, MPI_INT, root, newcom);"
+
+init['MPI_Allreduce'] = lambda n: f"int sum{n}, val{n} = 1;"
+operation['MPI_Allreduce'] = lambda n: f"MPI_Allreduce(&sum{n}, &val{n}, 1, MPI_INT, MPI_SUM, newcom);"
+
+init['MPI_Scan'] = lambda n: f"int outbuf{n}[buff_size], inbuf{n}[buff_size];"
+operation['MPI_Scan'] = lambda n: f"MPI_Scan(&outbuf{n}, inbuf{n}, buff_size, MPI_INT, MPI_SUM, newcom);" 
+
+init['MPI_Exscan'] = lambda n: f"int outbuf{n}[buff_size], inbuf{n}[buff_size];"
+operation['MPI_Exscan'] = lambda n: f"MPI_Exscan(&outbuf{n}, inbuf{n}, buff_size, MPI_INT, MPI_SUM, newcom);" 
+
+
+# Generate code with one collective
 for coll in collectives + icollectives:
   patterns = {}
   patterns = {'coll': coll}
@@ -101,8 +121,8 @@ for coll in collectives + icollectives:
 
   # Generate the correct code
   replace = patterns
-  replace['shortdesc'] = 'Collective @{coll}@ with a correct communicator'
-  replace['longdesc'] = f'All ranks call {coll} with the same communicator'
+  replace['shortdesc'] = 'Collective @{coll}@ with correct arguments'
+  replace['longdesc'] = f'All ranks in newcom call {coll} with correct arguments'
   replace['outcome'] = 'OK'
   replace['errormsg'] = ''
   replace['change_com'] = '/* No error injected here */'
@@ -115,5 +135,4 @@ for coll in collectives + icollectives:
   replace['outcome'] = 'ERROR: ComMismatch'
   replace['errormsg'] = 'Communicator mistmatch in collectives. @{coll}@ at @{filename}@:@{line:MBIERROR}@ has .'
   replace['change_com'] = 'if (rank % 2)\n    newcom = MPI_COMM_WORLD;'
-
   make_file(template, f'CollComMatching_{coll}_nok.c', replace)
