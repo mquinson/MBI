@@ -58,6 +58,7 @@ int main(int argc, char **argv) {
   if (nprocs < 2)
     printf("MBI ERROR: This test needs at least 2 processes to produce a bug.\\n");
 
+  int dbs = sizeof(int)*nprocs; /* Size of the dynamic buffers for alltoall and friends */
   @{init1}@
   @{init2}@
   int root = 0;
@@ -87,6 +88,14 @@ init = {}
 fini = {}
 operation = {}
 
+init['MPI_Alltoall'] = lambda n: f"int *sbuf{n} = malloc(dbs), *rbuf{n} = malloc(dbs);"
+operation['MPI_Alltoall'] = lambda n: f"MPI_Alltoall(sbuf{n}, 1, MPI_INT, rbuf{n}, root, MPI_INT, MPI_COMM_WORLD);"
+fini['MPI_Alltoall'] = lambda n: f"free(sbuf{n});free(rbuf{n});"
+
+init['MPI_Alltoallv'] = lambda n: f"int *sbuf{n}=malloc(dbs*2), *rbuf{n}=malloc(dbs*2), *scounts{n}=malloc(dbs), *rcounts{n}=malloc(dbs), *sdispls{n}=malloc(dbs), *rdispls{n}=malloc(dbs);"
+operation['MPI_Alltoallv'] = lambda n: f"MPI_Alltoallv(sbuf{n}, scounts{n}, sdispls{n}, MPI_INT, rbuf{n}, rcounts{n}, rdispls{n}, MPI_INT, MPI_COMM_WORLD);"
+fini['MPI_Alltoallv'] = lambda n: f"free(sbuf{n});free(rbuf{n});free(scounts{n});free(rcounts{n});free(sdispl{n});free(rdispls{n});"
+
 init['MPI_Barrier'] = lambda n: ""
 operation['MPI_Barrier'] = lambda n: 'MPI_Barrier(MPI_COMM_WORLD);'
 fini['MPI_Barrier'] = lambda n: ""
@@ -110,10 +119,6 @@ fini['MPI_Scatter'] = lambda n: ""
 init['MPI_Gather'] = lambda n: f"int val{n}, buf{n}[buff_size];"
 operation['MPI_Gather'] = lambda n: f"MPI_Gather(&val{n}, 1, MPI_INT, buf{n},1, MPI_INT, root, MPI_COMM_WORLD);"
 fini['MPI_Gather'] = lambda n: ""
-
-init['MPI_Alltoall'] = lambda n: f"int *sbuf{n} = malloc(sizeof(int)*nproc), *rbuf{n} = malloc(sizeof(int)*nproc*2);"
-operation['MPI_Alltoall'] = lambda n: f"  MPI_Alltoall(sbuf{n}, 1, MPI_INT, rbuf{n}, root, MPI_INT, MPI_COMM_WORLD);"
-fini['MPI_Alltoall'] = lambda n: f"free(sbuf{n});free(rbuf{n});"
 
 for coll1 in collectives + icollectives:
     for coll2 in collectives + icollectives:
