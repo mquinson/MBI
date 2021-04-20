@@ -144,3 +144,14 @@ for coll1 in collectives + icollectives:
     	replace['operation1b'] = operation[coll2]("1") # Inversion
     	replace['operation2b'] = operation[coll1]("2")
     	make_file(template, f'CollCallOrder_{coll1}_{coll2}_nok.c', replace)
+
+      # Generate another the incorrect ordering
+    	replace = patterns
+    	replace['shortdesc'] = 'Incorrect collective ordering'
+    	replace['longdesc'] = f'Odd ranks call {coll1} while even ranks do not call any collective'
+    	replace['outcome'] = 'ERROR: CollectiveOrdering'
+    	replace['errormsg'] = 'Collective mistmatch. @{coll1}@ at @{filename}@:@{line:MBIERROR1}@ is not matched.'
+    	replace['operation1b'] = '' # Remove functions
+    	replace['operation2b'] = '' 
+    	replace['operation2a'] = ''
+    	make_file(template, f'CollCallOrder_{coll1}_none_nok.c', replace)
