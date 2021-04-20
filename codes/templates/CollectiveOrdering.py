@@ -59,11 +59,10 @@ int main(int argc, char **argv) {
     printf("\\033[0;31m! This test needs at least 2 processes to produce a bug "
            "!\\033[0;0m\\n");
 
-
 	@{init1}@
 	@{init2}@
 
-  if (rank % 2) {
+  if (@{change_cond}@) {
     @{operation1a}@ /* MBIERROR1 */
     @{operation2a}@
   } else {
@@ -118,8 +117,16 @@ for coll1 in collectives + icollectives:
     patterns['operation1b'] = operation[coll1]("1")
     patterns['operation2a'] = operation[coll2]("2")
     patterns['operation2b'] = operation[coll2]("2")
+    patterns['change_cond'] = 'rank % 2'
 
     if coll1 == coll2:
+      # Generate the code using the collective twice
+      replace = patterns
+      replace['shortdesc'] = 'Correct collective ordering'
+      replace['longdesc'] = f'All ranks call {coll1} twice'
+      replace['outcome'] = 'OK'
+      replace['errormsg'] = ''
+      make_file(template, f'CollCallOrder_{coll1}_{coll2}_ok.c', replace)
       # Generate the code using the collective once
       replace = patterns
       replace['shortdesc'] = 'Correct collective ordering'
@@ -130,13 +137,6 @@ for coll1 in collectives + icollectives:
       replace['operation2a'] = ''
       replace['operation2b'] = ''
       make_file(template, f'CollCallOrder_{coll1}_ok.c', replace)
-      # Generate the code using the collective twice
-      replace = patterns
-      replace['shortdesc'] = 'Correct collective ordering'
-      replace['longdesc'] = f'All ranks call {coll1} twice'
-      replace['outcome'] = 'OK'
-      replace['errormsg'] = ''
-      make_file(template, f'CollCallOrder_{coll1}_{coll2}_ok.c', replace)
     else: 
       # Generate the correct ordering
     	replace = patterns
@@ -145,7 +145,6 @@ for coll1 in collectives + icollectives:
     	replace['outcome'] = 'OK'
     	replace['errormsg'] = ''
     	make_file(template, f'CollCallOrder_{coll1}_{coll2}_ok.c', replace)
-
       # Generate the incorrect ordering
     	replace = patterns
     	replace['shortdesc'] = 'Incorrect collective ordering'
@@ -155,8 +154,7 @@ for coll1 in collectives + icollectives:
     	replace['operation1b'] = operation[coll2]("1") # Inversion
     	replace['operation2b'] = operation[coll1]("2")
     	make_file(template, f'CollCallOrder_{coll1}_{coll2}_nok.c', replace)
-
-      # Generate another the incorrect ordering
+      # Generate the incorrect ordering using one collective
     	replace = patterns
     	replace['shortdesc'] = 'Incorrect collective ordering'
     	replace['longdesc'] = f'Odd ranks call {coll1} while even ranks do not call any collective'
@@ -166,3 +164,11 @@ for coll1 in collectives + icollectives:
     	replace['operation2b'] = '' 
     	replace['operation2a'] = ''
     	make_file(template, f'CollCallOrder_{coll1}_none_nok.c', replace)
+			# Generate a correct ordering with a conditional not depending on ranks
+    	replace = patterns
+    	replace['shortdesc'] = 'Correct collective ordering'
+    	replace['longdesc'] = f'All ranks call {coll1} and then {coll2} or inversely'
+    	replace['outcome'] = 'OK'
+    	replace['errormsg'] = ''
+    	replace['change_cond'] = 'nprocs<56'
+    	make_file(template, f'CollCallOrder_{coll1}_none_ok.c', replace)
