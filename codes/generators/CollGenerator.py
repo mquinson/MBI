@@ -81,12 +81,20 @@ int main(int argc, char **argv) {
 }
 """
 
-collectives = ['MPI_Allreduce', 'MPI_Alltoall', 'MPI_Barrier', 'MPI_Bcast', 'MPI_Gather', 'MPI_Reduce', 'MPI_Scatter']
+collectives = ['MPI_Allgather', 'MPI_Allreduce', 'MPI_Alltoall', 'MPI_Alltoallv', 'MPI_Barrier', 'MPI_Bcast', 'MPI_Gather', 'MPI_Reduce', 'MPI_Scatter']
 icollectives = []  # 'ibarrier', 'ireduce', 'iallreduce']
 
 init = {}
 fini = {}
 operation = {}
+
+init['MPI_Allgather'] = lambda n: f"int *rbuf{n} = malloc(dbs);"
+operation['MPI_Allgather'] = lambda n: f"MPI_Allgather(&rank, 1, MPI_INT, rbuf{n}, 1, MPI_INT, MPI_COMM_WORLD);"
+fini['MPI_Allgather'] = lambda n: f"free(rbuf{n});"
+
+init['MPI_Allreduce'] = lambda n: f"int sum{n}, val{n} = 1;"
+operation['MPI_Allreduce'] = lambda n: f"MPI_Allreduce(&sum{n}, &val{n}, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);"
+fini['MPI_Allreduce'] = lambda n: ""
 
 init['MPI_Alltoall'] = lambda n: f"int *sbuf{n} = malloc(dbs), *rbuf{n} = malloc(dbs);"
 operation['MPI_Alltoall'] = lambda n: f"MPI_Alltoall(sbuf{n}, 1, MPI_INT, rbuf{n}, root, MPI_INT, MPI_COMM_WORLD);"
@@ -107,10 +115,6 @@ fini['MPI_Bcast'] = lambda n: ""
 init['MPI_Reduce'] = lambda n: f"int sum{n}, val{n} = 1;"
 operation['MPI_Reduce'] = lambda n: f"MPI_Reduce(&sum{n}, &val{n}, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);"
 fini['MPI_Reduce'] = lambda n: ""
-
-init['MPI_Allreduce'] = lambda n: f"int sum{n}, val{n} = 1;"
-operation['MPI_Allreduce'] = lambda n: f"MPI_Allreduce(&sum{n}, &val{n}, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);"
-fini['MPI_Allreduce'] = lambda n: ""
 
 init['MPI_Scatter'] = lambda n: f"int val{n}, buf{n}[buff_size];"
 operation['MPI_Scatter'] = lambda n: f"MPI_Scatter(&buf{n}, 1, MPI_INT, &val{n}, 1, MPI_INT, root, MPI_COMM_WORLD);"
