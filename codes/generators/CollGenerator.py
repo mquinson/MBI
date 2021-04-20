@@ -56,11 +56,12 @@ int main(int argc, char **argv) {
   printf("Hello from rank %d \\n", rank);
 
   if (nprocs < 2)
-    printf("\\033[0;31m! This test needs at least 2 processes to produce a bug "
-           "!\\033[0;0m\\n");
+    printf("MBI ERROR: This test needs at least 2 processes to produce a bug.\\n");
 
   @{init1}@
   @{init2}@
+  int root = 0;
+  @{change_root}@
 
   if (@{change_cond}@) {
     @{operation1a}@ /* MBIERROR1 */
@@ -74,12 +75,12 @@ int main(int argc, char **argv) {
   @{fini2}@
   
   MPI_Finalize();
-  printf("\\033[0;32mrank %d Finished normally\\033[0;0m\\n", rank);
+  printf("Rank %d finished normally\\n", rank);
   return 0;
 }
 """
 
-collectives = ['MPI_Alltoall', 'MPI_Barrier', 'MPI_Bcast', 'MPI_Reduce', 'MPI_Allreduce', 'MPI_Scatter', 'MPI_Gather']
+collectives = ['MPI_Allreduce', 'MPI_Alltoall', 'MPI_Barrier', 'MPI_Bcast', 'MPI_Gather', 'MPI_Reduce', 'MPI_Scatter']
 icollectives = []  # 'ibarrier', 'ireduce', 'iallreduce']
 
 init = {}
@@ -132,16 +133,17 @@ for coll1 in collectives + icollectives:
         patterns['operation2a'] = operation[coll2]("2")
         patterns['operation2b'] = operation[coll2]("2")
         patterns['change_cond'] = 'rank % 2'
+        patterns['change_root'] = ''
 
         if coll1 == coll2:
-            # Generate the code using the collective twice
+            # Generate the correct code using the collective twice
             replace = patterns
             replace['shortdesc'] = 'Correct collective ordering'
             replace['longdesc'] = f'All ranks call {coll1} twice'
             replace['outcome'] = 'OK'
             replace['errormsg'] = ''
             make_file(template, f'CollCorrect_{coll1}_{coll2}.c', replace)
-            # Generate the code using the collective once
+            # Generate the correct code using the collective once
             replace = patterns
             replace['shortdesc'] = 'Correct collective ordering'
             replace['longdesc'] = f'All ranks call {coll1} once'
@@ -151,6 +153,30 @@ for coll1 in collectives + icollectives:
             replace['operation2a'] = ''
             replace['operation2b'] = ''
             make_file(template, f'CollCorrect_{coll1}.c', replace)
+            # Generate an incorrect root matching
+            replace['change_cond'] = '1'
+            replace['operation1b'] = '/* nothing to do in this case */'
+            replace['shortdesc'] = 'Collective @{coll1}@ with a root mismatch'
+            replace['longdesc'] = f'Odd ranks use 0 as a root while even ranks use 1 as a root'
+            replace['outcome'] = 'ERROR: RootMismatch'
+            replace['errormsg'] = 'Collective root mistmatch. @{coll1}@ at @{filename}@:@{line:MBIERROR}@ has 0 or 1 as a root.'
+            replace['change_root'] = 'if (rank % 2)\n    root = 1;'
+            make_file(template, f'CollRootMatching_{coll1}_nok.c', replace)
+            # Generate the call with root=-1
+            replace['shortdesc'] = f'Collective {coll1} with root = -1'
+            replace['longdesc'] = f'Collective {coll1} with root = -1'
+            replace['outcome'] = 'ERROR: InvalidRoot'
+            replace['errormsg'] = 'Invalid collective root.  @{coll1}@ at @{filename}@:@{line:MBIERROR}@ has -1 as a root while communicator MPI_COMM_WORLD requires ranks in range 0 to 1.'
+            replace['change_root'] = 'root = -1;'
+            make_file(template, f'CollRootNeg_{coll1}_nok.c', replace)
+            # Generate the call with root=2
+            replace['shortdesc'] = f'Collective {coll1} with root out of the communicator'
+            replace['longdesc'] = f'Collective {coll1} with root = 2 (there is only 2 ranks)'
+            replace['outcome'] = 'ERROR: InvalidRoot'
+            replace['errormsg'] = 'Invalid collective root.  @{coll1}@ at @{filename}@:@{line:MBIERROR}@ has 2 as a root while communicator MPI_COMM_WORLD requires ranks in range 0 to 1.'
+            replace['change_root'] = 'root = nprocs;'
+            make_file(template, f'CollRootTooLarge_{coll1}_nok.c', replace)
+
         else:
             # Generate the correct ordering
             replace = patterns
