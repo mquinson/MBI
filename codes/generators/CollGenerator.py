@@ -68,8 +68,8 @@ int main(int argc, char **argv) {
     @{operation1a}@ /* MBIERROR1 */
     @{operation2a}@
   } else {
-    @{operation1b}@ /* MBIERROR2 */
-    @{operation2b}@
+    @{operation2b}@ /* MBIERROR2 */
+    @{operation1b}@
   }
 
   @{fini1}@
@@ -95,9 +95,9 @@ fini['MPI_Allgather'] = lambda n: f"free(rbuf{n});"
 init['MPI_Allgatherv'] = lambda n: (f"int *rbuf{n} = malloc(dbs), *rcounts{n}=malloc(dbs),  *displs{n}=malloc(dbs);\n" 
   +  "  for (int i = 0; i < nprocs; i++) {\n"
   + f"    rcounts{n}[i] = 1;\n"
-  + f"    rdispls{n}[i] = 2 * (nprocs - (i + 1));\n"
+  + f"    displs{n}[i] = 2 * (nprocs - (i + 1));\n"
   +  "  }")
-operation['MPI_Allgatherv'] = lambda n: f"MPI_Allgatherv(&rank, 1, MPI_INT, rbuf{n}, 1, MPI_INT, MPI_COMM_WORLD);"
+operation['MPI_Allgatherv'] = lambda n: f"MPI_Allgatherv(&rank, 1, MPI_INT, rbuf{n}, rcounts{n}, displs{n}, MPI_INT, MPI_COMM_WORLD);"
 fini['MPI_Allgatherv'] = lambda n: f"free(rbuf{n});free(rcounts{n});free(displs{n});"
 
 init['MPI_Allreduce'] = lambda n: f"int sum{n}, val{n} = 1;"
@@ -105,7 +105,7 @@ operation['MPI_Allreduce'] = lambda n: f"MPI_Allreduce(&sum{n}, &val{n}, 1, MPI_
 fini['MPI_Allreduce'] = lambda n: ""
 
 init['MPI_Alltoall'] = lambda n: f"int *sbuf{n} = malloc(dbs), *rbuf{n} = malloc(dbs);"
-operation['MPI_Alltoall'] = lambda n: f"MPI_Alltoall(sbuf{n}, 1, MPI_INT, rbuf{n}, root, MPI_INT, MPI_COMM_WORLD);"
+operation['MPI_Alltoall'] = lambda n: f"MPI_Alltoall(sbuf{n}, 1, MPI_INT, rbuf{n}, 1, MPI_INT, MPI_COMM_WORLD);"
 fini['MPI_Alltoall'] = lambda n: f"free(sbuf{n});free(rbuf{n});"
 
 init['MPI_Alltoallv'] = lambda n: (f"int *sbuf{n}=malloc(dbs*2), *rbuf{n}=malloc(dbs*2), *scounts{n}=malloc(dbs), *rcounts{n}=malloc(dbs), *sdispls{n}=malloc(dbs), *rdispls{n}=malloc(dbs);\n"
@@ -116,7 +116,7 @@ init['MPI_Alltoallv'] = lambda n: (f"int *sbuf{n}=malloc(dbs*2), *rbuf{n}=malloc
   + f"    rdispls{n}[i] = i * 2;\n"
   +  "  }")
 operation['MPI_Alltoallv'] = lambda n: f"MPI_Alltoallv(sbuf{n}, scounts{n}, sdispls{n}, MPI_INT, rbuf{n}, rcounts{n}, rdispls{n}, MPI_INT, MPI_COMM_WORLD);"
-fini['MPI_Alltoallv'] = lambda n: f"free(sbuf{n});free(rbuf{n});free(scounts{n});free(rcounts{n});free(sdispl{n});free(rdispls{n});"
+fini['MPI_Alltoallv'] = lambda n: f"free(sbuf{n});free(rbuf{n});free(scounts{n});free(rcounts{n});free(sdispls{n});free(rdispls{n});"
 
 init['MPI_Barrier'] = lambda n: ""
 operation['MPI_Barrier'] = lambda n: 'MPI_Barrier(MPI_COMM_WORLD);'
@@ -175,6 +175,7 @@ for coll1 in collectives + icollectives:
             replace['init2'] = ''
             replace['operation2a'] = ''
             replace['operation2b'] = ''
+            replace['fini2'] = ''
             make_file(template, f'CollCorrect_{coll1}.c', replace)
             # Generate an incorrect root matching
             replace['change_cond'] = '1'
@@ -214,8 +215,8 @@ for coll1 in collectives + icollectives:
             replace['longdesc'] = f'Odd ranks call {coll1} and then {coll2} while even ranks call these collectives in the other order'
             replace['outcome'] = 'ERROR: CollectiveOrdering'
             replace['errormsg'] = 'Collective mistmatch. @{coll1}@ at @{filename}@:@{line:MBIERROR1}@ is matched with @{coll2}@ line @{filename}@:@{line:MBIERROR2}@.'
-            replace['operation1b'] = operation[coll2]("1")  # Inversion
-            replace['operation2b'] = operation[coll1]("2")
+            replace['operation1b'] = operation[coll2]("2")  # Inversion
+            replace['operation2b'] = operation[coll1]("1")
             make_file(template, f'CollCallOrder_{coll1}_{coll2}.c', replace)
             # Generate the incorrect ordering using one collective
             replace = patterns
@@ -226,6 +227,7 @@ for coll1 in collectives + icollectives:
             replace['operation1b'] = ''  # Remove functions
             replace['operation2b'] = ''
             replace['operation2a'] = ''
+            replace['fini2'] = ''
             make_file(template, f'CollCallOrder_{coll1}_none_nok.c', replace)
             # Generate a correct ordering with a conditional not depending on ranks
             replace = patterns
@@ -234,4 +236,7 @@ for coll1 in collectives + icollectives:
             replace['outcome'] = 'OK'
             replace['errormsg'] = ''
             replace['change_cond'] = 'nprocs<56'
+            replace['operation2b'] = '' # Remove functions
+            replace['operation2a'] = ''
+            replace['fini2'] = ''
             make_file(template, f'CollCallOrder2_{coll1}_none_ok.c', replace)
