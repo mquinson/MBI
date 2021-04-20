@@ -55,8 +55,8 @@ int main(int argc, char **argv) {
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   printf("Hello from rank %d \\n", rank);
 
-  if (nprocs < 2)
-    printf("MBI ERROR: This test needs at least 2 processes to produce a bug!\\n");
+  if (nprocs != 2)
+    printf("MBI ERROR: This test needs exactly 2 processes to produce a bug!\\n");
 
   int root = 0;
   @{change_root}@
@@ -99,15 +99,8 @@ for coll in collectives + icollectives:
   patterns['init'] = init[coll]("1")
   patterns['operation'] = operation[coll]("1")
 
-  # Generate the correct code => the same code is generated from ComMatching.py
-  #replace = patterns
-  #replace['shortdesc'] = 'Collective @{coll}@ with a correct root'
-  #replace['longdesc'] = f'All ranks call {coll} with the same root'
-  #replace['outcome'] = 'OK'
-  #replace['errormsg'] = ''
-  #replace['change_root'] = '/* No error injected here */'
-  #make_file(template, f'CollRootMatching_{coll}_ok.c', replace)
-
+  # No need to generate the correct code, as it is generated from ComMatching.py
+  
   # Generate the incorrect matching
   replace = patterns
   replace['shortdesc'] = 'Collective @{coll}@ with a root mismatch'
@@ -116,3 +109,22 @@ for coll in collectives + icollectives:
   replace['errormsg'] = 'Collective root mistmatch. @{coll}@ at @{filename}@:@{line:MBIERROR}@ has 0 or 1 as a root.'
   replace['change_root'] = 'if (rank % 2)\n    root = 1;'
   make_file(template, f'CollRootMatching_{coll}_nok.c', replace)
+
+  # Generate the call with root=-1
+  replace = patterns
+  replace['shortdesc'] = f'Collective {coll} with root = -1'
+  replace['longdesc'] = f'Collective {coll} with root = -1'
+  replace['outcome'] = 'ERROR: InvalidRoot'
+  replace['errormsg'] = 'Invalid collective root.  @{coll}@ at @{filename}@:@{line:MBIERROR}@ has -1 as a root while communicator MPI_COMM_WORLD requires ranks in range 0 to 1.'
+  replace['change_root'] = 'root = -1;'
+  make_file(template, f'CollRootNeg_{coll}_nok.c', replace)
+
+  # Generate the call with root=2
+  replace = patterns
+  replace['shortdesc'] = f'Collective {coll} with root out of the communicator'
+  replace['longdesc'] = f'Collective {coll} with root = 2 (there is only 2 ranks)'
+  replace['outcome'] = 'ERROR: InvalidRoot'
+  replace['errormsg'] = 'Invalid collective root.  @{coll}@ at @{filename}@:@{line:MBIERROR}@ has 2 as a root while communicator MPI_COMM_WORLD requires ranks in range 0 to 1.'
+  replace['change_root'] = 'root = 2;'
+  make_file(template, f'CollRootTooLarge_{coll}_nok.c', replace)
+
