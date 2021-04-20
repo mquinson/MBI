@@ -120,12 +120,23 @@ for coll1 in collectives + icollectives:
     patterns['operation2b'] = operation[coll2]("2")
 
     if coll1 == coll2:
-    	replace = patterns
-    	replace['shortdesc'] = 'Correct collective ordering'
-    	replace['longdesc'] = f'All ranks call {coll1} twice'
-    	replace['outcome'] = 'OK'
-    	replace['errormsg'] = ''
-    	make_file(template, f'CollCallOrder_{coll1}_{coll2}_ok.c', replace)
+      # Generate the code using the collective once
+      replace = patterns
+      replace['shortdesc'] = 'Correct collective ordering'
+      replace['longdesc'] = f'All ranks call {coll1} once'
+      replace['outcome'] = 'OK'
+      replace['errormsg'] = ''
+      replace['init2'] = ''
+      replace['operation2a'] = ''
+      replace['operation2b'] = ''
+      make_file(template, f'CollCallOrder_{coll1}_ok.c', replace)
+      # Generate the code using the collective twice
+      replace = patterns
+      replace['shortdesc'] = 'Correct collective ordering'
+      replace['longdesc'] = f'All ranks call {coll1} twice'
+      replace['outcome'] = 'OK'
+      replace['errormsg'] = ''
+      make_file(template, f'CollCallOrder_{coll1}_{coll2}_ok.c', replace)
     else: 
       # Generate the correct ordering
     	replace = patterns
