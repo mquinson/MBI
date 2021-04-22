@@ -126,7 +126,7 @@ for coll in collectives + icollectives:
     replace['longdesc'] = f'Odd ranks use 0 as a root while even ranks use 1 as a root' 
     replace['outcome'] = 'ERROR: RootMismatch' 
     replace['errormsg'] = 'Collective root mistmatch. @{coll}@ at @{filename}@:@{line:MBIERROR}@ has 0 or 1 as a root.' 
-    replace['change_root'] = 'if (rank % 2)\n  root = 1; /* MBIERROR */'
+    replace['change_root'] = 'if (rank % 2)\n		root = 1; /* MBIERROR */'
     make_file(template, f'CollRootMatching_{coll}_nok.c', replace)
 
     # Generate the call with root=-1 

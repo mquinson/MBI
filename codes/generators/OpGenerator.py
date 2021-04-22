@@ -63,6 +63,7 @@ int main(int argc, char **argv) {
 
   @{init}@
   @{operation}@ /* MBIERROR */
+	@{fini}@
 
   MPI_Finalize();
   printf("Rank %d finished normally\\n", rank);
@@ -75,12 +76,15 @@ icollectives = []  # 'ireduce']
 
 init = {}
 operation = {}
+fini = {}
 
 init['MPI_Reduce'] = lambda n: f"int sum{n}, val{n} = 1;"
 operation['MPI_Reduce'] = lambda n: f"MPI_Reduce(&sum{n}, &val{n}, 1, op, MPI_SUM, 0, MPI_COMM_WORLD);"
+fini['MPI_Reduce'] = lambda n: ""
 
 init['MPI_Allreduce'] = lambda n: f"int sum{n}, val{n} = 1;"
 operation['MPI_Allreduce'] = lambda n: f"MPI_Allreduce(&sum{n}, &val{n}, 1, MPI_INT, op, MPI_COMM_WORLD);"
+fini['MPI_Allreduce'] = lambda n: ""
 
 for coll in collectives + icollectives:
     patterns = {}
@@ -90,16 +94,8 @@ for coll in collectives + icollectives:
     patterns['icollfeature'] = 'Correct' if coll in icollectives else 'Lacking'
     patterns['coll'] = coll
     patterns['init'] = init[coll]("1")
+    patterns['fini'] = fini[coll]("1")
     patterns['operation'] = operation[coll]("1")
-
-    # Generate the correct code => the same code is generated from ComMatching.py
-   # replace = patterns
-   # replace['shortdesc'] = 'Collective @{coll}@ with a correct operator'
-   # replace['longdesc'] = f'All ranks call {coll} with the same operator'
-   # replace['outcome'] = 'OK'
-   # replace['errormsg'] = ''
-   # replace['change_op'] = '/* No error injected here */'
-   # make_file(template, f'CollOpMatching_{coll}_ok.c', replace)
 
     # Generate the incorrect matching
     replace = patterns
@@ -109,3 +105,12 @@ for coll in collectives + icollectives:
     replace['errormsg'] = 'Collective operator mistmatch. @{coll}@ at @{filename}@:@{line:MBIERROR}@ has MPI_MAX or MPI_SUM as an operator.'
     replace['change_op'] = 'if (rank % 2)\n    op = MPI_MAX;'
     make_file(template, f'CollOpMatching_{coll}_nok.c', replace)
+
+    # Generate the call with Op=MPI_OP_NULL
+    replace = patterns
+    replace['shortdesc'] = 'Collective @{coll}@ with an invalid operator '
+    replace['longdesc'] = 'Collective @{coll}@ with an invalid operator ' 
+    replace['outcome'] = 'ERROR: InvalidOp'
+    replace['errormsg'] = 'Invalid Operator. @{coll}@ at @{filename}@:@{line:MBIERROR}@ has MPI_OP_NULL as an operator.'
+    replace['change_op'] = 'op = MPI_OP_NULL;'
+    make_file(template, f'CollOpNull_{coll}_nok.c', replace)
