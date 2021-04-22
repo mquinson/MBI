@@ -62,13 +62,14 @@ int main(int argc, char **argv) {
   @{init1}@
   @{init2}@
   int root = 0;
+  @{change_root}@
 
   if (@{change_cond}@) {
     @{operation1a}@ /* MBIERROR1 */
     @{operation2a}@
   } else {
-    @{operation1b}@ /* MBIERROR2 */
-    @{operation2b}@
+    @{operation2b}@ /* MBIERROR2 */
+    @{operation1b}@
   }
 
   @{fini1}@
@@ -81,7 +82,7 @@ int main(int argc, char **argv) {
 """
 
 collectives = ['MPI_Allgather', 'MPI_Allgatherv', 'MPI_Allreduce', 'MPI_Alltoall', 'MPI_Alltoallv', 'MPI_Barrier', 'MPI_Bcast', 'MPI_Gather', 'MPI_Reduce', 'MPI_Scatter']
-icollectives = ['MPI_Ibarrier']  # 'ibarrier', 'ireduce', 'iallreduce']
+icollectives = []  # 'ibarrier', 'ireduce', 'iallreduce']
 
 init = {}
 fini = {}
@@ -121,10 +122,6 @@ init['MPI_Barrier'] = lambda n: ""
 operation['MPI_Barrier'] = lambda n: 'MPI_Barrier(MPI_COMM_WORLD);'
 fini['MPI_Barrier'] = lambda n: ""
 
-init['MPI_Ibarrier'] = lambda n: f"MPI_Request req{n};MPI_Status sta{n};"
-operation['MPI_Ibarrier'] = lambda n: f"MPI_Ibarrier(MPI_COMM_WORLD,&req{n});MPI_Wait(&req{n},&sta{n});"
-fini['MPI_Ibarrier'] = lambda n: f"free(req{n});"
-
 init['MPI_Bcast'] = lambda n: f'int buf{n}[buff_size];'
 operation['MPI_Bcast'] = lambda n: f'MPI_Bcast(buf{n}, buff_size, MPI_INT, 0, MPI_COMM_WORLD);'
 fini['MPI_Bcast'] = lambda n: ""
@@ -159,9 +156,10 @@ for coll1 in collectives + icollectives:
         patterns['operation2a'] = operation[coll2]("2")
         patterns['operation2b'] = operation[coll2]("2")
         patterns['change_cond'] = 'rank % 2'
+        patterns['change_root'] = ''
 
         if coll1 == coll2:
-            # Generate the correct code using the same collective twice
+            # Generate the correct code using the collective twice
             replace = patterns
             replace['shortdesc'] = 'Correct collective ordering'
             replace['longdesc'] = f'All ranks call {coll1} twice'
@@ -179,15 +177,39 @@ for coll1 in collectives + icollectives:
             replace['operation2b'] = ''
             replace['fini2'] = ''
             make_file(template, f'CollCorrect_{coll1}.c', replace)
+            # Generate an incorrect root matching
+            replace['change_cond'] = '1'
+            replace['operation1b'] = '/* nothing to do in this case */'
+            replace['shortdesc'] = 'Collective @{coll1}@ with a root mismatch'
+            replace['longdesc'] = f'Odd ranks use 0 as a root while even ranks use 1 as a root'
+            replace['outcome'] = 'ERROR: RootMismatch'
+            replace['errormsg'] = 'Collective root mistmatch. @{coll1}@ at @{filename}@:@{line:MBIERROR}@ has 0 or 1 as a root.'
+            replace['change_root'] = 'if (rank % 2)\n    root = 1;'
+            make_file(template, f'CollRootMatching_{coll1}_nok.c', replace)
+            # Generate the call with root=-1
+            replace['shortdesc'] = f'Collective {coll1} with root = -1'
+            replace['longdesc'] = f'Collective {coll1} with root = -1'
+            replace['outcome'] = 'ERROR: InvalidRoot'
+            replace['errormsg'] = 'Invalid collective root.  @{coll1}@ at @{filename}@:@{line:MBIERROR}@ has -1 as a root while communicator MPI_COMM_WORLD requires ranks in range 0 to 1.'
+            replace['change_root'] = 'root = -1;'
+            make_file(template, f'CollRootNeg_{coll1}_nok.c', replace)
+            # Generate the call with root=2
+            replace['shortdesc'] = f'Collective {coll1} with root out of the communicator'
+            replace['longdesc'] = f'Collective {coll1} with root = 2 (there is only 2 ranks)'
+            replace['outcome'] = 'ERROR: InvalidRoot'
+            replace['errormsg'] = 'Invalid collective root.  @{coll1}@ at @{filename}@:@{line:MBIERROR}@ has 2 as a root while communicator MPI_COMM_WORLD requires ranks in range 0 to 1.'
+            replace['change_root'] = 'root = nprocs;'
+            make_file(template, f'CollRootTooLarge_{coll1}_nok.c', replace)
+
         else:
-            # Generate the correct ordering with two different collectives
+            # Generate the correct ordering
             replace = patterns
             replace['shortdesc'] = 'Correct collective ordering'
             replace['longdesc'] = f'All ranks call {coll1} and then {coll2}'
             replace['outcome'] = 'OK'
             replace['errormsg'] = ''
             make_file(template, f'CollCorrect_{coll1}_{coll2}.c', replace)
-            # Generate the incorrect ordering with two different collectives
+            # Generate the incorrect ordering
             replace = patterns
             replace['shortdesc'] = 'Incorrect collective ordering'
             replace['longdesc'] = f'Odd ranks call {coll1} and then {coll2} while even ranks call these collectives in the other order'
@@ -195,8 +217,8 @@ for coll1 in collectives + icollectives:
             replace['errormsg'] = 'Collective mistmatch. @{coll1}@ at @{filename}@:@{line:MBIERROR1}@ is matched with @{coll2}@ line @{filename}@:@{line:MBIERROR2}@.'
             replace['operation1b'] = operation[coll2]("2")  # Inversion
             replace['operation2b'] = operation[coll1]("1")
-            make_file(template, f'CollCallOrder_{coll1}_{coll2}_nok.c', replace)
-            # Generate the incorrect ordering with one collective
+            make_file(template, f'CollCallOrder_{coll1}_{coll2}.c', replace)
+            # Generate the incorrect ordering using one collective
             replace = patterns
             replace['shortdesc'] = 'Incorrect collective ordering'
             replace['longdesc'] = f'Odd ranks call {coll1} while even ranks do not call any collective'
@@ -213,8 +235,8 @@ for coll1 in collectives + icollectives:
             replace['longdesc'] = f'All ranks call {coll1} and then {coll2} or inversely'
             replace['outcome'] = 'OK'
             replace['errormsg'] = ''
-            replace['change_cond'] = 'nprocs<256'
+            replace['change_cond'] = 'nprocs<56'
             replace['operation2b'] = '' # Remove functions
             replace['operation2a'] = ''
             replace['fini2'] = ''
-            make_file(template, f'CollCallOrder_{coll1}_none_ok.c', replace)
+            make_file(template, f'CollCallOrder2_{coll1}_none_ok.c', replace)

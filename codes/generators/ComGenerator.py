@@ -64,8 +64,10 @@ int main(int argc, char **argv) {
 
   @{change_com}@
 
+	int dbs = sizeof(int)*nprocs; /* Size of the dynamic buffers for alltoall and friends */
   @{init}@
-  @{operation}@ /* MBIERROR */
+  @{operation}@ 
+	@{fini}@
 
 	if(newcom != MPI_COMM_NULL)
 		MPI_Comm_free(&newcom);
@@ -76,36 +78,56 @@ int main(int argc, char **argv) {
 }
 """
 
-collectives = ['MPI_Bcast', 'MPI_Barrier', 'MPI_Reduce', 'MPI_Gather', 'MPI_Scatter', 'MPI_Scan', 'MPI_Exscan']
-icollectives = []  # 'ibarrier', 'ireduce']
+collectives = ['MPI_Bcast', 'MPI_Barrier', 'MPI_Reduce', 'MPI_Gather', 'MPI_Scatter', 'MPI_Scan', 'MPI_Exscan', 'MPI_Allgather', 'MPI_Allreduce']
+icollectives = ['MPI_Ibarrier']  # 'ibarrier', 'ireduce']
 
 init = {}
 operation = {}
+fini = {}
 
 init['MPI_Bcast'] = lambda n: f'int buf{n}[buff_size];'
 operation['MPI_Bcast'] = lambda n: f'MPI_Bcast(buf{n}, buff_size, MPI_INT, 0, newcom);'
+fini['MPI_Bcast'] = lambda n: ""
 
 init['MPI_Barrier'] = lambda n: ""
 operation['MPI_Barrier'] = lambda n: 'MPI_Barrier(newcom);'
+fini['MPI_Barrier'] = lambda n: ""
+
+init['MPI_Ibarrier'] = lambda n: f"MPI_Request req{n};MPI_Status stat{n};"
+operation['MPI_Ibarrier'] = lambda n: f'MPI_Barrier(newcom,&req{n});'
+fini['MPI_Ibarrier'] = lambda n: f"MPI_Wait(&req{n},&sta{n});"
 
 init['MPI_Reduce'] = lambda n: f"int sum{n}, val{n} = 1;"
 operation['MPI_Reduce'] = lambda n: f"MPI_Reduce(&sum{n}, &val{n}, 1, MPI_INT, MPI_SUM, 0, newcom);"
+fini['MPI_Reduce'] = lambda n: ""
 
 init['MPI_Gather'] = lambda n: f"int val{n}, buf{n}[buff_size];"
 operation['MPI_Gather'] = lambda n: f"MPI_Gather(&val{n}, 1, MPI_INT, buf{n},1, MPI_INT, 0, newcom);"
+fini['MPI_Gather'] = lambda n: ""
 
 init['MPI_Scatter'] = lambda n: f"int val{n}, buf{n}[buff_size];"
 operation['MPI_Scatter'] = lambda n: f"MPI_Scatter(&buf{n}, 1, MPI_INT, &val{n}, 1, MPI_INT, 0, newcom);"
+fini['MPI_Scatter'] = lambda n: ""
 
 init['MPI_Allreduce'] = lambda n: f"int sum{n}, val{n} = 1;"
 operation['MPI_Allreduce'] = lambda n: f"MPI_Allreduce(&sum{n}, &val{n}, 1, MPI_INT, MPI_SUM, newcom);"
+fini['MPI_Allreduce'] = lambda n: ""
 
 init['MPI_Scan'] = lambda n: f"int outbuf{n}[buff_size], inbuf{n}[buff_size];"
 operation['MPI_Scan'] = lambda n: f"MPI_Scan(&outbuf{n}, inbuf{n}, buff_size, MPI_INT, MPI_SUM, newcom);"
+fini['MPI_Scan'] = lambda n: ""
 
 init['MPI_Exscan'] = lambda n: f"int outbuf{n}[buff_size], inbuf{n}[buff_size];"
 operation['MPI_Exscan'] = lambda n: f"MPI_Exscan(&outbuf{n}, inbuf{n}, buff_size, MPI_INT, MPI_SUM, newcom);"
+fini['MPI_Exscan'] = lambda n: ""
 
+init['MPI_Allgather'] = lambda n: f"int *rbuf{n} = malloc(dbs);"
+operation['MPI_Allgather'] = lambda n: f"MPI_Allgather(&rank, 1, MPI_INT, rbuf{n}, 1, MPI_INT, newcom);"
+fini['MPI_Allgather'] = lambda n: f"free(rbuf{n});"
+
+init['MPI_Allreduce'] = lambda n: f"int sum{n}, val{n} = 1;"
+operation['MPI_Allreduce'] = lambda n: f"MPI_Allreduce(&sum{n}, &val{n}, 1, MPI_INT, MPI_SUM, newcom);"
+fini['MPI_Allreduce'] = lambda n: ""
 
 # Generate code with one collective
 for coll in collectives + icollectives:
@@ -117,22 +139,32 @@ for coll in collectives + icollectives:
     patterns['comfeature'] = 'Correct'
     patterns['coll'] = coll
     patterns['init'] = init[coll]("1")
+    patterns['fini'] = fini[coll]("1")
     patterns['operation'] = operation[coll]("1")
 
-    # Generate the correct code
+    # Generate the correct code => to remove?
     replace = patterns
     replace['shortdesc'] = 'Collective @{coll}@ with correct arguments'
     replace['longdesc'] = f'All ranks in newcom call {coll} with correct arguments'
     replace['outcome'] = 'OK'
     replace['errormsg'] = ''
     replace['change_com'] = '/* No error injected here */'
-    make_file(template, f'CollCommCorrect_{coll}.c', replace)
+    make_file(template, f'CollCorrect_{coll}.c', replace)
 
     # Generate the incorrect matching
     replace = patterns
     replace['shortdesc'] = 'Collective @{coll}@ with a communicator mismatch'
     replace['longdesc'] = f'Odd ranks call the collective on newcom while even ranks call the collective on MPI_COMM_WORLD'
     replace['outcome'] = 'ERROR: CommMismatch'
-    replace['errormsg'] = 'Communicator mistmatch in collectives. @{coll}@ at @{filename}@:@{line:MBIERROR}@ has .'
-    replace['change_com'] = 'if (rank % 2)\n    newcom = MPI_COMM_WORLD;'
-    make_file(template, f'CollCommMatching_{coll}_nok.c', replace)
+    replace['errormsg'] = 'Communicator mistmatch in collectives. @{coll}@ at @{filename}@:@{line:MBIERROR}@ has newcom or MPI_COMM_WORLD as a communicator.'
+    replace['change_com'] = 'if (rank % 2)\n    newcom = MPI_COMM_WORLD; /* MBIERROR */'
+    make_file(template, f'CollComMatching_{coll}_nok.c', replace)
+
+    # Generate the coll with newcom=MPI_COMM_NULL
+    replace = patterns
+    replace['shortdesc'] = f'Collective @{coll}@ with newcom=MPI_COMM_NULL' 
+    replace['longdesc'] = f'Collective @{coll}@ with newcom=MPI_COMM_NULL'
+    replace['outcome'] = 'ERROR: InvalidCom'
+    replace['errormsg'] = 'Invalid communicator. @{coll}@ at @{filename}@:@{line:MBIERROR}@ has MPI_COMM_NULL as a communicator.'
+    replace['change_com'] = 'newcom = MPI_COMM_NULL; /* MBIERROR */'
+    make_file(template, f'CollComNull_{coll}_nok.c', replace)
