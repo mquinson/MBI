@@ -25,14 +25,14 @@ os.environ["LC_ALL"] = "C"
 def run_cmd(buildcmd, execcmd, cachefile, binary, timeout, read_line_lambda=None):
     if os.path.exists(f'{cachefile}.txt'):
         print(f" (cached result found for {cachefile})", end='')
-        ans = None
+        outcome = None
         if os.path.exists(f'{cachefile}.timeout'):
-            ans = 'timeout'
+            outcome = 'timeout'
         with open(f'{cachefile}.txt', 'r') as infile:
             output = infile.read()
         with open(f'{cachefile}.elapsed', 'r') as infile:
             elapsed = infile.read()
-        return ans, elapsed, output
+        return outcome, elapsed, output
 
     start_time = time.time()
     if buildcmd == None:
@@ -62,7 +62,7 @@ def run_cmd(buildcmd, execcmd, cachefile, binary, timeout, read_line_lambda=None
 
     pid = process.pid
     pgid = os.getpgid(pid)  # We need that to forcefully kill subprocesses when leaving
-    ans = None
+    outcome = None
     while True:
         if poll_obj.poll(5):  # Something to read? Do check the timeout status every 5 sec if not
             line = process.stdout.readline()
@@ -73,7 +73,7 @@ def run_cmd(buildcmd, execcmd, cachefile, binary, timeout, read_line_lambda=None
             if read_line_lambda != None:
                 read_line_lambda(line, process)
         if time.time() - start_time > timeout:
-            ans = 'timeout'
+            outcome = 'timeout'
             with open(f'{cachefile}.timeout', 'w') as outfile:
                 outfile.write(f'{time.time() - start_time} seconds')
             break
@@ -102,7 +102,7 @@ def run_cmd(buildcmd, execcmd, cachefile, binary, timeout, read_line_lambda=None
     with open(f'{cachefile}.elapsed', 'w') as outfile:
         outfile.write(str(elapsed))
 
-    return ans, elapsed, output
+    return outcome, elapsed, output
 
 ##########################
 # Aislinn runner
@@ -485,17 +485,10 @@ args = parser.parse_args()
 
 todo = []
 
-ok_noerror = []
-ok_deadlock = []
-ok_numstab = []
-ok_segfault = []
-ok_mpierr = []
-ok_resleak = []
-ok_livelock = []
-ok_various = []
-ok_datarace = []
-failed = []
-notimplemented = []
+true_pos = []
+false_pos = []
+true_neg = []
+false_neg = []
 
 ########################
 # Going through files
@@ -536,7 +529,7 @@ def extract_todo(filename):
                     if not m:
                         print(
                             f"\n{filename}:{line_num}: MBI parse error: Test not followed by a proper 'ERROR' line:\n{line}{nextline}")
-                    expect = 'error' # [expects for expects in m.groups() if expects != None]
+                    expect = 'ERROR' # [expects for expects in m.groups() if expects != None]
                 res.append((filename, cmd, expect, test_count))
                 test_count += 1
                 line_num += 1
@@ -552,11 +545,11 @@ def extract_todo(filename):
 
 
 def return_to_queue(queue, func, args):
-    ans, elapsed = func(*args)
+    outcome, elapsed = func(*args)
     if elapsed is None:
         print(f"Elapsed not set for {func}({args})!")
         os._exit(1)
-    queue.put((ans, elapsed))
+    queue.put((outcome, elapsed))
 
 
 for filename in args.filenames:
@@ -568,15 +561,13 @@ for filename in args.filenames:
     todo = todo + extract_todo(filename)
 
     if len(todo) == 0:
-        print(" no test found. Please fix it.")
-        notimplemented.append(filename)
-        continue
+        raise Exception(f"No test found in {filename}. Please fix it.")
 
 ########################
 # Running the tests
 ########################
 
-for filename, cmd, outcome, test_count in todo:
+for filename, cmd, expected, test_count in todo:
     binary = re.sub('\.c', '', os.path.basename(filename))
 
     print(f"Test '{binary}_{test_count}'", end=": ")
@@ -612,48 +603,33 @@ for filename, cmd, outcome, test_count in todo:
     sys.stdout.flush()
     p.join(args.timeout+60)
     try:
-        (ans, elapsed) = q.get(block=False)
+        (outcome, elapsed) = q.get(block=False)
     except queue.Empty:
         if p.is_alive():
             print("HARD TIMEOUT! The child process failed to timeout by itself. Sorry for the output.")
             p.terminate()
-            ans = 'timeout'
+            outcome = 'timeout'
         else:
-            ans = 'RSF'
+            outcome = 'RSF'
 
-    # set res_category for all the elif that are 10 lines below
-    if ans in outcome or ('various' in outcome and (ans == 'deadlock' or ans == 'numstab')):
-        if 'OK' in outcome:
-            res_category = 'TRUE_POS'
-        else:
+    if expected == 'OK':
+        if outcome == 'OK':
             res_category = 'TRUE_NEG'
-
-    if ans not in outcome and not ('various' in outcome and (ans == 'deadlock' or ans == 'numstab')):
-        failed.append(f"{binary} (expected {outcome} but returned {ans})")
-        if 'OK' in outcome:
-            res_category = 'FALSE_NEG'
+            true_neg.append(f'{binary}_{test_count}')
         else:
             res_category = 'FALSE_POS'
-    elif 'OK' in outcome:
-        ok_noerror.append(binary)
-    elif 'deadlock' in outcome:
-        ok_deadlock.append(binary)
-    elif 'numstab' in outcome:
-        ok_numstab.append(binary)
-    elif 'segfault' in outcome:
-        ok_segfault.append(binary)
-    elif 'mpierr' in outcome:
-        ok_mpierr.append(binary)
-    elif 'resleak' in outcome:
-        ok_resleak.append(binary)
-    elif 'livelock' in outcome:
-        ok_livelock.append(binary)
-    elif 'various' in outcome:
-        ok_various.append(binary)
-    elif 'datarace' in outcome:
-        ok_datarace.append(binary)
+            false_pos.append(f'{binary}_{test_count} (expected {expected} but returned {outcome})')
+    elif expected == 'ERROR':
+        if outcome == 'OK':
+            res_category = 'FALSE_NEG'
+            false_neg.append(f'{binary}_{test_count} (expected {expected} but returned {outcome})')
+        else:
+            res_category = 'TRUE_POS'
+            true_pos.append(f'{binary}_{test_count}')
+    else: 
+        raise Exception(f"Unexpected expectation: {expected} (must be OK or ERROR)")
 
-    print(f"\nTest '{binary}' result: {res_category}: {args.x} returned {ans} while {outcome} was expected. Elapsed: {elapsed} sec\n\n")
+    print(f"\nTest '{binary}' result: {res_category}: {args.x} returned {outcome} while {expected} was expected. Elapsed: {elapsed} sec\n\n")
 
     np = re.search(r"(?:-np) [0-9]+", cmd)
     np = int(re.sub(r"-np ", "", np.group(0)))
@@ -669,28 +645,21 @@ for filename, cmd, outcome, test_count in todo:
 
     with open("./" + args.o, "a") as result_file:
         result_file.write(
-            f"{binary};{test_count};{args.x};{args.timeout};{np};{buff};{outcome};{ans};{elapsed};{args.job}\n")
+            f"{binary};{test_count};{args.x};{args.timeout};{np};{buff};{expected};{outcome};{elapsed};{args.job}\n")
 
 ########################
 # Termination
 ########################
 
-passed_count = 0
-passed_count += len(ok_noerror)
-passed_count += len(ok_deadlock)
-passed_count += len(ok_numstab)
-passed_count += len(ok_segfault)
-passed_count += len(ok_mpierr)
-passed_count += len(ok_resleak)
-passed_count += len(ok_livelock)
-passed_count += len(ok_various)
-passed_count += len(ok_datarace)
+passed = len(true_pos) + len(true_neg)
+total = passed + len(false_pos) + len(false_neg)
 
-print("XXXXXXXXX\nResult: {} test{} out of {} passed."
-      .format(passed_count, '' if passed_count == 1 else 's', passed_count+len(failed)))
-if len(failed) > 0:
-    print("{} failed tests:".format(len(failed) + len(notimplemented)))
-    for p in failed:
-        print("  {}".format(p))
-    for n in notimplemented:
-        print(n)
+print(f"XXXXXXXXX\nResult: {passed} test{'' if passed == 1 else 's'} out of {total} passed.")
+if len(false_pos) > 0:
+    print(f"{len(false_pos)} false positives:")
+    for p in false_pos:
+        print("  {p}")
+if len(false_neg) > 0:
+    print(f"{len(false_neg)} false negatives:")
+    for p in false_neg:
+        print("  {p}")
