@@ -27,7 +27,7 @@ test -e ${rootdir}/logs/parcoach || mkdir -p ${rootdir}/logs/parcoach
 cd ${rootdir}/logs/parcoach
 
 # Run the script on each code
-python3.8 ${rootdir}/scripts/runner.py -x parcoach -o bench_parcoach.csv -t 300 --job $CI_JOB_ID $(ls ${rootdir}/codes/*.c)
+python3 ${rootdir}/scripts/runner.py -x parcoach -o bench_parcoach.csv -t 300 --job $CI_JOB_ID $(ls ${rootdir}/codes/*.c)
 
 # Remove generated crufts
 rm -f *.bc
