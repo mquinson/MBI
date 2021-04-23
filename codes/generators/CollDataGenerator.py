@@ -43,6 +43,7 @@ END_MBI_TESTS
 
 #include <mpi.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #define buff_size 128
 
@@ -115,8 +116,8 @@ operation['MPI_Reduce'] = lambda n: f"MPI_Reduce(&sum{n}, &val{n}, 1, MPI_SUM, t
 fini['MPI_Reduce'] = lambda n: ""
 
 init['MPI_Ireduce'] = lambda n: f"MPI_Request req{n}; MPI_Status sta{n}; int sum{n}, val{n} = 1;"
-operation['MPI_Ireduce'] = lambda n: f"MPI_Ireduce(&sum{n}, &val{n}, 1, type, MPI_SUM, 0, MPI_COMM_WORLD, &re{n}); MPI_Wait(&req{n},&sta{n});"
-fini['MPI_Ireduce'] = lambda n: "free(req{n});"
+operation['MPI_Ireduce'] = lambda n: f"MPI_Ireduce(&sum{n}, &val{n}, 1, type, MPI_SUM, 0, MPI_COMM_WORLD, &req{n}); MPI_Wait(&req{n},&sta{n});"
+fini['MPI_Ireduce'] = lambda n: f"free(req{n});"
 
 init['MPI_Allreduce'] = lambda n: f"int sum{n}, val{n} = 1;"
 operation['MPI_Allreduce'] = lambda n: f"MPI_Allreduce(&sum{n}, &val{n}, 1, type, MPI_SUM, MPI_COMM_WORLD);"
@@ -148,7 +149,7 @@ for coll in collectives + icollectives:
     replace['longdesc'] = f'Odd ranks use MPI_INT as the datatype while even ranks use MPI_FLOAT'
     replace['outcome'] = 'ERROR: DataMismatch'
     replace['errormsg'] = 'Collective datatype mistmatch. @{coll}@ at @{filename}@:@{line:MBIERROR}@ has MPI_INT or MPI_FLOAT as a datatype.'
-    replace['change_type'] = 'if (rank % 2)\n    data = MPI_FLOAT;'
+    replace['change_type'] = 'if (rank % 2)\n    type = MPI_FLOAT;'
     make_file(template, f'CollDataMatching_{coll}_nok.c', replace)
 
     # Generate the call with null type

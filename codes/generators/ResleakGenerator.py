@@ -150,7 +150,7 @@ for call in callparameter:
     replace['errormsg'] = 'Resleak. @{call}@ at @{filename}@:@{line:MBIERROR}@ lacks several free.'
     replace['change_size'] = 'size=PARAM_PER_ITERATION;'
     replace['loop'] = 'for (i = 0; i < ITERATIONS; i++) {\n		for (j = 0; j < PARAM_PER_ITERATION; j++) {'
-    replace['cond'] = '			if (j < GROUPS_PER_ITERATION - GROUPS_LOST_PER_ITERATION) {'
+    replace['cond'] = '			if (j < PARAM_PER_ITERATION - PARAM_LOST_PER_ITERATION) {'
     replace['fini'] = fini[call]("1") + ' /* MBIERROR */'
     replace['end'] = '}\n }\n }'
     make_file(template, f'Resleak_multiple_{call}_nok.c', replace)

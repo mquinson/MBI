@@ -43,6 +43,7 @@ END_MBI_TESTS
 
 #include <mpi.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #define buff_size 128
 
@@ -134,8 +135,8 @@ operation['MPI_Reduce'] = lambda n: f"MPI_Reduce(&sum{n}, &val{n}, 1, MPI_INT, M
 fini['MPI_Reduce'] = lambda n: ""
 
 init['MPI_Ireduce'] = lambda n: f"MPI_Request req{n}; MPI_Status sta{n}; int sum{n}, val{n} = 1;"
-operation['MPI_Ireduce'] = lambda n: f"MPI_Ireduce(&sum{n}, &val{n}, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD, &re{n}); MPI_Wait(&req{n},&sta{n});"
-fini['MPI_Ireduce'] = lambda n: "free(req{n});"
+operation['MPI_Ireduce'] = lambda n: f"MPI_Ireduce(&sum{n}, &val{n}, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD, &req{n}); MPI_Wait(&req{n},&sta{n});"
+fini['MPI_Ireduce'] = lambda n: f"free(req{n});"
 
 init['MPI_Scatter'] = lambda n: f"int val{n}, buf{n}[buff_size];"
 operation['MPI_Scatter'] = lambda n: f"MPI_Scatter(&buf{n}, 1, MPI_INT, &val{n}, 1, MPI_INT, root, MPI_COMM_WORLD);"

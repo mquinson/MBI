@@ -43,6 +43,7 @@ END_MBI_TESTS
 
 #include <mpi.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #define buff_size 128
 
@@ -94,8 +95,8 @@ operation['MPI_Barrier'] = lambda n: 'MPI_Barrier(newcom);'
 fini['MPI_Barrier'] = lambda n: ""
 
 init['MPI_Ibarrier'] = lambda n: f"MPI_Request req{n};MPI_Status stat{n};"
-operation['MPI_Ibarrier'] = lambda n: f'MPI_Barrier(newcom,&req{n});'
-fini['MPI_Ibarrier'] = lambda n: f"MPI_Wait(&req{n},&sta{n});"
+operation['MPI_Ibarrier'] = lambda n: f'MPI_Ibarrier(newcom, &req{n});'
+fini['MPI_Ibarrier'] = lambda n: f"MPI_Wait(&req{n}, &stat{n});"
 
 init['MPI_Reduce'] = lambda n: f"int sum{n}, val{n} = 1;"
 operation['MPI_Reduce'] = lambda n: f"MPI_Reduce(&sum{n}, &val{n}, 1, MPI_INT, MPI_SUM, 0, newcom);"
