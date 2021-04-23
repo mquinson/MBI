@@ -135,7 +135,7 @@ def aislinnrun(execcmd, filename, binary, id, timeout, jobid):
         return res, elapsed
 
     if re.search('No errors found', output):
-        return 'noerror', elapsed
+        return 'OK', elapsed
 
     if re.search('Deadlock', output):
         return 'deadlock', elapsed
@@ -212,7 +212,7 @@ def civlrun(execcmd, filename, binary, id, timeout, jobid):
         return 'resleak', elapsed
 
     if re.search('The standard properties hold for all executions', output):
-        return 'noerror', elapsed
+        return 'OK', elapsed
 
     if re.search('A CIVL internal error has occurred', output):
         return 'RSF', elapsed
@@ -264,7 +264,7 @@ def isprun(execcmd, filename, binary, id, timeout, jobid):
         return 'resleak', elapsed
 
     if re.search('ISP detected no deadlocks', output):
-        return 'noerror', elapsed
+        return 'OK', elapsed
 
     if re.search('Fatal error in PMPI', output):
         return 'mpierr', elapsed
@@ -300,7 +300,7 @@ def mpisvrun(execcmd, filename, binary, id, timeout, jobid):
         return 'deadlock', elapsed
 
     if re.search('No Violation detected by MPI-SV', output):
-        return 'noerror', elapsed
+        return 'OK', elapsed
 
     return 'other', elapsed
 
@@ -374,7 +374,7 @@ def mustrun(execcmd, filename, binary, id, timeout, jobid):
         return 'RSF', elapsed
 
     if res == None:
-        return 'noerror', elapsed
+        return 'OK', elapsed
     return res, elapsed
 
 ##########################
@@ -398,7 +398,7 @@ def parcoachrun(execcmd, filename, binary, id, timeout, jobid):
         return res, elapsed
 
     if re.search('0 warning\(s\) issued', output):
-        return 'noerror', elapsed
+        return 'OK', elapsed
 
     if re.search('missing info for external function', output):
         return 'CUN', elapsed
@@ -450,7 +450,7 @@ def simgridrun(execcmd, filename, binary, id, timeout, jobid):
     if re.search('Probable memory leaks in your code: SMPI detected', output):
         return 'resleak', elapsed
     if re.search('No property violation found', output):
-        return 'noerror', elapsed
+        return 'OK', elapsed
 
     print("Couldn't assign output to specific behaviour; This will be treated as 'other'")
     return 'other', elapsed
@@ -530,18 +530,14 @@ def extract_todo(filename):
                 cmd = m.group(1)
                 nextline = next(input)
                 if re.match('[ |]*OK *', nextline):
-                    res.append((filename, cmd, 'noerror', test_count))
+                    expect = 'OK'
                 else:
                     m = re.match('[ |]*ERROR: *(.*)', nextline)
                     if not m:
                         print(
                             f"\n{filename}:{line_num}: MBI parse error: Test not followed by a proper 'ERROR' line:\n{line}{nextline}")
-                    expect = [expects for expects in m.groups() if expects != None]
-                    # TODO: enforce that the error message is valid
-                    # if not expect[0] in ["noerror", "deadlock",  "numstab", "segfault", "mpierr", "resleak", "livelock", "various", "datarace"]:
-                    #    print(f"\n{filename}:{line_num}: expectation >>{expect}<< not understood.")
-                    #    continue
-                    res.append((filename, cmd, expect, test_count))
+                    expect = 'error' # [expects for expects in m.groups() if expects != None]
+                res.append((filename, cmd, expect, test_count))
                 test_count += 1
                 line_num += 1
 
@@ -627,18 +623,18 @@ for filename, cmd, outcome, test_count in todo:
 
     # set res_category for all the elif that are 10 lines below
     if ans in outcome or ('various' in outcome and (ans == 'deadlock' or ans == 'numstab')):
-        if 'noerror' in outcome:
+        if 'OK' in outcome:
             res_category = 'TRUE_POS'
         else:
             res_category = 'TRUE_NEG'
 
     if ans not in outcome and not ('various' in outcome and (ans == 'deadlock' or ans == 'numstab')):
         failed.append(f"{binary} (expected {outcome} but returned {ans})")
-        if 'noerror' in outcome:
+        if 'OK' in outcome:
             res_category = 'FALSE_NEG'
         else:
             res_category = 'FALSE_POS'
-    elif 'noerror' in outcome:
+    elif 'OK' in outcome:
         ok_noerror.append(binary)
     elif 'deadlock' in outcome:
         ok_deadlock.append(binary)
