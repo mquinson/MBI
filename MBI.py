@@ -419,6 +419,10 @@ failure = []
 code_correct = 0
 code_incorrect = 0
 
+# To compute timing statistics 
+total_elapsed = 0
+
+
 ########################
 # Going through files
 ########################
@@ -579,6 +583,9 @@ for filename, cmd, expected, test_count in todo:
 
     print(f"\nTest '{binary}' result: {res_category}: {args.x} returned {outcome} while {expected} was expected. Elapsed: {elapsed} sec\n\n")
 
+    if res_category != 'timeout':
+        total_elapsed += float(elapsed)
+
     np = re.search(r"(?:-np) [0-9]+", cmd)
     np = int(re.sub(r"-np ", "", np.group(0)))
 
@@ -638,4 +645,5 @@ print(f"Recall: {percent(TP/(TP+FN))}% (found {TP} errors out of {TP+FN})")
 print(f"Specificity: {percent(TN/(TN+FP))}% (recognized {TN} correct codes out of {TN+FP})")
 print(f"Precision: {percent(TP/(TP+FP))}% ({TP} diagnostic of error are correct out of {TP+FP})")
 print(f"Accuracy: {percent((TP+TN)/(TP+TN+FP+FN))}% ({TP+TN} correct diagnostics in total, out of {TP+TN+FP+FN} diagnostics)")
+print(f"\nTotal time of all tests (not counting the timeouts): {total_elapsed}")
 print(f"\nMBI stats: {code_correct} correct codes; {code_incorrect} incorrect codes.")
