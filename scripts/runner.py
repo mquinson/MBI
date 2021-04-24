@@ -482,6 +482,7 @@ args = parser.parse_args()
 
 todo = []
 
+# To compute statistics on the performance of this tool
 true_pos = []
 false_pos = []
 true_neg = []
@@ -489,6 +490,10 @@ false_neg = []
 unimplemented = []
 timeout = []
 failure = []
+
+# To compute statistics on the MBI codes
+code_correct = 0
+code_incorrect = 0
 
 ########################
 # Going through files
@@ -612,6 +617,13 @@ for filename, cmd, expected, test_count in todo:
         else:
             outcome = 'failure'
 
+    # Stats on the codes, even if the tool fails
+    if expected == 'OK':
+        code_correct += 1
+    else:
+        code_incorrect += 1
+
+    # Properly categorize this run
     if outcome == 'timeout':
         res_category = 'timeout'
         if elapsed is None:
@@ -663,8 +675,12 @@ for filename, cmd, expected, test_count in todo:
 # Termination
 ########################
 
-passed = len(true_pos) + len(true_neg)
-total = passed + len(false_pos) + len(false_neg) + len(timeout) + len(unimplemented) + len(failure)
+TP = len(true_pos)
+TN = len(true_neg)
+FP = len(false_pos)
+FN = len(false_neg)
+passed = TP + TN
+total = passed + FP + FN + len(timeout) + len(unimplemented) + len(failure)
 
 print(f"XXXXXXXXX Final results")
 if len(false_pos) > 0:
@@ -687,4 +703,15 @@ if len(failure) > 0:
     print(f"XXX {len(failure)} tool failures:")
     for p in failure:
         print(f"  {p}")
-print(f"\nXXXX Summary: {passed} test{'' if passed == 1 else 's'} out of {total} passed.")
+
+def percent(ratio):
+    """Returns the ratio as a percentage, rounded to 2 digits only"""
+    return int(ratio*10000)/100
+print(f"\nXXXX Summary for {args.x} XXXX  {passed} test{'' if passed == 1 else 's'} passed (out of {total})")
+print(f"Portability: {percent(1-len(unimplemented)/total)}% ({len(unimplemented)} tests failed)")
+print(f"Robustness: {percent(1-(len(timeout)+len(failure))/(total-len(unimplemented)))}% ({len(timeout)} timeouts and {len(failure)} failures)\n")
+print(f"Recall: {percent(TP/(TP+FN))}% (found {TP} errors out of {TP+FN})")
+print(f"Specificity: {percent(TN/(TN+FP))}% (recognized {TN} correct codes out of {TN+FP})")
+print(f"Precision: {percent(TP/(TP+FP))}% ({TP} diagnostic of error are correct out of {TP+FP})")
+print(f"Accuracy: {percent((TP+TN)/(TP+TN+FP+FN))}% ({TP+TN} correct diagnostics in total, out of {TP+TN+FP+FN} diagnostics)")
+print(f"\nMBI stats: {code_correct} correct codes; {code_incorrect} incorrect codes.")
