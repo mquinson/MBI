@@ -48,7 +48,7 @@ def run_cmd(buildcmd, execcmd, cachefile, binary, timeout, read_line_lambda=None
             output += f"Compilation of {binary}.c raised an error (retcode: {compil.returncode})"
             for line in (output.split('\n')):
                 print(f"| {line}", file=sys.stderr)
-            return 'CUN', compil.returncode, output
+            return 'UNIMPLEMENTED', compil.returncode, output
 
     output += f"\n\nExecuting the command\n $ {execcmd}\n"
     for line in (output.split('\n')):
@@ -163,7 +163,7 @@ def aislinnrun(execcmd, filename, binary, id, timeout, jobid):
         return 'various', elapsed
 
     if re.search('Unkown function call', output):
-        return 'RSF', elapsed
+        return 'UNIMPLEMENTED', elapsed
 
     return 'other', elapsed
 
@@ -215,14 +215,14 @@ def civlrun(execcmd, filename, binary, id, timeout, jobid):
         return 'OK', elapsed
 
     if re.search('A CIVL internal error has occurred', output):
-        return 'RSF', elapsed
+        return 'failure', elapsed
 
     if re.search('This feature is not yet implemented', output):
-        return 'CUN', elapsed
+        return 'UNIMPLEMENTED', elapsed
     if re.search('doesn.t have a definition', output):
-        return 'CUN', elapsed
+        return 'UNIMPLEMENTED', elapsed
     if re.search('Undeclared identifier', output):
-        return 'CUN', elapsed
+        return 'UNIMPLEMENTED', elapsed
 
     return 'other', elapsed
 
@@ -294,7 +294,7 @@ def mpisvrun(execcmd, filename, binary, id, timeout, jobid):
         outfile.write(output)
 
     if re.search('failed external call', output):
-        return 'CUN', elapsed
+        return 'UNIMPLEMENTED', elapsed
 
     if re.search('found deadlock', output):
         return 'deadlock', elapsed
@@ -338,7 +338,7 @@ def mustrun(execcmd, filename, binary, id, timeout, jobid):
         read_line_lambda=must_filter)
 
     if not os.path.isfile("./MUST_Output.html"):
-        return 'RSF', elapsed
+        return 'failure', elapsed
 
     html = ""
     with open('MUST_Output.html') as input:
@@ -370,9 +370,6 @@ def mustrun(execcmd, filename, binary, id, timeout, jobid):
     if re.search('Error', html):
         return 'mpierr', elapsed
 
-    if re.search('MUST-ERROR', output):
-        return 'RSF', elapsed
-
     if res == None:
         return 'OK', elapsed
     return res, elapsed
@@ -401,7 +398,7 @@ def parcoachrun(execcmd, filename, binary, id, timeout, jobid):
         return 'OK', elapsed
 
     if re.search('missing info for external function', output):
-        return 'CUN', elapsed
+        return 'UNIMPLEMENTED', elapsed
 
     return 'deadlock', elapsed
 
@@ -444,7 +441,7 @@ def simgridrun(execcmd, filename, binary, id, timeout, jobid):
     if re.search('returned MPI_ERR', output):
         return 'mpierr', elapsed
     if re.search('Not yet implemented', output):
-        return 'CUN', elapsed
+        return 'UNIMPLEMENTED', elapsed
     if re.search('CRASH IN THE PROGRAM', output):
         return 'segfault', elapsed
     if re.search('Probable memory leaks in your code: SMPI detected', output):
@@ -489,6 +486,9 @@ true_pos = []
 false_pos = []
 true_neg = []
 false_neg = []
+unimplemented = []
+timeout = []
+failure = []
 
 ########################
 # Going through files
@@ -610,9 +610,21 @@ for filename, cmd, expected, test_count in todo:
             p.terminate()
             outcome = 'timeout'
         else:
-            outcome = 'RSF'
+            outcome = 'failure'
 
-    if expected == 'OK':
+    if outcome == 'timeout':
+        res_category = 'timeout'
+        if elapsed is None:
+            timeout.append(f'{binary}_{test_count} (hard timeout)')
+        else:
+            timeout.append(f'{binary}_{test_count} (elapsed: {elapsed} sec)')
+    elif outcome == 'failure':
+        res_category = 'failure'
+        failure.append(f'{binary}_{test_count}')
+    elif outcome == 'UNIMPLEMENTED':
+        res_category = 'portability issue'
+        unimplemented.append(f'{binary}_{test_count}')
+    elif expected == 'OK':
         if outcome == 'OK':
             res_category = 'TRUE_NEG'
             true_neg.append(f'{binary}_{test_count}')
@@ -652,14 +664,27 @@ for filename, cmd, expected, test_count in todo:
 ########################
 
 passed = len(true_pos) + len(true_neg)
-total = passed + len(false_pos) + len(false_neg)
+total = passed + len(false_pos) + len(false_neg) + len(timeout) + len(unimplemented) + len(failure)
 
-print(f"XXXXXXXXX\nResult: {passed} test{'' if passed == 1 else 's'} out of {total} passed.")
+print(f"XXXXXXXXX Final results")
 if len(false_pos) > 0:
-    print(f"{len(false_pos)} false positives:")
+    print(f"XXX {len(false_pos)} false positives:")
     for p in false_pos:
-        print("  {p}")
+        print(f"  {p}")
 if len(false_neg) > 0:
-    print(f"{len(false_neg)} false negatives:")
+    print(f"XXX {len(false_neg)} false negatives:")
     for p in false_neg:
-        print("  {p}")
+        print(f"  {p}")
+if len(timeout) > 0:
+    print(f"XXX {len(timeout)} timeouts:")
+    for p in timeout:
+        print(f"  {p}")
+if len(unimplemented) > 0:
+    print(f"XXX {len(unimplemented)} portability issues:")
+    for p in unimplemented:
+        print(f"  {p}")
+if len(failure) > 0:
+    print(f"XXX {len(failure)} tool failures:")
+    for p in failure:
+        print(f"  {p}")
+print(f"\nXXXX Summary: {passed} test{'' if passed == 1 else 's'} out of {total} passed.")
