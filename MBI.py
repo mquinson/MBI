@@ -256,14 +256,19 @@ def mustrun(execcmd, filename, binary, id, timeout, jobid):
         timeout=timeout,
         read_line_lambda=must_filter)
 
-    if not os.path.isfile("./MUST_Output.html"):
-        return 'failure', elapsed
-
     html = ""
-    with open('MUST_Output.html') as input:
-        for line in (input.readlines()):
-            html += line
-    os.rename(f"./MUST_Output.html", f"{binary}_{id}.html")
+    if os.path.isfile(f"{binary}_{id}.html"):
+        with open(f"{binary}_{id}.html") as input:
+            for line in (input.readlines()):
+                html += line
+    else:
+        if not os.path.isfile("./MUST_Output.html"):
+            return 'failure', elapsed
+
+        with open('MUST_Output.html') as input:
+            for line in (input.readlines()):
+                html += line
+        os.rename(f"./MUST_Output.html", f"{binary}_{id}.html")
 
     with open(f'{binary}_{id}.txt', 'w') as outfile:
         outfile.write(output)
