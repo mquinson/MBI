@@ -201,20 +201,21 @@ test-aislinn:
 #        paths:
 #            - tools/mpisv
 
-test-mpisv:
-    stage: test
-    image: mpisv/mpi-sv
-    needs: []
-#        - job: build-mpisv
-#          artifacts: true
-    script:
-        - ./scripts/mpisv-run
-    artifacts:
-        untracked: false
-        expire_in: 30 days
-        when: always
-        paths:
-            - logs
+# MPI-SV refuses to build on nested virtualization as we have when using docker on gitlab-CI
+#test-mpisv:
+#    stage: test
+#    image: mpisv/mpi-sv
+#    needs: []
+##        - job: build-mpisv
+##          artifacts: true
+#    script:
+#        - ./scripts/mpisv-run
+#    artifacts:
+#        untracked: false
+#        expire_in: 30 days
+#        when: always
+#        paths:
+#            - logs
 
 build-civl:
     stage: build
