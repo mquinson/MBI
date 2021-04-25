@@ -87,9 +87,9 @@ tools.sort()
 
 width_per_tool = WIDTH / (len(tools))
 
-error_type_not_sorted = list(set([ast.literal_eval(row[6])[0] for row in data]))
+error_type_not_sorted = list(set([row[6] for row in data]))
 error_type_not_sorted.sort()
-error_type = ['noerror'] + [error for error in error_type_not_sorted if error != 'noerror'] 
+error_type = ['OK'] + [error for error in error_type_not_sorted if error != 'OK'] 
 
 
 height_per_error = HEIGHT / (len(error_type) + 1)
@@ -101,7 +101,7 @@ CASE_WIDTH = width_per_tool / (5.7)
 
 case_per_error = []
 for error in error_type:
-    case_per_error.append([row for row in data if ast.literal_eval(row[6])[0] == error])
+    case_per_error.append([row for row in data if row[6] == error])
 
 nb_error_type = {}
 
@@ -132,7 +132,7 @@ def print_result(top_left_x, top_left_y, i, j, row):
     to = row[3]
     np = row[4]
     buf = row[5]
-    expected = ast.literal_eval(row[6])
+    expected = row[6]
     result = row[7]
     elapsed = row[8]
     job_id = row[9]
@@ -150,30 +150,27 @@ def print_result(top_left_x, top_left_y, i, j, row):
     if result == "timeout":
         fig = "TO.svg"
         nb_error[tool] += 1
-    elif result == "CUN":
+    elif result == "UNIMPLEMENTED":
         fig = "CUN.svg"
         nb_error[tool] += 1
-    elif result == "RSF":
+    elif result == "failure":
         fig = "RSF.svg"
         nb_error[tool] += 1
 
-    elif result not in expected:
-        fig = "cross.svg"
-        if 'various' in expected and (result == 'deadlock' or result == 'numstab'):
+    elif expected == 'OK':
+        if result == 'OK':
             fig = "tick.svg"
-            nb_TP[tool] += 1
-            
-        elif result == "noerror":
-            nb_FN[tool] += 1
-        else:
-            nb_FP[tool] += 1
-    else:
-        if result == "noerror":
             nb_TN[tool] += 1
         else:
+            fig = "cross.svg"
+            nb_FP[tool] += 1
+    elif expected == 'ERROR':
+        if result == 'OK':
+            fig = "cross.svg"
+            nb_FN[tool] += 1
+        else:
+            fig = "tick.svg"
             nb_TP[tool] += 1
-
-    
 
     r.append(draw.Image(top_left_x + 0.1*CASE_WIDTH + i * (CASE_WIDTH*1.1),
             top_left_y - 0.1*CASE_HEIGHT - j * (CASE_HEIGHT*1.1),
