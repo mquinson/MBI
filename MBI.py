@@ -209,6 +209,10 @@ def mpisvrun(execcmd, filename, binary, id, timeout, jobid):
         timeout=timeout,
         read_line_lambda=must_filter)
 
+    if os.path.exists('klee-last'):
+        os.rename(os.readlink('klee-last'), f"{binary}_{id}-klee-out")
+        os.remove('klee-last')
+
     with open(f'{binary}_{id}.txt', 'w') as outfile:
         outfile.write(output)
 
