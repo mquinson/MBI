@@ -209,12 +209,18 @@ def mpisvrun(execcmd, filename, binary, id, timeout, jobid):
         timeout=timeout,
         read_line_lambda=must_filter)
 
-    if os.path.exists('klee-last'):
+    if os.path.exists('klee-last') and not os.path.exists(f"{binary}_{id}-klee-out"):
         os.rename(os.readlink('klee-last'), f"{binary}_{id}-klee-out")
         os.remove('klee-last')
 
     with open(f'{binary}_{id}.txt', 'w') as outfile:
         outfile.write(output)
+
+    if res != None:
+        return res, elapsed
+
+    with open(f"{binary}_{id}-klee-out/info", 'r') as infofile:
+        info = infofile.read()
 
     if re.search('failed external call', output):
         return 'UNIMPLEMENTED', elapsed
@@ -222,7 +228,7 @@ def mpisvrun(execcmd, filename, binary, id, timeout, jobid):
     if re.search('found deadlock', output):
         return 'deadlock', elapsed
 
-    if re.search('No Violation detected by MPI-SV', output):
+    if re.search('No Violation detected by MPI-SV', info):
         return 'OK', elapsed
 
     return 'other', elapsed
