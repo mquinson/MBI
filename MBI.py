@@ -7,7 +7,6 @@ import sys
 import stat
 import re
 import argparse
-import queue
 import time
 import multiprocessing as mp
 
@@ -84,13 +83,7 @@ def aislinnrun(execcmd, filename, binary, id, timeout):
     if os.path.exists("./report.html"):
         os.rename("./report.html", f"{binary}_{id}.html")
 
-    if os.path.exists(f'{cachefile}.elapsed'):
-        with open(f'{cachefile}.elapsed', 'r') as infile:
-            elapsed = infile.read()
-    else:
-        elapsed = 0
-
-    return aislinnparse(cachefile), elapsed
+    return aislinnparse(cachefile)
 
 ##########################
 # CIVL runner
@@ -154,13 +147,7 @@ def civlrun(execcmd, filename, binary, id, timeout):
         binary=binary,
         timeout=timeout)
 
-    if os.path.exists(f'{cachefile}.elapsed'):
-        with open(f'{cachefile}.elapsed', 'r') as infile:
-            elapsed = infile.read()
-    else:
-        elapsed = 0
-
-    return civlparse(cachefile), elapsed
+    return civlparse(cachefile)
 
 ##########################
 # ISP runner
@@ -212,19 +199,13 @@ def isprun(execcmd, filename, binary, id, timeout):
         binary=binary,
         timeout=timeout)
 
-    if os.path.exists(f'{cachefile}.elapsed'):
-        with open(f'{cachefile}.elapsed', 'r') as infile:
-            elapsed = infile.read()
-    else:
-        elapsed = 0
-
-    return ispparser(cachefile), elapsed
+    return ispparser(cachefile)
 
 ##########################
 # MPI-SV runner
 ##########################
 
-def mpisvparser(cachefile):
+def mpisvparse(cachefile):
     if os.path.exists(f'{cachefile}.timeout'):
         outcome = 'timeout'
     if not os.path.exists(f'{cachefile}.txt') or not os.path.exists(f"{binary}_{id}-klee-out/info"):
@@ -262,18 +243,12 @@ def mpisvrun(execcmd, filename, binary, id, timeout):
         binary=binary,
         timeout=timeout,
         read_line_lambda=must_filter)
-
-    if os.path.exists(f'{cachefile}.elapsed'):
-        with open(f'{cachefile}.elapsed', 'r') as infile:
-            elapsed = infile.read()
-    else:
-        elapsed = 0
-
+    
     if os.path.exists('klee-last') and not os.path.exists(f"{binary}_{id}-klee-out"):
         os.rename(os.readlink('klee-last'), f"{binary}_{id}-klee-out")
         os.remove('klee-last')
 
-    return mpisvparser(cachefile), elapsed
+    return mpisvparse(cachefile)
 
 ##########################
 # MUST runner
@@ -289,7 +264,7 @@ def must_filter(line, process):
         except ProcessLookupError:
             pass  # Ok, it's gone now
 
-def mustparser(cachefile):
+def mustparse(cachefile):
     # do not report timeouts ASAP, as MUST still deadlocks when it detects a root mismatch
     if not os.path.exists(f'{cachefile}.txt') or not os.path.exists(f'{cachefile}.html'):
         return 'failure'
@@ -346,19 +321,13 @@ def mustrun(execcmd, filename, binary, id, timeout):
     if os.path.isfile("./MUST_Output.html"):
         os.rename(f"./MUST_Output.html", f"{cachefile}.html")
 
-    if os.path.exists(f'{cachefile}.elapsed'):
-        with open(f'{cachefile}.elapsed', 'r') as infile:
-            elapsed = infile.read()
-    else:
-        elapsed = 0
-
-    return mustparser(cachefile), elapsed
+    return mustparse(cachefile)
 
 ##########################
 # Parcoach runner
 ##########################
 
-def parcoachparser(cachefile):
+def parcoachparse(cachefile):
     if os.path.exists(f'{cachefile}.timeout'):
         return 'timeout'
     if not os.path.exists(f'{cachefile}.txt'):
@@ -386,19 +355,13 @@ def parcoachrun(execcmd, filename, binary, id, timeout):
         binary=binary,
         timeout=timeout)
 
-    if os.path.exists(f'{cachefile}.elapsed'):
-        with open(f'{cachefile}.elapsed', 'r') as infile:
-            elapsed = infile.read()
-    else:
-        elapsed = 0
-
-    return parcoachparser(cachefile), elapsed
+    return parcoachparse(cachefile)
 
 ##########################
 # SimGrid runner
 ##########################
 
-def simgridparser(cachefile):
+def simgridparse(cachefile):
     if os.path.exists(f'{cachefile}.timeout'):
         return 'timeout'
     if not os.path.exists(f'{cachefile}.txt'):
@@ -448,13 +411,7 @@ def simgridrun(execcmd, filename, binary, id, timeout):
         binary=binary,
         timeout=timeout)
 
-    if os.path.exists(f'{cachefile}.elapsed'):
-        with open(f'{cachefile}.elapsed', 'r') as infile:
-            elapsed = infile.read()
-    else:
-        elapsed = 0
-
-    return simgridparser(cachefile), elapsed
+    return simgridparse(cachefile)
 
 ########################
 # Main script argument parsing
@@ -479,19 +436,26 @@ args = parser.parse_args()
 if args.x == 'mpirun':
     raise Exception("No tool was provided, please retry with -x parameter. (see -h for further information on usage)")
 elif args.x == 'must':
-    func = mustrun
+    runf = mustrun
+    parsef = mustparse
 elif args.x == 'mpisv':
-    func = mpisvrun
+    runf = mpisvrun
+    parsef = mpisvparse
 elif args.x == 'simgrid':
-    func = simgridrun
+    runf = simgridrun
+    parsef = simgridparse
 elif args.x == 'civl':
-    func = civlrun
+    runf = civlrun
+    parsef = civlparse
 elif args.x == 'parcoach':
-    func = parcoachrun
+    runf = parcoachrun
+    parsef = parcoachparse
 elif args.x == 'isp':
-    func = isprun
+    runf = isprun
+    parsef = ispparser
 elif args.x == 'aislinn':
-    func = aislinnrun
+    runf = aislinnrun
+    parsef = aislinnparse
 else:
     raise Exception(f"The tool parameter you provided ({args.x}) is either incorect or not yet implemented.")
 
@@ -580,33 +544,29 @@ for filename in args.filenames:
 ########################
 # Running the tests
 ########################
-def return_to_queue(queue, func, args):
-    outcome, elapsed = func(*args)
-    if elapsed is None:
-        raise Exception(f"Elapsed not set for {func}({args})!")
-    queue.put((outcome, elapsed))
-
 for filename, cmd, expected, test_num in todo:
     binary = re.sub('\.c', '', os.path.basename(filename))
 
     print(f"Test '{binary}_{test_num}'", end=": ")
     sys.stdout.flush()
 
-    q = mp.Queue()
-    p = mp.Process(target=return_to_queue, args=(q, func, (cmd, filename, binary, test_num, args.timeout)))
+    p = mp.Process(target=runf, args=(cmd, filename, binary, test_num, args.timeout))
     p.start()
     print(f"Wait up to {args.timeout} seconds")
     sys.stdout.flush()
     p.join(args.timeout+60)
-    try:
-        (outcome, elapsed) = q.get(block=False)
-    except queue.Empty:
-        if p.is_alive():
-            print("HARD TIMEOUT! The child process failed to timeout by itself. Sorry for the output.")
-            p.terminate()
-            outcome = 'timeout'
-        else:
-            outcome = 'failure'
+    if p.is_alive():
+        print("HARD TIMEOUT! The child process failed to timeout by itself. Sorry for the output.")
+        p.terminate()
+
+for filename, cmd, expected, test_num in todo:
+    binary = re.sub('\.c', '', os.path.basename(filename))
+    test_ID = f'{binary}_{test_num}'
+    outcome = parsef(test_ID)
+
+    if os.path.exists(f'{test_ID}.elapsed'):
+        with open(f'{test_ID}.elapsed', 'r') as infile:
+            elapsed = infile.read()
 
     # Stats on the codes, even if the tool fails
     if expected == 'OK':
@@ -646,7 +606,7 @@ for filename, cmd, expected, test_num in todo:
 
     print(f"\nTest '{binary}' result: {res_category}: {args.x} returned {outcome} while {expected} was expected. Elapsed: {elapsed} sec\n\n")
 
-    if res_category != 'timeout':
+    if res_category != 'timeout' and elapsed is not None:
         total_elapsed += float(elapsed)
 
     np = re.search(r"(?:-np) [0-9]+", cmd)
