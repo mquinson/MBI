@@ -322,7 +322,7 @@ def mustparser(cachefile):
     if os.path.exists(f'{cachefile}.timeout'):
         return 'timeout'
 
-    return None # Give a chance to return 'timeout' if some was detected by run_cmd
+    return 'OK' # This is dangerous to trust the tool that much
 
 
 def mustrun(execcmd, filename, binary, id, timeout):
