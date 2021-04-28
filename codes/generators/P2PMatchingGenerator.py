@@ -11,28 +11,16 @@ template = """// @{generatedby}@
     @{longdesc}@
 
 BEGIN_MPI_FEATURES
-  P2P:   @{p2pfeature}@ 
-  iP2P:  @{ip2pfeature}@
-  PERS:  Lacking
-  COLL:  Lacking
-  iCOLL: Lacking
-  TOPO:  Lacking
-  RMA:   Lacking
-  PROB:  Lacking
-  COM:   Lacking 
-  GRP:   Lacking
-  DATA:  Lacking
-  OP:    Lacking
+	P2P!basic: @{p2pfeature}@ 
+	P2P!nonblocking: @{ip2pfeature}@
+	P2P!persistent: Lacking
+	P2P!probe: Lacking
+	COLL!basic: Lacking
+	COLL!nonblocking: Lacking
+	COLL!persistent: Lacking
+	COLL!probe: Lacking
+	RMA: Lacking
 END_MPI_FEATURES
-
-BEGIN_ERROR_LABELS
-  deadlock:  ???
-  numstab:   never
-  mpierr:    never
-  resleak:   never
-  datarace:  never
-  various:   never
-END_ERROR_LABELS
 
 BEGIN_MBI_TESTS
   $ mpirun -np 2 ${EXE}
@@ -112,7 +100,7 @@ for p1 in p2p + ip2p:
     replace = patterns
     replace['shortdesc'] = 'Point to point @{p1}@ is not matched' 
     replace['longdesc'] = f'Process 0 calls @{p1}@ and is not matched'
-    replace['outcome'] = 'ERROR: P2POrdering'
+    replace['outcome'] = 'ERROR: CallMatching'
     replace['errormsg'] = 'P2P mistmatch. @{p1}@ at @{filename}@:@{line:MBIERROR}@ is not matched.'
-    make_file(template, f'P2PCallOrder_{p1}_nok.c', replace)
+    make_file(template, f'P2PCallMatching_{p1}_nok.c', replace)
 

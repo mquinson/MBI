@@ -11,28 +11,16 @@ template = """// @{generatedby}@
     @{longdesc}@
 
 BEGIN_MPI_FEATURES
-  P2P:   Lacking
-  iP2P:  Lacking
-  PERS:  Lacking
-  COLL:  @{collfeature}@
-  iCOLL: @{icollfeature}@
-  TOPO:  Lacking
-  RMA:   Lacking
-  PROB:  Lacking
-  COM:   Lacking
-  GRP:   Lacking
-  DATA:  Lacking
-  OP:    Lacking
+	P2P!basic: Lacking
+	P2P!nonblocking: Lacking
+	P2P!persistent: Lacking
+	P2P!probe: Lacking
+	COLL!basic: @{collfeature}@
+	COLL!nonblocking: @{icollfeature}@
+	COLL!persistent: Lacking
+	COLL!probe: Lacking
+	RMA: Lacking
 END_MPI_FEATURES
-
-BEGIN_ERROR_LABELS
-  deadlock:  ???
-  numstab:   never
-  mpierr:    never
-  resleak:   never
-  datarace:  never
-  various:   never
-END_ERROR_LABELS
 
 BEGIN_MBI_TESTS
   $ mpirun -np 2 ${EXE}
@@ -196,7 +184,7 @@ for coll1 in collectives + icollectives:
             replace = patterns
             replace['shortdesc'] = 'Incorrect collective ordering'
             replace['longdesc'] = f'Odd ranks call {coll1} and then {coll2} while even ranks call these collectives in the other order'
-            replace['outcome'] = 'ERROR: CollectiveOrdering'
+            replace['outcome'] = 'ERROR: CallMatching'
             replace['errormsg'] = 'Collective mistmatch. @{coll1}@ at @{filename}@:@{line:MBIERROR1}@ is matched with @{coll2}@ line @{filename}@:@{line:MBIERROR2}@.'
             replace['operation1b'] = operation[coll2]("2")  # Inversion
             replace['operation2b'] = operation[coll1]("1")
@@ -205,7 +193,7 @@ for coll1 in collectives + icollectives:
             replace = patterns
             replace['shortdesc'] = 'Incorrect collective ordering'
             replace['longdesc'] = f'Odd ranks call {coll1} while even ranks do not call any collective'
-            replace['outcome'] = 'ERROR: CollectiveOrdering'
+            replace['outcome'] = 'ERROR: CallMatching'
             replace['errormsg'] = 'Collective mistmatch. @{coll1}@ at @{filename}@:@{line:MBIERROR1}@ is not matched.'
             replace['operation1b'] = ''  # Remove functions
             replace['operation2b'] = ''

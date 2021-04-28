@@ -11,28 +11,16 @@ template = """// @{generatedby}@
     @{longdesc}@
 
 BEGIN_MPI_FEATURES
-  P2P:   Lacking
-  iP2P:  Lacking
-  PERS:  Lacking
-  COLL:  @{collfeature}@
-  iCOLL: @{icollfeature}@
-  TOPO:  Lacking
-  RMA:   Lacking
-  PROB:  Lacking
-  COM:   Lacking
-  GRP:   Lacking
-  DATA:  Lacking
-  OP:    Lacking 
+	P2P!basic: Lacking
+	P2P!nonblocking: Lacking
+	P2P!persistent: Lacking
+	P2P!probe: Lacking
+	COLL!basic: @{collfeature}@
+	COLL!nonblocking: @{icollfeature}@
+	COLL!persistent: Lacking
+	COLL!probe: Lacking
+	RMA: Lacking
 END_MPI_FEATURES
-
-BEGIN_ERROR_LABELS
-  deadlock:  ???
-  numstab:   never
-  mpierr:    never
-  resleak:   never
-  datarace:  never
-  various:   never
-END_ERROR_LABELS
 
 BEGIN_MBI_TESTS
   $ mpirun -np 2 ${EXE}
@@ -102,7 +90,7 @@ for coll in collectives + icollectives:
     replace = patterns
     replace['shortdesc'] = 'Collective @{coll}@ with an operator  mismatch'
     replace['longdesc'] = f'Odd ranks use MPI_SUM as the operator while even ranks use MPI_MAX'
-    replace['outcome'] = 'ERROR: OpMismatch'
+    replace['outcome'] = 'ERROR: OperatorMatching'
     replace['errormsg'] = 'Collective operator mistmatch. @{coll}@ at @{filename}@:@{line:MBIERROR}@ has MPI_MAX or MPI_SUM as an operator.'
     replace['change_op'] = 'if (rank % 2)\n    op = MPI_MAX;'
     make_file(template, f'CollOpMatching_{coll}_nok.c', replace)
@@ -111,7 +99,7 @@ for coll in collectives + icollectives:
     replace = patterns
     replace['shortdesc'] = 'Collective @{coll}@ with an invalid operator '
     replace['longdesc'] = 'Collective @{coll}@ with an invalid operator ' 
-    replace['outcome'] = 'ERROR: InvalidOp'
+    replace['outcome'] = 'ERROR: InvalidOperator'
     replace['errormsg'] = 'Invalid Operator. @{coll}@ at @{filename}@:@{line:MBIERROR}@ has MPI_OP_NULL as an operator.'
     replace['change_op'] = 'op = MPI_OP_NULL;'
     make_file(template, f'CollOpNull_{coll}_nok.c', replace)

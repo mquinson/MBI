@@ -11,28 +11,16 @@ template = """// @{generatedby}@
     @{longdesc}@
 
 BEGIN_MPI_FEATURES
-  P2P:   Lacking
-  iP2P:  Lacking
-  PERS:  Lacking
-  COLL:  @{collfeature}@
-  iCOLL: @{icollfeature}@
-  TOPO:  Lacking
-  RMA:   Lacking
-  PROB:  Lacking
-  COM:   Lacking
-  GRP:   Lacking
-  DATA:  Lacking
-  OP:    Lacking 
+	P2P!basic: Lacking
+	P2P!nonblocking: Lacking
+	P2P!persistent: Lacking
+	P2P!probe: Lacking
+	COLL!basic: @{collfeature}@
+	COLL!nonblocking: @{icollfeature}@
+	COLL!persistent: Lacking
+	COLL!probe: Lacking
+	RMA: Lacking
 END_MPI_FEATURES
-
-BEGIN_ERROR_LABELS
-  deadlock:  ???
-  numstab:   never
-  mpierr:    never
-  resleak:   never
-  datarace:  never
-  various:   never
-END_ERROR_LABELS
 
 BEGIN_MBI_TESTS
   $ mpirun -np 2 ${EXE}
@@ -147,7 +135,7 @@ for coll in collectives + icollectives:
     replace = patterns
     replace['shortdesc'] = 'Collective @{coll}@ with a datatype mismatch'
     replace['longdesc'] = f'Odd ranks use MPI_INT as the datatype while even ranks use MPI_FLOAT'
-    replace['outcome'] = 'ERROR: DataMismatch'
+    replace['outcome'] = 'ERROR: DatatypeMatching'
     replace['errormsg'] = 'Collective datatype mistmatch. @{coll}@ at @{filename}@:@{line:MBIERROR}@ has MPI_INT or MPI_FLOAT as a datatype.'
     replace['change_type'] = 'if (rank % 2)\n    type = MPI_FLOAT;'
     make_file(template, f'CollDataMatching_{coll}_nok.c', replace)
@@ -156,7 +144,7 @@ for coll in collectives + icollectives:
     replace = patterns
     replace['shortdesc'] = 'Collective @{coll}@ with an invalid datatype '
     replace['longdesc'] = 'Collective @{coll}@ with an invalid datatype ' 
-    replace['outcome'] = 'ERROR: InvalidType'
+    replace['outcome'] = 'ERROR: InvalidDatatype'
     replace['errormsg'] = 'Invalid Datatype. @{coll}@ at @{filename}@:@{line:MBIERROR}@ has an invalid datatype.'
     replace['change_type'] = 'type=MPI_DATATYPE_NULL;'
     make_file(template, f'CollDataNull_{coll}_nok.c', replace)
