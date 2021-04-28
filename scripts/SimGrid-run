@@ -23,10 +23,8 @@ export VERBOSE=1
 test -e ${rootdir}/logs/simgrid || mkdir -p ${rootdir}/logs/simgrid
 cd ${rootdir}/logs/simgrid
 
-cp ${rootdir}/builds/SimGrid/cluster.xml .
-
 # Run the script on each code
-python3 ${rootdir}/MBI.py -x simgrid -o bench_simgrid.csv -t 300 $(ls ${rootdir}/codes/*.c)
+python3 ${rootdir}/MBI.py -x simgrid -o bench_simgrid.csv $(ls ${rootdir}/codes/*.c)
 
 # Remove generated cruft (binary files and SMPI temp files)
 find -type f -a -executable | xargs rm

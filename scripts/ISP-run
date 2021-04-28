@@ -23,7 +23,7 @@ test -e ${rootdir}/logs/isp || mkdir -p ${rootdir}/logs/isp
 cd ${rootdir}/logs/isp
 
 # Run the script on each code
-python3 ${rootdir}/MBI.py -x isp -o bench_isp.csv -t 300 $(ls ${rootdir}/codes/*.c)
+python3 ${rootdir}/MBI.py -x isp -o bench_isp.csv $(ls ${rootdir}/codes/*.c)
 
 # Remove generated cruft (binary files)
 find -type f -a -executable | xargs rm

@@ -395,10 +395,10 @@ parser = argparse.ArgumentParser(
 parser.add_argument('filenames', metavar='example.c', nargs="+", help='a list of MPI c sources.')
 
 parser.add_argument('-x', metavar='tool', default='mpirun',
-                    help='the tool you want at execution : one among [aislinn, civl, isp, must, simgrid, parcoach]')
+                    help='the tool you want at execution : one among [aislinn, civl, isp, mpisv, must, simgrid, parcoach]')
 
 parser.add_argument('-t', '--timeout', metavar='int', default=300, type=int,
-                    help='timeout value at execution time, given in seconds')
+                    help='timeout value at execution time, given in seconds (default: 300)')
 
 parser.add_argument('-o', metavar='output.csv', default='out.csv', type=str,
                     help='name of the csv file in which results will be written')
