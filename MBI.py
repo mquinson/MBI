@@ -166,7 +166,7 @@ def civlrun(execcmd, filename, binary, id, timeout):
 # ISP runner
 ##########################
 
-def ispparser(output):
+def ispparser(cachefile):
     if os.path.exists(f'{cachefile}.timeout'):
         outcome = 'timeout'
     if not os.path.exists(f'{cachefile}.txt'):
@@ -289,7 +289,7 @@ def must_filter(line, process):
         except ProcessLookupError:
             pass  # Ok, it's gone now
 
-def mustparser(output, html):
+def mustparser(cachefile):
     # do not report timeouts ASAP, as MUST still deadlocks when it detects a root mismatch
     if not os.path.exists(f'{cachefile}.txt') or not os.path.exists(f'{cachefile}.html'):
         return 'failure'
