@@ -273,12 +273,16 @@ if len(failure) > 0:
 def percent(ratio):
     """Returns the ratio as a percentage, rounded to 2 digits only"""
     return int(ratio*10000)/100
+
 print(f"\nXXXX Summary for {args.x} XXXX  {passed} test{'' if passed == 1 else 's'} passed (out of {total})")
-print(f"Portability: {percent(1-len(unimplemented)/total)}% ({len(unimplemented)} tests failed)")
-print(f"Robustness: {percent(1-(len(timeout)+len(failure))/(total-len(unimplemented)))}% ({len(timeout)} timeouts and {len(failure)} failures)\n")
-print(f"Recall: {percent(TP/(TP+FN))}% (found {TP} errors out of {TP+FN})")
-print(f"Specificity: {percent(TN/(TN+FP))}% (recognized {TN} correct codes out of {TN+FP})")
-print(f"Precision: {percent(TP/(TP+FP))}% ({TP} diagnostic of error are correct out of {TP+FP})")
-print(f"Accuracy: {percent((TP+TN)/(TP+TN+FP+FN))}% ({TP+TN} correct diagnostics in total, out of {TP+TN+FP+FN} diagnostics)")
+try:
+    print(f"Portability: {percent(1-len(unimplemented)/total)}% ({len(unimplemented)} tests failed)")
+    print(f"Robustness: {percent(1-(len(timeout)+len(failure))/(total-len(unimplemented)))}% ({len(timeout)} timeouts and {len(failure)} failures)\n")
+    print(f"Recall: {percent(TP/(TP+FN))}% (found {TP} errors out of {TP+FN})")
+    print(f"Specificity: {percent(TN/(TN+FP))}% (recognized {TN} correct codes out of {TN+FP})")
+    print(f"Precision: {percent(TP/(TP+FP))}% ({TP} diagnostic of error are correct out of {TP+FP})")
+    print(f"Accuracy: {percent((TP+TN)/(TP+TN+FP+FN))}% ({TP+TN} correct diagnostics in total, out of {TP+TN+FP+FN} diagnostics)")
+except ZeroDivisionError:
+    print("Got a ZeroDivisionError while computing the metrics. Are you using all tests?")
 print(f"\nTotal time of all tests (not counting the timeouts): {total_elapsed}")
 print(f"\nMBI stats: {code_correct} correct codes; {code_incorrect} incorrect codes.")
