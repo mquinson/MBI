@@ -83,8 +83,6 @@ def aislinnrun(execcmd, filename, binary, id, timeout):
     if os.path.exists("./report.html"):
         os.rename("./report.html", f"{binary}_{id}.html")
 
-    return aislinnparse(cachefile)
-
 ##########################
 # CIVL runner
 ##########################
@@ -147,8 +145,6 @@ def civlrun(execcmd, filename, binary, id, timeout):
         binary=binary,
         timeout=timeout)
 
-    return civlparse(cachefile)
-
 ##########################
 # ISP runner
 ##########################
@@ -199,8 +195,6 @@ def isprun(execcmd, filename, binary, id, timeout):
         binary=binary,
         timeout=timeout)
 
-    return ispparser(cachefile)
-
 ##########################
 # MPI-SV runner
 ##########################
@@ -247,8 +241,6 @@ def mpisvrun(execcmd, filename, binary, id, timeout):
     if os.path.exists('klee-last') and not os.path.exists(f"{binary}_{id}-klee-out"):
         os.rename(os.readlink('klee-last'), f"{binary}_{id}-klee-out")
         os.remove('klee-last')
-
-    return mpisvparse(cachefile)
 
 ##########################
 # MUST runner
@@ -321,8 +313,6 @@ def mustrun(execcmd, filename, binary, id, timeout):
     if os.path.isfile("./MUST_Output.html"):
         os.rename(f"./MUST_Output.html", f"{cachefile}.html")
 
-    return mustparse(cachefile)
-
 ##########################
 # Parcoach runner
 ##########################
@@ -354,8 +344,6 @@ def parcoachrun(execcmd, filename, binary, id, timeout):
         cachefile=cachefile,
         binary=binary,
         timeout=timeout)
-
-    return parcoachparse(cachefile)
 
 ##########################
 # SimGrid runner
@@ -410,8 +398,6 @@ def simgridrun(execcmd, filename, binary, id, timeout):
         cachefile=cachefile,
         binary=binary,
         timeout=timeout)
-
-    return simgridparse(cachefile)
 
 ########################
 # Main script argument parsing
