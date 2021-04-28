@@ -393,7 +393,7 @@ simgrid-svg:
     #   - pip3 install drawSvg
     script:
         - cd Data
-        - python3.8 gen_svg.py -i ../logs/simgrid/bench_simgrid.csv -o simgrid_result_LOG --header false --mode log
+        - python3.8 gen_svg.py -i ../logs/simgrid/bench_simgrid.csv -o simgrid_result_LOG --header false
         - cp *svg ../logs/
     artifacts:
         untracked: false
@@ -413,7 +413,7 @@ parcoach-svg:
     #   - pip3 install drawSvg
     script:
         - cd Data
-        - python3.8 gen_svg.py -i ../logs/parcoach/bench_parcoach.csv -o parcoach_result_LOG --header false --mode log
+        - python3.8 gen_svg.py -i ../logs/parcoach/bench_parcoach.csv -o parcoach_result_LOG --header false
         - cp *svg ../logs/
     artifacts:
         untracked: false
@@ -433,7 +433,7 @@ isp-svg:
     #   - pip3 install drawSvg
     script:
         - cd Data
-        - python3.8 gen_svg.py -i ../logs/isp/bench_isp.csv -o isp_result_LOG --header false --mode log
+        - python3.8 gen_svg.py -i ../logs/isp/bench_isp.csv -o isp_result_LOG --header false
         - cp *svg ../logs/
     artifacts:
         untracked: false
@@ -453,7 +453,7 @@ aislinn-svg:
     #   - pip3 install drawSvg
     script:
         - cd Data
-        - python3.8 gen_svg.py -i ../logs/aislinn/bench_aislinn.csv -o aislinn_result_LOG --header false --mode log
+        - python3.8 gen_svg.py -i ../logs/aislinn/bench_aislinn.csv -o aislinn_result_LOG --header false
         - cp *svg ../logs/
     artifacts:
         untracked: false
@@ -476,7 +476,7 @@ civl-svg:
     script:
         - cd Data
         - cat ../logs/civl/*.csv > result.csv
-        - python3.8 gen_svg.py -i result.csv -o civl_result_LOG --header false --mode log
+        - python3.8 gen_svg.py -i result.csv -o civl_result_LOG --header false
         - cp *svg ../logs/
     artifacts:
         untracked: false
@@ -511,7 +511,7 @@ must-svg:
     script:
         - cd Data
         - cat ../logs/must/*.csv > result.csv
-        - python3.8 gen_svg.py -i result.csv -o must_result_LOG --header false --mode log
+        - python3.8 gen_svg.py -i result.csv -o must_result_LOG --header false
         - cp *svg ../logs/
     artifacts:
         untracked: false
@@ -571,7 +571,7 @@ data-collect:
         - echo "#filename;id;tool;TO;NP;buff;expected;result;elapsed_time;jobid" > result.csv
         - cd Data
         - cat ../logs/*/*.csv >> result.csv
-        - python3.8 gen_svg.py -i result.csv -o all_result_LOG --header true --mode log
+        - python3.8 gen_svg.py -i result.csv -o all_result_LOG --header true
         - cp *svg ../log
     artifacts:
         untracked: false
