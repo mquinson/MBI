@@ -17,13 +17,6 @@ fi
 
 set -e # Fail on error
 
-# If this was not run with gilab-ci, we provide a meaningless value
-if [ -z "$CI_JOB_ID" ]
-then
-    CI_JOB_ID=0
-fi
-
-
 test -e ${rootdir}/logs/civl || mkdir -p ${rootdir}/logs/civl
 cd ${rootdir}/logs/civl
 
@@ -36,4 +29,4 @@ else
 fi
 
 # Run the script on each code
-python3 ${rootdir}/MBI.py -x civl -o bench_civl.csv -t 300 --job $CI_JOB_ID ${codes_list}
+python3 ${rootdir}/MBI.py -x civl -o bench_civl.csv ${codes_list}

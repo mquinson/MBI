@@ -17,13 +17,7 @@ parser.add_argument('-o', metavar='output', default='out', type=str, help='name 
 
 parser.add_argument('--header', metavar='header', default=True, type=bool, help='wether the input csv contains an header')
 
-parser.add_argument('--mode', metavar='mode', default="log", type=str, help='wether the link should point to execution log or C src code (either <log> or <src>)')
-
 args = parser.parse_args()
-
-DEBUG = False
-if args.mode == "log":
-    DEBUG = True
     
 #############################
 ## Specific SVG class
@@ -135,13 +129,8 @@ def print_result(top_left_x, top_left_y, i, j, row):
     expected = row[6]
     result = row[7]
     elapsed = row[8]
-    job_id = row[9]
 
-    if DEBUG:
-        link = "https://gitlab.com/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/-/jobs/{}/artifacts/raw/Benchmarks/{}_{}.txt".format(job_id,name,id)
-
-    else:
-        link = "https://gitlab.com/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/-/tree/master/codes/{}.c".format(name)
+    link = "https://gitlab.com/MpiCorrectnessBenchmark/mpicorrectnessbenchmark/-/tree/master/codes/{}.c".format(name)
     
     r = Hyperlink(link)
     

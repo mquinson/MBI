@@ -25,12 +25,6 @@ echo|add-apt-repository ppa:deadsnakes/ppa      # Add a source for the python we
 apt-get update
 apt-get install -y python3.7
 
-# If this was not run with gilab-ci, we provide a meaningless value
-if [ -z "$CI_JOB_ID" ]
-then
-    CI_JOB_ID=0
-fi
-
 test -e ${rootdir}/logs/mpisv || mkdir -p ${rootdir}/logs/mpisv
 cd ${rootdir}/logs/mpisv
 
@@ -43,7 +37,7 @@ else
 fi
 
 # Run the script on each code
-python3.7 ${rootdir}/MBI.py -x mpisv -o bench_mpisv.csv -t 300 --job $CI_JOB_ID ${codes_list}
+python3.7 ${rootdir}/MBI.py -x mpisv -o bench_mpisv.csv ${codes_list}
 
 # Remove generated cruft (temp files and compiled binaries)
 #find -executable | xargs rm

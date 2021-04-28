@@ -19,79 +19,125 @@ from MBIutils import *
 os.environ["LC_ALL"] = "C"
 
 ##########################
-# Helper function to run tests
-##########################
-
-
-##########################
 # Aislinn runner
 ##########################
 
+def aislinnparse(cachefile):
+    if os.path.exists(f'{cachefile}.timeout'):
+        outcome = 'timeout'
+    if not os.path.exists(f'{cachefile}.txt'):
+        return 'failure'
 
-def aislinnrun(execcmd, filename, binary, id, timeout, jobid):
+    with open(f'{cachefile}.txt', 'r') as infile:
+        output = infile.read()
+
+    if re.search('No errors found', output):
+        return 'OK'
+
+    if re.search('Deadlock', output):
+        return 'deadlock'
+    if re.search('Collective operation mismatch', output):
+        return 'deadlock'
+    if re.search('Mixing blocking and nonblocking collective operation', output):
+        return 'deadlock'
+    if re.search('Pending message', output):
+        return 'deadlock'
+
+    if re.search('Invalid rank', output):
+        return 'mpierr'
+    if re.search('Invalid datatype', output):
+        return 'mpierr'
+    if re.search('Invalid communicator', output):
+        return 'mpierr'
+    if re.search('Invalid color', output):
+        return 'mpierr'
+    if re.search('Invalid operation', output):
+        return 'mpierr'
+    if re.search('Invalid count', output):
+        return 'mpierr'
+
+    if re.search('Collective operation: root mismatch', output):
+        return 'various'
+
+    if re.search('Unkown function call', output):
+        return 'UNIMPLEMENTED'
+
+    return 'other'
+
+
+def aislinnrun(execcmd, filename, binary, id, timeout):
+    cachefile = f'{binary}_{id}'
+
     execcmd = re.sub("mpirun", "aislinn", execcmd)
     execcmd = re.sub('\${EXE}', binary, execcmd)
     execcmd = re.sub('\$zero_buffer', "--send-protocol=rendezvous", execcmd)
     execcmd = re.sub('\$infty_buffer', "--send-protocol=eager", execcmd)
     execcmd = re.sub('-np ', '-p=', execcmd)
 
-    res, elapsed, output = run_cmd(
+    run_cmd(
         buildcmd=f"aislinn-cc -g {filename} -o {binary}",
         execcmd=execcmd,
-        cachefile=f'{binary}_{id}',
+        cachefile=cachefile,
         binary=binary,
         timeout=timeout)
 
     if os.path.exists("./report.html"):
         os.rename("./report.html", f"{binary}_{id}.html")
+
+    if os.path.exists(f'{cachefile}.elapsed'):
+        with open(f'{cachefile}.elapsed', 'r') as infile:
+            elapsed = infile.read()
     else:
-        output += "No html report found"
+        elapsed = 0
 
-    with open(f'{binary}_{id}.txt', 'w') as outfile:
-        outfile.write(output)
-
-    if res != None:
-        return res, elapsed
-
-    if re.search('No errors found', output):
-        return 'OK', elapsed
-
-    if re.search('Deadlock', output):
-        return 'deadlock', elapsed
-    if re.search('Collective operation mismatch', output):
-        return 'deadlock', elapsed
-    if re.search('Mixing blocking and nonblocking collective operation', output):
-        return 'deadlock', elapsed
-    if re.search('Pending message', output):
-        return 'deadlock', elapsed
-
-    if re.search('Invalid rank', output):
-        return 'mpierr', elapsed
-    if re.search('Invalid datatype', output):
-        return 'mpierr', elapsed
-    if re.search('Invalid communicator', output):
-        return 'mpierr', elapsed
-    if re.search('Invalid color', output):
-        return 'mpierr', elapsed
-    if re.search('Invalid operation', output):
-        return 'mpierr', elapsed
-    if re.search('Invalid count', output):
-        return 'mpierr', elapsed
-
-    if re.search('Collective operation: root mismatch', output):
-        return 'various', elapsed
-
-    if re.search('Unkown function call', output):
-        return 'UNIMPLEMENTED', elapsed
-
-    return 'other', elapsed
+    return aislinnparse(cachefile), elapsed
 
 ##########################
 # CIVL runner
 ##########################
 
+def civlparse(cachefile):
+    if os.path.exists(f'{cachefile}.timeout'):
+        outcome = 'timeout'
+    if not os.path.exists(f'{cachefile}.txt'):
+        return 'failure'
 
-def civlrun(execcmd, filename, binary, id, timeout, jobid):
+    with open(f'{cachefile}.txt', 'r') as infile:
+        output = infile.read()
+
+    if re.search('DEADLOCK', output):
+        return 'deadlock'
+
+    if re.search('has a different root', output):
+        return 'various'
+    if re.search('has a different MPI_Op', output):
+        return 'various'
+
+    if re.search('MPI message leak', output):
+        return 'mpierr'
+    if re.search('MPI_ERROR', output):
+        return 'mpierr'
+
+    if re.search('MEMORY_LEAK', output):
+        return 'resleak'
+
+    if re.search('The standard properties hold for all executions', output):
+        return 'OK'
+
+    if re.search('A CIVL internal error has occurred', output):
+        return 'failure'
+
+    if re.search('This feature is not yet implemented', output):
+        return 'UNIMPLEMENTED'
+    if re.search('doesn.t have a definition', output):
+        return 'UNIMPLEMENTED'
+    if re.search('Undeclared identifier', output):
+        return 'UNIMPLEMENTED'
+
+    return 'other'
+
+def civlrun(execcmd, filename, binary, id, timeout):
+    cachefile = f'{binary}_{id}'
 
     execcmd = re.sub("mpirun", "java -jar ../../tools/CIVL-1.20_5259/lib/civl-1.20_5259.jar verify", execcmd)
     execcmd = re.sub('-np ', "-input_mpi_nprocs=", execcmd)
@@ -101,56 +147,54 @@ def civlrun(execcmd, filename, binary, id, timeout, jobid):
 
     subprocess.run("killall -9 java 2>/dev/null", shell=True)
 
-    res, elapsed, output = run_cmd(
+    run_cmd(
         buildcmd=None,
         execcmd=execcmd,
-        cachefile=f'{binary}_{id}',
+        cachefile=cachefile,
         binary=binary,
         timeout=timeout)
 
-    with open(f'{binary}_{id}.txt', 'w') as outfile:
-        outfile.write(output)
+    if os.path.exists(f'{cachefile}.elapsed'):
+        with open(f'{cachefile}.elapsed', 'r') as infile:
+            elapsed = infile.read()
+    else:
+        elapsed = 0
 
-    if res != None:
-        return res, elapsed
-
-    if re.search('DEADLOCK', output):
-        return 'deadlock', elapsed
-
-    if re.search('has a different root', output):
-        return 'various', elapsed
-    if re.search('has a different MPI_Op', output):
-        return 'various', elapsed
-
-    if re.search('MPI message leak', output):
-        return 'mpierr', elapsed
-    if re.search('MPI_ERROR', output):
-        return 'mpierr', elapsed
-
-    if re.search('MEMORY_LEAK', output):
-        return 'resleak', elapsed
-
-    if re.search('The standard properties hold for all executions', output):
-        return 'OK', elapsed
-
-    if re.search('A CIVL internal error has occurred', output):
-        return 'failure', elapsed
-
-    if re.search('This feature is not yet implemented', output):
-        return 'UNIMPLEMENTED', elapsed
-    if re.search('doesn.t have a definition', output):
-        return 'UNIMPLEMENTED', elapsed
-    if re.search('Undeclared identifier', output):
-        return 'UNIMPLEMENTED', elapsed
-
-    return 'other', elapsed
+    return civlparse(cachefile), elapsed
 
 ##########################
 # ISP runner
 ##########################
 
+def ispparser(cachefile):
+    if os.path.exists(f'{cachefile}.timeout'):
+        outcome = 'timeout'
+    if not os.path.exists(f'{cachefile}.txt'):
+        return 'failure'
 
-def isprun(execcmd, filename, binary, id, timeout, jobid):
+    with open(f'{cachefile}.txt', 'r') as infile:
+        output = infile.read()
+
+    if re.search('ISP detected deadlock!!!', output):
+        return 'deadlock'
+    if re.search('Detected a DEADLOCK in interleaving', output):
+        return 'deadlock'
+
+    if re.search('resource leaks detected', output):
+        return 'resleak'
+
+    if re.search('ISP detected no deadlocks', output):
+        return 'OK'
+
+    if re.search('Fatal error in PMPI', output):
+        return 'mpierr'
+    if re.search('Fatal error in MPI', output):
+        return 'mpierr'
+
+    return 'other'
+
+def isprun(execcmd, filename, binary, id, timeout):
+    cachefile = f'{binary}_{id}'
 
     execcmd = re.sub("mpirun", "isp.exe", execcmd)
     execcmd = re.sub('-np', '-n', execcmd)
@@ -161,39 +205,49 @@ def isprun(execcmd, filename, binary, id, timeout, jobid):
     print("\nClearing port before executing ISP\n")
     subprocess.run("kill -9 $(lsof -t -i:9999) 2>/dev/null", shell=True)
 
-    res, elapsed, output = run_cmd(
+    run_cmd(
         buildcmd=f"ispcc -o {binary} {filename}",
         execcmd=execcmd,
-        cachefile=f'{binary}_{id}',
+        cachefile=cachefile,
         binary=binary,
         timeout=timeout)
 
-    with open(f'{binary}_{id}.txt', 'w') as outfile:
-        outfile.write(output)
+    if os.path.exists(f'{cachefile}.elapsed'):
+        with open(f'{cachefile}.elapsed', 'r') as infile:
+            elapsed = infile.read()
+    else:
+        elapsed = 0
 
-    if res != None:
-        return res, elapsed
+    return ispparser(cachefile), elapsed
 
-    if re.search('ISP detected deadlock!!!', output):
-        return 'deadlock', elapsed
-    if re.search('Detected a DEADLOCK in interleaving', output):
-        return 'deadlock', elapsed
+##########################
+# MPI-SV runner
+##########################
 
-    if re.search('resource leaks detected', output):
-        return 'resleak', elapsed
+def mpisvparser(cachefile):
+    if os.path.exists(f'{cachefile}.timeout'):
+        outcome = 'timeout'
+    if not os.path.exists(f'{cachefile}.txt') or not os.path.exists(f"{binary}_{id}-klee-out/info"):
+        return 'failure'
 
-    if re.search('ISP detected no deadlocks', output):
-        return 'OK', elapsed
+    with open(f"{binary}_{id}-klee-out/info", 'r') as infofile:
+        info = infofile.read()
+    with open(f'{cachefile}.txt', 'r') as infile:
+        output = infile.read()
 
-    if re.search('Fatal error in PMPI', output):
-        return 'mpierr', elapsed
-    if re.search('Fatal error in MPI', output):
-        return 'mpierr', elapsed
+    if re.search('failed external call', output):
+        return 'UNIMPLEMENTED'
 
-    return 'other', elapsed
+    if re.search('found deadlock', output):
+        return 'deadlock'
 
+    if re.search('No Violation detected by MPI-SV', info):
+        return 'OK'
 
-def mpisvrun(execcmd, filename, binary, id, timeout, jobid):
+    return 'other'
+
+def mpisvrun(execcmd, filename, binary, id, timeout):
+    cachefile = f'{binary}_{id}'
 
     execcmd = re.sub("mpirun", "mpisv", execcmd)
     execcmd = re.sub('-np ', "", execcmd)
@@ -201,38 +255,25 @@ def mpisvrun(execcmd, filename, binary, id, timeout, jobid):
     execcmd = re.sub('\$zero_buffer', "", execcmd)
     execcmd = re.sub('\$infty_buffer', "", execcmd)
 
-    res, elapsed, output = run_cmd(
+    run_cmd(
         buildcmd=f"mpisvcc {filename} -o {binary}.bc",
         execcmd=execcmd,
-        cachefile=f'{binary}_{id}',
+        cachefile=cachefile,
         binary=binary,
         timeout=timeout,
         read_line_lambda=must_filter)
+
+    if os.path.exists(f'{cachefile}.elapsed'):
+        with open(f'{cachefile}.elapsed', 'r') as infile:
+            elapsed = infile.read()
+    else:
+        elapsed = 0
 
     if os.path.exists('klee-last') and not os.path.exists(f"{binary}_{id}-klee-out"):
         os.rename(os.readlink('klee-last'), f"{binary}_{id}-klee-out")
         os.remove('klee-last')
 
-    with open(f'{binary}_{id}.txt', 'w') as outfile:
-        outfile.write(output)
-
-    if res != None:
-        return res, elapsed
-
-    with open(f"{binary}_{id}-klee-out/info", 'r') as infofile:
-        info = infofile.read()
-
-    if re.search('failed external call', output):
-        return 'UNIMPLEMENTED', elapsed
-
-    if re.search('found deadlock', output):
-        return 'deadlock', elapsed
-
-    if re.search('No Violation detected by MPI-SV', info):
-        return 'OK', elapsed
-
-    return 'other', elapsed
-
+    return mpisvparser(cachefile), elapsed
 
 ##########################
 # MUST runner
@@ -248,8 +289,44 @@ def must_filter(line, process):
         except ProcessLookupError:
             pass  # Ok, it's gone now
 
+def mustparser(cachefile):
+    # do not report timeouts ASAP, as MUST still deadlocks when it detects a root mismatch
+    if not os.path.exists(f'{cachefile}.txt') or not os.path.exists(f'{cachefile}.html'):
+        return 'failure'
 
-def mustrun(execcmd, filename, binary, id, timeout, jobid):
+    with open(f'{cachefile}.html', 'r') as infile:
+        html = infile.read()
+
+    if re.search('deadlock', html):
+        return 'deadlock'
+
+    if re.search('not freed', html):
+        return 'resleak'
+
+    if re.search('conflicting roots', html):
+        return 'various'
+
+    if re.search('unknown datatype', html) or re.search('has to be a non-negative integer', html) or re.search('must use equal type signatures', html):
+        return 'mpierr'
+
+    with open(f'{cachefile}.txt', 'r') as infile:
+        output = infile.read()
+
+    if re.search('caught MPI error', output):
+        return 'mpierr'
+
+    if re.search('Error', html):
+        return 'mpierr'
+
+    # No interesting output found, so return the timeout as is if it exists
+    if os.path.exists(f'{cachefile}.timeout'):
+        return 'timeout'
+
+    return 'OK' # This is dangerous to trust the tool that much
+
+
+def mustrun(execcmd, filename, binary, id, timeout):
+    cachefile = f'{binary}_{id}'
 
     execcmd = re.sub("mpirun", "mustrun --must:distributed", execcmd)
     execcmd = re.sub('\${EXE}', binary, execcmd)
@@ -258,90 +335,96 @@ def mustrun(execcmd, filename, binary, id, timeout, jobid):
 
     subprocess.run("killall -9 mpirun 2>/dev/null", shell=True)
 
-    res, elapsed, output = run_cmd(
+    run_cmd(
         buildcmd=f"mpicc {filename} -o {binary}",
         execcmd=execcmd,
-        cachefile=f'{binary}_{id}',
+        cachefile=cachefile,
         binary=binary,
         timeout=timeout,
         read_line_lambda=must_filter)
 
-    html = ""
-    if os.path.isfile(f"{binary}_{id}.html"):
-        with open(f"{binary}_{id}.html") as input:
-            for line in (input.readlines()):
-                html += line
+    if os.path.isfile("./MUST_Output.html"):
+        os.rename(f"./MUST_Output.html", f"{cachefile}.html")
+
+    if os.path.exists(f'{cachefile}.elapsed'):
+        with open(f'{cachefile}.elapsed', 'r') as infile:
+            elapsed = infile.read()
     else:
-        if not os.path.isfile("./MUST_Output.html"):
-            return 'failure', elapsed
+        elapsed = 0
 
-        with open('MUST_Output.html') as input:
-            for line in (input.readlines()):
-                html += line
-        os.rename(f"./MUST_Output.html", f"{binary}_{id}.html")
-
-    with open(f'{binary}_{id}.txt', 'w') as outfile:
-        outfile.write(output)
-
-    if res != None and res != 'timeout':  # Try to read the result even if the test timeouted
-        return res, elapsed
-
-    if re.search('deadlock', html):
-        return 'deadlock', elapsed
-
-    if re.search('not freed', html):
-        return 'resleak', elapsed
-
-    if re.search('conflicting roots', html):
-        return 'various', elapsed
-
-    if re.search('unknown datatype', html) or re.search('has to be a non-negative integer', html) or re.search('must use equal type signatures', html):
-        return 'mpierr', elapsed
-
-    if re.search('caught MPI error', output):
-        return 'mpierr', elapsed
-
-    if re.search('Error', html):
-        return 'mpierr', elapsed
-
-    if res == None:
-        return 'OK', elapsed
-    return res, elapsed
+    return mustparser(cachefile), elapsed
 
 ##########################
 # Parcoach runner
 ##########################
 
+def parcoachparser(cachefile):
+    if os.path.exists(f'{cachefile}.timeout'):
+        return 'timeout'
+    if not os.path.exists(f'{cachefile}.txt'):
+        return 'failure'
 
-def parcoachrun(execcmd, filename, binary, id, timeout, jobid):
+    with open(f'{cachefile}.txt', 'r') as infile:
+        output = infile.read()
 
-    res, elapsed, output = run_cmd(
+    if re.search('0 warning\(s\) issued', output):
+        return 'OK'
+
+    if re.search('missing info for external function', output):
+        return 'UNIMPLEMENTED'
+
+    return 'deadlock'
+
+
+def parcoachrun(execcmd, filename, binary, id, timeout):
+    cachefile = f'{binary}_{id}'
+
+    run_cmd(
         buildcmd=f"clang -c -g -emit-llvm {filename} -I/usr/lib/x86_64-linux-gnu/mpich/include/ -o {binary}.bc",
         execcmd=f"opt-9 -load ../../builds/parcoach/src/aSSA/aSSA.so -parcoach -check-mpi {binary}.bc -o /dev/null",
-        cachefile=f'{binary}_{id}',
+        cachefile=cachefile,
         binary=binary,
         timeout=timeout)
 
-    with open(f'{binary}_{id}.txt', 'w') as outfile:
-        outfile.write(output)
+    if os.path.exists(f'{cachefile}.elapsed'):
+        with open(f'{cachefile}.elapsed', 'r') as infile:
+            elapsed = infile.read()
+    else:
+        elapsed = 0
 
-    if res != None:
-        return res, elapsed
-
-    if re.search('0 warning\(s\) issued', output):
-        return 'OK', elapsed
-
-    if re.search('missing info for external function', output):
-        return 'UNIMPLEMENTED', elapsed
-
-    return 'deadlock', elapsed
+    return parcoachparser(cachefile), elapsed
 
 ##########################
 # SimGrid runner
 ##########################
 
+def simgridparser(cachefile):
+    if os.path.exists(f'{cachefile}.timeout'):
+        return 'timeout'
+    if not os.path.exists(f'{cachefile}.txt'):
+        return 'failure'
 
-def simgridrun(execcmd, filename, binary, id, timeout, jobid):
+    with open(f'{cachefile}.txt', 'r') as infile:
+        output = infile.read()
+
+    if re.search('DEADLOCK DETECTED', output):
+        return 'deadlock'
+    if re.search('returned MPI_ERR', output):
+        return 'mpierr'
+    if re.search('Not yet implemented', output):
+        return 'UNIMPLEMENTED'
+    if re.search('CRASH IN THE PROGRAM', output):
+        return 'segfault'
+    if re.search('Probable memory leaks in your code: SMPI detected', output):
+        return 'resleak'
+    if re.search('No property violation found', output):
+        return 'OK'
+
+    print("Couldn't assign output to specific behaviour; This will be treated as 'other'")
+    return 'other'
+
+def simgridrun(execcmd, filename, binary, id, timeout):
+    cachefile = f'{binary}_{id}'
 
     if not os.path.exists("cluster.xml"):
         with open('cluster.xml', 'w') as outfile:
@@ -358,34 +441,20 @@ def simgridrun(execcmd, filename, binary, id, timeout, jobid):
     execcmd = re.sub('\$zero_buffer', "--cfg=smpi/buffering:zero", execcmd)
     execcmd = re.sub('\$infty_buffer', "--cfg=smpi/buffering:infty", execcmd)
 
-    res, elapsed, output = run_cmd(
+    run_cmd(
         buildcmd=f"smpicc {filename} -g -Wl,-znorelro -Wl,-znoseparate-code -o {binary}",
         execcmd=execcmd,
-        cachefile=f'{binary}_{id}',
+        cachefile=cachefile,
         binary=binary,
         timeout=timeout)
 
-    with open(f'{binary}_{id}.txt', 'w') as outfile:
-        outfile.write(output)
+    if os.path.exists(f'{cachefile}.elapsed'):
+        with open(f'{cachefile}.elapsed', 'r') as infile:
+            elapsed = infile.read()
+    else:
+        elapsed = 0
 
-    if res != None:
-        return res, elapsed
-    if re.search('DEADLOCK DETECTED', output):
-        return 'deadlock', elapsed
-    if re.search('returned MPI_ERR', output):
-        return 'mpierr', elapsed
-    if re.search('Not yet implemented', output):
-        return 'UNIMPLEMENTED', elapsed
-    if re.search('CRASH IN THE PROGRAM', output):
-        return 'segfault', elapsed
-    if re.search('Probable memory leaks in your code: SMPI detected', output):
-        return 'resleak', elapsed
-    if re.search('No property violation found', output):
-        return 'OK', elapsed
-
-    print("Couldn't assign output to specific behaviour; This will be treated as 'other'")
-    return 'other', elapsed
-
+    return simgridparser(cachefile), elapsed
 
 ########################
 # Main script argument parsing
@@ -397,16 +466,13 @@ parser = argparse.ArgumentParser(
 parser.add_argument('filenames', metavar='example.c', nargs="+", help='a list of MPI c sources.')
 
 parser.add_argument('-x', metavar='tool', default='mpirun',
-                    help='the tool you want at execution : one among [aislinn, civl, isp, must, simgrid, parcoach]')
+                    help='the tool you want at execution : one among [aislinn, civl, isp, mpisv, must, simgrid, parcoach]')
 
 parser.add_argument('-t', '--timeout', metavar='int', default=300, type=int,
-                    help='timeout value at execution time, given in seconds')
+                    help='timeout value at execution time, given in seconds (default: 300)')
 
 parser.add_argument('-o', metavar='output.csv', default='out.csv', type=str,
                     help='name of the csv file in which results will be written')
-
-parser.add_argument('--job', metavar='int', default='NA', type=str,
-                    help='Gitlab job-id, in order to fetch execution artifacts. If not run as a Gitlab job, do not consider.')
 
 args = parser.parse_args()
 
@@ -453,14 +519,12 @@ def extract_todo(filename):
                 if state == 0:
                     state = 1
                 else:
-                    print(f"\nMBI_TESTS header appears a second time at line {line_num}: \n{line}")
-                    sys.exit(1)
+                    raise Exception(f"MBI_TESTS header appears a second time at line {line_num}: \n{line}")
             elif re.match(".*END_MBI_TESTS.*", line):
                 if state == 1:
                     state = 2
                 else:
-                    print(f"\nUnexpected end of MBI_TESTS header at line {line_num}: \n{line}")
-                    sys.exit(1)
+                    raise Exception(f"Unexpected end of MBI_TESTS header at line {line_num}: \n{line}")
             if state == 1 and re.match("\s+\$ ?.*", line):
                 m = re.match('\s+\$ ?(.*)', line)
                 cmd = m.group(1)
@@ -478,11 +542,9 @@ def extract_todo(filename):
                 line_num += 1
 
     if state == 0:
-        print(f"\nMBI_TESTS header not found in file '{filename}'.")
-        sys.exit(1)
+        raise Exception(f"MBI_TESTS header not found in file '{filename}'.")
     if state == 1:
-        print(f"\nMBI_TESTS header not properly ended in file '{filename}'.")
-        sys.exit(1)
+        raise Exception(f"MBI_TESTS header not properly ended in file '{filename}'.")
 
     return res
 
@@ -490,8 +552,7 @@ def extract_todo(filename):
 def return_to_queue(queue, func, args):
     outcome, elapsed = func(*args)
     if elapsed is None:
-        print(f"Elapsed not set for {func}({args})!")
-        os._exit(1)
+        raise Exception(f"Elapsed not set for {func}({args})!")
     queue.put((outcome, elapsed))
 
 
@@ -519,8 +580,7 @@ for filename, cmd, expected, test_count in todo:
     q = mp.Queue()
 
     if args.x == 'mpirun':
-        print("No tool was provided, please retry with -x parameter. (see -h for further information on usage)")
-        sys.exit(1)
+        raise Exception("No tool was provided, please retry with -x parameter. (see -h for further information on usage)")
 
     elif args.x == 'must':
         func = mustrun
@@ -537,10 +597,9 @@ for filename, cmd, expected, test_count in todo:
     elif args.x == 'aislinn':
         func = aislinnrun
     else:
-        print(f"The tool parameter you provided ({args.x}) is either incorect or not yet implemented.")
-        sys.exit(1)
+        raise Exception(f"The tool parameter you provided ({args.x}) is either incorect or not yet implemented.")
 
-    p = mp.Process(target=return_to_queue, args=(q, func, (cmd, filename, binary, test_count, args.timeout, args.job)))
+    p = mp.Process(target=return_to_queue, args=(q, func, (cmd, filename, binary, test_count, args.timeout)))
     p.start()
     print(f"Wait up to {args.timeout} seconds")
     sys.stdout.flush()
@@ -610,7 +669,7 @@ for filename, cmd, expected, test_count in todo:
 
     with open("./" + args.o, "a") as result_file:
         result_file.write(
-            f"{binary};{test_count};{args.x};{args.timeout};{np};{buff};{expected};{outcome};{elapsed};{args.job}\n")
+            f"{binary};{test_count};{args.x};{args.timeout};{np};{buff};{expected};{outcome};{elapsed}\n")
 
 ########################
 # Termination

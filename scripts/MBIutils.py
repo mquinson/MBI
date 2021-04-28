@@ -10,14 +10,7 @@ import signal
 def run_cmd(buildcmd, execcmd, cachefile, binary, timeout, read_line_lambda=None):
     if os.path.exists(f'{cachefile}.txt') and os.path.exists(f'{cachefile}.elapsed'):
         print(f" (cached result found for {cachefile})", end='')
-        outcome = None
-        if os.path.exists(f'{cachefile}.timeout'):
-            outcome = 'timeout'
-        with open(f'{cachefile}.txt', 'r') as infile:
-            output = infile.read()
-        with open(f'{cachefile}.elapsed', 'r') as infile:
-            elapsed = infile.read()
-        return outcome, elapsed, output
+        return
 
     start_time = time.time()
     if buildcmd == None:
@@ -87,4 +80,5 @@ def run_cmd(buildcmd, execcmd, cachefile, binary, timeout, read_line_lambda=None
     with open(f'{cachefile}.elapsed', 'w') as outfile:
         outfile.write(str(elapsed))
 
-    return outcome, elapsed, output
+    with open(f'{cachefile}.txt', 'w') as outfile:
+        outfile.write(output)

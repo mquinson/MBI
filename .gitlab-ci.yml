@@ -2,7 +2,7 @@
 #   docker login registry.gitlab.inria.fr
 #   docker build -t registry.gitlab.inria.fr/quinson/mbi2 .
 #   docker push registry.gitlab.inria.fr/quinson/mbi2
-#image: registry.gitlab.com/mwapl/benchmarking-mpi:latest
+# image: registry.gitlab.com/mwapl/benchmarking-mpi:latest
 image: registry.gitlab.inria.fr/quinson/mbi2:latest
 
 variables:
@@ -13,6 +13,18 @@ stages:
     - test
     - svg
     - gather
+
+codes:
+    stage: build
+    needs: []
+    script:
+        - cd codes;for g in $(ls generators/*Generator.py) ; do $g; done
+    artifacts:
+        untracked: false
+        expire_in: 30 days
+        when: always
+        paths:
+            - codes
 
 build-must:
     stage: build
@@ -25,47 +37,17 @@ build-must:
         paths:
             - builds/MUST
 
-test-must-25:
+test-must-050:
     stage: test
     needs:
         - job: build-must
           artifacts: true
-    before_script:
-        - apt-get install -y psmisc
-    script:
-        - scripts/MUST-run $(ls *.c | head -25)
-    artifacts:
-        untracked: false
-        expire_in: 30 days
-        when: always
-        paths:
-            - logs
-
-test-must-50:
-    stage: test
-    needs:
-        - job: build-must
+        - job: codes
           artifacts: true
     before_script:
         - apt-get install -y psmisc
     script:
-        - scripts/MUST-run $(ls *.c | tail -n +26 | head -25)
-    artifacts:
-        untracked: false
-        expire_in: 30 days
-        when: always
-        paths:
-            - logs
-
-test-must-75:
-    stage: test
-    needs:
-        - job: build-must
-          artifacts: true
-    before_script:
-        - apt-get install -y psmisc
-    script:
-        - scripts/MUST-run $(ls *.c | tail -n +51 | head -25)
+        - scripts/MUST-run $(ls codes/*.c | head -50 | sed 's|^|../../|')
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -78,26 +60,12 @@ test-must-100:
     needs:
         - job: build-must
           artifacts: true
-    before_script:
-        - apt-get install -y psmisc
-    script:
-        - scripts/MUST-run $(ls *.c | tail -n +76 | head -25)
-    artifacts:
-        untracked: false
-        expire_in: 30 days
-        when: always
-        paths:
-            - logs
-
-test-must-125:
-    stage: test
-    needs:
-        - job: build-must
+        - job: codes
           artifacts: true
     before_script:
         - apt-get install -y psmisc
     script:
-        - scripts/MUST-run $(ls *.c | tail -n +101 | head -25)
+        - scripts/MUST-run $(ls codes/*.c | tail -n +51 | head -50 | sed 's|^|../../|')
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -110,26 +78,12 @@ test-must-150:
     needs:
         - job: build-must
           artifacts: true
-    before_script:
-        - apt-get install -y psmisc
-    script:
-        - scripts/MUST-run $(ls *.c | tail -n +126 | head -25)
-    artifacts:
-        untracked: false
-        expire_in: 30 days
-        when: always
-        paths:
-            - logs
-
-test-must-175:
-    stage: test
-    needs:
-        - job: build-must
+        - job: codes
           artifacts: true
     before_script:
         - apt-get install -y psmisc
     script:
-        - scripts/MUST-run $(ls *.c | tail -n +151 | head -25)
+        - scripts/MUST-run $(ls codes/*.c | tail -n +101 | head -50 | sed 's|^|../../|')
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -142,10 +96,138 @@ test-must-200:
     needs:
         - job: build-must
           artifacts: true
+        - job: codes
+          artifacts: true
     before_script:
         - apt-get install -y psmisc
     script:
-        - scripts/MUST-run $(ls *.c | tail -n +176)
+        - scripts/MUST-run $(ls codes/*.c | tail -n +151 | head -50 | sed 's|^|../../|')
+    artifacts:
+        untracked: false
+        expire_in: 30 days
+        when: always
+        paths:
+            - logs
+
+test-must-250:
+    stage: test
+    needs:
+        - job: build-must
+          artifacts: true
+        - job: codes
+          artifacts: true
+    before_script:
+        - apt-get install -y psmisc
+    script:
+        - scripts/MUST-run $(ls codes/*.c | tail -n +201 | head -50 | sed 's|^|../../|')
+    artifacts:
+        untracked: false
+        expire_in: 30 days
+        when: always
+        paths:
+            - logs
+
+test-must-300:
+    stage: test
+    needs:
+        - job: build-must
+          artifacts: true
+        - job: codes
+          artifacts: true
+    before_script:
+        - apt-get install -y psmisc
+    script:
+        - scripts/MUST-run $(ls codes/*.c | tail -n +251 | head -50 | sed 's|^|../../|')
+    artifacts:
+        untracked: false
+        expire_in: 30 days
+        when: always
+        paths:
+            - logs
+
+test-must-350:
+    stage: test
+    needs:
+        - job: build-must
+          artifacts: true
+        - job: codes
+          artifacts: true
+    before_script:
+        - apt-get install -y psmisc
+    script:
+        - scripts/MUST-run $(ls codes/*.c | tail -n +301 | head -50 | sed 's|^|../../|')
+    artifacts:
+        untracked: false
+        expire_in: 30 days
+        when: always
+        paths:
+            - logs
+
+test-must-400:
+    stage: test
+    needs:
+        - job: build-must
+          artifacts: true
+        - job: codes
+          artifacts: true
+    before_script:
+        - apt-get install -y psmisc
+    script:
+        - scripts/MUST-run $(ls codes/*.c | tail -n +351 | head -50 | sed 's|^|../../|')
+    artifacts:
+        untracked: false
+        expire_in: 30 days
+        when: always
+        paths:
+            - logs
+
+test-must-450:
+    stage: test
+    needs:
+        - job: build-must
+          artifacts: true
+        - job: codes
+          artifacts: true
+    before_script:
+        - apt-get install -y psmisc
+    script:
+        - scripts/MUST-run $(ls codes/*.c | tail -n +401 | head -50 | sed 's|^|../../|')
+    artifacts:
+        untracked: false
+        expire_in: 30 days
+        when: always
+        paths:
+            - logs
+
+test-must-500:
+    stage: test
+    needs:
+        - job: build-must
+          artifacts: true
+        - job: codes
+          artifacts: true
+    before_script:
+        - apt-get install -y psmisc
+    script:
+        - scripts/MUST-run $(ls codes/*.c | tail -n +451 | head -50 | sed 's|^|../../|')
+    artifacts:
+        untracked: false
+        expire_in: 30 days
+        when: always
+        paths:
+            - logs
+
+test-must-550:
+    stage: test
+    needs:
+        - job: build-must
+          artifacts: true
+        - job: codes
+          artifacts: true
+    before_script:
+        - apt-get install -y psmisc
+    script:
+        - scripts/MUST-run $(ls codes/*.c | tail -n +501 | sed 's|^|../../|')
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -175,6 +257,8 @@ test-aislinn:
     needs:
         - job: build-aislinn
           artifacts: true
+        - job: codes
+          artifacts: true
     before_script:
         - apt-get update
         - apt-get install -y gcc python2.7 python3.8 python-jinja2 autotools-dev automake build-essential
@@ -188,7 +272,7 @@ test-aislinn:
             - logs
 
 # MPI-SV is already built on its image file
-#build-mpisv:
+# build-mpisv:
 #    stage: build
 #    needs: []
 #    image: mpisv/mpi-sv
@@ -202,12 +286,14 @@ test-aislinn:
 #            - tools/mpisv
 
 # MPI-SV refuses to build on nested virtualization as we have when using docker on gitlab-CI
-#test-mpisv:
+# test-mpisv:
 #    stage: test
 #    image: mpisv/mpi-sv
-#    needs: []
+#    needs:
 ##        - job: build-mpisv
 ##          artifacts: true
+#        - job: codes
+#          artifacts: true
 #    script:
 #        - ./scripts/mpisv-run
 #    artifacts:
@@ -229,26 +315,45 @@ build-civl:
         paths:
             - tools/CIVL*
 
-test-civl100:
+test-civl200:
     stage: test
     needs:
         - job: build-civl
           artifacts: false
+        - job: codes
+          artifacts: true
     script:
-        - ./scripts/CIVL-run $(ls *.c | head -100)
+        - ./scripts/CIVL-run $(ls codes/*.c | head -200 | sed 's|^|../../|')
     artifacts:
         untracked: false
         expire_in: 30 days
         when: always
         paths:
             - logs
-test-civl200:
+test-civl400:
     stage: test
     needs:
         - job: build-civl
           artifacts: false
+        - job: codes
+          artifacts: true
     script:
-        - ./scripts/CIVL-run $(ls *.c | tail -n +101)
+        - ./scripts/CIVL-run $(ls codes/*.c | tail -n +201 | head -200 | sed 's|^|../../|')
+    artifacts:
+        untracked: false
+        expire_in: 30 days
+        when: always
+        paths:
+            - logs
+test-civl600:
+    stage: test
+    needs:
+        - job: build-civl
+          artifacts: false
+        - job: codes
+          artifacts: true
+    script:
+        - ./scripts/CIVL-run $(ls codes/*.c | tail -n +401 | head -200 | sed 's|^|../../|')
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -259,9 +364,6 @@ test-civl200:
 build-parcoach:
     stage: build
     needs: []
-    # before_script:
-    #     - apt-get update
-    #     - apt-get install -y git
     script:
         - ./scripts/Parcoach-build
     artifacts:
@@ -275,6 +377,8 @@ test-parcoach:
     stage: test
     needs:
         - job: build-parcoach
+          artifacts: true
+        - job: codes
           artifacts: true
     script:
         - ./scripts/Parcoach-run
@@ -305,6 +409,8 @@ test-simgrid:
     needs:
         - job: build-simgrid
           artifacts: true
+        - job: codes
+          artifacts: true
     script:
         - ./scripts/SimGrid-run
     artifacts:
@@ -334,6 +440,8 @@ test-isp:
     needs:
         - job: build-isp
           artifacts: true
+        - job: codes
+          artifacts: true
     script:
         - sh -x ./scripts/ISP-run
     artifacts:
@@ -354,7 +462,7 @@ simgrid-svg:
     #   - pip3 install drawSvg
     script:
         - cd Data
-        - python3.8 gen_svg.py -i ../logs/simgrid/bench_simgrid.csv -o simgrid_result_LOG --header false --mode log
+        - python3.8 gen_svg.py -i ../logs/simgrid/bench_simgrid.csv -o simgrid_result_LOG --header false
         - cp *svg ../logs/
     artifacts:
         untracked: false
@@ -374,7 +482,7 @@ parcoach-svg:
     #   - pip3 install drawSvg
     script:
         - cd Data
-        - python3.8 gen_svg.py -i ../logs/parcoach/bench_parcoach.csv -o parcoach_result_LOG --header false --mode log
+        - python3.8 gen_svg.py -i ../logs/parcoach/bench_parcoach.csv -o parcoach_result_LOG --header false
         - cp *svg ../logs/
     artifacts:
         untracked: false
@@ -394,7 +502,7 @@ isp-svg:
     #   - pip3 install drawSvg
     script:
         - cd Data
-        - python3.8 gen_svg.py -i ../logs/isp/bench_isp.csv -o isp_result_LOG --header false --mode log
+        - python3.8 gen_svg.py -i ../logs/isp/bench_isp.csv -o isp_result_LOG --header false
         - cp *svg ../logs/
     artifacts:
         untracked: false
@@ -414,7 +522,7 @@ aislinn-svg:
     #   - pip3 install drawSvg
     script:
         - cd Data
-        - python3.8 gen_svg.py -i ../logs/aislinn/bench_aislinn.csv -o aislinn_result_LOG --header false --mode log
+        - python3.8 gen_svg.py -i ../logs/aislinn/bench_aislinn.csv -o aislinn_result_LOG --header false
         - cp *svg ../logs/
     artifacts:
         untracked: false
@@ -426,9 +534,11 @@ aislinn-svg:
 civl-svg:
     stage: svg
     needs:
-        - job: test-civl100
-          artifacts: true
         - job: test-civl200
+          artifacts: true
+        - job: test-civl400
+          artifacts: true
+        - job: test-civl600
           artifacts: true
     # before_script:
     #   - apt-get update
@@ -437,7 +547,7 @@ civl-svg:
     script:
         - cd Data
         - cat ../logs/civl/*.csv > result.csv
-        - python3.8 gen_svg.py -i result.csv -o civl_result_LOG --header false --mode log
+        - python3.8 gen_svg.py -i result.csv -o civl_result_LOG --header false
         - cp *svg ../logs/
     artifacts:
         untracked: false
@@ -449,21 +559,27 @@ civl-svg:
 must-svg:
     stage: svg
     needs:
-        - job: test-must-25
-          artifacts: true
-        - job: test-must-50
-          artifacts: true
-        - job: test-must-75
+        - job: test-must-050
           artifacts: true
         - job: test-must-100
           artifacts: true
-        - job: test-must-125
-          artifacts: true
         - job: test-must-150
           artifacts: true
-        - job: test-must-175
-          artifacts: true
         - job: test-must-200
+          artifacts: true
+        - job: test-must-250
+          artifacts: true
+        - job: test-must-300
+          artifacts: true
+        - job: test-must-350
+          artifacts: true
+        - job: test-must-400
+          artifacts: true
+        - job: test-must-450
+          artifacts: true
+        - job: test-must-500
+          artifacts: true
+        - job: test-must-550
           artifacts: true
     # before_script:
     #   - apt-get update
@@ -472,7 +588,7 @@ must-svg:
     script:
         - cd Data
         - cat ../logs/must/*.csv > result.csv
-        - python3.8 gen_svg.py -i result.csv -o must_result_LOG --header false --mode log
+        - python3.8 gen_svg.py -i result.csv -o must_result_LOG --header false
         - cp *svg ../logs/
     artifacts:
         untracked: false
@@ -484,25 +600,33 @@ must-svg:
 data-collect:
     stage: gather
     needs:
-        - job: test-must-25
-          artifacts: true
-        - job: test-must-50
-          artifacts: true
-        - job: test-must-75
+        - job: test-must-050
           artifacts: true
         - job: test-must-100
           artifacts: true
-        - job: test-must-125
-          artifacts: true
         - job: test-must-150
-          artifacts: true
-        - job: test-must-175
           artifacts: true
         - job: test-must-200
           artifacts: true
-        - job: test-civl100
+        - job: test-must-250
+          artifacts: true
+        - job: test-must-300
+          artifacts: true
+        - job: test-must-350
+          artifacts: true
+        - job: test-must-400
+          artifacts: true
+        - job: test-must-450
+          artifacts: true
+        - job: test-must-500
+          artifacts: true
+        - job: test-must-550
           artifacts: true
         - job: test-civl200
+          artifacts: true
+        - job: test-civl400
+          artifacts: true
+        - job: test-civl600
           artifacts: true
         - job: test-parcoach
           artifacts: true
@@ -532,7 +656,7 @@ data-collect:
         - echo "#filename;id;tool;TO;NP;buff;expected;result;elapsed_time;jobid" > result.csv
         - cd Data
         - cat ../logs/*/*.csv >> result.csv
-        - python3.8 gen_svg.py -i result.csv -o all_result_LOG --header true --mode log
+        - python3.8 gen_svg.py -i result.csv -o all_result_LOG --header true
         - cp *svg ../log
     artifacts:
         untracked: false
