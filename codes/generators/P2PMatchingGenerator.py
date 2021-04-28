@@ -64,7 +64,7 @@ int main(int argc, char **argv) {
 """
 
 p2p = ['MPI_Send', 'MPI_Recv'] 
-ip2p = ['MPI_Isend']  
+ip2p = ['MPI_Isend', 'MPI_Irecv']  
 
 init = {}
 operation = {}
@@ -74,13 +74,17 @@ init['MPI_Send'] = lambda n: f'int buf{n}[buff_size];'
 operation['MPI_Send'] = lambda n: f'MPI_Send(buf{n}, buff_size, MPI_INT, 1, 0, MPI_COMM_WORLD);'
 fini['MPI_Send'] = lambda n: ""
 
-init['MPI_Recv'] = lambda n: f'int buf{n}[buff_size]; MPI_Status sta;'
-operation['MPI_Recv'] = lambda n: f'MPI_Recv(buf{n}, buff_size, MPI_INT, 1, 0, MPI_COMM_WORLD, &sta);'
+init['MPI_Recv'] = lambda n: f'int buf{n}[buff_size]; MPI_Status sta{n};'
+operation['MPI_Recv'] = lambda n: f'MPI_Recv(buf{n}, buff_size, MPI_INT, 1, 0, MPI_COMM_WORLD, &sta{n});'
 fini['MPI_Recv'] = lambda n: ""
 
 init['MPI_Isend'] = lambda n: f'int buf{n}[buff_size]; MPI_Request req{n};'
-operation['MPI_Isend'] = lambda n: f'MPI_Isend(buf{n}, buff_size, MPI_INT, 1, 0, MPI_COMM_WORLD, &req{n});'
-fini['MPI_Isend'] = lambda n: f'MPI_Wait(&req{n}, MPI_STATUS_IGNORE);'
+operation['MPI_Isend'] = lambda n: f'MPI_Isend(buf{n}, buff_size, MPI_INT, 1, 0, MPI_COMM_WORLD, &req{n});\n 		MPI_Wait(&req{n}, MPI_STATUS_IGNORE);'
+fini['MPI_Isend'] = lambda n: ""
+
+init['MPI_Irecv'] = lambda n: f'int buf{n}[buff_size]; MPI_Status sta{n}; MPI_Request req{n};'
+operation['MPI_Irecv'] = lambda n: f'MPI_Irecv(buf{n}, buff_size, MPI_INT, 1, 0, MPI_COMM_WORLD, &sta{n}, &req{n});\n 		MPI_Wait(&req{n}, MPI_STATUS_IGNORE);'
+fini['MPI_Irecv'] = lambda n: ""
 
 for p1 in p2p + ip2p:
     patterns = {}
@@ -96,11 +100,20 @@ for p1 in p2p + ip2p:
     patterns['operation1'] = operation[p1]("1")
     patterns['operation2'] = '' #operation[p2]("2")
 
-    # Generate the incorrect matching
+    # Generate the incorrect matching with one call
     replace = patterns
     replace['shortdesc'] = 'Point to point @{p1}@ is not matched' 
     replace['longdesc'] = f'Process 0 calls @{p1}@ and is not matched'
     replace['outcome'] = 'ERROR: CallMatching'
     replace['errormsg'] = 'P2P mistmatch. @{p1}@ at @{filename}@:@{line:MBIERROR}@ is not matched.'
     make_file(template, f'P2PCallMatching_{p1}_nok.c', replace)
+
+    # Generate the incorrect matching with two calls
+    replace = patterns
+    replace['shortdesc'] = 'Both point to point @{p1}@ are not matched' 
+    replace['longdesc'] = f'Processes 0 and 1 call @{p1}@ and are not matched'
+    replace['outcome'] = 'ERROR: CallMatching'
+    replace['errormsg'] = 'P2P mismatch. @{p1}@ at @{filename}@:@{line:MBIERROR}@ is not matched.'
+    replace['operation2'] = operation[p1]("1")
+    make_file(template, f'P2PCallMatching_{p1}_{p1}_nok.c', replace)
 
