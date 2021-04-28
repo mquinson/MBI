@@ -19,17 +19,11 @@ set -e # Fail on error
 
 export PATH=$PATH:${rootdir}/builds/ISP/bin/
 
-# If this was not run with gilab-ci, we provide a meaningless value
-if [ -z "$CI_JOB_ID" ]
-then
-    CI_JOB_ID=0
-fi
-
 test -e ${rootdir}/logs/isp || mkdir -p ${rootdir}/logs/isp
 cd ${rootdir}/logs/isp
 
 # Run the script on each code
-python3 ${rootdir}/MBI.py -x isp -o bench_isp.csv -t 300 --job $CI_JOB_ID $(ls ${rootdir}/codes/*.c)
+python3 ${rootdir}/MBI.py -x isp -o bench_isp.csv -t 300 $(ls ${rootdir}/codes/*.c)
 
 # Remove generated cruft (binary files)
 find -type f -a -executable | xargs rm

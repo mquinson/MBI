@@ -28,7 +28,7 @@ os.environ["LC_ALL"] = "C"
 ##########################
 
 
-def aislinnrun(execcmd, filename, binary, id, timeout, jobid):
+def aislinnrun(execcmd, filename, binary, id, timeout):
     execcmd = re.sub("mpirun", "aislinn", execcmd)
     execcmd = re.sub('\${EXE}', binary, execcmd)
     execcmd = re.sub('\$zero_buffer', "--send-protocol=rendezvous", execcmd)
@@ -88,7 +88,7 @@ def aislinnrun(execcmd, filename, binary, id, timeout, jobid):
 ##########################
 
 
-def civlrun(execcmd, filename, binary, id, timeout, jobid):
+def civlrun(execcmd, filename, binary, id, timeout):
 
     execcmd = re.sub("mpirun", "java -jar ../../tools/CIVL-1.20_5259/lib/civl-1.20_5259.jar verify", execcmd)
     execcmd = re.sub('-np ', "-input_mpi_nprocs=", execcmd)
@@ -144,7 +144,7 @@ def civlrun(execcmd, filename, binary, id, timeout, jobid):
 ##########################
 
 
-def isprun(execcmd, filename, binary, id, timeout, jobid):
+def isprun(execcmd, filename, binary, id, timeout):
 
     execcmd = re.sub("mpirun", "isp.exe", execcmd)
     execcmd = re.sub('-np', '-n', execcmd)
@@ -184,7 +184,7 @@ def isprun(execcmd, filename, binary, id, timeout, jobid):
     return 'other', elapsed
 
 
-def mpisvrun(execcmd, filename, binary, id, timeout, jobid):
+def mpisvrun(execcmd, filename, binary, id, timeout):
 
     execcmd = re.sub("mpirun", "mpisv", execcmd)
     execcmd = re.sub('-np ', "", execcmd)
@@ -237,7 +237,7 @@ def must_filter(line, process):
             pass  # Ok, it's gone now
 
 
-def mustrun(execcmd, filename, binary, id, timeout, jobid):
+def mustrun(execcmd, filename, binary, id, timeout):
 
     execcmd = re.sub("mpirun", "mustrun --must:distributed", execcmd)
     execcmd = re.sub('\${EXE}', binary, execcmd)
@@ -298,7 +298,7 @@ def mustrun(execcmd, filename, binary, id, timeout, jobid):
 ##########################
 
 
-def parcoachrun(execcmd, filename, binary, id, timeout, jobid):
+def parcoachrun(execcmd, filename, binary, id, timeout):
 
     res, elapsed, output = run_cmd(
         buildcmd=f"clang -c -g -emit-llvm {filename} -I/usr/lib/x86_64-linux-gnu/mpich/include/ -o {binary}.bc",
@@ -323,7 +323,7 @@ def parcoachrun(execcmd, filename, binary, id, timeout, jobid):
 ##########################
 
 
-def simgridrun(execcmd, filename, binary, id, timeout, jobid):
+def simgridrun(execcmd, filename, binary, id, timeout):
 
     if not os.path.exists("cluster.xml"):
         with open('cluster.xml', 'w') as outfile:
@@ -383,9 +383,6 @@ parser.add_argument('-t', '--timeout', metavar='int', default=300, type=int,
 
 parser.add_argument('-o', metavar='output.csv', default='out.csv', type=str,
                     help='name of the csv file in which results will be written')
-
-parser.add_argument('--job', metavar='int', default='NA', type=str,
-                    help='Gitlab job-id, in order to fetch execution artifacts. If not run as a Gitlab job, do not consider.')
 
 args = parser.parse_args()
 
@@ -519,7 +516,7 @@ for filename, cmd, expected, test_count in todo:
         print(f"The tool parameter you provided ({args.x}) is either incorect or not yet implemented.")
         sys.exit(1)
 
-    p = mp.Process(target=return_to_queue, args=(q, func, (cmd, filename, binary, test_count, args.timeout, args.job)))
+    p = mp.Process(target=return_to_queue, args=(q, func, (cmd, filename, binary, test_count, args.timeout)))
     p.start()
     print(f"Wait up to {args.timeout} seconds")
     sys.stdout.flush()
@@ -589,7 +586,7 @@ for filename, cmd, expected, test_count in todo:
 
     with open("./" + args.o, "a") as result_file:
         result_file.write(
-            f"{binary};{test_count};{args.x};{args.timeout};{np};{buff};{expected};{outcome};{elapsed};{args.job}\n")
+            f"{binary};{test_count};{args.x};{args.timeout};{np};{buff};{expected};{outcome};{elapsed}\n")
 
 ########################
 # Termination
