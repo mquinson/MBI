@@ -47,9 +47,6 @@ def aislinnrun(execcmd, filename, binary, id, timeout, jobid):
     else:
         output += "No html report found"
 
-    with open(f'{binary}_{id}.txt', 'w') as outfile:
-        outfile.write(output)
-
     if res != None:
         return res, elapsed
 
@@ -108,9 +105,6 @@ def civlrun(execcmd, filename, binary, id, timeout, jobid):
         binary=binary,
         timeout=timeout)
 
-    with open(f'{binary}_{id}.txt', 'w') as outfile:
-        outfile.write(output)
-
     if res != None:
         return res, elapsed
 
@@ -168,9 +162,6 @@ def isprun(execcmd, filename, binary, id, timeout, jobid):
         binary=binary,
         timeout=timeout)
 
-    with open(f'{binary}_{id}.txt', 'w') as outfile:
-        outfile.write(output)
-
     if res != None:
         return res, elapsed
 
@@ -212,9 +203,6 @@ def mpisvrun(execcmd, filename, binary, id, timeout, jobid):
     if os.path.exists('klee-last') and not os.path.exists(f"{binary}_{id}-klee-out"):
         os.rename(os.readlink('klee-last'), f"{binary}_{id}-klee-out")
         os.remove('klee-last')
-
-    with open(f'{binary}_{id}.txt', 'w') as outfile:
-        outfile.write(output)
 
     if res != None:
         return res, elapsed
@@ -280,9 +268,6 @@ def mustrun(execcmd, filename, binary, id, timeout, jobid):
                 html += line
         os.rename(f"./MUST_Output.html", f"{binary}_{id}.html")
 
-    with open(f'{binary}_{id}.txt', 'w') as outfile:
-        outfile.write(output)
-
     if res != None and res != 'timeout':  # Try to read the result even if the test timeouted
         return res, elapsed
 
@@ -321,9 +306,6 @@ def parcoachrun(execcmd, filename, binary, id, timeout, jobid):
         cachefile=f'{binary}_{id}',
         binary=binary,
         timeout=timeout)
-
-    with open(f'{binary}_{id}.txt', 'w') as outfile:
-        outfile.write(output)
 
     if res != None:
         return res, elapsed
@@ -364,9 +346,6 @@ def simgridrun(execcmd, filename, binary, id, timeout, jobid):
         cachefile=f'{binary}_{id}',
         binary=binary,
         timeout=timeout)
-
-    with open(f'{binary}_{id}.txt', 'w') as outfile:
-        outfile.write(output)
 
     if res != None:
         return res, elapsed
