@@ -2,7 +2,7 @@
 #   docker login registry.gitlab.inria.fr
 #   docker build -t registry.gitlab.inria.fr/quinson/mbi2 .
 #   docker push registry.gitlab.inria.fr/quinson/mbi2
-#image: registry.gitlab.com/mwapl/benchmarking-mpi:latest
+# image: registry.gitlab.com/mwapl/benchmarking-mpi:latest
 image: registry.gitlab.inria.fr/quinson/mbi2:latest
 
 variables:
@@ -180,7 +180,7 @@ test-must-400:
         when: always
         paths:
             - logs
-	    
+
 test-must-450:
     stage: test
     needs:
@@ -198,7 +198,7 @@ test-must-450:
         when: always
         paths:
             - logs
-	    
+
 test-must-500:
     stage: test
     needs:
@@ -216,7 +216,7 @@ test-must-500:
         when: always
         paths:
             - logs
-	    
+
 test-must-550:
     stage: test
     needs:
@@ -272,7 +272,7 @@ test-aislinn:
             - logs
 
 # MPI-SV is already built on its image file
-#build-mpisv:
+# build-mpisv:
 #    stage: build
 #    needs: []
 #    image: mpisv/mpi-sv
@@ -286,7 +286,7 @@ test-aislinn:
 #            - tools/mpisv
 
 # MPI-SV refuses to build on nested virtualization as we have when using docker on gitlab-CI
-#test-mpisv:
+# test-mpisv:
 #    stage: test
 #    image: mpisv/mpi-sv
 #    needs:
