@@ -476,8 +476,27 @@ parser.add_argument('-o', metavar='output.csv', default='out.csv', type=str,
 
 args = parser.parse_args()
 
+if args.x == 'mpirun':
+    raise Exception("No tool was provided, please retry with -x parameter. (see -h for further information on usage)")
+elif args.x == 'must':
+    func = mustrun
+elif args.x == 'mpisv':
+    func = mpisvrun
+elif args.x == 'simgrid':
+    func = simgridrun
+elif args.x == 'civl':
+    func = civlrun
+elif args.x == 'parcoach':
+    func = parcoachrun
+elif args.x == 'isp':
+    func = isprun
+elif args.x == 'aislinn':
+    func = aislinnrun
+else:
+    raise Exception(f"The tool parameter you provided ({args.x}) is either incorect or not yet implemented.")
+
 ########################
-# Usefull globals
+# Useful globals
 ########################
 
 todo = []
@@ -503,14 +522,13 @@ total_elapsed = 0
 # Going through files
 ########################
 
-
 def extract_todo(filename):
     """
-    Reads the header of the filename, and extract a list of todo item, each of them being a (cmd, expect, test_count) tupple.
-    The test_count is useful to build a log file containing both the binary and the test_count, when there is more than one test in the same binary.
+    Reads the header of the filename, and extract a list of todo item, each of them being a (cmd, expect, test_num) tupple.
+    The test_num is useful to build a log file containing both the binary and the test_num, when there is more than one test in the same binary.
     """
     res = []
-    test_count = 0
+    test_num = 0
     with open(filename, "r") as input:
         state = 0  # 0: before header; 1: in header; 2; after header
         line_num = 1
@@ -537,8 +555,8 @@ def extract_todo(filename):
                         print(
                             f"\n{filename}:{line_num}: MBI parse error: Test not followed by a proper 'ERROR' line:\n{line}{nextline}")
                     expect = 'ERROR' # [expects for expects in m.groups() if expects != None]
-                res.append((filename, cmd, expect, test_count))
-                test_count += 1
+                res.append((filename, cmd, expect, test_num))
+                test_num += 1
                 line_num += 1
 
     if state == 0:
@@ -547,14 +565,6 @@ def extract_todo(filename):
         raise Exception(f"MBI_TESTS header not properly ended in file '{filename}'.")
 
     return res
-
-
-def return_to_queue(queue, func, args):
-    outcome, elapsed = func(*args)
-    if elapsed is None:
-        raise Exception(f"Elapsed not set for {func}({args})!")
-    queue.put((outcome, elapsed))
-
 
 for filename in args.filenames:
     if filename == "template.c":
@@ -570,36 +580,20 @@ for filename in args.filenames:
 ########################
 # Running the tests
 ########################
+def return_to_queue(queue, func, args):
+    outcome, elapsed = func(*args)
+    if elapsed is None:
+        raise Exception(f"Elapsed not set for {func}({args})!")
+    queue.put((outcome, elapsed))
 
-for filename, cmd, expected, test_count in todo:
+for filename, cmd, expected, test_num in todo:
     binary = re.sub('\.c', '', os.path.basename(filename))
 
-    print(f"Test '{binary}_{test_count}'", end=": ")
+    print(f"Test '{binary}_{test_num}'", end=": ")
     sys.stdout.flush()
 
     q = mp.Queue()
-
-    if args.x == 'mpirun':
-        raise Exception("No tool was provided, please retry with -x parameter. (see -h for further information on usage)")
-
-    elif args.x == 'must':
-        func = mustrun
-    elif args.x == 'mpisv':
-        func = mpisvrun
-    elif args.x == 'simgrid':
-        func = simgridrun
-    elif args.x == 'civl':
-        func = civlrun
-    elif args.x == 'parcoach':
-        func = parcoachrun
-    elif args.x == 'isp':
-        func = isprun
-    elif args.x == 'aislinn':
-        func = aislinnrun
-    else:
-        raise Exception(f"The tool parameter you provided ({args.x}) is either incorect or not yet implemented.")
-
-    p = mp.Process(target=return_to_queue, args=(q, func, (cmd, filename, binary, test_count, args.timeout)))
+    p = mp.Process(target=return_to_queue, args=(q, func, (cmd, filename, binary, test_num, args.timeout)))
     p.start()
     print(f"Wait up to {args.timeout} seconds")
     sys.stdout.flush()
@@ -624,29 +618,29 @@ for filename, cmd, expected, test_count in todo:
     if outcome == 'timeout':
         res_category = 'timeout'
         if elapsed is None:
-            timeout.append(f'{binary}_{test_count} (hard timeout)')
+            timeout.append(f'{binary}_{test_num} (hard timeout)')
         else:
-            timeout.append(f'{binary}_{test_count} (elapsed: {elapsed} sec)')
+            timeout.append(f'{binary}_{test_num} (elapsed: {elapsed} sec)')
     elif outcome == 'failure':
         res_category = 'failure'
-        failure.append(f'{binary}_{test_count}')
+        failure.append(f'{binary}_{test_num}')
     elif outcome == 'UNIMPLEMENTED':
         res_category = 'portability issue'
-        unimplemented.append(f'{binary}_{test_count}')
+        unimplemented.append(f'{binary}_{test_num}')
     elif expected == 'OK':
         if outcome == 'OK':
             res_category = 'TRUE_NEG'
-            true_neg.append(f'{binary}_{test_count}')
+            true_neg.append(f'{binary}_{test_num}')
         else:
             res_category = 'FALSE_POS'
-            false_pos.append(f'{binary}_{test_count} (expected {expected} but returned {outcome})')
+            false_pos.append(f'{binary}_{test_num} (expected {expected} but returned {outcome})')
     elif expected == 'ERROR':
         if outcome == 'OK':
             res_category = 'FALSE_NEG'
-            false_neg.append(f'{binary}_{test_count} (expected {expected} but returned {outcome})')
+            false_neg.append(f'{binary}_{test_num} (expected {expected} but returned {outcome})')
         else:
             res_category = 'TRUE_POS'
-            true_pos.append(f'{binary}_{test_count}')
+            true_pos.append(f'{binary}_{test_num}')
     else: 
         raise Exception(f"Unexpected expectation: {expected} (must be OK or ERROR)")
 
@@ -669,7 +663,7 @@ for filename, cmd, expected, test_count in todo:
 
     with open("./" + args.o, "a") as result_file:
         result_file.write(
-            f"{binary};{test_count};{args.x};{args.timeout};{np};{buff};{expected};{outcome};{elapsed}\n")
+            f"{binary};{test_num};{args.x};{args.timeout};{np};{buff};{expected};{outcome};{elapsed}\n")
 
 ########################
 # Termination
