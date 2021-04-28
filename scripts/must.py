@@ -13,7 +13,7 @@ def must_filter(line, process):
         except ProcessLookupError:
             pass  # Ok, it's gone now
 
-def mustrun(execcmd, filename, binary, id, timeout):
+def run(execcmd, filename, binary, id, timeout):
     cachefile = f'{binary}_{id}'
 
     execcmd = re.sub("mpirun", "mustrun --must:distributed", execcmd)
@@ -34,7 +34,7 @@ def mustrun(execcmd, filename, binary, id, timeout):
     if os.path.isfile("./MUST_Output.html"):
         os.rename(f"./MUST_Output.html", f"{cachefile}.html")
 
-def mustparse(cachefile):
+def parse(cachefile):
     # do not report timeouts ASAP, as MUST still deadlocks when it detects a root mismatch
     if not os.path.exists(f'{cachefile}.txt') or not os.path.exists(f'{cachefile}.html'):
         return 'failure'
