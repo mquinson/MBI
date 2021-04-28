@@ -87,7 +87,7 @@ def run_cmd(buildcmd, execcmd, cachefile, binary, timeout, read_line_lambda=None
     with open(f'{cachefile}.elapsed', 'w') as outfile:
         outfile.write(str(elapsed))
 
-    with open(f'{binary}_{id}.txt', 'w') as outfile:
+    with open(f'{cachefile}.txt', 'w') as outfile:
         outfile.write(output)
 
     return outcome, elapsed, output
