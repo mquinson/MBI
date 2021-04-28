@@ -86,8 +86,8 @@ init['MPI_Isend'] = lambda n: f'int buf{n}[buff_size]; MPI_Request req{n};'
 operation['MPI_Isend'] = lambda n: f'MPI_Isend(buf{n}, buff_size, MPI_INT, 1, 0, MPI_COMM_WORLD, &req{n});\n 		MPI_Wait(&req{n}, MPI_STATUS_IGNORE);'
 fini['MPI_Isend'] = lambda n: ""
 
-init['MPI_Irecv'] = lambda n: f'int buf{n}[buff_size]; MPI_Status sta{n}; MPI_Request req{n};'
-operation['MPI_Irecv'] = lambda n: f'MPI_Irecv(buf{n}, buff_size, MPI_INT, 1, 0, MPI_COMM_WORLD, &sta{n}, &req{n});\n 		MPI_Wait(&req{n}, MPI_STATUS_IGNORE);'
+init['MPI_Irecv'] = lambda n: f'int buf{n}[buff_size]; MPI_Request req{n};'
+operation['MPI_Irecv'] = lambda n: f'MPI_Irecv(buf{n}, buff_size, MPI_INT, 1, 0, MPI_COMM_WORLD, &req{n});\n 		MPI_Wait(&req{n}, MPI_STATUS_IGNORE);'
 fini['MPI_Irecv'] = lambda n: ""
 
 for p1 in send + isend:

@@ -1,6 +1,5 @@
 import re
 import os
-import process
 from MBIutils import *
 
 def must_filter(line, process):
