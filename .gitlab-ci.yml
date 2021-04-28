@@ -14,6 +14,18 @@ stages:
     - svg
     - gather
 
+codes:
+    stage: build
+    needs: []
+    script:
+        - cd codes;for g in $(ls generators/*Generator.py) ; do $g; done
+    artifacts:
+        untracked: false
+        expire_in: 30 days
+        when: always
+        paths:
+            - codes
+
 build-must:
     stage: build
     needs: []
@@ -30,10 +42,11 @@ test-must-25:
     needs:
         - job: build-must
           artifacts: true
+        - job: codes
+          artifacts: true
     before_script:
         - apt-get install -y psmisc
     script:
-        - cd codes;for g in $(ls generators/*Generator.py) ; do $g; done; cd ..
         - scripts/MUST-run $(ls codes/*.c | head -25)
     artifacts:
         untracked: false
@@ -47,10 +60,11 @@ test-must-50:
     needs:
         - job: build-must
           artifacts: true
+        - job: codes
+          artifacts: true
     before_script:
         - apt-get install -y psmisc
     script:
-        - cd codes;for g in $(ls generators/*Generator.py) ; do $g; done; cd ..
         - scripts/MUST-run $(ls codes/*.c | tail -n +26 | head -25)
     artifacts:
         untracked: false
@@ -64,10 +78,11 @@ test-must-75:
     needs:
         - job: build-must
           artifacts: true
+        - job: codes
+          artifacts: true
     before_script:
         - apt-get install -y psmisc
     script:
-        - cd codes;for g in $(ls generators/*Generator.py) ; do $g; done; cd ..
         - scripts/MUST-run $(ls codes/*.c | tail -n +51 | head -25)
     artifacts:
         untracked: false
@@ -81,10 +96,11 @@ test-must-100:
     needs:
         - job: build-must
           artifacts: true
+        - job: codes
+          artifacts: true
     before_script:
         - apt-get install -y psmisc
     script:
-        - cd codes;for g in $(ls generators/*Generator.py) ; do $g; done; cd ..
         - scripts/MUST-run $(ls codes/*.c | tail -n +76 | head -25)
     artifacts:
         untracked: false
@@ -98,10 +114,11 @@ test-must-125:
     needs:
         - job: build-must
           artifacts: true
+        - job: codes
+          artifacts: true
     before_script:
         - apt-get install -y psmisc
     script:
-        - cd codes;for g in $(ls generators/*Generator.py) ; do $g; done; cd ..
         - scripts/MUST-run $(ls codes/*.c | tail -n +101 | head -25)
     artifacts:
         untracked: false
@@ -115,10 +132,11 @@ test-must-150:
     needs:
         - job: build-must
           artifacts: true
+        - job: codes
+          artifacts: true
     before_script:
         - apt-get install -y psmisc
     script:
-        - cd codes;for g in $(ls generators/*Generator.py) ; do $g; done; cd ..
         - scripts/MUST-run $(ls codes/*.c | tail -n +126 | head -25)
     artifacts:
         untracked: false
@@ -132,10 +150,11 @@ test-must-175:
     needs:
         - job: build-must
           artifacts: true
+        - job: codes
+          artifacts: true
     before_script:
         - apt-get install -y psmisc
     script:
-        - cd codes;for g in $(ls generators/*Generator.py) ; do $g; done; cd ..
         - scripts/MUST-run $(ls codes/*.c | tail -n +151 | head -25)
     artifacts:
         untracked: false
@@ -149,10 +168,11 @@ test-must-200:
     needs:
         - job: build-must
           artifacts: true
+        - job: codes
+          artifacts: true
     before_script:
         - apt-get install -y psmisc
     script:
-        - cd codes;for g in $(ls generators/*Generator.py) ; do $g; done; cd ..
         - scripts/MUST-run $(ls codes/*.c | tail -n +176)
     artifacts:
         untracked: false
@@ -183,11 +203,12 @@ test-aislinn:
     needs:
         - job: build-aislinn
           artifacts: true
+        - job: codes
+          artifacts: true
     before_script:
         - apt-get update
         - apt-get install -y gcc python2.7 python3.8 python-jinja2 autotools-dev automake build-essential
     script:
-        - cd codes;for g in $(ls generators/*Generator.py) ; do $g; done; cd ..
         - ./scripts/Aislinn-run
     artifacts:
         untracked: false
@@ -214,9 +235,11 @@ test-aislinn:
 #test-mpisv:
 #    stage: test
 #    image: mpisv/mpi-sv
-#    needs: []
+#    needs:
 ##        - job: build-mpisv
 ##          artifacts: true
+#        - job: codes
+#          artifacts: true
 #    script:
 #        - ./scripts/mpisv-run
 #    artifacts:
@@ -243,8 +266,9 @@ test-civl100:
     needs:
         - job: build-civl
           artifacts: false
+        - job: codes
+          artifacts: true
     script:
-        - cd codes;for g in $(ls generators/*Generator.py) ; do $g; done; cd ..
         - ./scripts/CIVL-run $(ls codes/*.c | head -100)
     artifacts:
         untracked: false
@@ -257,8 +281,9 @@ test-civl200:
     needs:
         - job: build-civl
           artifacts: false
+        - job: codes
+          artifacts: true
     script:
-        - cd codes;for g in $(ls generators/*Generator.py) ; do $g; done; cd ..
         - ./scripts/CIVL-run $(ls codes/*.c | tail -n +101)
     artifacts:
         untracked: false
@@ -270,9 +295,6 @@ test-civl200:
 build-parcoach:
     stage: build
     needs: []
-    # before_script:
-    #     - apt-get update
-    #     - apt-get install -y git
     script:
         - ./scripts/Parcoach-build
     artifacts:
@@ -287,8 +309,9 @@ test-parcoach:
     needs:
         - job: build-parcoach
           artifacts: true
+        - job: codes
+          artifacts: true
     script:
-        - cd codes;for g in $(ls generators/*Generator.py) ; do $g; done; cd ..
         - ./scripts/Parcoach-run
     artifacts:
         untracked: false
@@ -317,8 +340,9 @@ test-simgrid:
     needs:
         - job: build-simgrid
           artifacts: true
+        - job: codes
+          artifacts: true
     script:
-        - cd codes;for g in $(ls generators/*Generator.py) ; do $g; done; cd ..
         - ./scripts/SimGrid-run
     artifacts:
         untracked: false
@@ -347,8 +371,9 @@ test-isp:
     needs:
         - job: build-isp
           artifacts: true
+        - job: codes
+          artifacts: true
     script:
-        - cd codes;for g in $(ls generators/*Generator.py) ; do $g; done; cd ..
         - sh -x ./scripts/ISP-run
     artifacts:
         untracked: false
