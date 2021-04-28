@@ -27,5 +27,5 @@ cd ${rootdir}/logs/simgrid
 python3 ${rootdir}/MBI.py -x simgrid -o bench_simgrid.csv $(ls ${rootdir}/codes/*.c)
 
 # Remove generated cruft (binary files and SMPI temp files)
-find -type f -a -executable | xargs rm
+find -type f -a -executable | xargs rm -f
 rm -f smpitmp-*
