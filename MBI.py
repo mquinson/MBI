@@ -27,6 +27,40 @@ os.environ["LC_ALL"] = "C"
 # Aislinn runner
 ##########################
 
+def aislinnparse(output):
+    if re.search('No errors found', output):
+        return 'OK'
+
+    if re.search('Deadlock', output):
+        return 'deadlock'
+    if re.search('Collective operation mismatch', output):
+        return 'deadlock'
+    if re.search('Mixing blocking and nonblocking collective operation', output):
+        return 'deadlock'
+    if re.search('Pending message', output):
+        return 'deadlock'
+
+    if re.search('Invalid rank', output):
+        return 'mpierr'
+    if re.search('Invalid datatype', output):
+        return 'mpierr'
+    if re.search('Invalid communicator', output):
+        return 'mpierr'
+    if re.search('Invalid color', output):
+        return 'mpierr'
+    if re.search('Invalid operation', output):
+        return 'mpierr'
+    if re.search('Invalid count', output):
+        return 'mpierr'
+
+    if re.search('Collective operation: root mismatch', output):
+        return 'various'
+
+    if re.search('Unkown function call', output):
+        return 'UNIMPLEMENTED'
+
+    return 'other'
+
 
 def aislinnrun(execcmd, filename, binary, id, timeout):
     execcmd = re.sub("mpirun", "aislinn", execcmd)
@@ -47,46 +81,46 @@ def aislinnrun(execcmd, filename, binary, id, timeout):
     else:
         output += "No html report found"
 
-    if res != None:
-        return res, elapsed
+    if res == None:
+        res = aislinnparse(output)
 
-    if re.search('No errors found', output):
-        return 'OK', elapsed
-
-    if re.search('Deadlock', output):
-        return 'deadlock', elapsed
-    if re.search('Collective operation mismatch', output):
-        return 'deadlock', elapsed
-    if re.search('Mixing blocking and nonblocking collective operation', output):
-        return 'deadlock', elapsed
-    if re.search('Pending message', output):
-        return 'deadlock', elapsed
-
-    if re.search('Invalid rank', output):
-        return 'mpierr', elapsed
-    if re.search('Invalid datatype', output):
-        return 'mpierr', elapsed
-    if re.search('Invalid communicator', output):
-        return 'mpierr', elapsed
-    if re.search('Invalid color', output):
-        return 'mpierr', elapsed
-    if re.search('Invalid operation', output):
-        return 'mpierr', elapsed
-    if re.search('Invalid count', output):
-        return 'mpierr', elapsed
-
-    if re.search('Collective operation: root mismatch', output):
-        return 'various', elapsed
-
-    if re.search('Unkown function call', output):
-        return 'UNIMPLEMENTED', elapsed
-
-    return 'other', elapsed
+    return res, elapsed
 
 ##########################
 # CIVL runner
 ##########################
 
+def civlparse(output):
+    if re.search('DEADLOCK', output):
+        return 'deadlock'
+
+    if re.search('has a different root', output):
+        return 'various'
+    if re.search('has a different MPI_Op', output):
+        return 'various'
+
+    if re.search('MPI message leak', output):
+        return 'mpierr'
+    if re.search('MPI_ERROR', output):
+        return 'mpierr'
+
+    if re.search('MEMORY_LEAK', output):
+        return 'resleak'
+
+    if re.search('The standard properties hold for all executions', output):
+        return 'OK'
+
+    if re.search('A CIVL internal error has occurred', output):
+        return 'failure'
+
+    if re.search('This feature is not yet implemented', output):
+        return 'UNIMPLEMENTED'
+    if re.search('doesn.t have a definition', output):
+        return 'UNIMPLEMENTED'
+    if re.search('Undeclared identifier', output):
+        return 'UNIMPLEMENTED'
+
+    return 'other'
 
 def civlrun(execcmd, filename, binary, id, timeout):
 
@@ -105,44 +139,33 @@ def civlrun(execcmd, filename, binary, id, timeout):
         binary=binary,
         timeout=timeout)
 
-    if res != None:
-        return res, elapsed
+    if res == None:
+        res = civlparse(output)
 
-    if re.search('DEADLOCK', output):
-        return 'deadlock', elapsed
-
-    if re.search('has a different root', output):
-        return 'various', elapsed
-    if re.search('has a different MPI_Op', output):
-        return 'various', elapsed
-
-    if re.search('MPI message leak', output):
-        return 'mpierr', elapsed
-    if re.search('MPI_ERROR', output):
-        return 'mpierr', elapsed
-
-    if re.search('MEMORY_LEAK', output):
-        return 'resleak', elapsed
-
-    if re.search('The standard properties hold for all executions', output):
-        return 'OK', elapsed
-
-    if re.search('A CIVL internal error has occurred', output):
-        return 'failure', elapsed
-
-    if re.search('This feature is not yet implemented', output):
-        return 'UNIMPLEMENTED', elapsed
-    if re.search('doesn.t have a definition', output):
-        return 'UNIMPLEMENTED', elapsed
-    if re.search('Undeclared identifier', output):
-        return 'UNIMPLEMENTED', elapsed
-
-    return 'other', elapsed
+    return res, elapsed
 
 ##########################
 # ISP runner
 ##########################
 
+def ispparser(output):
+    if re.search('ISP detected deadlock!!!', output):
+        return 'deadlock'
+    if re.search('Detected a DEADLOCK in interleaving', output):
+        return 'deadlock'
+
+    if re.search('resource leaks detected', output):
+        return 'resleak'
+
+    if re.search('ISP detected no deadlocks', output):
+        return 'OK'
+
+    if re.search('Fatal error in PMPI', output):
+        return 'mpierr'
+    if re.search('Fatal error in MPI', output):
+        return 'mpierr'
+
+    return 'other'
 
 def isprun(execcmd, filename, binary, id, timeout):
 
@@ -162,27 +185,26 @@ def isprun(execcmd, filename, binary, id, timeout):
         binary=binary,
         timeout=timeout)
 
-    if res != None:
-        return res, elapsed
+    if res == None:
+        res = ispparser(output)
 
-    if re.search('ISP detected deadlock!!!', output):
-        return 'deadlock', elapsed
-    if re.search('Detected a DEADLOCK in interleaving', output):
-        return 'deadlock', elapsed
+    return res, elapsed
 
-    if re.search('resource leaks detected', output):
-        return 'resleak', elapsed
+##########################
+# MPI-SV runner
+##########################
 
-    if re.search('ISP detected no deadlocks', output):
-        return 'OK', elapsed
+def mpisvparser(output, info):
+    if re.search('failed external call', output):
+        return 'UNIMPLEMENTED'
 
-    if re.search('Fatal error in PMPI', output):
-        return 'mpierr', elapsed
-    if re.search('Fatal error in MPI', output):
-        return 'mpierr', elapsed
+    if re.search('found deadlock', output):
+        return 'deadlock'
 
-    return 'other', elapsed
+    if re.search('No Violation detected by MPI-SV', info):
+        return 'OK'
 
+    return 'other'
 
 def mpisvrun(execcmd, filename, binary, id, timeout):
 
@@ -204,23 +226,12 @@ def mpisvrun(execcmd, filename, binary, id, timeout):
         os.rename(os.readlink('klee-last'), f"{binary}_{id}-klee-out")
         os.remove('klee-last')
 
-    if res != None:
-        return res, elapsed
-
     with open(f"{binary}_{id}-klee-out/info", 'r') as infofile:
         info = infofile.read()
 
-    if re.search('failed external call', output):
-        return 'UNIMPLEMENTED', elapsed
-
-    if re.search('found deadlock', output):
-        return 'deadlock', elapsed
-
-    if re.search('No Violation detected by MPI-SV', info):
-        return 'OK', elapsed
-
-    return 'other', elapsed
-
+    if res == None:
+        res = mpisvparser(output, info)
+    return res, elapsed
 
 ##########################
 # MUST runner
@@ -235,6 +246,27 @@ def must_filter(line, process):
             os.killpg(pgid, signal.SIGTERM)
         except ProcessLookupError:
             pass  # Ok, it's gone now
+
+def mustparser(output, html):
+    if re.search('deadlock', html):
+        return 'deadlock'
+
+    if re.search('not freed', html):
+        return 'resleak'
+
+    if re.search('conflicting roots', html):
+        return 'various'
+
+    if re.search('unknown datatype', html) or re.search('has to be a non-negative integer', html) or re.search('must use equal type signatures', html):
+        return 'mpierr'
+
+    if re.search('caught MPI error', output):
+        return 'mpierr'
+
+    if re.search('Error', html):
+        return 'mpierr'
+
+    return None # Give a chance to return 'timeout' if some was detected by run_cmd
 
 
 def mustrun(execcmd, filename, binary, id, timeout):
@@ -268,34 +300,27 @@ def mustrun(execcmd, filename, binary, id, timeout):
                 html += line
         os.rename(f"./MUST_Output.html", f"{binary}_{id}.html")
 
-    if res != None and res != 'timeout':  # Try to read the result even if the test timeouted
+    # Sometimes, MUST timeouts, but still produces interesting outputs in the logs
+    newres = mustparser(output, html)
+    if newres != None: # Something interesting found in the logs, ignore any timeout returned by the run_cmd
+        return newres, elapsed
+    elif res != None: # nothing interesting and run_cmd returned a timeout
         return res, elapsed
-
-    if re.search('deadlock', html):
-        return 'deadlock', elapsed
-
-    if re.search('not freed', html):
-        return 'resleak', elapsed
-
-    if re.search('conflicting roots', html):
-        return 'various', elapsed
-
-    if re.search('unknown datatype', html) or re.search('has to be a non-negative integer', html) or re.search('must use equal type signatures', html):
-        return 'mpierr', elapsed
-
-    if re.search('caught MPI error', output):
-        return 'mpierr', elapsed
-
-    if re.search('Error', html):
-        return 'mpierr', elapsed
-
-    if res == None:
+    else: # nothing in the logs and no timeout: that should be good enough
         return 'OK', elapsed
-    return res, elapsed
 
 ##########################
 # Parcoach runner
 ##########################
+
+def parcoachparser(output):
+    if re.search('0 warning\(s\) issued', output):
+        return 'OK'
+
+    if re.search('missing info for external function', output):
+        return 'UNIMPLEMENTED'
+
+    return 'deadlock'
 
 
 def parcoachrun(execcmd, filename, binary, id, timeout):
@@ -307,21 +332,30 @@ def parcoachrun(execcmd, filename, binary, id, timeout):
         binary=binary,
         timeout=timeout)
 
-    if res != None:
-        return res, elapsed
-
-    if re.search('0 warning\(s\) issued', output):
-        return 'OK', elapsed
-
-    if re.search('missing info for external function', output):
-        return 'UNIMPLEMENTED', elapsed
-
-    return 'deadlock', elapsed
+    if res == None:
+        res = parcoachparser(output)
+    return res, elapsed
 
 ##########################
 # SimGrid runner
 ##########################
 
+def simgridparser(output):
+    if re.search('DEADLOCK DETECTED', output):
+        return 'deadlock'
+    if re.search('returned MPI_ERR', output):
+        return 'mpierr'
+    if re.search('Not yet implemented', output):
+        return 'UNIMPLEMENTED'
+    if re.search('CRASH IN THE PROGRAM', output):
+        return 'segfault'
+    if re.search('Probable memory leaks in your code: SMPI detected', output):
+        return 'resleak'
+    if re.search('No property violation found', output):
+        return 'OK'
+
+    print("Couldn't assign output to specific behaviour; This will be treated as 'other'")
+    return 'other'
 
 def simgridrun(execcmd, filename, binary, id, timeout):
 
@@ -347,24 +381,9 @@ def simgridrun(execcmd, filename, binary, id, timeout):
         binary=binary,
         timeout=timeout)
 
-    if res != None:
-        return res, elapsed
-    if re.search('DEADLOCK DETECTED', output):
-        return 'deadlock', elapsed
-    if re.search('returned MPI_ERR', output):
-        return 'mpierr', elapsed
-    if re.search('Not yet implemented', output):
-        return 'UNIMPLEMENTED', elapsed
-    if re.search('CRASH IN THE PROGRAM', output):
-        return 'segfault', elapsed
-    if re.search('Probable memory leaks in your code: SMPI detected', output):
-        return 'resleak', elapsed
-    if re.search('No property violation found', output):
-        return 'OK', elapsed
-
-    print("Couldn't assign output to specific behaviour; This will be treated as 'other'")
-    return 'other', elapsed
-
+    if res == None:
+        res = simgridparser(output)
+    return res, elapsed
 
 ########################
 # Main script argument parsing
