@@ -37,7 +37,7 @@ build-must:
         paths:
             - builds/MUST
 
-test-must-25:
+test-must-050:
     stage: test
     needs:
         - job: build-must
@@ -47,43 +47,7 @@ test-must-25:
     before_script:
         - apt-get install -y psmisc
     script:
-        - scripts/MUST-run $(ls codes/*.c | head -25 | sed 's|^|../../|')
-    artifacts:
-        untracked: false
-        expire_in: 30 days
-        when: always
-        paths:
-            - logs
-
-test-must-50:
-    stage: test
-    needs:
-        - job: build-must
-          artifacts: true
-        - job: codes
-          artifacts: true
-    before_script:
-        - apt-get install -y psmisc
-    script:
-        - scripts/MUST-run $(ls codes/*.c | tail -n +26 | head -25 | sed 's|^|../../|')
-    artifacts:
-        untracked: false
-        expire_in: 30 days
-        when: always
-        paths:
-            - logs
-
-test-must-75:
-    stage: test
-    needs:
-        - job: build-must
-          artifacts: true
-        - job: codes
-          artifacts: true
-    before_script:
-        - apt-get install -y psmisc
-    script:
-        - scripts/MUST-run $(ls codes/*.c | tail -n +51 | head -25 | sed 's|^|../../|')
+        - scripts/MUST-run $(ls codes/*.c | head -50 | sed 's|^|../../|')
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -101,25 +65,7 @@ test-must-100:
     before_script:
         - apt-get install -y psmisc
     script:
-        - scripts/MUST-run $(ls codes/*.c | tail -n +76 | head -25 | sed 's|^|../../|')
-    artifacts:
-        untracked: false
-        expire_in: 30 days
-        when: always
-        paths:
-            - logs
-
-test-must-125:
-    stage: test
-    needs:
-        - job: build-must
-          artifacts: true
-        - job: codes
-          artifacts: true
-    before_script:
-        - apt-get install -y psmisc
-    script:
-        - scripts/MUST-run $(ls codes/*.c | tail -n +101 | head -25 | sed 's|^|../../|')
+        - scripts/MUST-run $(ls codes/*.c | tail -n +51 | head -50 | sed 's|^|../../|')
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -137,25 +83,7 @@ test-must-150:
     before_script:
         - apt-get install -y psmisc
     script:
-        - scripts/MUST-run $(ls codes/*.c | tail -n +126 | head -25 | sed 's|^|../../|')
-    artifacts:
-        untracked: false
-        expire_in: 30 days
-        when: always
-        paths:
-            - logs
-
-test-must-175:
-    stage: test
-    needs:
-        - job: build-must
-          artifacts: true
-        - job: codes
-          artifacts: true
-    before_script:
-        - apt-get install -y psmisc
-    script:
-        - scripts/MUST-run $(ls codes/*.c | tail -n +151 | head -25 | sed 's|^|../../|')
+        - scripts/MUST-run $(ls codes/*.c | tail -n +101 | head -50 | sed 's|^|../../|')
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -173,7 +101,133 @@ test-must-200:
     before_script:
         - apt-get install -y psmisc
     script:
-        - scripts/MUST-run $(ls codes/*.c | tail -n +176 | sed 's|^|../../|')
+        - scripts/MUST-run $(ls codes/*.c | tail -n +151 | head -50 | sed 's|^|../../|')
+    artifacts:
+        untracked: false
+        expire_in: 30 days
+        when: always
+        paths:
+            - logs
+
+test-must-250:
+    stage: test
+    needs:
+        - job: build-must
+          artifacts: true
+        - job: codes
+          artifacts: true
+    before_script:
+        - apt-get install -y psmisc
+    script:
+        - scripts/MUST-run $(ls codes/*.c | tail -n +201 | head -50 | sed 's|^|../../|')
+    artifacts:
+        untracked: false
+        expire_in: 30 days
+        when: always
+        paths:
+            - logs
+
+test-must-300:
+    stage: test
+    needs:
+        - job: build-must
+          artifacts: true
+        - job: codes
+          artifacts: true
+    before_script:
+        - apt-get install -y psmisc
+    script:
+        - scripts/MUST-run $(ls codes/*.c | tail -n +251 | head -50 | sed 's|^|../../|')
+    artifacts:
+        untracked: false
+        expire_in: 30 days
+        when: always
+        paths:
+            - logs
+
+test-must-350:
+    stage: test
+    needs:
+        - job: build-must
+          artifacts: true
+        - job: codes
+          artifacts: true
+    before_script:
+        - apt-get install -y psmisc
+    script:
+        - scripts/MUST-run $(ls codes/*.c | tail -n +301 | head -50 | sed 's|^|../../|')
+    artifacts:
+        untracked: false
+        expire_in: 30 days
+        when: always
+        paths:
+            - logs
+
+test-must-400:
+    stage: test
+    needs:
+        - job: build-must
+          artifacts: true
+        - job: codes
+          artifacts: true
+    before_script:
+        - apt-get install -y psmisc
+    script:
+        - scripts/MUST-run $(ls codes/*.c | tail -n +351 | head -50 | sed 's|^|../../|')
+    artifacts:
+        untracked: false
+        expire_in: 30 days
+        when: always
+        paths:
+            - logs
+	    
+test-must-450:
+    stage: test
+    needs:
+        - job: build-must
+          artifacts: true
+        - job: codes
+          artifacts: true
+    before_script:
+        - apt-get install -y psmisc
+    script:
+        - scripts/MUST-run $(ls codes/*.c | tail -n +401 | head -50 | sed 's|^|../../|')
+    artifacts:
+        untracked: false
+        expire_in: 30 days
+        when: always
+        paths:
+            - logs
+	    
+test-must-500:
+    stage: test
+    needs:
+        - job: build-must
+          artifacts: true
+        - job: codes
+          artifacts: true
+    before_script:
+        - apt-get install -y psmisc
+    script:
+        - scripts/MUST-run $(ls codes/*.c | tail -n +451 | head -50 | sed 's|^|../../|')
+    artifacts:
+        untracked: false
+        expire_in: 30 days
+        when: always
+        paths:
+            - logs
+	    
+test-must-550:
+    stage: test
+    needs:
+        - job: build-must
+          artifacts: true
+        - job: codes
+          artifacts: true
+    before_script:
+        - apt-get install -y psmisc
+    script:
+        - scripts/MUST-run $(ls codes/*.c | tail -n +501 | sed 's|^|../../|')
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -261,21 +315,6 @@ build-civl:
         paths:
             - tools/CIVL*
 
-test-civl100:
-    stage: test
-    needs:
-        - job: build-civl
-          artifacts: false
-        - job: codes
-          artifacts: true
-    script:
-        - ./scripts/CIVL-run $(ls codes/*.c | head -100 | sed 's|^|../../|')
-    artifacts:
-        untracked: false
-        expire_in: 30 days
-        when: always
-        paths:
-            - logs
 test-civl200:
     stage: test
     needs:
@@ -284,7 +323,37 @@ test-civl200:
         - job: codes
           artifacts: true
     script:
-        - ./scripts/CIVL-run $(ls codes/*.c | tail -n +101 | sed 's|^|../../|')
+        - ./scripts/CIVL-run $(ls codes/*.c | head -200 | sed 's|^|../../|')
+    artifacts:
+        untracked: false
+        expire_in: 30 days
+        when: always
+        paths:
+            - logs
+test-civl400:
+    stage: test
+    needs:
+        - job: build-civl
+          artifacts: false
+        - job: codes
+          artifacts: true
+    script:
+        - ./scripts/CIVL-run $(ls codes/*.c | tail -n +201 | head -200 | sed 's|^|../../|')
+    artifacts:
+        untracked: false
+        expire_in: 30 days
+        when: always
+        paths:
+            - logs
+test-civl600:
+    stage: test
+    needs:
+        - job: build-civl
+          artifacts: false
+        - job: codes
+          artifacts: true
+    script:
+        - ./scripts/CIVL-run $(ls codes/*.c | tail -n +401 | head -200 | sed 's|^|../../|')
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -465,9 +534,11 @@ aislinn-svg:
 civl-svg:
     stage: svg
     needs:
-        - job: test-civl100
-          artifacts: true
         - job: test-civl200
+          artifacts: true
+        - job: test-civl400
+          artifacts: true
+        - job: test-civl600
           artifacts: true
     # before_script:
     #   - apt-get update
@@ -488,21 +559,27 @@ civl-svg:
 must-svg:
     stage: svg
     needs:
-        - job: test-must-25
-          artifacts: true
-        - job: test-must-50
-          artifacts: true
-        - job: test-must-75
+        - job: test-must-050
           artifacts: true
         - job: test-must-100
           artifacts: true
-        - job: test-must-125
-          artifacts: true
         - job: test-must-150
           artifacts: true
-        - job: test-must-175
-          artifacts: true
         - job: test-must-200
+          artifacts: true
+        - job: test-must-250
+          artifacts: true
+        - job: test-must-300
+          artifacts: true
+        - job: test-must-350
+          artifacts: true
+        - job: test-must-400
+          artifacts: true
+        - job: test-must-450
+          artifacts: true
+        - job: test-must-500
+          artifacts: true
+        - job: test-must-550
           artifacts: true
     # before_script:
     #   - apt-get update
@@ -523,25 +600,33 @@ must-svg:
 data-collect:
     stage: gather
     needs:
-        - job: test-must-25
-          artifacts: true
-        - job: test-must-50
-          artifacts: true
-        - job: test-must-75
+        - job: test-must-050
           artifacts: true
         - job: test-must-100
           artifacts: true
-        - job: test-must-125
-          artifacts: true
         - job: test-must-150
-          artifacts: true
-        - job: test-must-175
           artifacts: true
         - job: test-must-200
           artifacts: true
-        - job: test-civl100
+        - job: test-must-250
+          artifacts: true
+        - job: test-must-300
+          artifacts: true
+        - job: test-must-350
+          artifacts: true
+        - job: test-must-400
+          artifacts: true
+        - job: test-must-450
+          artifacts: true
+        - job: test-must-500
+          artifacts: true
+        - job: test-must-550
           artifacts: true
         - job: test-civl200
+          artifacts: true
+        - job: test-civl400
+          artifacts: true
+        - job: test-civl600
           artifacts: true
         - job: test-parcoach
           artifacts: true
