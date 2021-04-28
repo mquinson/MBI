@@ -448,14 +448,12 @@ def extract_todo(filename):
                 if state == 0:
                     state = 1
                 else:
-                    print(f"\nMBI_TESTS header appears a second time at line {line_num}: \n{line}")
-                    sys.exit(1)
+                    raise Exception(f"MBI_TESTS header appears a second time at line {line_num}: \n{line}")
             elif re.match(".*END_MBI_TESTS.*", line):
                 if state == 1:
                     state = 2
                 else:
-                    print(f"\nUnexpected end of MBI_TESTS header at line {line_num}: \n{line}")
-                    sys.exit(1)
+                    raise Exception(f"Unexpected end of MBI_TESTS header at line {line_num}: \n{line}")
             if state == 1 and re.match("\s+\$ ?.*", line):
                 m = re.match('\s+\$ ?(.*)', line)
                 cmd = m.group(1)
@@ -473,11 +471,9 @@ def extract_todo(filename):
                 line_num += 1
 
     if state == 0:
-        print(f"\nMBI_TESTS header not found in file '{filename}'.")
-        sys.exit(1)
+        raise Exception(f"MBI_TESTS header not found in file '{filename}'.")
     if state == 1:
-        print(f"\nMBI_TESTS header not properly ended in file '{filename}'.")
-        sys.exit(1)
+        raise Exception(f"MBI_TESTS header not properly ended in file '{filename}'.")
 
     return res
 
@@ -485,8 +481,7 @@ def extract_todo(filename):
 def return_to_queue(queue, func, args):
     outcome, elapsed = func(*args)
     if elapsed is None:
-        print(f"Elapsed not set for {func}({args})!")
-        os._exit(1)
+        raise Exception(f"Elapsed not set for {func}({args})!")
     queue.put((outcome, elapsed))
 
 
@@ -514,8 +509,7 @@ for filename, cmd, expected, test_count in todo:
     q = mp.Queue()
 
     if args.x == 'mpirun':
-        print("No tool was provided, please retry with -x parameter. (see -h for further information on usage)")
-        sys.exit(1)
+        raise Exception("No tool was provided, please retry with -x parameter. (see -h for further information on usage)")
 
     elif args.x == 'must':
         func = mustrun
@@ -532,8 +526,7 @@ for filename, cmd, expected, test_count in todo:
     elif args.x == 'aislinn':
         func = aislinnrun
     else:
-        print(f"The tool parameter you provided ({args.x}) is either incorect or not yet implemented.")
-        sys.exit(1)
+        raise Exception(f"The tool parameter you provided ({args.x}) is either incorect or not yet implemented.")
 
     p = mp.Process(target=return_to_queue, args=(q, func, (cmd, filename, binary, test_count, args.timeout)))
     p.start()
