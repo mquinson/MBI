@@ -31,7 +31,7 @@ else
 fi
 
 # Run the script on each code
-python3 ${rootdir}/MBI.py -x must -o bench_must.csv ${codes_list}
+python3 ${rootdir}/MBI.py -x must ${codes_list}
 
 # Remove generated cruft (temp files and compiled binaries)
 rm -rf must_temp

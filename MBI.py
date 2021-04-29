@@ -43,6 +43,8 @@ elif args.x in ['aislinn', 'civl', 'isp', 'must', 'mpisv', 'simgrid', 'parcoach'
     exec(f'tool = {args.x}.Tool()')
 else:
     raise Exception(f"The tool parameter you provided ({args.x}) is either incorect or not yet implemented.")
+if args.o is 'out.csv':
+    args.o = f'bench_{args.x}.csv'
 
 ########################
 # Extract the TODOs from the codes

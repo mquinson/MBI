@@ -29,4 +29,4 @@ else
 fi
 
 # Run the script on each code
-python3 ${rootdir}/MBI.py -x civl -o bench_civl.csv ${codes_list}
+python3 ${rootdir}/MBI.py -x civl ${codes_list}
