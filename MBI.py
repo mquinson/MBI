@@ -53,31 +53,10 @@ else:
     raise Exception(f"The tool parameter you provided ({args.x}) is either incorect or not yet implemented.")
 
 ########################
-# Useful globals
+# Extract the TODOs from the codes
 ########################
 
 todo = []
-
-# To compute statistics on the performance of this tool
-true_pos = []
-false_pos = []
-true_neg = []
-false_neg = []
-unimplemented = []
-timeout = []
-failure = []
-
-# To compute statistics on the MBI codes
-code_correct = 0
-code_incorrect = 0
-
-# To compute timing statistics 
-total_elapsed = 0
-
-
-########################
-# Going through files
-########################
 
 def extract_todo(filename):
     """
@@ -152,6 +131,26 @@ for filename, cmd, expected, test_num in todo:
         print("HARD TIMEOUT! The child process failed to timeout by itself. Sorry for the output.")
         p.terminate()
 
+########################
+# Extract some statistics
+########################
+
+# To compute statistics on the performance of this tool
+true_pos = []
+false_pos = []
+true_neg = []
+false_neg = []
+unimplemented = []
+timeout = []
+failure = []
+
+# To compute statistics on the MBI codes
+code_correct = 0
+code_incorrect = 0
+
+# To compute timing statistics 
+total_elapsed = 0
+
 for filename, cmd, expected, test_num in todo:
     binary = re.sub('\.c', '', os.path.basename(filename))
     test_ID = f'{binary}_{test_num}'
@@ -219,7 +218,7 @@ for filename, cmd, expected, test_num in todo:
             f"{binary};{test_num};{args.x};{args.timeout};{np};{buff};{expected};{outcome};{elapsed}\n")
 
 ########################
-# Termination
+# Statistics summary
 ########################
 
 TP = len(true_pos)
