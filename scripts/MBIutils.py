@@ -18,8 +18,10 @@ class AbstractTool:
 
 def run_cmd(buildcmd, execcmd, cachefile, binary, timeout, read_line_lambda=None):
     if os.path.exists(f'{cachefile}.txt') and os.path.exists(f'{cachefile}.elapsed'):
-        print(f" (cached result found for {cachefile})", end='')
+        print(f" (cached result found for {cachefile})")
         return
+
+    print(f"Wait up to {args.timeout} seconds")
 
     start_time = time.time()
     if buildcmd == None:

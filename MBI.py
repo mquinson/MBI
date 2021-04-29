@@ -12,15 +12,7 @@ import multiprocessing as mp
 
 # Add our lib directory to the PYTHONPATH, and load our utilitary libraries
 sys.path.append(f'{os.path.dirname(os.path.abspath(__file__))}/scripts')
-from MBIutils import *
-
-import aislinn
-import civl
-import isp
-import mpisv
-import must
-import simgrid
-import parcoach
+import aislinn, civl, isp, mpisv, must, simgrid, parcoach
 
 # Some scripts may fail if error messages get translated
 os.environ["LC_ALL"] = "C"
@@ -48,7 +40,7 @@ args = parser.parse_args()
 if args.x == 'mpirun':
     raise Exception("No tool was provided, please retry with -x parameter. (see -h for further information on usage)")
 elif args.x in ['aislinn', 'civl', 'isp', 'must', 'mpisv', 'simgrid', 'parcoach']:
-    eval(f'tool = {args.x}.Tool()')
+    exec(f'tool = {args.x}.Tool()')
 else:
     raise Exception(f"The tool parameter you provided ({args.x}) is either incorect or not yet implemented.")
 
@@ -124,7 +116,6 @@ for filename, cmd, expected, test_num in todo:
 
     p = mp.Process(target=tool.run, args=(cmd, filename, binary, test_num, args.timeout))
     p.start()
-    print(f"Wait up to {args.timeout} seconds")
     sys.stdout.flush()
     p.join(args.timeout+60)
     if p.is_alive():
@@ -196,7 +187,7 @@ for filename, cmd, expected, test_num in todo:
     else: 
         raise Exception(f"Unexpected expectation: {expected} (must be OK or ERROR)")
 
-    print(f"\nTest '{binary}' result: {res_category}: {args.x} returned {outcome} while {expected} was expected. Elapsed: {elapsed} sec\n\n")
+    print(f"Test '{binary}' result: {res_category}: {args.x} returned {outcome} while {expected} was expected. Elapsed: {elapsed} sec")
 
     if res_category != 'timeout' and elapsed is not None:
         total_elapsed += float(elapsed)

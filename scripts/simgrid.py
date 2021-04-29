@@ -50,5 +50,4 @@ class Tool(AbstractTool):
         if re.search('No property violation found', output):
             return 'OK'
 
-        print("Couldn't assign output to specific behaviour; This will be treated as 'other'")
         return 'other'
