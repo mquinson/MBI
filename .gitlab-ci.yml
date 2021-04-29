@@ -545,6 +545,7 @@ civl-svg:
     #   - apt-get install -y python3-pip libcairo2
     #   - pip3 install drawSvg
     script:
+        - ./scripts/CIVL-run
         - cd Data
         - cat ../logs/civl/*.csv > result.csv
         - python3.8 gen_svg.py -i result.csv -o civl_result_LOG --header false
@@ -586,6 +587,7 @@ must-svg:
     #   - apt-get install -y python3-pip libcairo2
     #   - pip3 install drawSvg
     script:
+        - scripts/MUST-run
         - cd Data
         - cat ../logs/must/*.csv > result.csv
         - python3.8 gen_svg.py -i result.csv -o must_result_LOG --header false
@@ -657,7 +659,7 @@ data-collect:
         - cd Data
         - cat ../logs/*/*.csv >> result.csv
         - python3.8 gen_svg.py -i result.csv -o all_result_LOG --header true
-        - cp *svg ../log
+        - cp *svg ../logs
     artifacts:
         untracked: false
         expire_in: 30 days
