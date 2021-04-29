@@ -83,7 +83,8 @@ def extract_todo(filename):
                         print(
                             f"\n{filename}:{line_num}: MBI parse error: Test not followed by a proper 'ERROR' line:\n{line}{nextline}")
                     expect = 'ERROR' # [expects for expects in m.groups() if expects != None]
-                res.append((filename, cmd, expect, test_num))
+                test = {'filename': filename, 'id': test_num, 'cmd': cmd, 'expect':expect }
+                res.append(test.copy())
                 test_num += 1
                 line_num += 1
 
@@ -92,6 +93,8 @@ def extract_todo(filename):
     if state == 1:
         raise Exception(f"MBI_TESTS header not properly ended in file '{filename}'.")
 
+    if len(res) == 0:
+        raise Exception(f"No test found in {filename}. Please fix it.")
     return res
 
 for filename in args.filenames:
@@ -102,19 +105,16 @@ for filename in args.filenames:
 
     todo = todo + extract_todo(filename)
 
-    if len(todo) == 0:
-        raise Exception(f"No test found in {filename}. Please fix it.")
-
 ########################
 # Running the tests
 ########################
-for filename, cmd, expected, test_num in todo:
-    binary = re.sub('\.c', '', os.path.basename(filename))
+for test in todo:
+    binary = re.sub('\.c', '', os.path.basename(test['filename']))
 
-    print(f"Test '{binary}_{test_num}'", end=": ")
+    print(f"Test '{binary}_{test['id']}'", end=": ")
     sys.stdout.flush()
 
-    p = mp.Process(target=tool.run, args=(cmd, filename, binary, test_num, args.timeout))
+    p = mp.Process(target=tool.run, args=(test['cmd'], test['filename'], binary, test['id'], args.timeout))
     p.start()
     sys.stdout.flush()
     p.join(args.timeout+60)
@@ -142,10 +142,11 @@ code_incorrect = 0
 # To compute timing statistics 
 total_elapsed = 0
 
-for filename, cmd, expected, test_num in todo:
-    binary = re.sub('\.c', '', os.path.basename(filename))
-    test_ID = f'{binary}_{test_num}'
+for test in todo:
+    binary = re.sub('\.c', '', os.path.basename(test['filename']))
+    test_ID = f"{binary}_{test['id']}"
     outcome = tool.parse(test_ID)
+    expected = test['expect']
 
     if os.path.exists(f'{test_ID}.elapsed'):
         with open(f'{test_ID}.elapsed', 'r') as infile:
@@ -161,42 +162,42 @@ for filename, cmd, expected, test_num in todo:
     if outcome == 'timeout':
         res_category = 'timeout'
         if elapsed is None:
-            timeout.append(f'{binary}_{test_num} (hard timeout)')
+            timeout.append(f'{test_ID} (hard timeout)')
         else:
-            timeout.append(f'{binary}_{test_num} (elapsed: {elapsed} sec)')
+            timeout.append(f'{test_ID} (elapsed: {elapsed} sec)')
     elif outcome == 'failure':
         res_category = 'failure'
-        failure.append(f'{binary}_{test_num}')
+        failure.append(f'{test_ID}')
     elif outcome == 'UNIMPLEMENTED':
         res_category = 'portability issue'
-        unimplemented.append(f'{binary}_{test_num}')
+        unimplemented.append(f'{test_ID}')
     elif expected == 'OK':
         if outcome == 'OK':
             res_category = 'TRUE_NEG'
-            true_neg.append(f'{binary}_{test_num}')
+            true_neg.append(f'{test_ID}')
         else:
             res_category = 'FALSE_POS'
-            false_pos.append(f'{binary}_{test_num} (expected {expected} but returned {outcome})')
+            false_pos.append(f'{test_ID} (expected {expected} but returned {outcome})')
     elif expected == 'ERROR':
         if outcome == 'OK':
             res_category = 'FALSE_NEG'
-            false_neg.append(f'{binary}_{test_num} (expected {expected} but returned {outcome})')
+            false_neg.append(f'{test_ID} (expected {expected} but returned {outcome})')
         else:
             res_category = 'TRUE_POS'
-            true_pos.append(f'{binary}_{test_num}')
+            true_pos.append(f'{test_ID}')
     else: 
         raise Exception(f"Unexpected expectation: {expected} (must be OK or ERROR)")
 
-    print(f"Test '{binary}' result: {res_category}: {args.x} returned {outcome} while {expected} was expected. Elapsed: {elapsed} sec")
+    print(f"Test '{test_ID}' result: {res_category}: {args.x} returned {outcome} while {expected} was expected. Elapsed: {elapsed} sec")
 
     if res_category != 'timeout' and elapsed is not None:
         total_elapsed += float(elapsed)
 
-    np = re.search(r"(?:-np) [0-9]+", cmd)
+    np = re.search(r"(?:-np) [0-9]+", test['cmd'])
     np = int(re.sub(r"-np ", "", np.group(0)))
 
-    zero_buff = re.search(r"\$zero_buffer", cmd)
-    infty_buff = re.search(r"\$infty_buffer", cmd)
+    zero_buff = re.search(r"\$zero_buffer", test['cmd'])
+    infty_buff = re.search(r"\$infty_buffer", test['cmd'])
     if zero_buff != None:
         buff = '0'
     elif infty_buff != None:
@@ -206,7 +207,7 @@ for filename, cmd, expected, test_num in todo:
 
     with open("./" + args.o, "a") as result_file:
         result_file.write(
-            f"{binary};{test_num};{args.x};{args.timeout};{np};{buff};{expected};{outcome};{elapsed}\n")
+            f"{binary};{test['id']};{args.x};{args.timeout};{np};{buff};{expected};{outcome};{elapsed}\n")
 
 ########################
 # Statistics summary
