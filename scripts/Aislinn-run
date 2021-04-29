@@ -31,4 +31,4 @@ cd ${rootdir}/logs/aislinn
 python3.8 ${rootdir}/MBI.py -x aislinn -o bench_aislinn.csv $(ls ${rootdir}/codes/*.c)
 
 # Remove generated cruft (binary files)
-find -type f -a -executable | xargs rm
+find -type f -a -executable | xargs rm -f

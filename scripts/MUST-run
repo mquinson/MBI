@@ -35,4 +35,4 @@ python3 ${rootdir}/MBI.py -x must -o bench_must.csv ${codes_list}
 
 # Remove generated cruft (temp files and compiled binaries)
 rm -rf must_temp
-find -type f -a -executable | xargs rm
+find -type f -a -executable | xargs rm -f

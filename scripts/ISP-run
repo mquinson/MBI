@@ -26,4 +26,4 @@ cd ${rootdir}/logs/isp
 python3 ${rootdir}/MBI.py -x isp -o bench_isp.csv $(ls ${rootdir}/codes/*.c)
 
 # Remove generated cruft (binary files)
-find -type f -a -executable | xargs rm
+find -type f -a -executable | xargs rm -f
