@@ -6,6 +6,15 @@ import shlex
 import select
 import signal
 
+class AbstractTool:
+    def run(execcmd, filename, binary, id, timeout):
+        """Compile that test code and anaylse it with the Tool if needed (a cache system should be used)"""
+        pass
+
+    def parse(cachefile):
+        """Read the result of a previous run from the cache, and compute the test outcome"""
+        return 'failure'
+
 
 def run_cmd(buildcmd, execcmd, cachefile, binary, timeout, read_line_lambda=None):
     if os.path.exists(f'{cachefile}.txt') and os.path.exists(f'{cachefile}.elapsed'):

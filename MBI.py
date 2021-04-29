@@ -47,27 +47,8 @@ args = parser.parse_args()
 
 if args.x == 'mpirun':
     raise Exception("No tool was provided, please retry with -x parameter. (see -h for further information on usage)")
-elif args.x == 'must':
-    runf = must.run
-    parsef = must.parse
-elif args.x == 'mpisv':
-    runf = mpisv.run
-    parsef = mpisv.parse
-elif args.x == 'simgrid':
-    runf = simgrid.run
-    parsef = simgrid.parse
-elif args.x == 'civl':
-    runf = civl.run
-    parsef = civl.parse
-elif args.x == 'parcoach':
-    runf = parcoach.run
-    parsef = parcoach.parse
-elif args.x == 'isp':
-    runf = isp.run
-    parsef = isp.parser
-elif args.x == 'aislinn':
-    runf = aislinn.run
-    parsef = aislinn.parse
+elif args.x in ['aislinn', 'civl', 'isp', 'must', 'mpisv', 'simgrid', 'parcoach']:
+    eval(f'tool = {args.x}.Tool()')
 else:
     raise Exception(f"The tool parameter you provided ({args.x}) is either incorect or not yet implemented.")
 
@@ -162,7 +143,7 @@ for filename, cmd, expected, test_num in todo:
     print(f"Test '{binary}_{test_num}'", end=": ")
     sys.stdout.flush()
 
-    p = mp.Process(target=runf, args=(cmd, filename, binary, test_num, args.timeout))
+    p = mp.Process(target=tool.run, args=(cmd, filename, binary, test_num, args.timeout))
     p.start()
     print(f"Wait up to {args.timeout} seconds")
     sys.stdout.flush()
@@ -174,7 +155,7 @@ for filename, cmd, expected, test_num in todo:
 for filename, cmd, expected, test_num in todo:
     binary = re.sub('\.c', '', os.path.basename(filename))
     test_ID = f'{binary}_{test_num}'
-    outcome = parsef(test_ID)
+    outcome = tool.parse(test_ID)
 
     if os.path.exists(f'{test_ID}.elapsed'):
         with open(f'{test_ID}.elapsed', 'r') as infile:
