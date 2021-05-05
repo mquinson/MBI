@@ -43,12 +43,19 @@ elif args.x in ['aislinn', 'civl', 'isp', 'must', 'mpisv', 'simgrid', 'parcoach'
     exec(f'tool = {args.x}.Tool()')
 else:
     raise Exception(f"The tool parameter you provided ({args.x}) is either incorect or not yet implemented.")
-if args.o is 'out.csv':
+if args.o == 'out.csv':
     args.o = f'bench_{args.x}.csv'
 
 ########################
 # Extract the TODOs from the codes
 ########################
+
+possible_details = ['InvalidCommunicator','InvalidDatatype','InvalidRoot','InvalidWindow', 'InvalidOperator', 'ActualDatatype',
+                    'OutOfInitFini', 'CommunicatorLeak', 'DatatypeLeak', 'GroupLeak', 'MissingStart', 'MissingWait', 
+                    'MessageRace', 'CallMatching', 'CommunicatorMatching', 'DatatypeMatching', 'RootMatching', 'OperatorMatching',
+                    'BufferingHazard']
+                    # BufferLength/BufferOverlap
+                    # RMA concurrency errors (local and distributed)
 
 todo = []
 
@@ -77,15 +84,19 @@ def extract_todo(filename):
                 m = re.match('\s+\$ ?(.*)', line)
                 cmd = m.group(1)
                 nextline = next(input)
+                detail = None
                 if re.match('[ |]*OK *', nextline):
                     expect = 'OK'
                 else:
                     m = re.match('[ |]*ERROR: *(.*)', nextline)
                     if not m:
-                        print(
+                        raise Exception(
                             f"\n{filename}:{line_num}: MBI parse error: Test not followed by a proper 'ERROR' line:\n{line}{nextline}")
-                    expect = 'ERROR' # [expects for expects in m.groups() if expects != None]
-                test = {'filename': filename, 'id': test_num, 'cmd': cmd, 'expect':expect }
+                    expect = 'ERROR' 
+                    detail = m.group(1)
+                    if detail not in possible_details:
+                        raise Exception(f"\n{filename}:{line_num}: MBI parse error: Detailled outcome not allowed: {detail}")
+                test = {'filename': filename, 'id': test_num, 'cmd': cmd, 'expect':expect, 'detail':detail }
                 res.append(test.copy())
                 test_num += 1
                 line_num += 1
@@ -244,14 +255,17 @@ if len(failure) > 0:
     for p in failure:
         print(f"  {p}")
 
+
+
+
 def percent(ratio):
     """Returns the ratio as a percentage, rounded to 2 digits only"""
     return int(ratio*10000)/100
-
 print(f"\nXXXX Summary for {args.x} XXXX  {passed} test{'' if passed == 1 else 's'} passed (out of {total})")
 try:
     print(f"Portability: {percent(1-len(unimplemented)/total)}% ({len(unimplemented)} tests failed)")
     print(f"Robustness: {percent(1-(len(timeout)+len(failure))/(total-len(unimplemented)))}% ({len(timeout)} timeouts and {len(failure)} failures)\n")
+
     print(f"Recall: {percent(TP/(TP+FN))}% (found {TP} errors out of {TP+FN})")
     print(f"Specificity: {percent(TN/(TN+FP))}% (recognized {TN} correct codes out of {TN+FP})")
     print(f"Precision: {percent(TP/(TP+FP))}% ({TP} diagnostic of error are correct out of {TP+FP})")
