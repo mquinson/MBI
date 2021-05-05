@@ -112,15 +112,15 @@ for p1 in send + isend:
         replace = patterns 
         replace['shortdesc'] = 'Point to point @{p1}@ and @{p2}@ may not be matched' 
         replace['longdesc'] = f'Processes 0 and 1 both call @{p1}@ and @{p2}@. This results in a deadlock depending on the buffering mode' 
-        replace['outcome'] = 'ERROR: Buffering' 
-        replace['errormsg'] = 'ERROR: Buffering' 
+        replace['outcome'] = 'ERROR: BufferingHazard' 
+        replace['errormsg'] = 'ERROR: BufferingHazard' 
         make_file(template, f'P2PBuffering_{p1}_{p2}_nok.c', replace)
     		# Generate the incorrect matching depending on the buffering mode (recv + send)
         replace = patterns 
         replace['shortdesc'] = 'Point to point @{p1}@ and @{p2}@ may not be matched' 
         replace['longdesc'] = f'Processes 0 and 1 both call @{p1}@ and @{p2}@. This results in a deadlock depending on the buffering mode' 
-        replace['outcome'] = 'ERROR: Buffering' 
-        replace['errormsg'] = 'ERROR: Buffering' 
+        replace['outcome'] = 'ERROR: BufferingHazard' 
+        replace['errormsg'] = 'ERROR: BufferingHazard' 
         replace['operation1a'] =  operation[p2]("2")
         replace['operation2a'] = operation[p1]("1")
         replace['operation1b'] =  operation[p2]("2")
@@ -130,8 +130,8 @@ for p1 in send + isend:
         replace = patterns 
         replace['shortdesc'] = 'Point to point @{p1}@ and @{p2}@ may not be matched' 
         replace['longdesc'] = f'Processes 0 and 1 both call @{p1}@ and @{p2}@. This results in a deadlock depending on the buffering mode' 
-        replace['outcome'] = 'ERROR: Buffering' 
-        replace['errormsg'] = 'ERROR: Buffering' 
+        replace['outcome'] = 'OK' 
+        replace['errormsg'] = 'OK' 
         replace['operation1a'] =  operation[p1]("1")
         replace['operation2a'] = operation[p2]("2")
         make_file(template, f'P2PCallMatching_{p1}_{p2}_ok.c', replace)
