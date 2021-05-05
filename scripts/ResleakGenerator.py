@@ -15,7 +15,7 @@ BEGIN_MPI_FEATURES
 	P2P!nonblocking: Lacking
 	P2P!persistent: Lacking
 	P2P!probe: Lacking
-	COLL!basic: @{collfeature}@
+	COLL!basic: Lacking
 	COLL!nonblocking: Lacking 
 	COLL!persistent: Lacking
 	COLL!probe: Lacking
@@ -82,29 +82,36 @@ callparameter = ['MPI_Op_create', 'MPI_Comm_group', 'MPI_Comm_dup', 'MPI_Type_co
 init = {}
 operation = {}
 fini = {}
+error = {}
 
 init['MPI_Op_create'] = lambda n: 'MPI_Op op[size];'
 operation['MPI_Op_create'] = lambda n: 'MPI_Op_create((MPI_User_function *)myOp, 0, &op[j]);'
+error['MPI_Op_create'] = 'OperatorLeak'
 fini['MPI_Op_create'] = lambda n: "MPI_Op_free(&op[j]);"
 
 init['MPI_Comm_group'] = lambda n: 'MPI_Group grp[size];'
 operation['MPI_Comm_group'] = lambda n: 'MPI_Comm_group(MPI_COMM_WORLD, &grp[j]);'
+error['MPI_Comm_group'] = 'GroupLeak'
 fini['MPI_Comm_group'] = lambda n: "MPI_Group_free(&grp[j]);"
 
 init['MPI_Group_excl'] = lambda n: 'MPI_Group worldgroup, grp[size];\n MPI_Comm_group(MPI_COMM_WORLD, &worldgroup);'
 operation['MPI_Group_excl'] = lambda n: 'MPI_Group_excl(worldgroup, 1, &rank, &grp[j]);' 
+error['MPI_Group_excl'] = 'GroupLeak'
 fini['MPI_Group_excl'] = lambda n: "MPI_Group_free(&grp[j]);"
 
 init['MPI_Comm_create'] = lambda n: 'MPI_Comm com[size]; MPI_Group grp[size];'
 operation['MPI_Comm_create'] = lambda n: 'MPI_Comm_group(MPI_COMM_WORLD, &grp[j]);\n MPI_Comm_create(MPI_COMM_WORLD, grp[j], &com[j]);\n MPI_Group_free(&grp[j]);'
+error['MPI_Comm_create'] = 'CommunicatorLeak'
 fini['MPI_Comm_create'] = lambda n: "MPI_Comm_free(&com[j]);"
 
 init['MPI_Comm_dup'] = lambda n: f'MPI_Comm com[size];'
 operation['MPI_Comm_dup'] = lambda n: 'MPI_Comm_dup(MPI_COMM_WORLD, &com[j]);'
+error['MPI_Comm_dup'] = 'CommunicatorLeak'
 fini['MPI_Comm_dup'] = lambda n: "MPI_Comm_free(&com[j]);"
 
 init['MPI_Type_contiguous'] = lambda n: 'MPI_Datatype type[size];'
 operation['MPI_Type_contiguous'] = lambda n: 'MPI_Type_contiguous(2, MPI_DOUBLE, &type[j]);'
+error['MPI_Type_contiguous'] = 'TypeLeak'
 fini['MPI_Type_contiguous'] = lambda n: "MPI_Type_free(&type[j]);"
 
 # Generate code with one collective
@@ -134,7 +141,7 @@ for call in callparameter:
     replace = patterns
     replace['shortdesc'] = '@{call}@ has no free'
     replace['longdesc'] = '@{call}@ has no free'
-    replace['outcome'] = 'ERROR: Resleak'
+    replace['outcome'] = f'ERROR: {error[call]}'
     replace['errormsg'] = 'Resleak. @{call}@ at @{filename}@:@{line:MBIERROR}@ has no free.'
     replace['fini'] = ' /* MBIERROR MISSING: ' + free + ' */'
     make_file(template, f'Resleak_{call}_nok.c', replace)
@@ -143,7 +150,7 @@ for call in callparameter:
     replace = patterns
     replace['shortdesc'] = '@{call}@ lacks several free'
     replace['longdesc'] = '@{call}@ lacks several free'
-    replace['outcome'] = 'ERROR: Resleak'
+    replace['outcome'] = f'ERROR: {error[call]}'
     replace['errormsg'] = 'Resleak. @{call}@ at @{filename}@:@{line:MBIERROR}@ lacks several free.'
     replace['change_size'] = 'size=PARAM_PER_ITERATION;'
     replace['loop'] = 'for (i = 0; i < ITERATIONS; i++) {\n		for (j = 0; j < PARAM_PER_ITERATION; j++) {'
