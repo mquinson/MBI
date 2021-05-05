@@ -11,18 +11,15 @@ template = """// @{generatedby}@
     @{longdesc}@
 
 BEGIN_MPI_FEATURES
-  P2P:   Lacking
-  iP2P:  Lacking
-  PERS:  Lacking
-  COLL:  Lacking
-  iCOLL: Lacking
-  TOPO:  Lacking
-  RMA:   Lacking
-  PROB:  Lacking
-  COM:   Lacking 
-  GRP:   Lacking
-  DATA:  Lacking
-  OP:    Lacking
+	P2P!basic: Lacking
+	P2P!nonblocking: Lacking
+	P2P!persistent: Lacking
+	P2P!probe: Lacking
+	COLL!basic: @{collfeature}@
+	COLL!nonblocking: Lacking 
+	COLL!persistent: Lacking
+	COLL!probe: Lacking
+	RMA: Lacking
 END_MPI_FEATURES
 
 BEGIN_ERROR_LABELS
