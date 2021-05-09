@@ -62,7 +62,7 @@ int main(int argc, char **argv) {
 """
 
 collectives = ['MPI_Bcast', 'MPI_Reduce', 'MPI_Gather', 'MPI_Scatter']
-icollectives = []  # 'ibarrier', 'ireduce']
+icollectives = ['MPI_Ireduce']
 
 init = {}
 operation = {}
@@ -84,6 +84,9 @@ init['MPI_Scatter'] = lambda n: f"int val{n}, buf{n}[buff_size];"
 operation['MPI_Scatter'] = lambda n: f"MPI_Scatter(&buf{n}, 1, MPI_INT, &val{n}, 1, MPI_INT, root, MPI_COMM_WORLD);"
 fini['MPI_Scatter'] = lambda n: ""
 
+init['MPI_Ireduce'] = lambda n: f"MPI_Request req{n}; MPI_Status sta{n}; int sum{n}, val{n} = 1;"
+operation['MPI_Ireduce'] = lambda n: f"MPI_Ireduce(&sum{n}, &val{n}, 1, MPI_INT, MPI_SUM, root, MPI_COMM_WORLD, &req{n}); MPI_Wait(&req{n},&sta{n});"
+fini['MPI_Ireduce'] = lambda n: f"free(req{n});"
 
 # Generate code with one collective
 for coll in collectives + icollectives:

@@ -77,7 +77,7 @@ int main(int argc, char **argv) {
 }
 """
 
-callparameter = ['MPI_Op_create', 'MPI_Comm_group', 'MPI_Comm_dup', 'MPI_Type_contiguous', 'MPI_Comm_create', 'MPI_Group_excl']
+callparameter = ['MPI_Op_create', 'MPI_Comm_group', 'MPI_Comm_dup', 'MPI_Type_contiguous', 'MPI_Comm_create', 'MPI_Group_excl', 'MPI_Comm_split']
 
 init = {}
 operation = {}
@@ -108,6 +108,11 @@ init['MPI_Comm_dup'] = lambda n: f'MPI_Comm com[size];'
 operation['MPI_Comm_dup'] = lambda n: 'MPI_Comm_dup(MPI_COMM_WORLD, &com[j]);'
 error['MPI_Comm_dup'] = 'CommunicatorLeak'
 fini['MPI_Comm_dup'] = lambda n: "MPI_Comm_free(&com[j]);"
+
+init['MPI_Comm_split'] = lambda n: f'MPI_Comm com[size]; int color = rank % 2; int key = 1;'
+operation['MPI_Comm_split'] = lambda n: 'MPI_Comm_split(MPI_COMM_WORLD,color,key, &com[j]);'
+error['MPI_Comm_split'] = 'CommunicatorLeak'
+fini['MPI_Comm_split'] = lambda n: "MPI_Comm_free(&com[j]);"
 
 init['MPI_Type_contiguous'] = lambda n: 'MPI_Datatype type[size];'
 operation['MPI_Type_contiguous'] = lambda n: 'MPI_Type_contiguous(2, MPI_DOUBLE, &type[j]);'

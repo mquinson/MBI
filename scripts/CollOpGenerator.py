@@ -61,19 +61,24 @@ int main(int argc, char **argv) {
 """
 
 collectives = ['MPI_Reduce', 'MPI_Allreduce']
-icollectives = []  # 'ireduce']
+icollectives = ['MPI_Ireduce'] 
 
 init = {}
 operation = {}
 fini = {}
 
 init['MPI_Reduce'] = lambda n: f"int sum{n}, val{n} = 1;"
-operation['MPI_Reduce'] = lambda n: f"MPI_Reduce(&sum{n}, &val{n}, 1, op, MPI_SUM, 0, MPI_COMM_WORLD);"
+operation['MPI_Reduce'] = lambda n: f"MPI_Reduce(&sum{n}, &val{n}, 1, MPI_INT, Op, 0, MPI_COMM_WORLD);"
 fini['MPI_Reduce'] = lambda n: ""
 
 init['MPI_Allreduce'] = lambda n: f"int sum{n}, val{n} = 1;"
 operation['MPI_Allreduce'] = lambda n: f"MPI_Allreduce(&sum{n}, &val{n}, 1, MPI_INT, op, MPI_COMM_WORLD);"
 fini['MPI_Allreduce'] = lambda n: ""
+
+init['MPI_Ireduce'] = lambda n: f"MPI_Request req{n}; MPI_Status sta{n}; int sum{n}, val{n} = 1;"
+operation['MPI_Ireduce'] = lambda n: f"MPI_Ireduce(&sum{n}, &val{n}, 1, MPI_INT, op, 0, MPI_COMM_WORLD, &req{n}); MPI_Wait(&req{n},&sta{n});"
+fini['MPI_Ireduce'] = lambda n: f"free(req{n});"
+
 
 for coll in collectives + icollectives:
     patterns = {}
