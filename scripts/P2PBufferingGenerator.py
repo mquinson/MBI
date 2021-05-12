@@ -53,7 +53,7 @@ int main(int argc, char **argv) {
 	if (rank == 0) {
   	@{operation1a}@ /* MBIERROR1 */
   	@{operation2a}@ 
-	}if (rank == 1) {
+	}else if (rank == 1) {
   	@{operation1b}@ /* MBIERROR2 */
   	@{operation2b}@ 
 	}
@@ -127,12 +127,13 @@ for p1 in send + isend:
         replace['operation1b'] =  operation[p2]("2")
         replace['operation2b'] = operation[p1]("1")
         make_file(template, f'P2PBuffering_{p2}_{p1}_nok.c', replace)
-    		# Generate the correct matching 
+    		# Generate the correct matching
         replace = patterns 
-        replace['shortdesc'] = 'Point to point @{p1}@ and @{p2}@ may not be matched' 
-        replace['longdesc'] = f'Processes 0 and 1 both call @{p1}@ and @{p2}@. This results in a deadlock depending on the buffering mode' 
+        replace['shortdesc'] = 'Point to point @{p1}@ and @{p2}@ are correctly  matched' 
+        replace['longdesc'] = f'Process 0 calls @{p1}@ and process 1 calls @{p2}@.' 
         replace['outcome'] = 'OK' 
         replace['errormsg'] = 'OK' 
         replace['operation1a'] =  operation[p1]("1")
         replace['operation2a'] = operation[p2]("2")
         make_file(template, f'P2PCallMatching_{p1}_{p2}_ok.c', replace)
+
