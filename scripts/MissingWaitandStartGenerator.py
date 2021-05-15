@@ -68,10 +68,13 @@ int main(int argc, char **argv) {
 }
 """
 
+#SEND
 isend = ['MPI_Isend']  
 perssend = ['MPI_Send_init']  
+#RECV
 irecv = ['MPI_Irecv']  
 persrecv = ['MPI_Recv_init']  
+#COLL
 pers=[]
 icoll=['MPI_Ireduce']
 
