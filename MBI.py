@@ -8,6 +8,7 @@ import stat
 import re
 import argparse
 import time
+import glob
 import multiprocessing as mp
 
 # Add our lib directory to the PYTHONPATH, and load our utilitary libraries
@@ -260,8 +261,6 @@ def cmd_stats():
 parser = argparse.ArgumentParser(
     description='This runner intends to provide a bridge from a MPI compiler/executor + a test written with MPI bugs collection header and the actual result compared to the expected.')
 
-parser.add_argument('filenames', metavar='example.c', nargs="+", help='a list of MPI c sources.')
-
 parser.add_argument('-c', metavar='cmd', default='all',
                     help="The command you want to execute. By default, 'all', runs all commands in sequence. Other choices:\n"
                     "  run: run the tests on all codes.\n"
@@ -276,6 +275,9 @@ parser.add_argument('-t', '--timeout', metavar='int', default=300, type=int,
 parser.add_argument('-o', metavar='output.csv', default='out.csv', type=str,
                     help='name of the csv file in which results will be written')
 
+parser.add_argument('-b', metavar='batch', default='all',
+                    help="only take some files, with the syntax N:M to get only the files which numbers are from N to M")
+
 args = parser.parse_args()
 
 if args.x == 'mpirun':
@@ -287,10 +289,18 @@ else:
 if args.o == 'out.csv':
     args.o = f'bench_{args.x}.csv'
 
-for filename in args.filenames:
-    if filename == "template.c":
-        continue
+if args.b == 'all':
+    filenames = glob.glob("gencodes/*.c")
+else:
+    match = re.match('(\d*):(\d*)', args.b)
+    if not match:
+        print(f"The parameter to batch option ({args.b}) is invalid. Must be something like 'N:M', with N and M numbers (or omitted)")
+    m = 0 if match.group(1)=='' else int(match.group(1))
+    M = 0 if match.group(2)=='' else int(match.group(2))
+    filenames = glob.glob("gencodes/*.c")
+    filenames = filenames[m:M]
 
+for filename in filenames:
     binary = re.sub('\.c', '', os.path.basename(filename))
 
     todo = todo + extract_todo(filename)

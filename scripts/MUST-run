@@ -6,13 +6,5 @@ rootdir=$(pwd)
 
 set -e # Fail on error
 
-# Get the list of codes from the command line, if it was provided
-if [ $# -eq 0 ] 
-then
-  codes_list=$(ls ${rootdir}/codes/*.c)
-else
-  codes_list=$@
-fi
-
 # Run the script on each code
-python3 ${rootdir}/MBI.py -x must ${codes_list}
+python3 ${rootdir}/MBI.py -x must $@

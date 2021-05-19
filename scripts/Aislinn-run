@@ -11,4 +11,4 @@ apt-get update
 apt-get install -y python3.8 gcc python2.7 python-jinja2
 
 # Run the script on each code
-python3.8 ${rootdir}/MBI.py -x aislinn $(ls ${rootdir}/codes/*.c)
+python3.8 ${rootdir}/MBI.py -x aislinn $@

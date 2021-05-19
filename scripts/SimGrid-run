@@ -7,4 +7,4 @@ rootdir=$(pwd)
 set -e # Fail on error
 
 # Run the script on each code
-python3 ${rootdir}/MBI.py -x simgrid $(ls ${rootdir}/codes/*.c)
+python3 ${rootdir}/MBI.py -x simgrid $@
