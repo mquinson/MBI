@@ -13,13 +13,6 @@ class Tool(AbstractTool):
             print("  docker run -it --rm --name MIB --volume $(pwd):/MBI mpisv/mpi-sv /MBI/MBI.py -x mpisv")
             sys.exit(1)
 
-    def setup(self, rootdir):
-        subprocess.run("apt-get update", check=True, shell=True)
-        subprocess.run("apt-get install -y software-properties-common", check=True, shell=True) # First install add-apt-repository
-        subprocess.run("echo|add-apt-repository ppa:deadsnakes/ppa", check=True, shell=True) # Add a source for the python we need
-        subprocess.run("apt-get update", check=True, shell=True)
-        subprocess.run("apt-get install -y python3.7", check=True, shell=True)
-
     def run(self, execcmd, filename, binary, id, timeout):
         cachefile = f'{binary}_{id}'
 
