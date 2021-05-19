@@ -582,33 +582,31 @@ must-svg:
 data-collect:
     stage: gather
     needs:
-        - job: test-must-050
+        - job: test-must-1
           artifacts: true
-        - job: test-must-100
+        - job: test-must-2
           artifacts: true
-        - job: test-must-150
+        - job: test-must-3
           artifacts: true
-        - job: test-must-200
+        - job: test-must-4
           artifacts: true
-        - job: test-must-250
+        - job: test-must-5
           artifacts: true
-        - job: test-must-300
+        - job: test-must-6
           artifacts: true
-        - job: test-must-350
+        - job: test-must-7
           artifacts: true
-        - job: test-must-400
+        - job: test-must-8
           artifacts: true
-        - job: test-must-450
+        - job: test-must-9
           artifacts: true
-        - job: test-must-500
+        - job: test-must-10
           artifacts: true
-        - job: test-must-550
+        - job: test-civl-1
           artifacts: true
-        - job: test-civl200
+        - job: test-civl-2
           artifacts: true
-        - job: test-civl400
-          artifacts: true
-        - job: test-civl600
+        - job: test-civl-3
           artifacts: true
         - job: test-parcoach
           artifacts: true
