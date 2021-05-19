@@ -147,8 +147,8 @@ for coll in collectives + icollectives:
     replace = patterns
     replace['shortdesc'] = 'Collective outside of parallel region'
     replace['longdesc'] = f'Collective {coll} called outside of the MPI parallel region'
-    replace['outcome'] = 'ERROR: OutsideParallelRegion'
-    replace['errormsg'] = 'Collective outside of parallel region. {coll} at @{filename}@:@{line:MBIERROR}@ is called after MPI_Finalize'
+    replace['outcome'] = 'ERROR: OutOfInitFini'
+    replace['errormsg'] = 'Collective {coll} at @{filename}@:@{line:MBIERROR}@ is called after MPI_Finalize'
     replace['init1'] = ""
     replace['fini1'] = ""
     replace['operation1'] = ""
