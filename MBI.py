@@ -276,8 +276,8 @@ parser.add_argument('-t', '--timeout', metavar='int', default=300, type=int,
 parser.add_argument('-o', metavar='output.csv', default='out.csv', type=str,
                     help='name of the csv file in which results will be written')
 
-parser.add_argument('-b', metavar='batch', default='all',
-                    help="only take some files, with the syntax N:M to get only the files which numbers are from N to M")
+parser.add_argument('-b', metavar='batch', default='1/1',
+                    help="Limits the test executions to the batch #N out of M batches (Syntax: 'N/M'). To get 3 runners, use 1/3 2/3 3/3")
 
 args = parser.parse_args()
 
@@ -290,20 +290,21 @@ else:
 if args.o == 'out.csv':
     args.o = f'bench_{args.x}.csv'
 
-if args.b == 'all':
-    filenames = glob.glob("gencodes/*.c")
-else:
-    match = re.match('(\d*):(\d*)', args.b)
-    if not match:
-        print(f"The parameter to batch option ({args.b}) is invalid. Must be something like 'N:M', with N and M numbers (or omitted)")
-    m = 0 if match.group(1)=='' else int(match.group(1))
-    M = 0 if match.group(2)=='' else int(match.group(2))
-    filenames = glob.glob("gencodes/*.c")
-    filenames = filenames[m:M]
+# Choose the files that will be used by this runner, depending on the -b argument
+match = re.match('(\d*)/(\d*)', args.b)
+if not match:
+    print(f"The parameter to batch option ({args.b}) is invalid. Must be something like 'N/M', with N and M numbers.")
+pos = int(match.group(1))
+runner_count = int(match.group(2))
+assert pos > 0
+assert pos <= runner_count
+filenames = glob.glob("gencodes/*.c")
+batch = int(len(filenames) / runner_count)+1
+min_rank = batch*(pos-1)
+max_rank = (batch*pos)-1
+print(f'Handling files from #{min_rank} to #{max_rank}, out of {len(filenames)}')
 
-for filename in filenames:
-    binary = re.sub('\.c', '', os.path.basename(filename))
-
+for filename in filenames[min_rank:max_rank]:
     todo = todo + extract_todo(filename)
 
 rootdir=os.path.dirname(os.path.abspath(__file__))
