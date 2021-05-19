@@ -5,19 +5,18 @@ from MBIutils import *
 
 class Tool(AbstractTool):
     def ensure_image(self):
-        id = subprocess.run("source /etc/os-release && echo $ID", shell=True, capture_output=True)
-        ver = subprocess.run("source /etc/os-release && echo $VERSION_ID", shell=True, capture_output=True)
-        if id.stdout == "ubuntu" and ver.stdout == "18.04":
+        id = subprocess.run("grep '^ID=' /etc/os-release|sed 's/.*=//'", shell=True, capture_output=True, text=True)
+        ver = subprocess.run("grep '^VERSION_ID=' /etc/os-release|sed 's/.*=//'", shell=True, capture_output=True, text=True)
+        if id.stdout == "ubuntu\n" and ver.stdout == '"18.04"\n':
             print("This is an Ubuntu 18.04 OS. Good.")
         else:
+            print(f"id: '{id.stdout}'; version: '{ver.stdout}'")
             print("Please run this script in a ubuntu:18.04 image. Run these commands:")
             print("  docker image pull ubuntu:18.04")
             print("  docker run -it --rm --name MIB --volume $(pwd):/MBI ubuntu:18.04 /MBI/MBI.py -x aislinn")
             sys.exit(1)
 
     def setup(self, rootdir):
-        subprocess.run("apt-get update", check=True)
-        subprocess.run("apt-get install -y python3.8 gcc python2.7 python-jinja2", check=True)
         os.environ['PATH'] = os.environ['PATH'] + ":" + rootdir + "/tools/aislinn-git/bin/"
 
     def run(self, execcmd, filename, binary, id, timeout):
