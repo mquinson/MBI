@@ -46,16 +46,25 @@ else:
 if args.o == 'out.csv':
     args.o = f'bench_{args.x}.csv'
 
+# Basic verification
+tool.ensure_image()
+
 ########################
 # Extract the TODOs from the codes
 ########################
 
-possible_details = ['InvalidCommunicator','InvalidDatatype','InvalidRoot','InvalidWindow', 'InvalidOperator', 'ActualDatatype',
-                    'OutOfInitFini', 'CommunicatorLeak', 'DatatypeLeak', 'GroupLeak', 'MissingStart', 'MissingWait', 
-                    'MessageRace', 'CallMatching', 'CommunicatorMatching', 'DatatypeMatching', 'RootMatching', 'OperatorMatching',
-                    'BufferingHazard']
-                    # BufferLength/BufferOverlap
-                    # RMA concurrency errors (local and distributed)
+possible_details = [
+    # scope limited to one call
+    'InvalidCommunicator','InvalidDatatype','InvalidRoot','InvalidWindow', 'InvalidOperator', 'ActualDatatype',
+    # scope: Process-wide
+    'OutOfInitFini', 'CommunicatorLeak', 'DatatypeLeak', 'GroupLeak', 'OperatorLeak', 'TypeLeak', 'MissingStart', 'MissingWait', 
+    'RequestLeak',
+    # scope: communicator
+    'MessageRace', 'CallMatching', 'CommunicatorMatching', 'DatatypeMatching', 'InvalidSrcDest', 'RootMatching', 'OperatorMatching',
+    # larger scope
+    'BufferingHazard']
+    # BufferLength/BufferOverlap
+    # RMA concurrency errors (local and distributed)
 
 todo = []
 
@@ -95,7 +104,7 @@ def extract_todo(filename):
                     expect = 'ERROR' 
                     detail = m.group(1)
                     if detail not in possible_details:
-                        raise Exception(f"\n{filename}:{line_num}: MBI parse error: Detailled outcome not allowed: {detail}")
+                        raise Exception(f"\n{filename}:{line_num}: MBI parse error: Detailled outcome {detail} is not one of the allowed ones.")
                 test = {'filename': filename, 'id': test_num, 'cmd': cmd, 'expect':expect, 'detail':detail }
                 res.append(test.copy())
                 test_num += 1
