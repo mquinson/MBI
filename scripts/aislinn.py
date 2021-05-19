@@ -15,6 +15,11 @@ class Tool(AbstractTool):
             print("  docker run -it --rm --name MIB --volume $(pwd):/MBI ubuntu:18.04 /MBI/MBI.py -x aislinn")
             sys.exit(1)
 
+    def setup(self, rootdir):
+        subprocess.run("apt-get update", check=True)
+        subprocess.run("apt-get install -y python3.8 gcc python2.7 python-jinja2", check=True)
+        os.environ['PATH'] = os.environ['PATH'] + ":" + rootdir + "/tools/aislinn-git/bin/"
+
     def run(self, execcmd, filename, binary, id, timeout):
         cachefile = f'{binary}_{id}'
 

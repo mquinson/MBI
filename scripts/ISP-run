@@ -8,9 +8,6 @@ set -e # Fail on error
 
 export PATH=$PATH:${rootdir}/builds/ISP/bin/
 
-test -e ${rootdir}/logs/isp || mkdir -p ${rootdir}/logs/isp
-cd ${rootdir}/logs/isp
-
 # Run the script on each code
 python3 ${rootdir}/MBI.py -x isp $(ls ${rootdir}/codes/*.c)
 

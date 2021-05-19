@@ -8,9 +8,6 @@ set -e # Fail on error
 
 export PATH=${rootdir}/builds/MUST/bin:$PATH
 
-test -e ${rootdir}/logs/must || mkdir -p ${rootdir}/logs/must
-cd ${rootdir}/logs/must
-
 # Get the list of codes from the command line, if it was provided
 if [ $# -eq 0 ] 
 then

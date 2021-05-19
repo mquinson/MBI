@@ -5,16 +5,7 @@
 cd "$(dirname "$0")"/../
 rootdir=$(pwd)
 
-# Check that we have the dependencies
-apt-get update
-apt-get install -y python3.8 gcc python2.7 python-jinja2 #autotools-dev automake build-essential git
-
 set -e # Fail on error
-
-export PATH=$PATH:${rootdir}/tools/aislinn-git/bin/
-
-test -e ${rootdir}/logs/aislinn || mkdir -p ${rootdir}/logs/aislinn
-cd ${rootdir}/logs/aislinn
 
 # Run the script on each code
 python3.8 ${rootdir}/MBI.py -x aislinn $(ls ${rootdir}/codes/*.c)

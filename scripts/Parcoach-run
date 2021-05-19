@@ -6,9 +6,6 @@ rootdir=$(pwd)
 
 set -e # Fail on error
 
-test -e ${rootdir}/logs/parcoach || mkdir -p ${rootdir}/logs/parcoach
-cd ${rootdir}/logs/parcoach
-
 # Run the script on each code
 python3 ${rootdir}/MBI.py -x parcoach $(ls ${rootdir}/codes/*.c)
 

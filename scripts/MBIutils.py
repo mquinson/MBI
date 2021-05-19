@@ -17,8 +17,11 @@ class AbstractTool:
             print(f"  docker run -it --rm --name MIB --volume $(pwd):/MBI mpi-bugs-initiative /MBI/MBI.py {params}")
             sys.exit(1)
 
-    def setup():
-        """Ensure that this tool is usable in this environment: Installation, file copy, etc"""
+    def setup(rootdir):
+        """
+        Ensure that this tool (previously built) is usable in this environment: go to the logs directory, setup the PATH, etc.
+        This is called only once for all tests, from the logs directory.
+        """
         pass
 
     def run(execcmd, filename, binary, id, timeout):

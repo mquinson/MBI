@@ -6,9 +6,6 @@ rootdir=$(pwd)
 
 set -e # Fail on error
 
-test -e ${rootdir}/logs/civl || mkdir -p ${rootdir}/logs/civl
-cd ${rootdir}/logs/civl
-
 # Get the list of codes from the command line, if it was provided
 if [ $# -eq 0 ] 
 then

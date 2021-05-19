@@ -6,12 +6,6 @@ rootdir=$(pwd)
 
 set -e # Fail on error
 
-export PATH=$PATH:${rootdir}/builds/SimGrid/bin
-export VERBOSE=1
-
-test -e ${rootdir}/logs/simgrid || mkdir -p ${rootdir}/logs/simgrid
-cd ${rootdir}/logs/simgrid
-
 # Run the script on each code
 python3 ${rootdir}/MBI.py -x simgrid $(ls ${rootdir}/codes/*.c)
 
