@@ -101,12 +101,13 @@ def cmd_run():
     tool.setup(rootdir)
 
     for test in todo:
-        binary = re.sub('\.c', '', os.path.basename(test['filename']))
+        filename = f"../../{test['filename']}" # we are now in the tool's log directory
+        binary = re.sub('\.c', '', os.path.basename(filename))
 
         print(f"Test '{binary}_{test['id']}'", end=": ")
         sys.stdout.flush()
 
-        p = mp.Process(target=tool.run, args=(test['cmd'], test['filename'], binary, test['id'], args.timeout))
+        p = mp.Process(target=tool.run, args=(test['cmd'], filename, binary, test['id'], args.timeout))
         p.start()
         sys.stdout.flush()
         p.join(args.timeout+60)
