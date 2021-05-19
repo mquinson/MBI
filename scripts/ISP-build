@@ -17,9 +17,7 @@ fi
 
 set -e # Fail on error
 
-cd tools/
-QUILT_PATCHES=isp-patches quilt push -a # Install our patches
-cd isp-0.3.1
+cd tools/isp-0.3.1
 ./configure --prefix=${rootdir}/builds/ISP --with-mpi-inc-dir=/usr/lib/x86_64-linux-gnu/mpich/include --enable-optional-ample-set-fix
 sed -i "s/-source 1.5 -target 1.5 -classpath/-source 1.7 -target 1.7 -classpath/" UI/Makefile*
 make -j$(nproc) install
