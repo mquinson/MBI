@@ -34,7 +34,7 @@ def run_cmd(buildcmd, execcmd, cachefile, binary, timeout, read_line_lambda=None
         print(f" (cached result found for {cachefile})")
         return
 
-    print(f"Wait up to {args.timeout} seconds")
+    print(f"Wait up to {timeout} seconds")
 
     start_time = time.time()
     if buildcmd == None:
