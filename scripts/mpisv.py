@@ -34,8 +34,7 @@ class Tool(AbstractTool):
             execcmd=execcmd,
             cachefile=cachefile,
             binary=binary,
-            timeout=timeout,
-            read_line_lambda=must_filter)
+            timeout=timeout)
         
         if os.path.exists('klee-last') and not os.path.exists(f"{binary}_{id}-klee-out"):
             os.rename(os.readlink('klee-last'), f"{binary}_{id}-klee-out")

@@ -296,12 +296,8 @@ for filename in args.filenames:
     todo = todo + extract_todo(filename)
 
 rootdir=os.path.dirname(os.path.abspath(__file__))
-# Create all parts of '{rootdir}/logs/{args.x}' recursively
-for d in [f'{rootdir}/logs', f'{rootdir}/logs/{args.x}']:
-    if not os.path.exists(d):
-       os.mkdir(d)
-# Enter that directory
-os.chdir(f'{rootdir}/logs/{args.x}')
+os.makedirs(f'{rootdir}/logs/{args.x}', exist_ok=True)
+os.chdir(   f'{rootdir}/logs/{args.x}')
 
 if args.c == 'all':
     cmd_run()
