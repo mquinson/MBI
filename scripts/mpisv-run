@@ -4,18 +4,6 @@
 cd "$(dirname "$0")"/../
 rootdir=$(pwd)
 
-# Check that we have the right image
-source /etc/os-release
-if [ -e /root/mpi-sv/mpisv ]
-then 
-   echo "This is the docker image of MPI-SV. Good."
-else
-   echo "Please run this script in a mpisv/mpi-sv image. Run these commands:"
-   echo "  docker image pull mpisv/mpi-sv"
-   echo "  docker run -it --rm --name MIB --volume $(pwd):/MBI mpisv/mpi-sv /MBI/scripts/mpisv-run"
-   exit 1
-fi
-
 set -e # Fail on error
 
 # Check that we have the dependencies: our scripts need python 3.6 that is not available without PPA on Ubuntu 14.04

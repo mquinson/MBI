@@ -1,8 +1,20 @@
 import re
 import os
+import sys
 from MBIutils import *
 
 class Tool(AbstractTool):
+    def ensure_image(self):
+        id = subprocess.run("source /etc/os-release && echo $ID", shell=True, capture_output=True)
+        ver = subprocess.run("source /etc/os-release && echo $VERSION_ID", shell=True, capture_output=True)
+        if id.stdout == "ubuntu" and ver.stdout == "18.04":
+            print("This is an Ubuntu 18.04 OS. Good.")
+        else:
+            print("Please run this script in a ubuntu:18.04 image. Run these commands:")
+            print("  docker image pull ubuntu:18.04")
+            print("  docker run -it --rm --name MIB --volume $(pwd):/MBI ubuntu:18.04 /MBI/MBI.py -x aislinn")
+            sys.exit(1)
+
     def run(self, execcmd, filename, binary, id, timeout):
         cachefile = f'{binary}_{id}'
 

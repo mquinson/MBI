@@ -3,6 +3,9 @@ import os
 from MBIutils import *
 
 class Tool(AbstractTool):
+    def ensure_image(self):
+        AbstractTool.ensure_image(self, "-x parcoach")
+
     def parse(self, cachefile):
         if os.path.exists(f'{cachefile}.timeout'):
             return 'timeout'

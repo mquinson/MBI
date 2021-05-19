@@ -1,8 +1,18 @@
 import re
 import os
+import sys
 from MBIutils import *
 
 class Tool(AbstractTool):
+    def ensure_image(self):
+        if os.path.exists("/root/mpi-sv/mpisv"):
+            print("This is the docker image of MPI-SV. Good.")
+        else:
+            print("Please run this script in a mpisv/mpi-sv image. Run these commands:")
+            print("  docker image pull mpisv/mpi-sv")
+            print("  docker run -it --rm --name MIB --volume $(pwd):/MBI mpisv/mpi-sv /MBI/MBI.py -x mpisv")
+            sys.exit(1)
+
     def run(self, execcmd, filename, binary, id, timeout):
         cachefile = f'{binary}_{id}'
 

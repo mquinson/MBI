@@ -14,6 +14,9 @@ def must_filter(line, process):
             pass  # Ok, it's gone now
 
 class Tool(AbstractTool):
+    def ensure_image(self):
+        AbstractTool.ensure_image(self, "-x must")
+
     def run(self, execcmd, filename, binary, id, timeout):
         cachefile = f'{binary}_{id}'
 

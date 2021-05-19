@@ -3,6 +3,9 @@ import os
 from MBIutils import *
 
 class Tool(AbstractTool):
+    def ensure_image(self):
+        AbstractTool.ensure_image(self, "-x civl")
+
     def run(self, execcmd, filename, binary, id, timeout):
         cachefile = f'{binary}_{id}'
 
