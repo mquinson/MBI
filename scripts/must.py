@@ -17,6 +17,9 @@ class Tool(AbstractTool):
     def ensure_image(self):
         AbstractTool.ensure_image(self, "-x must")
 
+    def setup(self, rootdir):
+        os.environ['PATH'] = os.environ['PATH'] + ":" + rootdir + "/builds/MUST/bin/"
+
     def run(self, execcmd, filename, binary, id, timeout):
         cachefile = f'{binary}_{id}'
 

@@ -6,6 +6,9 @@ class Tool(AbstractTool):
     def ensure_image(self):
         AbstractTool.ensure_image(self, "-x isp")
 
+    def setup(self, rootdir):
+        os.environ['PATH'] = os.environ['PATH'] + ":" + rootdir + "/builds/ISP/bin/"
+
     def run(self, execcmd, filename, binary, id, timeout):
         cachefile = f'{binary}_{id}'
 

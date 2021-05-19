@@ -6,8 +6,6 @@ rootdir=$(pwd)
 
 set -e # Fail on error
 
-export PATH=${rootdir}/builds/MUST/bin:$PATH
-
 # Get the list of codes from the command line, if it was provided
 if [ $# -eq 0 ] 
 then
