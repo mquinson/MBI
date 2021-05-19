@@ -18,13 +18,14 @@ codes:
     stage: build
     needs: []
     script:
-        - cd codes;for g in $(ls generators/*Generator.py) ; do $g; done
+        - mkdir gencodes
+        - cd gencodes;for g in $(ls ../scripts/*Generator.py) ; do $g; done
     artifacts:
         untracked: false
         expire_in: 30 days
         when: always
         paths:
-            - codes
+            - gencodes
 
 build-must:
     stage: build
@@ -47,7 +48,7 @@ test-must-050:
     before_script:
         - apt-get install -y psmisc
     script:
-        - scripts/MUST-run $(ls codes/*.c | head -50)
+        - scripts/MUST-run $(ls gencodes/*.c | head -50)
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -65,7 +66,7 @@ test-must-100:
     before_script:
         - apt-get install -y psmisc
     script:
-        - scripts/MUST-run $(ls codes/*.c | tail -n +51 | head -50)
+        - scripts/MUST-run $(ls gencodes/*.c | tail -n +51 | head -50)
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -83,7 +84,7 @@ test-must-150:
     before_script:
         - apt-get install -y psmisc
     script:
-        - scripts/MUST-run $(ls codes/*.c | tail -n +101 | head -50)
+        - scripts/MUST-run $(ls gencodes/*.c | tail -n +101 | head -50)
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -101,7 +102,7 @@ test-must-200:
     before_script:
         - apt-get install -y psmisc
     script:
-        - scripts/MUST-run $(ls codes/*.c | tail -n +151 | head -50)
+        - scripts/MUST-run $(ls gencodes/*.c | tail -n +151 | head -50)
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -119,7 +120,7 @@ test-must-250:
     before_script:
         - apt-get install -y psmisc
     script:
-        - scripts/MUST-run $(ls codes/*.c | tail -n +201 | head -50)
+        - scripts/MUST-run $(ls gencodes/*.c | tail -n +201 | head -50)
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -137,7 +138,7 @@ test-must-300:
     before_script:
         - apt-get install -y psmisc
     script:
-        - scripts/MUST-run $(ls codes/*.c | tail -n +251 | head -50)
+        - scripts/MUST-run $(ls gencodes/*.c | tail -n +251 | head -50)
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -155,7 +156,7 @@ test-must-350:
     before_script:
         - apt-get install -y psmisc
     script:
-        - scripts/MUST-run $(ls codes/*.c | tail -n +301 | head -50)
+        - scripts/MUST-run $(ls gencodes/*.c | tail -n +301 | head -50)
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -173,7 +174,7 @@ test-must-400:
     before_script:
         - apt-get install -y psmisc
     script:
-        - scripts/MUST-run $(ls codes/*.c | tail -n +351 | head -50)
+        - scripts/MUST-run $(ls gencodes/*.c | tail -n +351 | head -50)
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -191,7 +192,7 @@ test-must-450:
     before_script:
         - apt-get install -y psmisc
     script:
-        - scripts/MUST-run $(ls codes/*.c | tail -n +401 | head -50)
+        - scripts/MUST-run $(ls gencodes/*.c | tail -n +401 | head -50)
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -209,7 +210,7 @@ test-must-500:
     before_script:
         - apt-get install -y psmisc
     script:
-        - scripts/MUST-run $(ls codes/*.c | tail -n +451 | head -50)
+        - scripts/MUST-run $(ls gencodes/*.c | tail -n +451 | head -50)
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -227,7 +228,7 @@ test-must-550:
     before_script:
         - apt-get install -y psmisc
     script:
-        - scripts/MUST-run $(ls codes/*.c | tail -n +501)
+        - scripts/MUST-run $(ls gencodes/*.c | tail -n +501)
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -323,7 +324,7 @@ test-civl200:
         - job: codes
           artifacts: true
     script:
-        - ./scripts/CIVL-run $(ls codes/*.c | head -200)
+        - ./scripts/CIVL-run $(ls gencodes/*.c | head -200)
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -338,7 +339,7 @@ test-civl400:
         - job: codes
           artifacts: true
     script:
-        - ./scripts/CIVL-run $(ls codes/*.c | tail -n +201 | head -200)
+        - ./scripts/CIVL-run $(ls gencodes/*.c | tail -n +201 | head -200)
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -353,7 +354,7 @@ test-civl600:
         - job: codes
           artifacts: true
     script:
-        - ./scripts/CIVL-run $(ls codes/*.c | tail -n +401 | head -200)
+        - ./scripts/CIVL-run $(ls gencodes/*.c | tail -n +401 | head -200)
     artifacts:
         untracked: false
         expire_in: 30 days
