@@ -20,6 +20,5 @@ set -e # Fail on error
 rm -rf /tmp/build-must ; mkdir /tmp/build-must
 cd /tmp/build-must
 
-cmake --version
 CC=$(which gcc) CXX=$(which gcc++) FC=$(which gfortran) cmake ${rootdir}/tools/MUST-v1.7 -DCMAKE_INSTALL_PREFIX=${rootdir}/builds/MUST -DCMAKE_BUILD_TYPE=Release
 make -j$(nproc) install VERBOSE=1
