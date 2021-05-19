@@ -28,7 +28,7 @@ possible_details = [
     'InvalidCommunicator','InvalidDatatype','InvalidRoot','InvalidWindow', 'InvalidOperator', 'ActualDatatype',
     # scope: Process-wide
     'OutOfInitFini', 'CommunicatorLeak', 'DatatypeLeak', 'GroupLeak', 'OperatorLeak', 'TypeLeak', 'MissingStart', 'MissingWait', 
-    'RequestLeak',
+    'RequestLeak', 'LocalConcurrency',
     # scope: communicator
     'MessageRace', 'CallMatching', 'CommunicatorMatching', 'DatatypeMatching', 'InvalidSrcDest', 'RootMatching', 'OperatorMatching',
     # larger scope
