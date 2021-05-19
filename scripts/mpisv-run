@@ -23,6 +23,3 @@ fi
 
 # Run the script on each code
 python3.7 ${rootdir}/MBI.py -x mpisv ${codes_list}
-
-# Remove generated cruft (temp files and compiled binaries)
-#find -executable | xargs rm

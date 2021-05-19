@@ -25,6 +25,9 @@ class Tool(AbstractTool):
             binary=binary,
             timeout=timeout)
 
+    def teardown(self): # Remove generated cruft (binary files)
+        subprocess.run("find -type f -a -executable | xargs rm -f", shell=True, check=True)
+
     def parser(self, cachefile):
         if os.path.exists(f'{cachefile}.timeout'):
             outcome = 'timeout'

@@ -35,6 +35,10 @@ class Tool(AbstractTool):
             binary=binary,
             timeout=timeout)
 
+    def teardown(self): 
+        subprocess.run("find -type f -a -executable | xargs rm -f", shell=True, check=True) # Remove generated cruft (binary files)
+        subprocess.run("rm -f smpitmp-*", shell=True, check=True) 
+
     def parse(self, cachefile):
         if os.path.exists(f'{cachefile}.timeout'):
             return 'timeout'

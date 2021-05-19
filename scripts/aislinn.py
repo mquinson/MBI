@@ -39,6 +39,9 @@ class Tool(AbstractTool):
         if os.path.exists("./report.html"):
             os.rename("./report.html", f"{binary}_{id}.html")
 
+    def teardown(self): # Remove generated cruft (binary files)
+        subprocess.run("find -type f -a -executable | xargs rm -f", shell=True, check=True)
+
     def parse(self, cachefile):
         if os.path.exists(f'{cachefile}.timeout'):
             outcome = 'timeout'

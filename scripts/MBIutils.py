@@ -17,15 +17,22 @@ class AbstractTool:
             print(f"  docker run -it --rm --name MIB --volume $(pwd):/MBI mpi-bugs-initiative /MBI/MBI.py {params}")
             sys.exit(1)
 
-    def setup(rootdir):
+    def setup(self, rootdir):
         """
-        Ensure that this tool (previously built) is usable in this environment: go to the logs directory, setup the PATH, etc.
+        Ensure that this tool (previously built) is usable in this environment: setup the PATH, etc.
         This is called only once for all tests, from the logs directory.
         """
         pass
 
     def run(execcmd, filename, binary, id, timeout):
         """Compile that test code and anaylse it with the Tool if needed (a cache system should be used)"""
+        pass
+
+    def teardown(self):
+        """
+        Clean the results of all test runs: remove temp files and binaries.
+        This is called only once for all tests, from the logs directory.
+        """
         pass
 
     def parse(cachefile):

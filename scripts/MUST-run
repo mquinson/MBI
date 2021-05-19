@@ -18,7 +18,3 @@ fi
 
 # Run the script on each code
 python3 ${rootdir}/MBI.py -x must ${codes_list}
-
-# Remove generated cruft (temp files and compiled binaries)
-rm -rf must_temp
-find -type f -a -executable | xargs rm -f

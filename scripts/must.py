@@ -38,6 +38,10 @@ class Tool(AbstractTool):
         if os.path.isfile("./MUST_Output.html"):
             os.rename(f"./MUST_Output.html", f"{cachefile}.html")
 
+    def teardown(self): 
+        subprocess.run("find -type f -a -executable | xargs rm -f", shell=True, check=True) # Remove generated cruft (binary files)
+        subprocess.run("rm -rf must_temp", shell=True, check=True)
+
     def parse(self, cachefile):
         # do not report timeouts ASAP, as MUST still deadlocks when it detects a root mismatch
         if not os.path.exists(f'{cachefile}.txt') or not os.path.exists(f'{cachefile}.html'):

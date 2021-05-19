@@ -10,6 +10,3 @@ export PATH=$PATH:${rootdir}/builds/ISP/bin/
 
 # Run the script on each code
 python3 ${rootdir}/MBI.py -x isp $(ls ${rootdir}/codes/*.c)
-
-# Remove generated cruft (binary files)
-find -type f -a -executable | xargs rm -f

@@ -96,6 +96,9 @@ def cmd_run():
     # Basic verification
     tool.ensure_image()
 
+    # Do the tool-specific setups
+    tool.setup(rootdir)
+
     for test in todo:
         binary = re.sub('\.c', '', os.path.basename(test['filename']))
 
@@ -109,6 +112,8 @@ def cmd_run():
         if p.is_alive():
             print("HARD TIMEOUT! The child process failed to timeout by itself. Sorry for the output.")
             p.terminate()
+
+    tool.teardown()
 
 ########################
 # cmd_stats(): what to do when '-c stats' is used (extract the statistics)
@@ -297,8 +302,6 @@ for d in [f'{rootdir}/logs', f'{rootdir}/logs/{args.x}']:
        os.mkdir(d)
 # Enter that directory
 os.chdir(f'{rootdir}/logs/{args.x}')
-# Do the tool-specific setups
-tool.setup(rootdir)
 
 if args.c == 'all':
     cmd_run()
