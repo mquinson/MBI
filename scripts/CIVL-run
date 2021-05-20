@@ -1,6 +1,0 @@
-#! /bin/sh
-
-set -e # Fail on error
-
-# Run the script on each code
-./ensure_python.sh ./MBI.py -x civl $@
