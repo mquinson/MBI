@@ -2,16 +2,23 @@
 
 set -e # Fail on error
 
-# Go to the MBI scripts/ directory
-cd "$(dirname "$0")"
+# Go to the main MBI/ directory
+cd "$(dirname "$0")"/..
 
-./CIVL-build
-./CIVL-run
-./ISP-build
-./ISP-run
-./MUST-build
-./MUST-run
-./Parcoach-build
-./Parcoach-run
-./SimGrid-build
-./SimGrid-run
+scripts/CIVL-build
+./MBI.py -x civl
+
+scripts/ISP-build
+./MBI.py -x isp
+
+scripts/MUST-build
+./MBI.py -x must
+
+./MBI.py -x mpisv
+
+scripts/SimGrid-build
+./MBI.py -x simgrid
+
+scripts/Parcoach-build
+./MBI.py -x parcoach
+
