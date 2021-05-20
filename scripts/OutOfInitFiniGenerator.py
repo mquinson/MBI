@@ -122,11 +122,11 @@ operation['MPI_Ireduce'] = lambda n: f"MPI_Ireduce(&sum{n}, &val{n}, 1, MPI_INT,
 fini['MPI_Ireduce'] = lambda n: f"free(req{n});"
 
 init['MPI_Scatter'] = lambda n: f"int val{n}, buf{n}[buff_size];"
-operation['MPI_Scatter'] = lambda n: f"MPI_Scatter(&buf{n}, 1, MPI_INT, &val{n}, 1, MPI_INT, root, MPI_COMM_WORLD);"
+operation['MPI_Scatter'] = lambda n: f"MPI_Scatter(&buf{n}, 1, MPI_INT, &val{n}, 1, MPI_INT, 0, MPI_COMM_WORLD);"
 fini['MPI_Scatter'] = lambda n: ""
 
 init['MPI_Gather'] = lambda n: f"int val{n}, buf{n}[buff_size];"
-operation['MPI_Gather'] = lambda n: f"MPI_Gather(&val{n}, 1, MPI_INT, buf{n},1, MPI_INT, root, MPI_COMM_WORLD);"
+operation['MPI_Gather'] = lambda n: f"MPI_Gather(&val{n}, 1, MPI_INT, buf{n},1, MPI_INT, 0, MPI_COMM_WORLD);"
 fini['MPI_Gather'] = lambda n: ""
 
 for coll in collectives + icollectives:
