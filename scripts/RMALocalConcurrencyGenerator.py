@@ -54,7 +54,7 @@ int main(int argc, char **argv) {
   localbuf = 0;
   W = 4;
 
-  MPI_Win_create(W, NUM_ELEMT * sizeof(int), sizeof(int), MPI_INFO_NULL, MPI_COMM_WORLD, &win);
+  MPI_Win_create(&W, NUM_ELEMT * sizeof(int), sizeof(int), MPI_INFO_NULL, MPI_COMM_WORLD, &win);
 
   @{epoch}@
 
@@ -89,7 +89,7 @@ epoch['MPI_Win_fence'] =lambda n: 'MPI_Win_fence(0, win);'
 finEpoch['MPI_Win_fence'] =lambda n: 'MPI_Win_fence(0, win);'
 epoch['MPI_Win_lock'] =lambda n: 'MPI_Win_lock(MPI_LOCK_EXCLUSIVE, (rank + 1) % nprocs, 0, win);'
 finEpoch['MPI_Win_lock'] =lambda n: 'MPI_Win_unlock((rank + 1) % nprocs, win);'
-epoch['MPI_Win_lockall'] =lambda n: 'MPI_Win_lock_all(win);'
+epoch['MPI_Win_lockall'] =lambda n: 'MPI_Win_lock_all(0,win);'
 finEpoch['MPI_Win_lockall'] =lambda n: 'MPI_Win_unlock_all(win);'
 
 operation['MPI_Put'] = lambda n: 'MPI_Put(&localbuf, NUM_ELEMT, MPI_INT, 1, 0, NUM_ELEMT, MPI_INT, win);'
