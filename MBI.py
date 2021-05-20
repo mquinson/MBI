@@ -129,6 +129,9 @@ def cmd_gencodes():
     elif os.path.exists("../../scripts/CollOpGenerator.py"): # Gitlab-ci run
         generators = glob.glob(f"{os.getcwd()}/../../scripts/*Generator.py") 
         dir = "../../gencodes/"
+    elif os.path.exists("scripts/CollOpGenerator.py"): # Gitlab-ci run
+        generators = glob.glob(f"{os.getcwd()}/scripts/*Generator.py") 
+        dir = "gencodes/"
     else:
         raise Exception("Cannot find the codes' generators. Please report that bug.")
     subprocess.run(f"rm -rf {dir} ; mkdir {dir}", shell=True, check=True)
@@ -341,22 +344,22 @@ parser.add_argument('-b', metavar='batch', default='1/1',
 
 args = parser.parse_args()
 
-# Parameter checking on -x. Did we get a valid tool to use?
-if args.c == 'generate':
-    pass # No need to check the provided tool to just generate the codes
-elif args.x == 'mpirun':
-    raise Exception("No tool was provided, please retry with -x parameter. (see -h for further information on usage)")
-elif args.x in ['aislinn', 'civl', 'isp', 'must', 'mpisv', 'simgrid', 'parcoach']:
-    exec(f'tool = {args.x}.Tool()')
-else:
-    raise Exception(f"The tool parameter you provided ({args.x}) is either incorect or not yet implemented.")
+# Parameter checking: Did we get a valid tool to use?
+if args.c != 'generate':
+    if args.x == 'mpirun':
+        raise Exception("No tool was provided, please retry with -x parameter. (see -h for further information on usage)")
+    elif args.x in ['aislinn', 'civl', 'isp', 'must', 'mpisv', 'simgrid', 'parcoach']:
+        exec(f'tool = {args.x}.Tool()')
+    else:
+        raise Exception(f"The tool parameter you provided ({args.x}) is either incorect or not yet implemented.")
+
+    # Go to the tools' logs directory on need
+    rootdir=os.path.dirname(os.path.abspath(__file__))
+    os.makedirs(f'{rootdir}/logs/{args.x}', exist_ok=True)
+    os.chdir(   f'{rootdir}/logs/{args.x}')
+
 if args.o == 'out.csv':
     args.o = f'bench_{args.x}.csv'
-
-# Go to the tools' logs directory 
-rootdir=os.path.dirname(os.path.abspath(__file__))
-os.makedirs(f'{rootdir}/logs/{args.x}', exist_ok=True)
-os.chdir(   f'{rootdir}/logs/{args.x}')
 
 if args.c == 'all':
     extract_all_todo(args.b)
