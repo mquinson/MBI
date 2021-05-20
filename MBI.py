@@ -209,7 +209,12 @@ def cmd_stats():
         outcome = tool.parse(test_ID)
         expected = test['expect']
 
-        if os.path.exists(f'{test_ID}.elapsed'):
+        if not os.path.exists(f'{test_ID}.elapsed'):
+            if outcome == 'failure':
+                elapsed = 0
+            else: 
+                raise Exception(f"Invalid test result: {test_ID}.txt exists but not {test_ID}.elapsed")
+        else:
             with open(f'{test_ID}.elapsed', 'r') as infile:
                 elapsed = infile.read()
 
