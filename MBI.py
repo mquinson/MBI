@@ -126,10 +126,11 @@ def cmd_gencodes():
     if os.path.exists("/MBI/scripts"): # Docker run
         generators = glob.glob("/MBI/scripts/*Generator.py")
         dir = "/MBI/gencodes"
-    elif os.path.exists("../../scripts/CollOpGenerator.py"): # Gitlab-ci run
+    elif os.path.exists("../../scripts/CollOpGenerator.py"): # Local run, from logs dir
         generators = glob.glob(f"{os.getcwd()}/../../scripts/*Generator.py") 
         dir = "../../gencodes/"
-    elif os.path.exists("scripts/CollOpGenerator.py"): # Gitlab-ci run
+    elif os.path.exists("scripts/CollOpGenerator.py"): # Local run, from main dir
+    g    print("main dir")
         generators = glob.glob(f"{os.getcwd()}/scripts/*Generator.py") 
         dir = "gencodes/"
     else:
@@ -137,7 +138,7 @@ def cmd_gencodes():
     subprocess.run(f"rm -rf {dir} ; mkdir {dir}", shell=True, check=True)
     here = os.getcwd()
     os.chdir(dir)
-    print("Generate the codes in: ", end='')
+    print("Generate the codes: ", end='')
     for generator in generators:
         m = re.match("^.*?/([^/]*)Generator.py$", generator)
         if m:
