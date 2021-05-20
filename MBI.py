@@ -358,7 +358,6 @@ os.makedirs(f'{rootdir}/logs/{args.x}', exist_ok=True)
 os.chdir(   f'{rootdir}/logs/{args.x}')
 
 if args.c == 'all':
-    cmd_gencodes()
     extract_all_todo(args.b)
     cmd_run()
     cmd_stats()

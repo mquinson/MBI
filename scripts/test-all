@@ -5,6 +5,8 @@ set -e # Fail on error
 # Go to the main MBI/ directory
 cd "$(dirname "$0")"/..
 
+./MBI.py -c generate
+
 scripts/CIVL-build
 ./MBI.py -x civl
 
