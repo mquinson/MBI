@@ -130,7 +130,7 @@ def cmd_gencodes():
         generators = glob.glob(f"{os.getcwd()}/../../scripts/*Generator.py") 
         dir = "../../gencodes/"
     elif os.path.exists("scripts/CollOpGenerator.py"): # Local run, from main dir
-    g    print("main dir")
+        print("main dir")
         generators = glob.glob(f"{os.getcwd()}/scripts/*Generator.py") 
         dir = "gencodes/"
     else:
