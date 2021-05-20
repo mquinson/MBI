@@ -100,10 +100,12 @@ def cmd_run():
     # Do the tool-specific setups
     tool.setup(rootdir)
 
+    count = 1
     for test in todo:
         binary = re.sub('\.c', '', os.path.basename(test['filename']))
 
-        print(f"Test '{binary}_{test['id']}'", end=": ")
+        print(f"\nTest '{binary}_{test['id']} (test #{count} out of {len(todo)})'", end=": ")
+        count += 1
         sys.stdout.flush()
 
         p = mp.Process(target=tool.run, args=(test['cmd'], test['filename'], binary, test['id'], args.timeout))
