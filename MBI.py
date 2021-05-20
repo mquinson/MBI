@@ -9,6 +9,7 @@ import re
 import argparse
 import time
 import glob
+import subprocess
 import multiprocessing as mp
 
 # Add our lib directory to the PYTHONPATH, and load our utilitary libraries
@@ -41,7 +42,7 @@ todo = []
 
 def extract_todo(filename):
     """
-    Reads the header of the filename, and extract a list of todo item, each of them being a (cmd, expect, test_num) tupple.
+    Reads the header of the provided filename, and extract a list of todo item, each of them being a (cmd, expect, test_num) tupple.
     The test_num is useful to build a log file containing both the binary and the test_num, when there is more than one test in the same binary.
     """
     res = []
@@ -90,8 +91,65 @@ def extract_todo(filename):
         raise Exception(f"No test found in {filename}. Please fix it.")
     return res
 
+def extract_all_todo(batch):
+    """Extract the TODOs from all existing files, applying the batching request"""
+    if os.path.exists("/MBI/gencodes"): # Docker run
+        filenames = glob.glob("/MBI/gencodes/*.c")
+    elif os.path.exists("gencodes/"): # Gitlab-ci run
+        filenames = glob.glob(f"{os.getcwd()}/gencodes/*.c") # our code expects absolute paths
+    elif os.path.exists("../../gencodes/"): # Local runs
+        filenames = glob.glob(f"{os.getcwd()}/../../gencodes/*.c") # our code expects absolute paths
+    else:
+        raise Exception("Cannot find the input codes. Did you run the generators before running the tests?")
+    # Choose the files that will be used by this runner, depending on the -b argument
+    match = re.match('(\d+)/(\d+)', batch)
+    if not match:
+        print(f"The parameter to batch option ({batch}) is invalid. Must be something like 'N/M', with N and M numbers.")
+    pos = int(match.group(1))
+    runner_count = int(match.group(2))
+    assert pos > 0
+    assert pos <= runner_count
+    batch = int(len(filenames) / runner_count)+1
+    min_rank = batch*(pos-1)
+    max_rank = (batch*pos)-1
+    print(f'Handling files from #{min_rank} to #{max_rank}, out of {len(filenames)} in {os.getcwd()}')
+
+    global todo
+    for filename in filenames[min_rank:max_rank]:
+        todo = todo + extract_todo(filename)
+
 ########################
-# cmd_run(): what to do when -c run is used (running the tests)
+# cmd_gencodes(): what to do when '-c generate' is used (Generating the codes)
+########################
+def cmd_gencodes():
+    if os.path.exists("/MBI/scripts"): # Docker run
+        generators = glob.glob("/MBI/scripts/*Generator.py")
+        dir = "/MBI/gencodes"
+    elif os.path.exists("../../scripts/CollOpGenerator.py"): # Gitlab-ci run
+        generators = glob.glob(f"{os.getcwd()}/../../scripts/*Generator.py") 
+        dir = "../../gencodes/"
+    else:
+        raise Exception("Cannot find the codes' generators. Please report that bug.")
+    subprocess.run(f"rm -rf {dir} ; mkdir {dir}", shell=True, check=True)
+    here = os.getcwd()
+    os.chdir(dir)
+    print("Generate the codes in: ", end='')
+    for generator in generators:
+        m = re.match("^.*?/([^/]*)Generator.py$", generator)
+        if m:
+            print(m.group(1), end=", ")
+        else:
+            print(generator, end=", ")
+        subprocess.run(generator,check=True)
+    print(f" (files generated in {os.getcwd()})")
+    print("Test count: ", end='')
+    sys.stdout.flush()
+    subprocess.run("ls *.c|wc -l", shell=True, check=True)
+    os.chdir(here)
+
+
+########################
+# cmd_run(): what to do when '-c run' is used (running the tests)
 ########################
 def cmd_run():
     # Basic verification
@@ -282,7 +340,10 @@ parser.add_argument('-b', metavar='batch', default='1/1',
 
 args = parser.parse_args()
 
-if args.x == 'mpirun':
+# Parameter checking on -x. Did we get a valid tool to use?
+if args.c == 'generate':
+    pass # No need to check the provided tool to just generate the codes
+elif args.x == 'mpirun':
     raise Exception("No tool was provided, please retry with -x parameter. (see -h for further information on usage)")
 elif args.x in ['aislinn', 'civl', 'isp', 'must', 'mpisv', 'simgrid', 'parcoach']:
     exec(f'tool = {args.x}.Tool()')
@@ -291,38 +352,23 @@ else:
 if args.o == 'out.csv':
     args.o = f'bench_{args.x}.csv'
 
-if os.path.exists("/MBI/gencodes"): # Docker run
-    filenames = glob.glob("/MBI/gencodes/*.c")
-elif os.path.exists("gencodes/"): # Gitlab-ci run
-    filenames = glob.glob(f"{os.getcwd()}/gencodes/*.c") # our code expects absolute paths
-else:
-    raise Exception("Cannot find the input codes. Did you run the generators before running the tests?")
-# Choose the files that will be used by this runner, depending on the -b argument
-match = re.match('(\d+)/(\d+)', args.b)
-if not match:
-    print(f"The parameter to batch option ({args.b}) is invalid. Must be something like 'N/M', with N and M numbers.")
-pos = int(match.group(1))
-runner_count = int(match.group(2))
-assert pos > 0
-assert pos <= runner_count
-batch = int(len(filenames) / runner_count)+1
-min_rank = batch*(pos-1)
-max_rank = (batch*pos)-1
-print(f'Handling files from #{min_rank} to #{max_rank}, out of {len(filenames)} in {os.getcwd()}')
-
-for filename in filenames[min_rank:max_rank]:
-    todo = todo + extract_todo(filename)
-
+# Go to the tools' logs directory 
 rootdir=os.path.dirname(os.path.abspath(__file__))
 os.makedirs(f'{rootdir}/logs/{args.x}', exist_ok=True)
 os.chdir(   f'{rootdir}/logs/{args.x}')
 
 if args.c == 'all':
+    cmd_gencodes()
+    extract_all_todo(args.b)
     cmd_run()
     cmd_stats()
+elif args.c == 'generate':
+    cmd_gencodes()
 elif args.c == 'run':
+    extract_all_todo(args.b)
     cmd_run()
 elif args.c == 'stats':
+    extract_all_todo(args.b)
     cmd_stats()
 else:
     print(f"Invalid command '{args.c}'. Please choose one of 'all', 'run', 'stats'")
