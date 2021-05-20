@@ -100,7 +100,8 @@ def extract_all_todo(batch):
     elif os.path.exists("../../gencodes/"): # Local runs
         filenames = glob.glob(f"{os.getcwd()}/../../gencodes/*.c") # our code expects absolute paths
     else:
-        raise Exception("Cannot find the input codes. Did you run the generators before running the tests?")
+        subprocess.run("ls")
+        raise Exception(f"Cannot find the input codes (cwd: {os.getcwd()}). Did you run the generators before running the tests?")
     # Choose the files that will be used by this runner, depending on the -b argument
     match = re.match('(\d+)/(\d+)', batch)
     if not match:
