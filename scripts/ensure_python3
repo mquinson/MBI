@@ -29,5 +29,19 @@ then
    exec python3 $@
 fi
 
-echo "Please run this script from the relevant MBI image"
+echo "Please run this script from the relevant MBI image."
+if echo $@ | grep -qi aislinn 
+then
+    get="docker image pull ubuntu:18.04"
+    img=ubuntu:18.04
+elif echo $@ | grep -qi mpisv
+then
+    get="docker image pull mpisv/mpi-sv"
+    img=mpisv/mpi-sv
+else
+    get="docker build -f Dockerfile -t mpi-bugs-initiative:latest . # Only the first time"
+    img=mpi-bugs-initiative
+fi
+echo "  $get"
+echo '  docker run -it --rm --name MIB --volume $(pwd):/MBI '"$img /MBI/MBI.py $@"
 exit 1
