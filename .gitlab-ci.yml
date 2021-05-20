@@ -516,12 +516,14 @@ civl-svg:
           artifacts: true
         - job: test-civl-3
           artifacts: true
+        - job: codes
+          artifacts: true
     # before_script:
     #   - apt-get update
     #   - apt-get install -y python3-pip libcairo2
     #   - pip3 install drawSvg
     script:
-        - ./scripts/CIVL-run
+        - scripts/ensure_python3 ./MBI.py -x civl
         - cd Data
         - cat ../logs/civl/*.csv > result.csv
         - python3.8 gen_svg.py -i result.csv -o civl_result_LOG --header false
@@ -555,6 +557,8 @@ must-svg:
         - job: test-must-9
           artifacts: true
         - job: test-must-10
+          artifacts: true
+        - job: codes
           artifacts: true
     # before_script:
     #   - apt-get update
