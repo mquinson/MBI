@@ -69,7 +69,7 @@ operation = {}
 fini = {}
 
 init['MPI_Reduce'] = lambda n: f"int sum{n}, val{n} = 1;"
-operation['MPI_Reduce'] = lambda n: f"MPI_Reduce(&sum{n}, &val{n}, 1, MPI_INT, Op, 0, MPI_COMM_WORLD);"
+operation['MPI_Reduce'] = lambda n: f"MPI_Reduce(&sum{n}, &val{n}, 1, MPI_INT, op, 0, MPI_COMM_WORLD);"
 fini['MPI_Reduce'] = lambda n: ""
 
 init['MPI_Allreduce'] = lambda n: f"int sum{n}, val{n} = 1;"
