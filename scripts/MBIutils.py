@@ -35,7 +35,7 @@ class AbstractTool:
         """
         pass
 
-    def parse(cachefile):
+    def parse(self, cachefile):
         """Read the result of a previous run from the cache, and compute the test outcome"""
         return 'failure'
 

@@ -1,14 +1,3 @@
 #! /bin/bash
 
-# Check that we have the right image
-# Go to the MBI root directory
-cd "$(dirname "$0")"/../
-rootdir=$(pwd)
-
-set -e # Fail on error
-
-apt-get update
-apt-get install -y python3.8 gcc python2.7 python-jinja2
-
-# Run the script on each code
-python3.8 ${rootdir}/MBI.py -x aislinn $@
+./MBI.py -x aislinn $@

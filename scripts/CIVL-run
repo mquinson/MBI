@@ -1,10 +1,6 @@
 #! /bin/sh
 
-# Go to the MBI root directory
-cd "$(dirname "$0")"/../
-rootdir=$(pwd)
-
 set -e # Fail on error
 
 # Run the script on each code
-python3 ${rootdir}/MBI.py -x civl $@
+./ensure_python.sh ./MBI.py -x civl $@

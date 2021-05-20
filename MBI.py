@@ -1,4 +1,4 @@
-#! /usr/bin/python3
+#! /MBI/scripts/ensure_python3
 
 import shutil
 import os
@@ -101,13 +101,12 @@ def cmd_run():
     tool.setup(rootdir)
 
     for test in todo:
-        filename = f"../../{test['filename']}" # we are now in the tool's log directory
-        binary = re.sub('\.c', '', os.path.basename(filename))
+        binary = re.sub('\.c', '', os.path.basename(test['filename']))
 
         print(f"Test '{binary}_{test['id']}'", end=": ")
         sys.stdout.flush()
 
-        p = mp.Process(target=tool.run, args=(test['cmd'], filename, binary, test['id'], args.timeout))
+        p = mp.Process(target=tool.run, args=(test['cmd'], test['filename'], binary, test['id'], args.timeout))
         p.start()
         sys.stdout.flush()
         p.join(args.timeout+60)
@@ -291,18 +290,18 @@ if args.o == 'out.csv':
     args.o = f'bench_{args.x}.csv'
 
 # Choose the files that will be used by this runner, depending on the -b argument
-match = re.match('(\d*)/(\d*)', args.b)
+match = re.match('(\d+)/(\d+)', args.b)
 if not match:
     print(f"The parameter to batch option ({args.b}) is invalid. Must be something like 'N/M', with N and M numbers.")
 pos = int(match.group(1))
 runner_count = int(match.group(2))
 assert pos > 0
 assert pos <= runner_count
-filenames = glob.glob("gencodes/*.c")
+filenames = glob.glob("/MBI/gencodes/*.c")
 batch = int(len(filenames) / runner_count)+1
 min_rank = batch*(pos-1)
 max_rank = (batch*pos)-1
-print(f'Handling files from #{min_rank} to #{max_rank}, out of {len(filenames)}')
+print(f'Handling files from #{min_rank} to #{max_rank}, out of {len(filenames)} in {os.getcwd()}')
 
 for filename in filenames[min_rank:max_rank]:
     todo = todo + extract_todo(filename)

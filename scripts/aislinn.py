@@ -17,6 +17,7 @@ class Tool(AbstractTool):
             sys.exit(1)
 
     def setup(self, rootdir):
+        subprocess.run("apt-get install -y gcc python2.7 python-jinja2", shell=True, check=True)
         os.environ['PATH'] = os.environ['PATH'] + ":" + rootdir + "/tools/aislinn-git/bin/"
 
     def run(self, execcmd, filename, binary, id, timeout):
