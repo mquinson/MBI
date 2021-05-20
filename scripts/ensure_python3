@@ -1,5 +1,20 @@
 #! /bin/bash
 
+# Try to use one of the python binaries existing on this machine
+for candidate in `which python3.8` `which python3.7` `which python3` `which python` 
+do
+    if $candidate <<EOF
+import sys
+if sys.version_info < (3, 7):
+    sys.exit(1)
+sys.exit(0)
+EOF
+    then
+        exec $candidate $@
+    fi
+done
+
+# Try to guess the used docker image, and install the missing packages from it
 if [ -e /etc/os-release ] 
 then
     source /etc/os-release
@@ -21,12 +36,6 @@ then
     apt-get update
     apt-get install -y python3.7
     exec python3.7 $@
-fi
-
-if [ -e /MBI ] 
-then 
-   echo "This seems to be a MBI docker image. Good."
-   exec python3 $@
 fi
 
 echo "Please run this script from the relevant MBI image."
