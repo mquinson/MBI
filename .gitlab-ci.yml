@@ -302,6 +302,7 @@ test-civl-1:
         - job: codes
           artifacts: true
     script:
+        - pwd;ls
         - MBI.py -x civl -b 1/3
     artifacts:
         untracked: false
