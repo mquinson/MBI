@@ -289,6 +289,12 @@ else:
 if args.o == 'out.csv':
     args.o = f'bench_{args.x}.csv'
 
+if os.path.exists("/MBI/gencodes"): # Docker run
+    filenames = glob.glob("/MBI/gencodes/*.c")
+elif os.path.exists("gencodes/"): # Gitlab-ci run
+    filenames = glob.glob(f"{os.getcwd()}/gencodes/*.c") # our code expects absolute paths
+else:
+    raise Exception("Cannot find the input codes. Did you run the generators before running the tests?")
 # Choose the files that will be used by this runner, depending on the -b argument
 match = re.match('(\d+)/(\d+)', args.b)
 if not match:
@@ -297,7 +303,6 @@ pos = int(match.group(1))
 runner_count = int(match.group(2))
 assert pos > 0
 assert pos <= runner_count
-filenames = glob.glob("/MBI/gencodes/*.c")
 batch = int(len(filenames) / runner_count)+1
 min_rank = batch*(pos-1)
 max_rank = (batch*pos)-1
