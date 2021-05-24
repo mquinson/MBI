@@ -130,22 +130,22 @@ for s in send + isend + psend:
         # Generate a message race
         if s in send and r in irecv + precv:
             replace = patterns 
-            replace['shortdesc'] = 'Message Race'
+            replace['shortdesc'] = ' Local Concurrency with a P2P'
             replace['longdesc'] = f'The message buffer in {r} is modified before the call has been completed.'
-            replace['outcome'] = 'ERROR: MessageRace' 
-            replace['errormsg'] = 'P2P Message Race. The receive buffer in @{r}@ is modified at @{filename}@:@{line:MBIERROR2}@ whereas there is no guarantee the message has been received.'
-            make_file(template, f'P2PMessageRace_{r}_{s}_nok.c', replace)
+            replace['outcome'] = 'ERROR: LocalConcurrency' 
+            replace['errormsg'] = 'Local Concurrency with a P2P. The receive buffer in @{r}@ is modified at @{filename}@:@{line:MBIERROR2}@ whereas there is no guarantee the message has been received.'
+            make_file(template, f'P2PLocalConcurrency_{r}_{s}_nok.c', replace)
         if s in isend + psend and r in recv:
             replace = patterns 
-            replace['shortdesc'] = 'Message Race'
+            replace['shortdesc'] = ' Local Concurrency with a P2P'
             replace['longdesc'] = f'The message buffer in {s} is modified before the call has been completed.'
-            replace['outcome'] = 'ERROR: MessageRace' 
-            replace['errormsg'] = 'P2P Message Race. The send buffer in @{s}@ is modified at @{filename}@:@{line:MBIERROR1}@ whereas there is no guarantee the message has been sent.'
-            make_file(template, f'P2PMessageRace_{r}_{s}_nok.c', replace)
+            replace['outcome'] = 'ERROR: LocalConcurrency' 
+            replace['errormsg'] = 'Local Concurrency with a P2P. The send buffer in @{s}@ is modified at @{filename}@:@{line:MBIERROR1}@ whereas there is no guarantee the message has been sent.'
+            make_file(template, f'P2PLocalConcurrency_{r}_{s}_nok.c', replace)
         if s in isend + psend and r in irecv + precv:
             replace = patterns 
-            replace['shortdesc'] = 'Message Race'
+            replace['shortdesc'] = ' Local Concurrency with a P2P'
             replace['longdesc'] = f'The message buffer in {s} and {r} are modified before the calls have completed.'
-            replace['outcome'] = 'ERROR: MessageRace' 
-            replace['errormsg'] = 'P2P Message Race. The message buffers in @{s}@ and @{r}@ are modified at @{filename}@:@{line:MBIERROR1}@ and @{filename}@:@{line:MBIERROR2}@ whereas there is no guarantee the calls have been completed.'
-            make_file(template, f'P2PMessageRace_{r}_{s}_nok.c', replace)
+            replace['outcome'] = 'ERROR: LocalConcurrency' 
+            replace['errormsg'] = 'Local Concurrency with a P2P. The message buffers in @{s}@ and @{r}@ are modified at @{filename}@:@{line:MBIERROR1}@ and @{filename}@:@{line:MBIERROR2}@ whereas there is no guarantee the calls have been completed.'
+            make_file(template, f'P2PLocalConcurrency_{r}_{s}_nok.c', replace)

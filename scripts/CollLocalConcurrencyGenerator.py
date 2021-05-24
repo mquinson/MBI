@@ -86,8 +86,8 @@ for c in icoll + pcoll:
     patterns['write'] = write[c]("1")
 
     replace = patterns 
-    replace['shortdesc'] = 'Message Race'
+    replace['shortdesc'] = 'Local concurrency with a collective'
     replace['longdesc'] = f'The buffer in {c} is modified before the call has been completed.'
-    replace['outcome'] = 'ERROR: MessageRace' 
-    replace['errormsg'] = 'Collective Message Race. The buffer in @{c}@ is modified at @{filename}@:@{line:MBIERROR}@ whereas there is no guarantee the call has been completed.'
+    replace['outcome'] = 'ERROR: LocalConcurrency' 
+    replace['errormsg'] = 'Local Concurrency with a collective. The buffer in @{c}@ is modified at @{filename}@:@{line:MBIERROR}@ whereas there is no guarantee the call has been completed.'
     make_file(template, f'CollMessageRace_{c}_nok.c', replace)
