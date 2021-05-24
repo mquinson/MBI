@@ -92,7 +92,7 @@ finEpoch['MPI_Win_lock'] =lambda n: 'MPI_Win_unlock((rank + 1) % nprocs, win);'
 epoch['MPI_Win_lockall'] =lambda n: 'MPI_Win_lock_all(0,win);'
 finEpoch['MPI_Win_lockall'] =lambda n: 'MPI_Win_unlock_all(win);'
 
-operation['MPI_Put'] = lambda n: 'MPI_Put(&localbuf, NUM_ELEMT, MPI_INT, 1, 0, NUM_ELEMT, MPI_INT, win);'
+operation['MPI_Put'] = lambda n: 'MPI_Put(&localbuf, NUM_ELEMT, MPI_INT, (rank + 1) % nprocs, 0, NUM_ELEMT, MPI_INT, win);'
 operation['store'] = lambda n: 'localbuf = 8;'
 operation['loadstore'] = lambda n: 'if (localbuf % 2 == 0) {\n   localbuf++;\n   }'
 operation['load'] = lambda n: 'if (localbuf % 2 == 0) {\n   /* do nothing */\n   }'
@@ -121,6 +121,15 @@ for e in epoch:
             replace['outcome'] = 'ERROR: LocalConcurrency' 
             replace['errormsg'] = 'Local Concurrency error. @{p2}@ at @{filename}@:@{line:MBIERROR2}@ conflicts with @{p1}@ line @{line:MBIERROR1}@'
             make_file(template, f'LocalConcurrency_{e}_{p1}_{p2}_nok.c', replace)
+
+    		# Generate a data race (Get + Get/load/store/Put)
+        replace = patterns 
+        replace['shortdesc'] = 'Correct code using RMA operations' 
+        replace['longdesc'] = 'Correct code using RMA operations' 
+        replace['outcome'] = 'OK' 
+        replace['errormsg'] = 'OK'
+        replace['operation2'] = ''
+        make_file(template, f'LocalConcurrency_{e}_{p1}_ok.c', replace)
 
 for e in epoch:
     for p1 in read: 

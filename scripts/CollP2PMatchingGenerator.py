@@ -15,7 +15,7 @@ BEGIN_MPI_FEATURES
 	P2P!nonblocking: @{ip2pfeature}@
 	P2P!persistent: Lacking
 	P2P!probe: Lacking
-	COLL!basic: Lacking
+	COLL!basic: @{collfeature}@ 
 	COLL!nonblocking: Lacking
 	COLL!persistent: Lacking
 	COLL!probe: Lacking
@@ -88,7 +88,7 @@ operation['MPI_Send'] = lambda n: f'MPI_Send(buf{n}, buff_size, MPI_INT, 1, 0, M
 fini['MPI_Send'] = lambda n: ""
 
 init['MPI_Recv'] = lambda n: f'int buf{n}[buff_size]; MPI_Status sta{n};'
-operation['MPI_Recv'] = lambda n: f'MPI_Recv(buf{n}, buff_size, MPI_INT, 1, 0, MPI_COMM_WORLD, &sta{n});'
+operation['MPI_Recv'] = lambda n: f'MPI_Recv(buf{n}, buff_size, MPI_INT, 0, 0, MPI_COMM_WORLD, &sta{n});'
 fini['MPI_Recv'] = lambda n: ""
 
 init['MPI_Isend'] = lambda n: f'int buf{n}[buff_size]; MPI_Request req{n};'
@@ -96,7 +96,7 @@ operation['MPI_Isend'] = lambda n: f'MPI_Isend(buf{n}, buff_size, MPI_INT, 1, 0,
 fini['MPI_Isend'] = lambda n: f'MPI_Wait(&req{n}, MPI_STATUS_IGNORE);'
 
 init['MPI_Irecv'] = lambda n: f'int buf{n}[buff_size]; MPI_Request req{n};'
-operation['MPI_Irecv'] = lambda n: f'MPI_Irecv(buf{n}, buff_size, MPI_INT, 1, 0, MPI_COMM_WORLD, &req{n});'
+operation['MPI_Irecv'] = lambda n: f'MPI_Irecv(buf{n}, buff_size, MPI_INT, 0, 0, MPI_COMM_WORLD, &req{n});'
 fini['MPI_Irecv'] = lambda n: f'MPI_Wait(&req{n}, MPI_STATUS_IGNORE);'
 
 ## COLL
