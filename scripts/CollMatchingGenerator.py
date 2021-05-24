@@ -71,7 +71,7 @@ int main(int argc, char **argv) {
 """
 
 collectives = ['MPI_Allgather', 'MPI_Allgatherv', 'MPI_Allreduce', 'MPI_Alltoall', 'MPI_Alltoallv', 'MPI_Barrier', 'MPI_Bcast', 'MPI_Gather', 'MPI_Reduce', 'MPI_Scatter']
-icollectives = ['MPI_Ibarrier', 'MPI_Ireduce']
+icollectives = ['MPI_Ibarrier', 'MPI_Ireduce', 'MPI_Ibcast']
 
 init = {}
 fini = {}
@@ -118,6 +118,10 @@ fini['MPI_Ibarrier'] = lambda n: f"free(req{n});"
 init['MPI_Bcast'] = lambda n: f'int buf{n}[buff_size];'
 operation['MPI_Bcast'] = lambda n: f'MPI_Bcast(buf{n}, buff_size, MPI_INT, 0, MPI_COMM_WORLD);'
 fini['MPI_Bcast'] = lambda n: ""
+
+init['MPI_Ibcast'] = lambda n: f'int buf{n}[buff_size];MPI_Request req{n};MPI_Status sta{n};'
+operation['MPI_Ibcast'] = lambda n: f'MPI_Ibcast(buf{n}, buff_size, MPI_INT, 0, MPI_COMM_WORLD,&req{n});MPI_Wait(&req{n},&sta{n});'
+fini['MPI_Ibcast'] = lambda n: ""
 
 init['MPI_Reduce'] = lambda n: f"int sum{n}, val{n} = 1;"
 operation['MPI_Reduce'] = lambda n: f"MPI_Reduce(&sum{n}, &val{n}, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);"
