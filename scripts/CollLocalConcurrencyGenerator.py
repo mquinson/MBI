@@ -90,4 +90,4 @@ for c in icoll + pcoll:
     replace['longdesc'] = f'The buffer in {c} is modified before the call has been completed.'
     replace['outcome'] = 'ERROR: LocalConcurrency' 
     replace['errormsg'] = 'Local Concurrency with a collective. The buffer in @{c}@ is modified at @{filename}@:@{line:MBIERROR}@ whereas there is no guarantee the call has been completed.'
-    make_file(template, f'CollMessageRace_{c}_nok.c', replace)
+    make_file(template, f'CollLocalConcurrency_{c}_nok.c', replace)
