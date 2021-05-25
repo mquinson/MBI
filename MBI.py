@@ -27,12 +27,12 @@ os.environ["LC_ALL"] = "C"
 
 possible_details = [
     # scope limited to one call
-    'InvalidCommunicator','InvalidDatatype','InvalidRoot','InvalidWindow', 'InvalidOperator', 'ActualDatatype',
+    'InvalidCommunicator','InvalidDatatype','InvalidRoot', 'InvalidTag', 'InvalidWindow', 'InvalidOperator', 'InvalidOtherArg', 'ActualDatatype',
     # scope: Process-wide
     'OutOfInitFini', 'CommunicatorLeak', 'DatatypeLeak', 'GroupLeak', 'OperatorLeak', 'TypeLeak', 'MissingStart', 'MissingWait', 
     'RequestLeak', 'LocalConcurrency',
     # scope: communicator
-    'MessageRace', 'CallMatching', 'CommunicatorMatching', 'DatatypeMatching', 'InvalidSrcDest', 'RootMatching', 'OperatorMatching',
+    'MessageRace', 'CallMatching', 'CommunicatorMatching', 'DatatypeMatching', 'InvalidSrcDest', 'OperatorMatching', 'OtherArgMatching', 'RootMatching', 'TagMatching',
     # larger scope
     'BufferingHazard']
     # BufferLength/BufferOverlap
