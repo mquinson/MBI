@@ -14,6 +14,9 @@ def must_filter(line, process):
             pass  # Ok, it's gone now
 
 class Tool(AbstractTool):
+    def identify(self):
+        return "MUST wrapper"
+
     def ensure_image(self):
         AbstractTool.ensure_image(self, "-x must")
 

@@ -3,6 +3,9 @@ import os
 from MBIutils import *
 
 class Tool(AbstractTool):
+    def identify(self):
+        return "PARCOACH wrapper"
+
     def ensure_image(self):
         AbstractTool.ensure_image(self, "-x parcoach")
 
