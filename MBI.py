@@ -37,15 +37,24 @@ os.environ["LC_ALL"] = "C"
 
 possible_details = {
     # scope limited to one call
-    'InvalidCommunicator':'Call', 'InvalidDatatype':'Call', 'InvalidRoot':'Call', 'InvalidTag':'Call', 'InvalidWindow':'Call', 'InvalidOperator':'Call', 'InvalidOtherArg':'Call', 'ActualDatatype':'Call',
+    'InvalidCommunicator':'ACall', 'InvalidDatatype':'ACall', 'InvalidRoot':'ACall', 'InvalidTag':'ACall', 'InvalidWindow':'ACall', 'InvalidOperator':'ACall', 'InvalidOtherArg':'ACall', 'ActualDatatype':'ACall',
     # scope: Process-wide
-    'OutOfInitFini':'Process', 'CommunicatorLeak':'Process', 'DatatypeLeak':'Process', 'GroupLeak':'Process', 'OperatorLeak':'Process', 'TypeLeak':'Process', 'MissingStart':'Process', 'MissingWait':'Process',
-    'RequestLeak':'Process', 'LocalConcurrency':'Process',
+    'OutOfInitFini':'BProcess', 'CommunicatorLeak':'BProcess', 'DatatypeLeak':'BProcess', 'GroupLeak':'BProcess', 'OperatorLeak':'BProcess', 'TypeLeak':'BProcess', 'MissingStart':'BProcess', 'MissingWait':'BProcess',
+    'RequestLeak':'BProcess', 'LocalConcurrency':'BProcess',
     # scope: communicator
-    'MessageRace':'Comm', 'CallMatching':'Comm', 'CommunicatorMatching':'Comm', 'DatatypeMatching':'Comm', 'InvalidSrcDest':'Comm', 'OperatorMatching':'Comm', 'OtherArgMatching':'Comm', 'RootMatching':'Comm', 'TagMatching':'Comm',
+    'MessageRace':'CComm', 'CallMatching':'CComm', 'CommunicatorMatching':'CComm', 'DatatypeMatching':'CComm', 'InvalidSrcDest':'CComm', 'OperatorMatching':'CComm', 'OtherArgMatching':'CComm', 'RootMatching':'CComm', 'TagMatching':'CComm',
     # larger scope
-    'BufferingHazard':'System',
-    'OK':'OK'}
+    'BufferingHazard':'DSystem',
+    'OK':'EOK'}
+
+displayed_name = {
+    'ACall':'Error scope: single call',
+    'BProcess':'Error scope: single process',
+    'CComm':'Error scope: communicator',
+    'DSystem':'Error scope: system-wide',
+    'EOK':'Correct codes'
+}
+
 # BufferLength/BufferOverlap
 # RMA concurrency errors (local and distributed)
 
@@ -273,19 +282,28 @@ def cmd_stats(rootdir, toolnames=[]):
     # Analyse each test, grouped by expectation, and all tools for a given test
     ########################
     with open(f"{rootdir}/summary.html", "w") as outHTML:
-      previous_detail=''  
       outHTML.write(f"<html><head><title>MBI outcomes for all tests</title></head>\n<body>\n")
 
+      previous_scope=''
+      previous_detail=''  # To open a new section for each possible detailed outcome
       testcount=0 # To repeat the table header every 25 lines
       for test in sorted(todo, key=lambda t: f"{possible_details[t['detail']]}|{t['detail']}"):
         testcount += 1
+        if previous_scope != possible_details[test['detail']]:
+            if previous_scope != '': # Close the previous table, if we are not generating the first one
+                outHTML.write(f"</table>\n")
+            previous_scope = possible_details[test['detail']]
+            previous_detail = '' # This is a new section
+            outHTML.write(f"  <h2>{displayed_name[ possible_details[test['detail']]]}</h2>\n")
+
         if previous_detail != f"{possible_details[test['detail']]}|{test['detail']}" or testcount == 25:
             if testcount != 25: # Write the expected outcome only once, not every 25 tests
-                if previous_detail != '': # Close the previous table, if we are not generating the first one
+                if previous_detail != '': # Close the previous table, if we are not generating the first one of this scope
                     outHTML.write(f"</table>\n")
                 previous_detail = f"{possible_details[test['detail']]}|{test['detail']}"
-                outHTML.write(f"  <h2>Expected outcome: {test['detail']}</h2>\n")
-                outHTML.write( '  <table border=0>\n')
+                if test['detail'] is not 'OK':
+                    outHTML.write(f"  <h3>Expected outcome: {test['detail']}</h3>\n")
+                outHTML.write( '  <table border=1>\n')
             testcount=0
             outHTML.write("   <tr><td>Test</td>")
             for toolname in used_toolnames:
