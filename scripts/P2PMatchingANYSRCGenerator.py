@@ -111,7 +111,7 @@ for s in send + isend:
         patterns['operation2'] = operation[s]("2")
         patterns['operation1'] = operation[r]("1")
 
-        # Generate the incorrect matching because of the conditional
+        # Generate the incorrect matching
         replace = patterns 
         replace['shortdesc'] = 'The message ordering is non-deterministic.'
         replace['longdesc'] = f'The code assumes a fixed order in the reception of messages while the message ordering is non-deterministic.' 
