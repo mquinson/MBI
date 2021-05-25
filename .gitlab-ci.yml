@@ -626,6 +626,8 @@ data-collect:
           artifacts: true
         - job: aislinn-svg
           artifacts: true
+        - job: codes
+          artifacts: true
     # before_script:
     #     - apt-get update
     #     - apt-get install -y python3-pip libcairo2
