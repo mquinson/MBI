@@ -322,7 +322,7 @@ def cmd_stats(rootdir, toolnames=[]):
                 if previous_detail != '': # Close the previous table, if we are not generating the first one of this scope
                     outHTML.write(f"</table>\n")
                 previous_detail = f"{possible_details[test['detail']]}|{test['detail']}"
-                if test['detail'] is not 'OK':
+                if test['detail'] != 'OK':
                     outHTML.write(f"  <a name='{test['detail']}'/><h3>Expected outcome: {test['detail']}</h3>\n")
                 outHTML.write( '  <table border=1>\n')
             testcount=0
@@ -342,7 +342,15 @@ def cmd_stats(rootdir, toolnames=[]):
             (res_category, elapsed, diagnostic) = categorize(toolname=toolname, test_ID=test_ID, expected=expected)
 
             results[toolname][res_category].append(f"{test_ID} expected {test['detail']}, outcome: {diagnostic}")
-            outHTML.write(f"<td align='center'><a href='logs/{toolname}/{test_ID}.txt'><img title='{diagnostic}' src='img/{res_category}.svg' width='24' /></a></td>")
+            outHTML.write(f"<td align='center'><a href='logs/{toolname}/{test_ID}.txt'><img title='{diagnostic}' src='img/{res_category}.svg' width='24' /></a>")
+            extra=None
+            if os.path.exists(f'logs/{toolname}/{test_ID}.html'):
+                extra=f'logs/{toolname}/{test_ID}.html'
+            if os.path.exists(f'logs/{toolname}/{test_ID}-klee-out'): # MPI-SV 
+                extra=f'logs/{toolname}/{test_ID}-klee-out'
+            if extra is not None:
+                outHTML.write(f"&nbsp;<a href='{extra}'><img title='more info' src='img/html.svg' height='24' /></a>")
+            outHTML.write("</td>")
 
             if res_category != 'timeout' and elapsed is not None:
                 total_elapsed[toolname] += float(elapsed)
