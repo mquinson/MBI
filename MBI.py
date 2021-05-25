@@ -76,7 +76,7 @@ def extract_todo(filename):
                 m = re.match('\s+\$ ?(.*)', line)
                 cmd = m.group(1)
                 nextline = next(input)
-                detail = None
+                detail = 'OK'
                 if re.match('[ |]*OK *', nextline):
                     expect = 'OK'
                 else:
@@ -253,26 +253,47 @@ def categorize(toolname, test_ID, expected):
 def cmd_stats(rootdir, toolnames=[]):
     here = os.getcwd()
     os.chdir(rootdir)
+    results = {}
+    total_elapsed = {}
     for toolname in toolnames:
         if not toolname in tools:
             raise Exception(f"Tool {toolname} does not seem to be a valid name.")
 
         # To compute statistics on the performance of this tool
-        results= {'failure':[], 'timeout':[], 'unimplemented':[], 'TRUE_NEG':[], 'TRUE_POS':[], 'FALSE_NEG':[], 'FALSE_POS':[]}
+        results[toolname]= {'failure':[], 'timeout':[], 'unimplemented':[], 'TRUE_NEG':[], 'TRUE_POS':[], 'FALSE_NEG':[], 'FALSE_POS':[]}
 
         # To compute timing statistics
-        total_elapsed = 0
+        total_elapsed[toolname] = 0
 
-        for test in todo:
-            
-            binary=re.sub('\.c', '', os.path.basename(test['filename']))
-            test_ID = f"{binary}_{test['id']}"
-            expected=test['expect']
+    ########################
+    # Analyse each test, grouped by expectation, and all tools for a given test
+    ########################
+    with open(f"{rootdir}/summary.html", "w") as outHTML:
+      previous_detail=''  
+      outHTML.write(f"<html><head><title>MBI outcomes for all tests</title></head>\n<body><table border=0>\n")
+      for test in sorted(todo, key=lambda t: t['detail']):            
+        if previous_detail != test['detail']:
+            previous_detail = test['detail']
+            outHTML.write(f"  <tr><td colspan='{len(toolnames)+1}'>Expected outcome: {previous_detail}</td></tr>\n  <tr><td>Test</td>")
+            for toolname in toolnames:
+                outHTML.write(f"<td>{toolname}</td>")
+            outHTML.write(f"</tr>\n")
+        outHTML.write(f"    <tr>")
+
+        binary=re.sub('\.c', '', os.path.basename(test['filename']))
+        test_ID = f"{binary}_{test['id']}"
+        expected=test['expect']
+
+        outHTML.write(f"<td><a href='gencodes/{binary}.c'>{binary}</a></td>")
+
+        for toolname in toolnames:
             (res_category, elapsed, diagnostic) = categorize(toolname=toolname, test_ID=test_ID, expected=expected)
 
-            results[res_category].append(diagnostic)
+            results[toolname][res_category].append(diagnostic)
+            outHTML.write(f"<td><a href='logs/{toolname}/{test_ID}.txt'>{res_category}</a></td>")
+
             if res_category != 'timeout' and elapsed is not None:
-                total_elapsed += float(elapsed)
+                total_elapsed[toolname] += float(elapsed)
 
             if len(toolnames) == 1:
                 print(f"Test '{test_ID}' result: {res_category}: {diagnostic}. Elapsed: {elapsed} sec")
@@ -283,18 +304,20 @@ def cmd_stats(rootdir, toolnames=[]):
             with open(f"./logs/{toolname}/{args.o}", "a") as result_file:
                 result_file.write(
                     f"{binary};{test['id']};{args.x};{args.timeout};{np};0;{expected};{res_category};{elapsed}\n")
+        outHTML.write(f"</tr>\n")
+      outHTML.write(f"</table></body></html>\n")
 
-        ########################
-        # Statistics summary
-        ########################
-
-        TP = len(results['TRUE_POS'])
-        TN = len(results['TRUE_NEG'])
-        FP = len(results['FALSE_POS'])
-        FN = len(results['FALSE_NEG'])
-        nPort = len(results['unimplemented'])
-        nFail = len(results['failure'])
-        nTout = len(results['timeout'])
+    ########################
+    # Per tool statistics summary
+    ########################
+    for toolname in toolnames:
+        TP = len(results[toolname]['TRUE_POS'])
+        TN = len(results[toolname]['TRUE_NEG'])
+        FP = len(results[toolname]['FALSE_POS'])
+        FN = len(results[toolname]['FALSE_NEG'])
+        nPort = len(results[toolname]['unimplemented'])
+        nFail = len(results[toolname]['failure'])
+        nTout = len(results[toolname]['timeout'])
         passed = TP + TN
         total = passed + FP + FN + nTout + nPort + nFail
 
@@ -302,27 +325,27 @@ def cmd_stats(rootdir, toolnames=[]):
         if FP > 0:
             print(f"XXX {FP} false positives")
             if len(toolnames) == 1:
-                for p in results['TRUE_POS']:
+                for p in results[toolname]['TRUE_POS']:
                     print(f"  {p}")
         if FN > 0:
             print(f"XXX {FN} false negatives")
             if len(toolnames) == 1:
-                for p in results['TRUE_NEG']:
+                for p in results[toolname]['TRUE_NEG']:
                     print(f"  {p}")
         if nTout > 0:
             print(f"XXX {nTout} timeouts")
             if len(toolnames) == 1:
-                for p in results['timeout']:
+                for p in results[toolname]['timeout']:
                     print(f"  {p}")
         if nPort > 0:
             print(f"XXX {nPort} portability issues")
             if len(toolnames) == 1:
-                for p in results['unimplemented']:
+                for p in results[toolname]['unimplemented']:
                     print(f"  {p}")
         if nFail > 0:
             print(f"XXX {nFail} tool failures")
             if len(toolnames) == 1:
-                for p in results['failure']:
+                for p in results[toolname]['failure']:
                     print(f"  {p}")
 
         def percent(ratio):

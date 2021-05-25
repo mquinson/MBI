@@ -577,7 +577,7 @@ must-svg:
         paths:
             - logs/*
 
-data-collect:
+pages:
     stage: gather
     needs:
         - job: test-must-1
@@ -634,6 +634,8 @@ data-collect:
     #     - pip3 install drawSvg
     script:
         - python3.8 MBI.py -c stats
+        - mkdir pages
+        - cp -r summary.html gencodes logs pages
         - echo "#filename;id;tool;TO;NP;buff;expected;result;elapsed_time;jobid" > result.csv
         - cd Data
         - cat ../logs/*/*.csv >> result.csv
