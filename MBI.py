@@ -291,7 +291,7 @@ def cmd_stats(rootdir, toolnames=[]):
         for toolname in toolnames:
             (res_category, elapsed, diagnostic) = categorize(toolname=toolname, test_ID=test_ID, expected=expected)
 
-            results[toolname][res_category].append(diagnostic)
+            results[toolname][res_category].append(f"{test_ID} expected {test['detail']}, outcome: {diagnostic}")
             outHTML.write(f"<td align='center'><a href='logs/{toolname}/{test_ID}.txt'><img title='{diagnostic}' src='img/{res_category}.svg' width='24' /></a></td>")
 
             if res_category != 'timeout' and elapsed is not None:
@@ -328,12 +328,12 @@ def cmd_stats(rootdir, toolnames=[]):
         if FP > 0:
             print(f"XXX {FP} false positives")
             if len(toolnames) == 1:
-                for p in results[toolname]['TRUE_POS']:
+                for p in results[toolname]['FALSE_POS']:
                     print(f"  {p}")
         if FN > 0:
             print(f"XXX {FN} false negatives")
             if len(toolnames) == 1:
-                for p in results[toolname]['TRUE_NEG']:
+                for p in results[toolname]['FALSE_NEG']:
                     print(f"  {p}")
         if nTout > 0:
             print(f"XXX {nTout} timeouts")
