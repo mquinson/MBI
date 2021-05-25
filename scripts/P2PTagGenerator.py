@@ -160,5 +160,14 @@ for p1 in send + isend + perssend:
         replace['longdesc'] = 'Point to point @{p1}@ and @{p2}@ have an invalid tag.' 
         replace['outcome'] = 'ERROR: InvalidTag' 
         replace['errormsg'] = 'Invalid Tag. @{p1}@ at @{filename}@:@{line:MBIERROR1}@ and @{p2}@ at @{filename}@:@{line:MBIERROR2}@ use an invalid tag.' 
-        replace['change_tag'] = 'tag=-1; rtag=-2;/* MBIERROR */'
+        replace['change_tag'] = 'stag=-1; rtag=-2;/* MBIERROR */'
         make_file(template, f'P2PInvalidTag_{p1}_{p2}_nok.c', replace)
+
+    		# Generate a correct code using MPI_ANY_TAG 
+        replace = patterns 
+        replace['shortdesc'] = 'Correct code' 
+        replace['longdesc'] = 'Correct code' 
+        replace['outcome'] = 'OK' 
+        replace['errormsg'] = 'OK'
+        replace['change_tag'] = 'rtag=MPI_ANY_TAG;'
+        make_file(template, f'P2PTagMatching_{p1}_{p2}_ok.c', replace)
