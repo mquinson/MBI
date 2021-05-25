@@ -634,8 +634,8 @@ pages:
     #     - pip3 install drawSvg
     script:
         - python3.8 MBI.py -c stats
-        - mkdir pages
-        - cp -r summary.html gencodes logs pages
+        - mkdir public
+        - cp -r summary.html gencodes logs public
         - echo "#filename;id;tool;TO;NP;buff;expected;result;elapsed_time;jobid" > result.csv
         - cd Data
         - cat ../logs/*/*.csv >> result.csv
