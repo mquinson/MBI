@@ -2,14 +2,6 @@
 
 # autopep8 -i --max-line-length 130 MBI.py
 
-import parcoach
-import simgrid
-import must
-import mpisv
-import isp
-import civl
-import aislinn
-
 import shutil
 import os
 import signal
@@ -24,6 +16,14 @@ import multiprocessing as mp
 
 # Add our lib directory to the PYTHONPATH, and load our utilitary libraries
 sys.path.append(f'{os.path.dirname(os.path.abspath(__file__))}/scripts')
+
+import parcoach
+import simgrid
+import must
+import mpisv
+import isp
+import civl
+import aislinn
 
 tools = {'aislinn': aislinn.Tool(), 'civl': civl.Tool(), 'isp': isp.Tool(), 'mpisv': mpisv.Tool(),
          'must': must.Tool(), 'simgrid': simgrid.Tool(), 'parcoach': parcoach.Tool()}
@@ -206,7 +206,49 @@ def cmd_run(rootdir, toolname):
 ########################
 # cmd_stats(): what to do when '-c stats' is used (extract the statistics of this tool)
 ########################
+def categorize(toolname, test_ID, expected):
+    outcome = tools[toolname].parse(test_ID)
 
+    if not os.path.exists(f'{test_ID}.elapsed') and not os.path.exists(f'logs/{toolname}/{test_ID}.elapsed'):
+        if outcome == 'failure':
+            elapsed = 0
+        else:
+            raise Exception(f"Invalid test result: {test_ID}.txt exists but not {test_ID}.elapsed")
+    else:
+        with open(f'{test_ID}.elapsed', 'r') as infile:
+            elapsed = infile.read()
+
+    # Properly categorize this run
+    if outcome == 'timeout':
+        res_category = 'timeout'
+        if elapsed is None:
+            diagnostic = f'{test_ID} (hard timeout)'
+        else:
+            diagnostic = f'{test_ID} (elapsed: {elapsed} sec)'
+    elif outcome == 'failure':
+        res_category = 'failure'
+        diagnostic = f'{test_ID}'
+    elif outcome == 'UNIMPLEMENTED':
+        res_category = 'unimplemented'
+        diagnostic = f'{test_ID}'
+    elif expected == 'OK':
+        if outcome == 'OK':
+            res_category = 'TRUE_NEG'
+            diagnostic = f'{test_ID}'
+        else:
+            res_category = 'FALSE_POS'
+            diagnostic = f'{test_ID} (expected {expected} but returned {outcome})'
+    elif expected == 'ERROR':
+        if outcome == 'OK':
+            res_category = 'FALSE_NEG'
+            diagnostic = f'{test_ID} (expected {expected} but returned {outcome})'
+        else:
+            res_category = 'TRUE_POS'
+            diagnostic =  f'{test_ID}'
+    else:
+        raise Exception(f"Unexpected expectation: {expected} (must be OK or ERROR)")
+
+    return (res_category, elapsed, diagnostic)
 
 def cmd_stats(rootdir, toolnames=[]):
     for toolname in toolnames:
@@ -214,124 +256,65 @@ def cmd_stats(rootdir, toolnames=[]):
             raise Exception(f"Tool {toolname} does not seem to be a valid name.")
 
         # To compute statistics on the performance of this tool
-        true_pos = []
-        false_pos = []
-        true_neg = []
-        false_neg = []
-        unimplemented = []
-        timeout = []
-        failure = []
-
-        # To compute statistics on the MBI codes
-        code_correct = 0
-        code_incorrect = 0
+        results= {'failure':[], 'timeout':[], 'unimplemented':[], 'TRUE_NEG':[], 'TRUE_POS':[], 'FALSE_NEG':[], 'FALSE_POS':[]}
 
         # To compute timing statistics
         total_elapsed = 0
 
         for test in todo:
-            binary = re.sub('\.c', '', os.path.basename(test['filename']))
+            
+            binary=re.sub('\.c', '', os.path.basename(test['filename']))
             test_ID = f"{binary}_{test['id']}"
-            outcome = tools[toolname].parse(test_ID)
-            expected = test['expect']
+            expected=test['expect']
+            (res_category, elapsed, diagnostic) = categorize(toolname=toolname, test_ID=test_ID, expected=expected)
 
-            if not os.path.exists(f'{test_ID}.elapsed'):
-                if outcome == 'failure':
-                    elapsed = 0
-                else:
-                    raise Exception(f"Invalid test result: {test_ID}.txt exists but not {test_ID}.elapsed")
-            else:
-                with open(f'{test_ID}.elapsed', 'r') as infile:
-                    elapsed = infile.read()
-
-            # Stats on the codes, even if the tool fails
-            if expected == 'OK':
-                code_correct += 1
-            else:
-                code_incorrect += 1
-
-            # Properly categorize this run
-            if outcome == 'timeout':
-                res_category = 'timeout'
-                if elapsed is None:
-                    timeout.append(f'{test_ID} (hard timeout)')
-                else:
-                    timeout.append(f'{test_ID} (elapsed: {elapsed} sec)')
-            elif outcome == 'failure':
-                res_category = 'failure'
-                failure.append(f'{test_ID}')
-            elif outcome == 'UNIMPLEMENTED':
-                res_category = 'portability issue'
-                unimplemented.append(f'{test_ID}')
-            elif expected == 'OK':
-                if outcome == 'OK':
-                    res_category = 'TRUE_NEG'
-                    true_neg.append(f'{test_ID}')
-                else:
-                    res_category = 'FALSE_POS'
-                    false_pos.append(f'{test_ID} (expected {expected} but returned {outcome})')
-            elif expected == 'ERROR':
-                if outcome == 'OK':
-                    res_category = 'FALSE_NEG'
-                    false_neg.append(f'{test_ID} (expected {expected} but returned {outcome})')
-                else:
-                    res_category = 'TRUE_POS'
-                    true_pos.append(f'{test_ID}')
-            else:
-                raise Exception(f"Unexpected expectation: {expected} (must be OK or ERROR)")
-
-            print(f"Test '{test_ID}' result: {res_category}: {args.x} returned {outcome} while {expected} was expected. Elapsed: {elapsed} sec")
-
+            results[res_category].append(diagnostic)
             if res_category != 'timeout' and elapsed is not None:
                 total_elapsed += float(elapsed)
+
+            print(f"Test '{test_ID}' result: {res_category}: {diagnostic}. Elapsed: {elapsed} sec")
 
             np = re.search(r"(?:-np) [0-9]+", test['cmd'])
             np = int(re.sub(r"-np ", "", np.group(0)))
 
-            zero_buff = re.search(r"\$zero_buffer", test['cmd'])
-            infty_buff = re.search(r"\$infty_buffer", test['cmd'])
-            if zero_buff != None:
-                buff = '0'
-            elif infty_buff != None:
-                buff = 'inf'
-            else:
-                buff = 'NA'
-
             with open("./" + args.o, "a") as result_file:
                 result_file.write(
-                    f"{binary};{test['id']};{args.x};{args.timeout};{np};{buff};{expected};{outcome};{elapsed}\n")
+                    f"{binary};{test['id']};{args.x};{args.timeout};{np};0;{expected};{res_category};{elapsed}\n")
 
         ########################
         # Statistics summary
         ########################
 
-        TP = len(true_pos)
-        TN = len(true_neg)
-        FP = len(false_pos)
-        FN = len(false_neg)
+        TP = len(results['TRUE_POS'])
+        TN = len(results['TRUE_NEG'])
+        FP = len(results['FALSE_POS'])
+        FN = len(results['FALSE_NEG'])
+        nPort = len(results['unimplemented'])
+        nFail = len(results['failure'])
+        nTout = len(results['timeout'])
         passed = TP + TN
-        total = passed + FP + FN + len(timeout) + len(unimplemented) + len(failure)
+        total = passed + FP + FN + nTout + nPort + nFail
 
         print(f"XXXXXXXXX Final results")
-        if len(false_pos) > 0:
-            print(f"XXX {len(false_pos)} false positives:")
-            for p in false_pos:
+        if FP > 0:
+            print(f"XXX {FP} false positives:")
+            for p in results['TRUE_POS']:
                 print(f"  {p}")
-        if len(false_neg) > 0:
-            print(f"XXX {len(false_neg)} false negatives:")
-            for p in false_neg:
+        if FN > 0:
+            print(f"XXX {FN} false negatives:")
+            for p in results['TRUE_NEG']:
                 print(f"  {p}")
-        if len(timeout) > 0:
-            print(f"XXX {len(timeout)} timeouts:")
-            for p in timeout:
+        if nTout > 0:
+            print(f"XXX {nTout} timeouts:")
+            for p in results['timeout']:
                 print(f"  {p}")
-        if len(unimplemented) > 0:
-            print(f"XXX {len(unimplemented)} portability issues:")
-            for p in unimplemented:
+        if nPort > 0:
+            print(f"XXX {nPort} portability issues:")
+            for p in results['unimplemented']:
                 print(f"  {p}")
-        if len(failure) > 0:
-            print(f"XXX {len(failure)} tool failures:")
-            for p in failure:
+        if nFail > 0:
+            print(f"XXX {nFail} tool failures:")
+            for p in results['failure']:
                 print(f"  {p}")
 
         def percent(ratio):
@@ -339,9 +322,9 @@ def cmd_stats(rootdir, toolnames=[]):
             return int(ratio*10000)/100
         print(f"\nXXXX Summary for {args.x} XXXX  {passed} test{'' if passed == 1 else 's'} passed (out of {total})")
         try:
-            print(f"Portability: {percent(1-len(unimplemented)/total)}% ({len(unimplemented)} tests failed)")
+            print(f"Portability: {percent(1-nPort/total)}% ({nPort} tests failed)")
             print(
-                f"Robustness: {percent(1-(len(timeout)+len(failure))/(total-len(unimplemented)))}% ({len(timeout)} timeouts and {len(failure)} failures)\n")
+                f"Robustness: {percent(1-(nTout+nFail)/(total-nPort))}% ({nTout} timeouts and {nFail} failures)\n")
 
             print(f"Recall: {percent(TP/(TP+FN))}% (found {TP} errors out of {TP+FN})")
             print(f"Specificity: {percent(TN/(TN+FP))}% (recognized {TN} correct codes out of {TN+FP})")
@@ -350,7 +333,6 @@ def cmd_stats(rootdir, toolnames=[]):
         except ZeroDivisionError:
             print("Got a ZeroDivisionError while computing the metrics. Are you using all tests?")
         print(f"\nTotal time of all tests (not counting the timeouts): {total_elapsed}")
-        print(f"\nMBI stats: {code_correct} correct codes; {code_incorrect} incorrect codes.")
 
 ########################
 # Main script argument parsing
