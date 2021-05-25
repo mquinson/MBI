@@ -12,7 +12,7 @@ stages:
     - build
     - test
     - svg
-    - gather
+    - deploy
 
 codes:
     stage: build
@@ -578,7 +578,7 @@ must-svg:
             - logs/*
 
 pages:
-    stage: gather
+    stage: deploy
     needs:
         - job: test-must-1
           artifacts: true
