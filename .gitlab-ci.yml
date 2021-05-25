@@ -646,4 +646,4 @@ pages:
         expire_in: 30 days
         when: always
         paths:
-            - logs
+            - public
