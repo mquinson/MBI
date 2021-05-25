@@ -280,7 +280,7 @@ def cmd_stats(rootdir, toolnames=[]):
             np = re.search(r"(?:-np) [0-9]+", test['cmd'])
             np = int(re.sub(r"-np ", "", np.group(0)))
 
-            with open("./" + args.o, "a") as result_file:
+            with open(f"./logs/{toolname}/{args.o}", "a") as result_file:
                 result_file.write(
                     f"{binary};{test['id']};{args.x};{args.timeout};{np};0;{expected};{res_category};{elapsed}\n")
 
