@@ -274,21 +274,24 @@ def cmd_stats(rootdir, toolnames=[]):
     ########################
     with open(f"{rootdir}/summary.html", "w") as outHTML:
       previous_detail=''  
-      outHTML.write(f"<html><head><title>MBI outcomes for all tests</title></head>\n<body><table border=0>\n")
+      outHTML.write(f"<html><head><title>MBI outcomes for all tests</title></head>\n<body>\n")
 
       testcount=0 # To repeat the table header every 25 lines
       for test in sorted(todo, key=lambda t: f"{possible_details[t['detail']]}|{t['detail']}"):
         testcount += 1
         if previous_detail != f"{possible_details[test['detail']]}|{test['detail']}" or testcount == 25:
             if testcount != 25: # Write the expected outcome only once, not every 25 tests
+                if previous_detail != '': # Close the previous table, if we are not generating the first one
+                    outHTML.write(f"</table>\n")
                 previous_detail = f"{possible_details[test['detail']]}|{test['detail']}"
-                outHTML.write(f"  <tr><td colspan='{len(used_toolnames)+1}'>Expected outcome: {test['detail']}</td></tr>\n")
+                outHTML.write(f"  <h2>Expected outcome: {test['detail']}</h2>\n")
+                outHTML.write( '  <table border=0>\n')
             testcount=0
-            outHTML.write("  <tr><td>Test</td>")
+            outHTML.write("   <tr><td>Test</td>")
             for toolname in used_toolnames:
                 outHTML.write(f"<td>{toolname}</td>")
             outHTML.write(f"</tr>\n")
-        outHTML.write(f"    <tr>")
+        outHTML.write(f"     <tr>")
 
         binary=re.sub('\.c', '', os.path.basename(test['filename']))
         test_ID = f"{binary}_{test['id']}"
