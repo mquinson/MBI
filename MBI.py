@@ -16,10 +16,10 @@ import multiprocessing as mp
 sys.path.append(f'{os.path.dirname(os.path.abspath(__file__))}/scripts')
 import aislinn, civl, isp, mpisv, must, simgrid, parcoach
 
+tools = {'aislinn': aislinn.Tool(), 'civl': civl.Tool(), 'isp':isp.Tool(), 'mpisv':mpisv.Tool(), 'must':must.Tool(), 'simgrid':simgrid.Tool(), 'parcoach':parcoach.Tool()}
+
 # Some scripts may fail if error messages get translated
 os.environ["LC_ALL"] = "C"
-
-tool = None # The correct tool will be chosen when parsing the parameters, at the bottom of this file
 
 ########################
 # Extract the TODOs from the codes
@@ -27,12 +27,12 @@ tool = None # The correct tool will be chosen when parsing the parameters, at th
 
 possible_details = [
     # scope limited to one call
-    'InvalidCommunicator','InvalidDatatype','InvalidRoot','InvalidWindow', 'InvalidOperator', 'ActualDatatype',
+    'InvalidCommunicator','InvalidDatatype','InvalidRoot', 'InvalidTag', 'InvalidWindow', 'InvalidOperator', 'InvalidOtherArg', 'ActualDatatype',
     # scope: Process-wide
     'OutOfInitFini', 'CommunicatorLeak', 'DatatypeLeak', 'GroupLeak', 'OperatorLeak', 'TypeLeak', 'MissingStart', 'MissingWait', 
     'RequestLeak', 'LocalConcurrency',
     # scope: communicator
-    'MessageRace', 'CallMatching', 'CommunicatorMatching', 'DatatypeMatching', 'InvalidSrcDest', 'RootMatching', 'OperatorMatching',
+    'MessageRace', 'CallMatching', 'CommunicatorMatching', 'DatatypeMatching', 'InvalidSrcDest', 'OperatorMatching', 'OtherArgMatching', 'RootMatching', 'TagMatching',
     # larger scope
     'BufferingHazard']
     # BufferLength/BufferOverlap
@@ -158,12 +158,17 @@ def cmd_gencodes():
 ########################
 # cmd_run(): what to do when '-c run' is used (running the tests)
 ########################
-def cmd_run():
+def cmd_run(rootdir, toolname):
+    # Go to the tools' logs directory on need
+    rootdir=os.path.dirname(os.path.abspath(__file__))
+    os.makedirs(f'{rootdir}/logs/{toolname}', exist_ok=True)
+    os.chdir(   f'{rootdir}/logs/{toolname}')
+
     # Basic verification
-    tool.ensure_image()
+    tools[toolname].ensure_image()
 
     # Do the tool-specific setups
-    tool.setup(rootdir)
+    tools[toolname].setup(rootdir)
 
     count = 1
     for test in todo:
@@ -173,7 +178,7 @@ def cmd_run():
         count += 1
         sys.stdout.flush()
 
-        p = mp.Process(target=tool.run, args=(test['cmd'], test['filename'], binary, test['id'], args.timeout))
+        p = mp.Process(target=tools[toolname].run, args=(test['cmd'], test['filename'], binary, test['id'], args.timeout))
         p.start()
         sys.stdout.flush()
         p.join(args.timeout+60)
@@ -181,12 +186,17 @@ def cmd_run():
             print("HARD TIMEOUT! The child process failed to timeout by itself. Sorry for the output.")
             p.terminate()
 
-    tool.teardown()
+    tools[toolname].teardown()
 
 ########################
-# cmd_stats(): what to do when '-c stats' is used (extract the statistics)
+# cmd_stats(): what to do when '-c stats' is used (extract the statistics of this tool)
 ########################
-def cmd_stats():
+def cmd_stats(rootdir, toolnames = []):
+  for toolname in toolnames:
+    if not toolname in tools:
+      raise Exception(f"Tool {toolname} does not seem to be a valid name.")
+
+
     # To compute statistics on the performance of this tool
     true_pos = []
     false_pos = []
@@ -206,10 +216,15 @@ def cmd_stats():
     for test in todo:
         binary = re.sub('\.c', '', os.path.basename(test['filename']))
         test_ID = f"{binary}_{test['id']}"
-        outcome = tool.parse(test_ID)
+        outcome = tools[toolname].parse(test_ID)
         expected = test['expect']
 
-        if os.path.exists(f'{test_ID}.elapsed'):
+        if not os.path.exists(f'{test_ID}.elapsed'):
+            if outcome == 'failure':
+                elapsed = 0
+            else: 
+                raise Exception(f"Invalid test result: {test_ID}.txt exists but not {test_ID}.elapsed")
+        else:
             with open(f'{test_ID}.elapsed', 'r') as infile:
                 elapsed = infile.read()
 
@@ -346,36 +361,32 @@ parser.add_argument('-b', metavar='batch', default='1/1',
                     help="Limits the test executions to the batch #N out of M batches (Syntax: 'N/M'). To get 3 runners, use 1/3 2/3 3/3")
 
 args = parser.parse_args()
+rootdir = os.path.dirname(os.path.abspath(__file__))
 
 # Parameter checking: Did we get a valid tool to use?
-if args.c != 'generate':
+if args.c != 'generate' and args.c != 'stats':
     if args.x == 'mpirun':
         raise Exception("No tool was provided, please retry with -x parameter. (see -h for further information on usage)")
     elif args.x in ['aislinn', 'civl', 'isp', 'must', 'mpisv', 'simgrid', 'parcoach']:
-        exec(f'tool = {args.x}.Tool()')
+        pass
     else:
         raise Exception(f"The tool parameter you provided ({args.x}) is either incorect or not yet implemented.")
-
-    # Go to the tools' logs directory on need
-    rootdir=os.path.dirname(os.path.abspath(__file__))
-    os.makedirs(f'{rootdir}/logs/{args.x}', exist_ok=True)
-    os.chdir(   f'{rootdir}/logs/{args.x}')
 
 if args.o == 'out.csv':
     args.o = f'bench_{args.x}.csv'
 
 if args.c == 'all':
     extract_all_todo(args.b)
-    cmd_run()
-    cmd_stats()
+    cmd_run(rootdir=rootdir, toolname=args.x)
+    cmd_stats(rootdir, toolnames=[args.x])
 elif args.c == 'generate':
     cmd_gencodes()
 elif args.c == 'run':
     extract_all_todo(args.b)
-    cmd_run()
+    cmd_run(rootdir=rootdir, toolname=args.x)
 elif args.c == 'stats':
     extract_all_todo(args.b)
-    cmd_stats()
+    cmd_stats(rootdir, toolnames=['aislinn', 'civl', 'isp', 'simgrid', 'mpisv', 'must', 'parcoach'])
 else:
     print(f"Invalid command '{args.c}'. Please choose one of 'all', 'run', 'stats'")
     sys.exit(1)

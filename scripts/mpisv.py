@@ -4,6 +4,9 @@ import sys
 from MBIutils import *
 
 class Tool(AbstractTool):
+    def identify(self):
+        return "MPI-SV wrapper"
+
     def ensure_image(self):
         if os.path.exists("/root/mpi-sv/mpisv"):
             print("This is the docker image of MPI-SV. Good.")

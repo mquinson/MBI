@@ -4,6 +4,9 @@ import sys
 from MBIutils import *
 
 class Tool(AbstractTool):
+    def identify(self):
+        return "Aislinn wrapper"
+
     def ensure_image(self):
         id = subprocess.run("grep '^ID=' /etc/os-release|sed 's/.*=//'", shell=True, capture_output=True, text=True)
         ver = subprocess.run("grep '^VERSION_ID=' /etc/os-release|sed 's/.*=//'", shell=True, capture_output=True, text=True)

@@ -3,6 +3,10 @@ import os
 from MBIutils import *
 
 class Tool(AbstractTool):
+    def identify(self):
+        return "SimGrid wrapper"
+
+
     def ensure_image(self):
         AbstractTool.ensure_image(self, "-x simgrid")
 
