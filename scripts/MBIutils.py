@@ -48,9 +48,9 @@ def run_cmd(buildcmd, execcmd, cachefile, binary, timeout, read_line_lambda=None
 
     start_time = time.time()
     if buildcmd == None:
-        output = f"No need to compile https://gitlab.com/MbiBugsInitiative/MbiBugsInitiative/-/tree/master/codes/{binary}.c\n\n"
+        output = f"No need to compile {binary}.c\n\n"
     else:
-        output = f"Compiling https://gitlab.com/MbiBugsInitiative/MbiBugsInitiative/-/tree/master/codes/{binary}.c\n\n"
+        output = f"Compiling {binary}.c\n\n"
         output += f"$ {buildcmd}\n"
 
         compil = subprocess.run(buildcmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
