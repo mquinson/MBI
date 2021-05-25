@@ -256,15 +256,18 @@ def cmd_stats(rootdir, toolnames=[]):
     os.chdir(rootdir)
     results = {}
     total_elapsed = {}
+    used_toolnames = []
     for toolname in toolnames:
         if not toolname in tools:
             raise Exception(f"Tool {toolname} does not seem to be a valid name.")
 
-        # To compute statistics on the performance of this tool
-        results[toolname]= {'failure':[], 'timeout':[], 'unimplemented':[], 'TRUE_NEG':[], 'TRUE_POS':[], 'FALSE_NEG':[], 'FALSE_POS':[]}
+        if os.path.exists(f'logs/{toolname}'):
+            used_toolnames.append(toolname)
+            # To compute statistics on the performance of this tool
+            results[toolname]= {'failure':[], 'timeout':[], 'unimplemented':[], 'TRUE_NEG':[], 'TRUE_POS':[], 'FALSE_NEG':[], 'FALSE_POS':[]}
 
-        # To compute timing statistics
-        total_elapsed[toolname] = 0
+            # To compute timing statistics
+            total_elapsed[toolname] = 0
 
     ########################
     # Analyse each test, grouped by expectation, and all tools for a given test
@@ -276,8 +279,8 @@ def cmd_stats(rootdir, toolnames=[]):
       for test in sorted(todo, key=lambda t: f"{possible_details[t['detail']]}|{t['detail']}"):
         if previous_detail != f"{possible_details[test['detail']]}|{test['detail']}":
             previous_detail = f"{possible_details[test['detail']]}|{test['detail']}"
-            outHTML.write(f"  <tr><td colspan='{len(toolnames)+1}'>Expected outcome: {test['detail']}</td></tr>\n  <tr><td>Test</td>")
-            for toolname in toolnames:
+            outHTML.write(f"  <tr><td colspan='{len(used_toolnames)+1}'>Expected outcome: {test['detail']}</td></tr>\n  <tr><td>Test</td>")
+            for toolname in used_toolnames:
                 outHTML.write(f"<td>{toolname}</td>")
             outHTML.write(f"</tr>\n")
         outHTML.write(f"    <tr>")
@@ -288,7 +291,7 @@ def cmd_stats(rootdir, toolnames=[]):
 
         outHTML.write(f"<td><a href='gencodes/{binary}.c'>{binary}</a></td>")
 
-        for toolname in toolnames:
+        for toolname in used_toolnames:
             (res_category, elapsed, diagnostic) = categorize(toolname=toolname, test_ID=test_ID, expected=expected)
 
             results[toolname][res_category].append(f"{test_ID} expected {test['detail']}, outcome: {diagnostic}")
@@ -297,13 +300,13 @@ def cmd_stats(rootdir, toolnames=[]):
             if res_category != 'timeout' and elapsed is not None:
                 total_elapsed[toolname] += float(elapsed)
 
-            if len(toolnames) == 1:
+            if len(used_toolnames) == 1:
                 print(f"Test '{test_ID}' result: {res_category}: {diagnostic}. Elapsed: {elapsed} sec")
 
             np = re.search(r"(?:-np) [0-9]+", test['cmd'])
             np = int(re.sub(r"-np ", "", np.group(0)))
 
-            if len(toolnames) == 1:
+            if len(used_toolnames) == 1:
                 with open(f"./logs/{toolname}/bench_{toolname}.csv", "a") as result_file:
                     result_file.write(
                         f"{binary};{test['id']};{args.x};{args.timeout};{np};0;{expected};{res_category};{elapsed}\n")
@@ -313,7 +316,7 @@ def cmd_stats(rootdir, toolnames=[]):
     ########################
     # Per tool statistics summary
     ########################
-    for toolname in toolnames:
+    for toolname in used_toolnames:
         TP = len(results[toolname]['TRUE_POS'])
         TN = len(results[toolname]['TRUE_NEG'])
         FP = len(results[toolname]['FALSE_POS'])
@@ -327,27 +330,27 @@ def cmd_stats(rootdir, toolnames=[]):
         print(f"XXXXXXXXX Final results for {toolname}")
         if FP > 0:
             print(f"XXX {FP} false positives")
-            if len(toolnames) == 1:
+            if len(used_toolnames) == 1:
                 for p in results[toolname]['FALSE_POS']:
                     print(f"  {p}")
         if FN > 0:
             print(f"XXX {FN} false negatives")
-            if len(toolnames) == 1:
+            if len(used_toolnames) == 1:
                 for p in results[toolname]['FALSE_NEG']:
                     print(f"  {p}")
         if nTout > 0:
             print(f"XXX {nTout} timeouts")
-            if len(toolnames) == 1:
+            if len(used_toolnames) == 1:
                 for p in results[toolname]['timeout']:
                     print(f"  {p}")
         if nPort > 0:
             print(f"XXX {nPort} portability issues")
-            if len(toolnames) == 1:
+            if len(used_toolnames) == 1:
                 for p in results[toolname]['unimplemented']:
                     print(f"  {p}")
         if nFail > 0:
             print(f"XXX {nFail} tool failures")
-            if len(toolnames) == 1:
+            if len(used_toolnames) == 1:
                 for p in results[toolname]['failure']:
                     print(f"  {p}")
 
