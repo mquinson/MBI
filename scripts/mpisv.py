@@ -49,7 +49,7 @@ class Tool(AbstractTool):
         with open(f'{cachefile}-klee-out/info' if os.path.exists(f'{cachefile}-klee-out/info') else f'logs/mpisv/{cachefile}-klee-out/info', 'r') as infile:
             info = infile.read()
 
-        if re.search('failed external call', output):
+        if re.search('Compilation of .*? raised an error \(retcode: ', output) or re.search('failed external call', output):
             return 'UNIMPLEMENTED'
 
         if re.search('found deadlock', output):

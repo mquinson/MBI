@@ -43,6 +43,9 @@ class Tool(AbstractTool):
         with open(f'{cachefile}.txt' if os.path.exists(f'{cachefile}.txt') else f'logs/isp/{cachefile}.txt', 'r') as infile:
             output = infile.read()
 
+        if re.search('Compilation of .*? raised an error \(retcode: ', output):
+            return 'UNIMPLEMENTED'
+
         if re.search('ISP detected deadlock!!!', output):
             return 'deadlock'
         if re.search('Detected a DEADLOCK in interleaving', output):

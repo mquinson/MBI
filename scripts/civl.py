@@ -36,6 +36,9 @@ class Tool(AbstractTool):
         with open(f'{cachefile}.txt' if os.path.exists(f'{cachefile}.txt') else f'logs/civl/{cachefile}.txt', 'r') as infile:
             output = infile.read()
 
+        if re.search('Compilation of .*? raised an error \(retcode: ', output):
+            return 'UNIMPLEMENTED'
+
         if re.search('DEADLOCK', output):
             return 'deadlock'
 

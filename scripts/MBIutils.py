@@ -60,6 +60,10 @@ def run_cmd(buildcmd, execcmd, cachefile, binary, timeout, read_line_lambda=None
             output += f"Compilation of {binary}.c raised an error (retcode: {compil.returncode})"
             for line in (output.split('\n')):
                 print(f"| {line}", file=sys.stderr)
+            with open(f'{cachefile}.elapsed', 'w') as outfile:
+                outfile.write(str(time.time() - start_time))
+            with open(f'{cachefile}.txt', 'w') as outfile:
+                outfile.write(output)
             return 'UNIMPLEMENTED', compil.returncode, output
 
     output += f"\n\nExecuting the command\n $ {execcmd}\n"

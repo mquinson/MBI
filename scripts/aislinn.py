@@ -82,7 +82,7 @@ class Tool(AbstractTool):
         if re.search('Collective operation: root mismatch', output):
             return 'various'
 
-        if re.search('Unkown function call', output):
+        if re.search('Unkown function call', output) or re.search('Compilation of .*? raised an error \(retcode: ', output):
             return 'UNIMPLEMENTED'
 
         return 'other'
