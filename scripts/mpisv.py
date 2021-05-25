@@ -37,15 +37,17 @@ class Tool(AbstractTool):
             os.remove('klee-last')
 
     def parse(self, cachefile):
-        if os.path.exists(f'{cachefile}.timeout'):
+        if os.path.exists(f'{cachefile}.timeout') or os.path.exists(f'logs/mpisv/{cachefile}.timeout'):
             outcome = 'timeout'
-        if not os.path.exists(f'{cachefile}.txt') or not os.path.exists(f"{binary}_{id}-klee-out/info"):
+        if not (os.path.exists(f'{cachefile}.txt') or os.path.exists(f'logs/mpisv/{cachefile}.txt')):
+            return 'failure'
+        if not (os.path.exists(f'{cachefile}-klee-out/info') or os.path.exists(f'logs/mpisv/{cachefile}-klee-out/info')):
             return 'failure'
 
-        with open(f"{binary}_{id}-klee-out/info", 'r') as infofile:
-            info = infofile.read()
-        with open(f'{cachefile}.txt', 'r') as infile:
+        with open(f'{cachefile}.txt' if os.path.exists(f'{cachefile}.txt') else f'logs/mpisv/{cachefile}.txt', 'r') as infile:
             output = infile.read()
+        with open(f'{cachefile}-klee-out/info' if os.path.exists(f'{cachefile}-klee-out/info') else f'logs/mpisv/{cachefile}-klee-out/info', 'r') as infile:
+            info = infile.read()
 
         if re.search('failed external call', output):
             return 'UNIMPLEMENTED'

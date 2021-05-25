@@ -44,12 +44,12 @@ class Tool(AbstractTool):
         subprocess.run("rm -f smpitmp-*", shell=True, check=True) 
 
     def parse(self, cachefile):
-        if os.path.exists(f'{cachefile}.timeout'):
-            return 'timeout'
-        if not os.path.exists(f'{cachefile}.txt'):
+        if os.path.exists(f'{cachefile}.timeout') or os.path.exists(f'logs/simgrid/{cachefile}.timeout'):
+            outcome = 'timeout'
+        if not (os.path.exists(f'{cachefile}.txt') or os.path.exists(f'logs/simgrid/{cachefile}.txt')):
             return 'failure'
 
-        with open(f'{cachefile}.txt', 'r') as infile:
+        with open(f'{cachefile}.txt' if os.path.exists(f'{cachefile}.txt') else f'logs/simgrid/{cachefile}.txt', 'r') as infile:
             output = infile.read()
 
         if re.search('DEADLOCK DETECTED', output):

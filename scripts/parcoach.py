@@ -23,12 +23,12 @@ class Tool(AbstractTool):
         subprocess.run("rm -f *.bc", shell=True, check=True)
 
     def parse(self, cachefile):
-        if os.path.exists(f'{cachefile}.timeout'):
-            return 'timeout'
-        if not os.path.exists(f'{cachefile}.txt'):
+        if os.path.exists(f'{cachefile}.timeout') or os.path.exists(f'logs/parcoach/{cachefile}.timeout'):
+            outcome = 'timeout'
+        if not (os.path.exists(f'{cachefile}.txt') or os.path.exists(f'logs/parcoach/{cachefile}.txt')):
             return 'failure'
 
-        with open(f'{cachefile}.txt', 'r') as infile:
+        with open(f'{cachefile}.txt' if os.path.exists(f'{cachefile}.txt') else f'logs/parcoach/{cachefile}.txt', 'r') as infile:
             output = infile.read()
 
         if re.search('0 warning\(s\) issued', output):

@@ -215,7 +215,7 @@ def categorize(toolname, test_ID, expected):
         else:
             raise Exception(f"Invalid test result: {test_ID}.txt exists but not {test_ID}.elapsed")
     else:
-        with open(f'{test_ID}.elapsed', 'r') as infile:
+        with open(f'{test_ID}.elapsed' if os.path.exists(f'{test_ID}.elapsed') else f'logs/{toolname}/{test_ID}.elapsed', 'r') as infile:
             elapsed = infile.read()
 
     # Properly categorize this run
@@ -251,6 +251,8 @@ def categorize(toolname, test_ID, expected):
     return (res_category, elapsed, diagnostic)
 
 def cmd_stats(rootdir, toolnames=[]):
+    here = os.getcwd()
+    os.chdir(rootdir)
     for toolname in toolnames:
         if not toolname in tools:
             raise Exception(f"Tool {toolname} does not seem to be a valid name.")
@@ -272,7 +274,8 @@ def cmd_stats(rootdir, toolnames=[]):
             if res_category != 'timeout' and elapsed is not None:
                 total_elapsed += float(elapsed)
 
-            print(f"Test '{test_ID}' result: {res_category}: {diagnostic}. Elapsed: {elapsed} sec")
+            if len(toolnames) == 1:
+                print(f"Test '{test_ID}' result: {res_category}: {diagnostic}. Elapsed: {elapsed} sec")
 
             np = re.search(r"(?:-np) [0-9]+", test['cmd'])
             np = int(re.sub(r"-np ", "", np.group(0)))
@@ -295,27 +298,32 @@ def cmd_stats(rootdir, toolnames=[]):
         passed = TP + TN
         total = passed + FP + FN + nTout + nPort + nFail
 
-        print(f"XXXXXXXXX Final results")
+        print(f"XXXXXXXXX Final results for {toolname}")
         if FP > 0:
-            print(f"XXX {FP} false positives:")
-            for p in results['TRUE_POS']:
-                print(f"  {p}")
+            print(f"XXX {FP} false positives")
+            if len(toolnames) == 1:
+                for p in results['TRUE_POS']:
+                    print(f"  {p}")
         if FN > 0:
-            print(f"XXX {FN} false negatives:")
-            for p in results['TRUE_NEG']:
-                print(f"  {p}")
+            print(f"XXX {FN} false negatives")
+            if len(toolnames) == 1:
+                for p in results['TRUE_NEG']:
+                    print(f"  {p}")
         if nTout > 0:
-            print(f"XXX {nTout} timeouts:")
-            for p in results['timeout']:
-                print(f"  {p}")
+            print(f"XXX {nTout} timeouts")
+            if len(toolnames) == 1:
+                for p in results['timeout']:
+                    print(f"  {p}")
         if nPort > 0:
-            print(f"XXX {nPort} portability issues:")
-            for p in results['unimplemented']:
-                print(f"  {p}")
+            print(f"XXX {nPort} portability issues")
+            if len(toolnames) == 1:
+                for p in results['unimplemented']:
+                    print(f"  {p}")
         if nFail > 0:
-            print(f"XXX {nFail} tool failures:")
-            for p in results['failure']:
-                print(f"  {p}")
+            print(f"XXX {nFail} tool failures")
+            if len(toolnames) == 1:
+                for p in results['failure']:
+                    print(f"  {p}")
 
         def percent(ratio):
             """Returns the ratio as a percentage, rounded to 2 digits only"""
@@ -331,8 +339,10 @@ def cmd_stats(rootdir, toolnames=[]):
             print(f"Precision: {percent(TP/(TP+FP))}% ({TP} diagnostic of error are correct out of {TP+FP})")
             print(f"Accuracy: {percent((TP+TN)/(TP+TN+FP+FN))}% ({TP+TN} correct diagnostics in total, out of {TP+TN+FP+FN} diagnostics)")
         except ZeroDivisionError:
-            print("Got a ZeroDivisionError while computing the metrics. Are you using all tests?")
+            print(f"Got a ZeroDivisionError while computing the metrics for tool {toolname}. Are you using all tests?")
         print(f"\nTotal time of all tests (not counting the timeouts): {total_elapsed}")
+
+    os.chdir(here)
 
 ########################
 # Main script argument parsing
