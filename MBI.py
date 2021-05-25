@@ -31,10 +31,7 @@ tools = {'aislinn': aislinn.Tool(), 'civl': civl.Tool(), 'isp': isp.Tool(), 'mpi
 # Some scripts may fail if error messages get translated
 os.environ["LC_ALL"] = "C"
 
-########################
-# Extract the TODOs from the codes
-########################
-
+# Associate all possible detailed outcome to a given error scope. Scopes must be sorted alphabetically.
 possible_details = {
     # scope limited to one call
     'InvalidCommunicator':'ACall', 'InvalidDatatype':'ACall', 'InvalidRoot':'ACall', 'InvalidTag':'ACall', 'InvalidWindow':'ACall', 'InvalidOperator':'ACall', 'InvalidOtherArg':'ACall', 'ActualDatatype':'ACall',
@@ -52,12 +49,17 @@ displayed_name = {
     'BProcess':'Error scope: single process',
     'CComm':'Error scope: communicator',
     'DSystem':'Error scope: system-wide',
-    'EOK':'Correct codes'
+    'EOK':'Correct codes',
+
+    'aislinn':'Aislinn','civl':'CIVL', 'isp':'ISP', 'simgrid':'SimGrid', 'mpisv':'MPI-SV', 'must':'MUST', 'parcoach':'PARCOACH'
 }
 
 # BufferLength/BufferOverlap
 # RMA concurrency errors (local and distributed)
 
+########################
+# Extract the TODOs from the codes
+########################
 todo = []
 
 
@@ -284,6 +286,25 @@ def cmd_stats(rootdir, toolnames=[]):
     with open(f"{rootdir}/summary.html", "w") as outHTML:
       outHTML.write(f"<html><head><title>MBI outcomes for all tests</title></head>\n<body>\n")
 
+      # Generate the table of contents
+      previous_scope=''
+      previous_detail=''  # To open a new section for each possible detailed outcome
+      outHTML.write("<h2>Table of contents</h2>\n<ul>\n")
+      for test in sorted(todo, key=lambda t: f"{possible_details[t['detail']]}|{t['detail']}"):
+        if previous_scope != possible_details[test['detail']]:
+            if previous_scope != '': # Close the previous item, if we are not generating the first one
+                outHTML.write(f"  </ul>\n")
+                outHTML.write(f" </li>\n")
+            previous_scope = possible_details[test['detail']]
+            previous_detail = '' # This is a new section
+            outHTML.write(f" <li><a href='#{possible_details[test['detail']]}'>{displayed_name[ possible_details[test['detail']]]}</a>\n  <ul>\n")
+
+        if previous_detail != f"{possible_details[test['detail']]}|{test['detail']}" and test['detail'] != 'OK':
+            previous_detail = f"{possible_details[test['detail']]}|{test['detail']}"
+            outHTML.write(f"   <li>Error: <a href='#{test['detail']}'>{test['detail']}</a></li>\n")
+      outHTML.write("  </ul>\n</ul>\n")
+
+      # Generate the actual content
       previous_scope=''
       previous_detail=''  # To open a new section for each possible detailed outcome
       testcount=0 # To repeat the table header every 25 lines
@@ -294,7 +315,7 @@ def cmd_stats(rootdir, toolnames=[]):
                 outHTML.write(f"</table>\n")
             previous_scope = possible_details[test['detail']]
             previous_detail = '' # This is a new section
-            outHTML.write(f"  <h2>{displayed_name[ possible_details[test['detail']]]}</h2>\n")
+            outHTML.write(f"  <a name='{possible_details[test['detail']]}'/><h2>{displayed_name[ possible_details[test['detail']]]}</h2>\n")
 
         if previous_detail != f"{possible_details[test['detail']]}|{test['detail']}" or testcount == 25:
             if testcount != 25: # Write the expected outcome only once, not every 25 tests
@@ -302,12 +323,12 @@ def cmd_stats(rootdir, toolnames=[]):
                     outHTML.write(f"</table>\n")
                 previous_detail = f"{possible_details[test['detail']]}|{test['detail']}"
                 if test['detail'] is not 'OK':
-                    outHTML.write(f"  <h3>Expected outcome: {test['detail']}</h3>\n")
+                    outHTML.write(f"  <a name='{test['detail']}'/><h3>Expected outcome: {test['detail']}</h3>\n")
                 outHTML.write( '  <table border=1>\n')
             testcount=0
             outHTML.write("   <tr><td>Test</td>")
             for toolname in used_toolnames:
-                outHTML.write(f"<td>{toolname}</td>")
+                outHTML.write(f"<td>&nbsp;{displayed_name[toolname]}&nbsp;</td>")
             outHTML.write(f"</tr>\n")
         outHTML.write(f"     <tr>")
 
