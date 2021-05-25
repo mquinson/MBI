@@ -1,5 +1,15 @@
 #! /MBI/scripts/ensure_python3
 
+# autopep8 -i --max-line-length 130 MBI.py
+
+import parcoach
+import simgrid
+import must
+import mpisv
+import isp
+import civl
+import aislinn
+
 import shutil
 import os
 import signal
@@ -14,9 +24,9 @@ import multiprocessing as mp
 
 # Add our lib directory to the PYTHONPATH, and load our utilitary libraries
 sys.path.append(f'{os.path.dirname(os.path.abspath(__file__))}/scripts')
-import aislinn, civl, isp, mpisv, must, simgrid, parcoach
 
-tools = {'aislinn': aislinn.Tool(), 'civl': civl.Tool(), 'isp':isp.Tool(), 'mpisv':mpisv.Tool(), 'must':must.Tool(), 'simgrid':simgrid.Tool(), 'parcoach':parcoach.Tool()}
+tools = {'aislinn': aislinn.Tool(), 'civl': civl.Tool(), 'isp': isp.Tool(), 'mpisv': mpisv.Tool(),
+         'must': must.Tool(), 'simgrid': simgrid.Tool(), 'parcoach': parcoach.Tool()}
 
 # Some scripts may fail if error messages get translated
 os.environ["LC_ALL"] = "C"
@@ -27,18 +37,19 @@ os.environ["LC_ALL"] = "C"
 
 possible_details = [
     # scope limited to one call
-    'InvalidCommunicator','InvalidDatatype','InvalidRoot', 'InvalidTag', 'InvalidWindow', 'InvalidOperator', 'InvalidOtherArg', 'ActualDatatype',
+    'InvalidCommunicator', 'InvalidDatatype', 'InvalidRoot', 'InvalidTag', 'InvalidWindow', 'InvalidOperator', 'InvalidOtherArg', 'ActualDatatype',
     # scope: Process-wide
-    'OutOfInitFini', 'CommunicatorLeak', 'DatatypeLeak', 'GroupLeak', 'OperatorLeak', 'TypeLeak', 'MissingStart', 'MissingWait', 
+    'OutOfInitFini', 'CommunicatorLeak', 'DatatypeLeak', 'GroupLeak', 'OperatorLeak', 'TypeLeak', 'MissingStart', 'MissingWait',
     'RequestLeak', 'LocalConcurrency',
     # scope: communicator
     'MessageRace', 'CallMatching', 'CommunicatorMatching', 'DatatypeMatching', 'InvalidSrcDest', 'OperatorMatching', 'OtherArgMatching', 'RootMatching', 'TagMatching',
     # larger scope
     'BufferingHazard']
-    # BufferLength/BufferOverlap
-    # RMA concurrency errors (local and distributed)
+# BufferLength/BufferOverlap
+# RMA concurrency errors (local and distributed)
 
 todo = []
+
 
 def extract_todo(filename):
     """
@@ -73,11 +84,12 @@ def extract_todo(filename):
                     if not m:
                         raise Exception(
                             f"\n{filename}:{line_num}: MBI parse error: Test not followed by a proper 'ERROR' line:\n{line}{nextline}")
-                    expect = 'ERROR' 
+                    expect = 'ERROR'
                     detail = m.group(1)
                     if detail not in possible_details:
-                        raise Exception(f"\n{filename}:{line_num}: MBI parse error: Detailled outcome {detail} is not one of the allowed ones.")
-                test = {'filename': filename, 'id': test_num, 'cmd': cmd, 'expect':expect, 'detail':detail }
+                        raise Exception(
+                            f"\n{filename}:{line_num}: MBI parse error: Detailled outcome {detail} is not one of the allowed ones.")
+                test = {'filename': filename, 'id': test_num, 'cmd': cmd, 'expect': expect, 'detail': detail}
                 res.append(test.copy())
                 test_num += 1
                 line_num += 1
@@ -91,14 +103,15 @@ def extract_todo(filename):
         raise Exception(f"No test found in {filename}. Please fix it.")
     return res
 
+
 def extract_all_todo(batch):
     """Extract the TODOs from all existing files, applying the batching request"""
-    if os.path.exists("/MBI/gencodes"): # Docker run
+    if os.path.exists("/MBI/gencodes"):  # Docker run
         filenames = glob.glob("/MBI/gencodes/*.c")
-    elif os.path.exists("gencodes/"): # Gitlab-ci run
-        filenames = glob.glob(f"{os.getcwd()}/gencodes/*.c") # our code expects absolute paths
-    elif os.path.exists("../../gencodes/"): # Local runs
-        filenames = glob.glob(f"{os.getcwd()}/../../gencodes/*.c") # our code expects absolute paths
+    elif os.path.exists("gencodes/"):  # Gitlab-ci run
+        filenames = glob.glob(f"{os.getcwd()}/gencodes/*.c")  # our code expects absolute paths
+    elif os.path.exists("../../gencodes/"):  # Local runs
+        filenames = glob.glob(f"{os.getcwd()}/../../gencodes/*.c")  # our code expects absolute paths
     else:
         subprocess.run("ls ../..", shell=True)
         raise Exception(f"Cannot find the input codes (cwd: {os.getcwd()}). Did you run the generators before running the tests?")
@@ -122,18 +135,20 @@ def extract_all_todo(batch):
 ########################
 # cmd_gencodes(): what to do when '-c generate' is used (Generating the codes)
 ########################
+
+
 def cmd_gencodes():
-    if os.path.exists("/MBI/scripts/CollOpGenerator.py"): # Docker run
+    if os.path.exists("/MBI/scripts/CollOpGenerator.py"):  # Docker run
         print("Docker run")
         generators = glob.glob("/MBI/scripts/*Generator.py")
         dir = "/MBI/gencodes"
-    elif os.path.exists("../../scripts/CollOpGenerator.py"): # Local run, from logs dir
+    elif os.path.exists("../../scripts/CollOpGenerator.py"):  # Local run, from logs dir
         print("Local run, from tools' logs dir")
-        generators = glob.glob(f"{os.getcwd()}/../../scripts/*Generator.py") 
+        generators = glob.glob(f"{os.getcwd()}/../../scripts/*Generator.py")
         dir = "../../gencodes/"
-    elif os.path.exists("scripts/CollOpGenerator.py"): # Local run, from main dir
+    elif os.path.exists("scripts/CollOpGenerator.py"):  # Local run, from main dir
         print("Local run, from MBI main dir")
-        generators = glob.glob(f"{os.getcwd()}/scripts/*Generator.py") 
+        generators = glob.glob(f"{os.getcwd()}/scripts/*Generator.py")
         dir = "gencodes/"
     else:
         raise Exception("Cannot find the codes' generators. Please report that bug.")
@@ -147,7 +162,7 @@ def cmd_gencodes():
             print(m.group(1), end=", ")
         else:
             print(generator, end=", ")
-        subprocess.run(generator,check=True)
+        subprocess.run(generator, check=True)
     print(f" (files generated in {os.getcwd()})")
     print("Test count: ", end='')
     sys.stdout.flush()
@@ -160,9 +175,9 @@ def cmd_gencodes():
 ########################
 def cmd_run(rootdir, toolname):
     # Go to the tools' logs directory on need
-    rootdir=os.path.dirname(os.path.abspath(__file__))
+    rootdir = os.path.dirname(os.path.abspath(__file__))
     os.makedirs(f'{rootdir}/logs/{toolname}', exist_ok=True)
-    os.chdir(   f'{rootdir}/logs/{toolname}')
+    os.chdir(f'{rootdir}/logs/{toolname}')
 
     # Basic verification
     tools[toolname].ensure_image()
@@ -191,154 +206,156 @@ def cmd_run(rootdir, toolname):
 ########################
 # cmd_stats(): what to do when '-c stats' is used (extract the statistics of this tool)
 ########################
-def cmd_stats(rootdir, toolnames = []):
-  for toolname in toolnames:
-    if not toolname in tools:
-      raise Exception(f"Tool {toolname} does not seem to be a valid name.")
 
 
-    # To compute statistics on the performance of this tool
-    true_pos = []
-    false_pos = []
-    true_neg = []
-    false_neg = []
-    unimplemented = []
-    timeout = []
-    failure = []
+def cmd_stats(rootdir, toolnames=[]):
+    for toolname in toolnames:
+        if not toolname in tools:
+            raise Exception(f"Tool {toolname} does not seem to be a valid name.")
 
-    # To compute statistics on the MBI codes
-    code_correct = 0
-    code_incorrect = 0
+        # To compute statistics on the performance of this tool
+        true_pos = []
+        false_pos = []
+        true_neg = []
+        false_neg = []
+        unimplemented = []
+        timeout = []
+        failure = []
 
-    # To compute timing statistics 
-    total_elapsed = 0
+        # To compute statistics on the MBI codes
+        code_correct = 0
+        code_incorrect = 0
 
-    for test in todo:
-        binary = re.sub('\.c', '', os.path.basename(test['filename']))
-        test_ID = f"{binary}_{test['id']}"
-        outcome = tools[toolname].parse(test_ID)
-        expected = test['expect']
+        # To compute timing statistics
+        total_elapsed = 0
 
-        if not os.path.exists(f'{test_ID}.elapsed'):
-            if outcome == 'failure':
-                elapsed = 0
-            else: 
-                raise Exception(f"Invalid test result: {test_ID}.txt exists but not {test_ID}.elapsed")
-        else:
-            with open(f'{test_ID}.elapsed', 'r') as infile:
-                elapsed = infile.read()
+        for test in todo:
+            binary = re.sub('\.c', '', os.path.basename(test['filename']))
+            test_ID = f"{binary}_{test['id']}"
+            outcome = tools[toolname].parse(test_ID)
+            expected = test['expect']
 
-        # Stats on the codes, even if the tool fails
-        if expected == 'OK':
-            code_correct += 1
-        else:
-            code_incorrect += 1
-
-        # Properly categorize this run
-        if outcome == 'timeout':
-            res_category = 'timeout'
-            if elapsed is None:
-                timeout.append(f'{test_ID} (hard timeout)')
+            if not os.path.exists(f'{test_ID}.elapsed'):
+                if outcome == 'failure':
+                    elapsed = 0
+                else:
+                    raise Exception(f"Invalid test result: {test_ID}.txt exists but not {test_ID}.elapsed")
             else:
-                timeout.append(f'{test_ID} (elapsed: {elapsed} sec)')
-        elif outcome == 'failure':
-            res_category = 'failure'
-            failure.append(f'{test_ID}')
-        elif outcome == 'UNIMPLEMENTED':
-            res_category = 'portability issue'
-            unimplemented.append(f'{test_ID}')
-        elif expected == 'OK':
-            if outcome == 'OK':
-                res_category = 'TRUE_NEG'
-                true_neg.append(f'{test_ID}')
+                with open(f'{test_ID}.elapsed', 'r') as infile:
+                    elapsed = infile.read()
+
+            # Stats on the codes, even if the tool fails
+            if expected == 'OK':
+                code_correct += 1
             else:
-                res_category = 'FALSE_POS'
-                false_pos.append(f'{test_ID} (expected {expected} but returned {outcome})')
-        elif expected == 'ERROR':
-            if outcome == 'OK':
-                res_category = 'FALSE_NEG'
-                false_neg.append(f'{test_ID} (expected {expected} but returned {outcome})')
+                code_incorrect += 1
+
+            # Properly categorize this run
+            if outcome == 'timeout':
+                res_category = 'timeout'
+                if elapsed is None:
+                    timeout.append(f'{test_ID} (hard timeout)')
+                else:
+                    timeout.append(f'{test_ID} (elapsed: {elapsed} sec)')
+            elif outcome == 'failure':
+                res_category = 'failure'
+                failure.append(f'{test_ID}')
+            elif outcome == 'UNIMPLEMENTED':
+                res_category = 'portability issue'
+                unimplemented.append(f'{test_ID}')
+            elif expected == 'OK':
+                if outcome == 'OK':
+                    res_category = 'TRUE_NEG'
+                    true_neg.append(f'{test_ID}')
+                else:
+                    res_category = 'FALSE_POS'
+                    false_pos.append(f'{test_ID} (expected {expected} but returned {outcome})')
+            elif expected == 'ERROR':
+                if outcome == 'OK':
+                    res_category = 'FALSE_NEG'
+                    false_neg.append(f'{test_ID} (expected {expected} but returned {outcome})')
+                else:
+                    res_category = 'TRUE_POS'
+                    true_pos.append(f'{test_ID}')
             else:
-                res_category = 'TRUE_POS'
-                true_pos.append(f'{test_ID}')
-        else: 
-            raise Exception(f"Unexpected expectation: {expected} (must be OK or ERROR)")
+                raise Exception(f"Unexpected expectation: {expected} (must be OK or ERROR)")
 
-        print(f"Test '{test_ID}' result: {res_category}: {args.x} returned {outcome} while {expected} was expected. Elapsed: {elapsed} sec")
+            print(f"Test '{test_ID}' result: {res_category}: {args.x} returned {outcome} while {expected} was expected. Elapsed: {elapsed} sec")
 
-        if res_category != 'timeout' and elapsed is not None:
-            total_elapsed += float(elapsed)
+            if res_category != 'timeout' and elapsed is not None:
+                total_elapsed += float(elapsed)
 
-        np = re.search(r"(?:-np) [0-9]+", test['cmd'])
-        np = int(re.sub(r"-np ", "", np.group(0)))
+            np = re.search(r"(?:-np) [0-9]+", test['cmd'])
+            np = int(re.sub(r"-np ", "", np.group(0)))
 
-        zero_buff = re.search(r"\$zero_buffer", test['cmd'])
-        infty_buff = re.search(r"\$infty_buffer", test['cmd'])
-        if zero_buff != None:
-            buff = '0'
-        elif infty_buff != None:
-            buff = 'inf'
-        else:
-            buff = 'NA'
+            zero_buff = re.search(r"\$zero_buffer", test['cmd'])
+            infty_buff = re.search(r"\$infty_buffer", test['cmd'])
+            if zero_buff != None:
+                buff = '0'
+            elif infty_buff != None:
+                buff = 'inf'
+            else:
+                buff = 'NA'
 
-        with open("./" + args.o, "a") as result_file:
-            result_file.write(
-                f"{binary};{test['id']};{args.x};{args.timeout};{np};{buff};{expected};{outcome};{elapsed}\n")
+            with open("./" + args.o, "a") as result_file:
+                result_file.write(
+                    f"{binary};{test['id']};{args.x};{args.timeout};{np};{buff};{expected};{outcome};{elapsed}\n")
 
-    ########################
-    # Statistics summary
-    ########################
+        ########################
+        # Statistics summary
+        ########################
 
-    TP = len(true_pos)
-    TN = len(true_neg)
-    FP = len(false_pos)
-    FN = len(false_neg)
-    passed = TP + TN
-    total = passed + FP + FN + len(timeout) + len(unimplemented) + len(failure)
+        TP = len(true_pos)
+        TN = len(true_neg)
+        FP = len(false_pos)
+        FN = len(false_neg)
+        passed = TP + TN
+        total = passed + FP + FN + len(timeout) + len(unimplemented) + len(failure)
 
-    print(f"XXXXXXXXX Final results")
-    if len(false_pos) > 0:
-        print(f"XXX {len(false_pos)} false positives:")
-        for p in false_pos:
-            print(f"  {p}")
-    if len(false_neg) > 0:
-        print(f"XXX {len(false_neg)} false negatives:")
-        for p in false_neg:
-            print(f"  {p}")
-    if len(timeout) > 0:
-        print(f"XXX {len(timeout)} timeouts:")
-        for p in timeout:
-            print(f"  {p}")
-    if len(unimplemented) > 0:
-        print(f"XXX {len(unimplemented)} portability issues:")
-        for p in unimplemented:
-            print(f"  {p}")
-    if len(failure) > 0:
-        print(f"XXX {len(failure)} tool failures:")
-        for p in failure:
-            print(f"  {p}")
+        print(f"XXXXXXXXX Final results")
+        if len(false_pos) > 0:
+            print(f"XXX {len(false_pos)} false positives:")
+            for p in false_pos:
+                print(f"  {p}")
+        if len(false_neg) > 0:
+            print(f"XXX {len(false_neg)} false negatives:")
+            for p in false_neg:
+                print(f"  {p}")
+        if len(timeout) > 0:
+            print(f"XXX {len(timeout)} timeouts:")
+            for p in timeout:
+                print(f"  {p}")
+        if len(unimplemented) > 0:
+            print(f"XXX {len(unimplemented)} portability issues:")
+            for p in unimplemented:
+                print(f"  {p}")
+        if len(failure) > 0:
+            print(f"XXX {len(failure)} tool failures:")
+            for p in failure:
+                print(f"  {p}")
 
+        def percent(ratio):
+            """Returns the ratio as a percentage, rounded to 2 digits only"""
+            return int(ratio*10000)/100
+        print(f"\nXXXX Summary for {args.x} XXXX  {passed} test{'' if passed == 1 else 's'} passed (out of {total})")
+        try:
+            print(f"Portability: {percent(1-len(unimplemented)/total)}% ({len(unimplemented)} tests failed)")
+            print(
+                f"Robustness: {percent(1-(len(timeout)+len(failure))/(total-len(unimplemented)))}% ({len(timeout)} timeouts and {len(failure)} failures)\n")
 
-    def percent(ratio):
-        """Returns the ratio as a percentage, rounded to 2 digits only"""
-        return int(ratio*10000)/100
-    print(f"\nXXXX Summary for {args.x} XXXX  {passed} test{'' if passed == 1 else 's'} passed (out of {total})")
-    try:
-        print(f"Portability: {percent(1-len(unimplemented)/total)}% ({len(unimplemented)} tests failed)")
-        print(f"Robustness: {percent(1-(len(timeout)+len(failure))/(total-len(unimplemented)))}% ({len(timeout)} timeouts and {len(failure)} failures)\n")
-
-        print(f"Recall: {percent(TP/(TP+FN))}% (found {TP} errors out of {TP+FN})")
-        print(f"Specificity: {percent(TN/(TN+FP))}% (recognized {TN} correct codes out of {TN+FP})")
-        print(f"Precision: {percent(TP/(TP+FP))}% ({TP} diagnostic of error are correct out of {TP+FP})")
-        print(f"Accuracy: {percent((TP+TN)/(TP+TN+FP+FN))}% ({TP+TN} correct diagnostics in total, out of {TP+TN+FP+FN} diagnostics)")
-    except ZeroDivisionError:
-        print("Got a ZeroDivisionError while computing the metrics. Are you using all tests?")
-    print(f"\nTotal time of all tests (not counting the timeouts): {total_elapsed}")
-    print(f"\nMBI stats: {code_correct} correct codes; {code_incorrect} incorrect codes.")
+            print(f"Recall: {percent(TP/(TP+FN))}% (found {TP} errors out of {TP+FN})")
+            print(f"Specificity: {percent(TN/(TN+FP))}% (recognized {TN} correct codes out of {TN+FP})")
+            print(f"Precision: {percent(TP/(TP+FP))}% ({TP} diagnostic of error are correct out of {TP+FP})")
+            print(f"Accuracy: {percent((TP+TN)/(TP+TN+FP+FN))}% ({TP+TN} correct diagnostics in total, out of {TP+TN+FP+FN} diagnostics)")
+        except ZeroDivisionError:
+            print("Got a ZeroDivisionError while computing the metrics. Are you using all tests?")
+        print(f"\nTotal time of all tests (not counting the timeouts): {total_elapsed}")
+        print(f"\nMBI stats: {code_correct} correct codes; {code_incorrect} incorrect codes.")
 
 ########################
 # Main script argument parsing
 ########################
+
 
 parser = argparse.ArgumentParser(
     description='This runner intends to provide a bridge from a MPI compiler/executor + a test written with MPI bugs collection header and the actual result compared to the expected.')
