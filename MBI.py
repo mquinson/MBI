@@ -222,29 +222,29 @@ def categorize(toolname, test_ID, expected):
     if outcome == 'timeout':
         res_category = 'timeout'
         if elapsed is None:
-            diagnostic = f'{test_ID} (hard timeout)'
+            diagnostic = f'hard timeout'
         else:
-            diagnostic = f'{test_ID} (elapsed: {elapsed} sec)'
+            diagnostic = f'timeout after {elapsed} sec'
     elif outcome == 'failure':
         res_category = 'failure'
-        diagnostic = f'{test_ID}'
+        diagnostic = f'tool error, or test not run'
     elif outcome == 'UNIMPLEMENTED':
         res_category = 'unimplemented'
-        diagnostic = f'{test_ID}'
+        diagnostic = f'portability issue'
     elif expected == 'OK':
         if outcome == 'OK':
             res_category = 'TRUE_NEG'
-            diagnostic = f'{test_ID}'
+            diagnostic = f'correctly reported no error'
         else:
             res_category = 'FALSE_POS'
-            diagnostic = f'{test_ID} (expected {expected} but returned {outcome})'
+            diagnostic = f'reported an error in a correct code'
     elif expected == 'ERROR':
         if outcome == 'OK':
             res_category = 'FALSE_NEG'
-            diagnostic = f'{test_ID} (expected {expected} but returned {outcome})'
+            diagnostic = f'failed to detect an error'
         else:
             res_category = 'TRUE_POS'
-            diagnostic =  f'{test_ID}'
+            diagnostic =  f'correctly detected an error'
     else:
         raise Exception(f"Unexpected expectation: {expected} (must be OK or ERROR)")
 
@@ -290,7 +290,7 @@ def cmd_stats(rootdir, toolnames=[]):
             (res_category, elapsed, diagnostic) = categorize(toolname=toolname, test_ID=test_ID, expected=expected)
 
             results[toolname][res_category].append(diagnostic)
-            outHTML.write(f"<td><a href='logs/{toolname}/{test_ID}.txt'>{res_category}</a></td>")
+            outHTML.write(f"<td align='center'><a href='logs/{toolname}/{test_ID}.txt'><img title='{diagnostic}' src='img/{res_category}.svg' width='24' /></a></td>")
 
             if res_category != 'timeout' and elapsed is not None:
                 total_elapsed[toolname] += float(elapsed)
