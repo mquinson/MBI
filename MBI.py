@@ -301,7 +301,7 @@ def cmd_stats(rootdir, toolnames=[]):
             np = re.search(r"(?:-np) [0-9]+", test['cmd'])
             np = int(re.sub(r"-np ", "", np.group(0)))
 
-            with open(f"./logs/{toolname}/{args.o}", "a") as result_file:
+            with open(f"./logs/{toolname}/bench_{toolname}.csv", "a") as result_file:
                 result_file.write(
                     f"{binary};{test['id']};{args.x};{args.timeout};{np};0;{expected};{res_category};{elapsed}\n")
         outHTML.write(f"</tr>\n")
@@ -386,9 +386,6 @@ parser.add_argument('-x', metavar='tool', default='mpirun',
 parser.add_argument('-t', '--timeout', metavar='int', default=300, type=int,
                     help='timeout value at execution time, given in seconds (default: 300)')
 
-parser.add_argument('-o', metavar='output.csv', default='out.csv', type=str,
-                    help='name of the csv file in which results will be written')
-
 parser.add_argument('-b', metavar='batch', default='1/1',
                     help="Limits the test executions to the batch #N out of M batches (Syntax: 'N/M'). To get 3 runners, use 1/3 2/3 3/3")
 
@@ -403,9 +400,6 @@ if args.c != 'generate' and args.c != 'stats':
         pass
     else:
         raise Exception(f"The tool parameter you provided ({args.x}) is either incorect or not yet implemented.")
-
-if args.o == 'out.csv':
-    args.o = f'bench_{args.x}.csv'
 
 if args.c == 'all':
     extract_all_todo(args.b)
