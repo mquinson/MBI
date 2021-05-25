@@ -35,16 +35,17 @@ os.environ["LC_ALL"] = "C"
 # Extract the TODOs from the codes
 ########################
 
-possible_details = [
+possible_details = {
     # scope limited to one call
-    'InvalidCommunicator', 'InvalidDatatype', 'InvalidRoot', 'InvalidTag', 'InvalidWindow', 'InvalidOperator', 'InvalidOtherArg', 'ActualDatatype',
+    'InvalidCommunicator':'Call', 'InvalidDatatype':'Call', 'InvalidRoot':'Call', 'InvalidTag':'Call', 'InvalidWindow':'Call', 'InvalidOperator':'Call', 'InvalidOtherArg':'Call', 'ActualDatatype':'Call',
     # scope: Process-wide
-    'OutOfInitFini', 'CommunicatorLeak', 'DatatypeLeak', 'GroupLeak', 'OperatorLeak', 'TypeLeak', 'MissingStart', 'MissingWait',
-    'RequestLeak', 'LocalConcurrency',
+    'OutOfInitFini':'Process', 'CommunicatorLeak':'Process', 'DatatypeLeak':'Process', 'GroupLeak':'Process', 'OperatorLeak':'Process', 'TypeLeak':'Process', 'MissingStart':'Process', 'MissingWait':'Process',
+    'RequestLeak':'Process', 'LocalConcurrency':'Process',
     # scope: communicator
-    'MessageRace', 'CallMatching', 'CommunicatorMatching', 'DatatypeMatching', 'InvalidSrcDest', 'OperatorMatching', 'OtherArgMatching', 'RootMatching', 'TagMatching',
+    'MessageRace':'Comm', 'CallMatching':'Comm', 'CommunicatorMatching':'Comm', 'DatatypeMatching':'Comm', 'InvalidSrcDest':'Comm', 'OperatorMatching':'Comm', 'OtherArgMatching':'Comm', 'RootMatching':'Comm', 'TagMatching':'Comm',
     # larger scope
-    'BufferingHazard']
+    'BufferingHazard':'System',
+    'OK':'OK'}
 # BufferLength/BufferOverlap
 # RMA concurrency errors (local and distributed)
 
@@ -271,10 +272,11 @@ def cmd_stats(rootdir, toolnames=[]):
     with open(f"{rootdir}/summary.html", "w") as outHTML:
       previous_detail=''  
       outHTML.write(f"<html><head><title>MBI outcomes for all tests</title></head>\n<body><table border=0>\n")
-      for test in sorted(todo, key=lambda t: t['detail']):            
-        if previous_detail != test['detail']:
-            previous_detail = test['detail']
-            outHTML.write(f"  <tr><td colspan='{len(toolnames)+1}'>Expected outcome: {previous_detail}</td></tr>\n  <tr><td>Test</td>")
+
+      for test in sorted(todo, key=lambda t: f"{possible_details[t['detail']]}|{t['detail']}"):
+        if previous_detail != f"{possible_details[test['detail']]}|{test['detail']}":
+            previous_detail = f"{possible_details[test['detail']]}|{test['detail']}"
+            outHTML.write(f"  <tr><td colspan='{len(toolnames)+1}'>Expected outcome: {test['detail']}</td></tr>\n  <tr><td>Test</td>")
             for toolname in toolnames:
                 outHTML.write(f"<td>{toolname}</td>")
             outHTML.write(f"</tr>\n")
@@ -301,9 +303,10 @@ def cmd_stats(rootdir, toolnames=[]):
             np = re.search(r"(?:-np) [0-9]+", test['cmd'])
             np = int(re.sub(r"-np ", "", np.group(0)))
 
-            with open(f"./logs/{toolname}/bench_{toolname}.csv", "a") as result_file:
-                result_file.write(
-                    f"{binary};{test['id']};{args.x};{args.timeout};{np};0;{expected};{res_category};{elapsed}\n")
+            if len(toolnames) == 1:
+                with open(f"./logs/{toolname}/bench_{toolname}.csv", "a") as result_file:
+                    result_file.write(
+                        f"{binary};{test['id']};{args.x};{args.timeout};{np};0;{expected};{res_category};{elapsed}\n")
         outHTML.write(f"</tr>\n")
       outHTML.write(f"</table></body></html>\n")
 
