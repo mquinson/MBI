@@ -276,10 +276,15 @@ def cmd_stats(rootdir, toolnames=[]):
       previous_detail=''  
       outHTML.write(f"<html><head><title>MBI outcomes for all tests</title></head>\n<body><table border=0>\n")
 
+      testcount=0 # To repeat the table header every 25 lines
       for test in sorted(todo, key=lambda t: f"{possible_details[t['detail']]}|{t['detail']}"):
-        if previous_detail != f"{possible_details[test['detail']]}|{test['detail']}":
-            previous_detail = f"{possible_details[test['detail']]}|{test['detail']}"
-            outHTML.write(f"  <tr><td colspan='{len(used_toolnames)+1}'>Expected outcome: {test['detail']}</td></tr>\n  <tr><td>Test</td>")
+        testcount += 1
+        if previous_detail != f"{possible_details[test['detail']]}|{test['detail']}" or testcount == 25:
+            if testcount != 25: # Write the expected outcome only once, not every 25 tests
+                previous_detail = f"{possible_details[test['detail']]}|{test['detail']}"
+                outHTML.write(f"  <tr><td colspan='{len(used_toolnames)+1}'>Expected outcome: {test['detail']}</td></tr>\n")
+            testcount=0
+            outHTML.write("  <tr><td>Test</td>")
             for toolname in used_toolnames:
                 outHTML.write(f"<td>{toolname}</td>")
             outHTML.write(f"</tr>\n")
