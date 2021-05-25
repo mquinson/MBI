@@ -631,6 +631,7 @@ data-collect:
     #     - apt-get install -y python3-pip libcairo2
     #     - pip3 install drawSvg
     script:
+        - python3.8 MBI.py -c stats
         - echo "#filename;id;tool;TO;NP;buff;expected;result;elapsed_time;jobid" > result.csv
         - cd Data
         - cat ../logs/*/*.csv >> result.csv
