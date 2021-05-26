@@ -48,6 +48,8 @@ int main(int argc, char **argv) {
   if (nprocs < 2)
     printf("MBI ERROR: This test needs at least 2 processes to produce a bug!\\n");
 
+  int dbs = sizeof(int)*nprocs; /* Size of the dynamic buffers for alltoall and friends */
+  
   @{init1}@
   @{init2}@
   @{init3}@
@@ -164,14 +166,14 @@ for s in send + isend:
             patterns['r'] = r
             patterns['c'] = c
             patterns['init1'] = init[s]("1")
-            patterns['init2'] = init[r]("1")
-            patterns['init3'] = init[c]("1")
+            patterns['init2'] = init[r]("2")
+            patterns['init3'] = init[c]("3")
             patterns['fini1'] = fini[s]("1")
-            patterns['fini2'] = fini[r]("1")
-            patterns['fini3'] = fini[c]("1")
+            patterns['fini2'] = fini[r]("2")
+            patterns['fini3'] = fini[c]("3")
             patterns['operation1'] = operation[s]("1")
-            patterns['operation2'] = operation[r]("1")
-            patterns['operation3'] = operation[c]("1")
+            patterns['operation2'] = operation[r]("2")
+            patterns['operation3'] = operation[c]("3")
 
             # Generate the incorrect matching because of the conditional
             replace = patterns 

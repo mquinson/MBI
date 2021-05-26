@@ -87,7 +87,7 @@ fini['MPI_Scatter'] = lambda n: ""
 
 init['MPI_Ireduce'] = lambda n: f"MPI_Request req{n}; MPI_Status sta{n}; int sum{n}, val{n} = 1;"
 operation['MPI_Ireduce'] = lambda n: f"MPI_Ireduce(&sum{n}, &val{n}, 1, MPI_INT, MPI_SUM, root, MPI_COMM_WORLD, &req{n}); MPI_Wait(&req{n},&sta{n});"
-fini['MPI_Ireduce'] = lambda n: f"free(req{n});"
+fini['MPI_Ireduce'] = lambda n: ""
 
 # Generate code with one collective
 for coll in collectives + icollectives:

@@ -48,9 +48,9 @@ def run_cmd(buildcmd, execcmd, cachefile, binary, timeout, read_line_lambda=None
 
     start_time = time.time()
     if buildcmd == None:
-        output = f"No need to compile https://gitlab.com/MbiBugsInitiative/MbiBugsInitiative/-/tree/master/codes/{binary}.c\n\n"
+        output = f"No need to compile {binary}.c\n\n"
     else:
-        output = f"Compiling https://gitlab.com/MbiBugsInitiative/MbiBugsInitiative/-/tree/master/codes/{binary}.c\n\n"
+        output = f"Compiling {binary}.c\n\n"
         output += f"$ {buildcmd}\n"
 
         compil = subprocess.run(buildcmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -60,6 +60,10 @@ def run_cmd(buildcmd, execcmd, cachefile, binary, timeout, read_line_lambda=None
             output += f"Compilation of {binary}.c raised an error (retcode: {compil.returncode})"
             for line in (output.split('\n')):
                 print(f"| {line}", file=sys.stderr)
+            with open(f'{cachefile}.elapsed', 'w') as outfile:
+                outfile.write(str(time.time() - start_time))
+            with open(f'{cachefile}.txt', 'w') as outfile:
+                outfile.write(output)
             return 'UNIMPLEMENTED', compil.returncode, output
 
     output += f"\n\nExecuting the command\n $ {execcmd}\n"

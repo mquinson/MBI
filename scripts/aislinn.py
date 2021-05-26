@@ -46,12 +46,12 @@ class Tool(AbstractTool):
         subprocess.run("find -type f -a -executable | xargs rm -f", shell=True, check=True)
 
     def parse(self, cachefile):
-        if os.path.exists(f'{cachefile}.timeout'):
+        if os.path.exists(f'{cachefile}.timeout') or os.path.exists(f'logs/aislinn/{cachefile}.timeout'):
             outcome = 'timeout'
-        if not os.path.exists(f'{cachefile}.txt'):
+        if not (os.path.exists(f'{cachefile}.txt') or os.path.exists(f'logs/aislinn/{cachefile}.txt')):
             return 'failure'
 
-        with open(f'{cachefile}.txt', 'r') as infile:
+        with open(f'{cachefile}.txt' if os.path.exists(f'{cachefile}.txt') else f'logs/aislinn/{cachefile}.txt', 'r') as infile:
             output = infile.read()
 
         if re.search('No errors found', output):
@@ -82,7 +82,7 @@ class Tool(AbstractTool):
         if re.search('Collective operation: root mismatch', output):
             return 'various'
 
-        if re.search('Unkown function call', output):
+        if re.search('Unkown function call', output) or re.search('Compilation of .*? raised an error \(retcode: ', output):
             return 'UNIMPLEMENTED'
 
         return 'other'

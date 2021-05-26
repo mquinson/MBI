@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="38.085907mm"
+   height="38.085907mm"
+   viewBox="0 0 38.085907 38.085907"
+   version="1.1"
+   id="svg4282"
+   inkscape:version="1.0.2 (e86c870879, 2021-01-15)"
+   sodipodi:docname="unimplemented.svg">
+  <defs
+     id="defs4276">
+    <filter
+       height="1.148898"
+       y="-0.074448995"
+       width="1.1865224"
+       x="-0.093261182"
+       id="filter14079"
+       style="color-interpolation-filters:sRGB"
+       inkscape:collect="always">
+      <feGaussianBlur
+         id="feGaussianBlur14081"
+         stdDeviation="1.1047884"
+         inkscape:collect="always" />
+    </filter>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="2.08957"
+     inkscape:cx="83.758231"
+     inkscape:cy="148.44158"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     inkscape:document-rotation="0"
+     showgrid="false"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:window-width="1438"
+     inkscape:window-height="1013"
+     inkscape:window-x="215"
+     inkscape:window-y="33"
+     inkscape:window-maximized="0" />
+  <metadata
+     id="metadata4279">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Calque 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-274.06798,-108.5144)">
+    <circle
+       r="19.042953"
+       cy="127.55736"
+       cx="293.11093"
+       id="circle14171"
+       style="vector-effect:none;fill:#d47500;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.529167;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+    <circle
+       style="vector-effect:none;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.447471;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle14173"
+       cx="293.11093"
+       cy="127.55736"
+       r="16.102989" />
+    <circle
+       r="14.633007"
+       cy="127.55736"
+       cx="293.11093"
+       id="circle14175"
+       style="vector-effect:none;fill:#ffcb1e;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.406622;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+    <g
+       id="g5001"
+       style="font-variation-settings:normal;opacity:0.453;vector-effect:none;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0.75015;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;filter:url(#filter14079);stop-color:#000000"
+       transform="translate(175.76426,108.19035)">
+      <path
+         style="color:#000000;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:36.9821px;line-height:1.25;font-family:'Arial monospaced for SAP';-inkscape-font-specification:'Arial monospaced for SAP Bold';font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-variant-east-asian:normal;font-feature-settings:normal;font-variation-settings:normal;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000000;letter-spacing:0px;word-spacing:0px;text-transform:none;writing-mode:lr-tb;direction:ltr;text-orientation:mixed;dominant-baseline:auto;baseline-shift:baseline;text-anchor:start;white-space:normal;shape-padding:0;shape-margin:0;inline-size:0;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;vector-effect:none;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:0.75015;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;filter:url(#filter14079);color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate;stop-color:#000000;stop-opacity:1"
+         d="m 105.9775,15.046109 c 0.18335,-2.276513 1.10006,-4.114322 2.75014,-5.5134286 1.65009,-1.3991066 3.81353,-2.0986599 6.49032,-2.0986599 2.76237,0 5.00526,0.7054817 6.72867,2.1164452 1.72342,1.3991073 2.58513,3.1598473 2.58513,5.2822203 0,1.339823 -0.35446,2.531435 -1.06339,3.574836 -0.70892,1.031545 -1.9312,2.146087 -3.66685,3.343628 -0.99005,0.687696 -1.69897,1.351679 -2.12677,1.991948 -0.4278,0.628413 -0.6417,1.493962 -0.6417,2.596648 0,0.29642 0.0122,0.527628 0.0366,0.693624 h -4.32688 c 0,-1.991948 0.23835,-3.52148 0.71504,-4.588595 0.47669,-1.067115 1.52785,-2.146088 3.15349,-3.236917 1.01449,-0.675839 1.7723,-1.333894 2.27344,-1.974163 0.51336,-0.640269 0.77004,-1.49989 0.77004,-2.578861 0,-1.078972 -0.3728,-1.932664 -1.11839,-2.561077 -0.74559,-0.628413 -1.78453,-0.942619 -3.11682,-0.942619 -1.38118,0 -2.49346,0.385347 -3.33684,1.156042 -0.84337,0.770695 -1.3384,1.879309 -1.48507,3.325842 z m 11.09215,18.727872 h -4.32681 v -4.517454 h 4.32681 z"
+         id="path4996" />
+      <path
+         style="color:#000000;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:36.9821px;line-height:1.25;font-family:'Arial monospaced for SAP';-inkscape-font-specification:'Arial monospaced for SAP Bold';font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-variant-east-asian:normal;font-feature-settings:normal;font-variation-settings:normal;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000000;letter-spacing:0px;word-spacing:0px;text-transform:none;writing-mode:lr-tb;direction:ltr;text-orientation:mixed;dominant-baseline:auto;baseline-shift:baseline;text-anchor:start;white-space:normal;shape-padding:0;shape-margin:0;inline-size:0;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;vector-effect:none;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:0.75015;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;filter:url(#filter14079);color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate;stop-color:#000000;stop-opacity:1"
+         d="m 115.21875,5.6347656 c -2.99016,0 -5.63829,0.8160218 -7.6543,2.5253906 -1.99204,1.6890584 -3.16326,4.0646938 -3.3789,6.7421878 l -0.13867,1.710937 1.70312,0.216797 6.45117,0.820313 0.18555,-1.835938 c 0.115,-1.134189 0.44212,-1.751981 0.91016,-2.179687 0.48244,-0.440863 1.07641,-0.685547 2.12304,-0.685547 1.0495,0 1.61512,0.231349 1.95703,0.519531 0.35772,0.301497 0.47852,0.520878 0.47852,1.185547 0,0.793715 -0.16814,1.199514 -0.37305,1.455078 l -0.008,0.0078 -0.006,0.0078 c -0.32738,0.418271 -0.94536,0.979638 -1.85547,1.585938 l -0.002,0.002 -0.002,0.002 c -1.78344,1.196713 -3.09882,2.442169 -3.79297,3.996094 -0.64668,1.447639 -0.87305,3.186838 -0.87305,5.322265 v 0.423828 1.375 6.740235 h 7.92578 v -1.798828 l -0.0195,-7.001954 -0.0176,-0.43164 c -0.0354,-0.869364 0.17768,-1.360114 0.33008,-1.583985 l 0.004,-0.0078 0.004,-0.0059 c 0.23625,-0.353582 0.78216,-0.904263 1.65235,-1.509766 l 0.006,-0.0039 c 1.83696,-1.26803 3.21112,-2.475794 4.12305,-3.802735 l 0.002,-0.0039 0.004,-0.0039 c 0.91006,-1.339417 1.37305,-2.928886 1.37305,-4.585938 0,-2.608285 -1.18049,-4.9962729 -3.24805,-6.675781 -2.08742,-1.7074663 -4.79633,-2.5214844 -7.86328,-2.5214844 z"
+         id="path4999"
+         sodipodi:nodetypes="sscccccssssccccccssccccccsccscccccscss" />
+    </g>
+    <g
+       id="g4990"
+       style="fill:#ffffff"
+       transform="translate(177.8563,105.91291)">
+      <path
+         style="color:#000000;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:36.9821px;line-height:1.25;font-family:'Arial monospaced for SAP';-inkscape-font-specification:'Arial monospaced for SAP Bold';font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-variant-east-asian:normal;font-feature-settings:normal;font-variation-settings:normal;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000000;letter-spacing:0px;word-spacing:0px;text-transform:none;writing-mode:lr-tb;direction:ltr;text-orientation:mixed;dominant-baseline:auto;baseline-shift:baseline;text-anchor:start;white-space:normal;shape-padding:0;shape-margin:0;inline-size:0;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;vector-effect:none;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:3.59728;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate;stop-color:#000000;stop-opacity:1"
+         d="m 105.9775,15.046109 c 0.18335,-2.276513 1.10006,-4.114322 2.75014,-5.5134286 1.65009,-1.3991066 3.81353,-2.0986599 6.49032,-2.0986599 2.76237,0 5.00526,0.7054817 6.72867,2.1164452 1.72342,1.3991073 2.58513,3.1598473 2.58513,5.2822203 0,1.339823 -0.35446,2.531435 -1.06339,3.574836 -0.70892,1.031545 -1.9312,2.146087 -3.66685,3.343628 -0.99005,0.687696 -1.69897,1.351679 -2.12677,1.991948 -0.4278,0.628413 -0.6417,1.493962 -0.6417,2.596648 0,0.29642 0.0122,0.527628 0.0366,0.693624 h -4.32688 c 0,-1.991948 0.23835,-3.52148 0.71504,-4.588595 0.47669,-1.067115 1.52785,-2.146088 3.15349,-3.236917 1.01449,-0.675839 1.7723,-1.333894 2.27344,-1.974163 0.51336,-0.640269 0.77004,-1.49989 0.77004,-2.578861 0,-1.078972 -0.3728,-1.932664 -1.11839,-2.561077 -0.74559,-0.628413 -1.78453,-0.942619 -3.11682,-0.942619 -1.38118,0 -2.49346,0.385347 -3.33684,1.156042 -0.84337,0.770695 -1.3384,1.879309 -1.48507,3.325842 z m 11.09215,18.727872 h -4.32681 v -4.517454 h 4.32681 z"
+         id="path4992" />
+      <path
+         style="color:#000000;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:36.9821px;line-height:1.25;font-family:'Arial monospaced for SAP';-inkscape-font-specification:'Arial monospaced for SAP Bold';font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-variant-east-asian:normal;font-feature-settings:normal;font-variation-settings:normal;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000000;letter-spacing:0px;word-spacing:0px;text-transform:none;writing-mode:lr-tb;direction:ltr;text-orientation:mixed;dominant-baseline:auto;baseline-shift:baseline;text-anchor:start;white-space:normal;shape-padding:0;shape-margin:0;inline-size:0;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;vector-effect:none;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:3.59728;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate;stop-color:#000000;stop-opacity:1"
+         d="m 115.21875,5.6347656 c -2.99016,0 -5.63829,0.8160218 -7.6543,2.5253906 -1.99204,1.6890584 -3.16326,4.0646938 -3.3789,6.7421878 l -0.13867,1.710937 1.70312,0.216797 6.45117,0.820313 0.18555,-1.835938 c 0.115,-1.134189 0.44212,-1.751981 0.91016,-2.179687 0.48244,-0.440863 1.07641,-0.685547 2.12304,-0.685547 1.0495,0 1.61512,0.231349 1.95703,0.519531 0.35772,0.301497 0.47852,0.520878 0.47852,1.185547 0,0.793715 -0.16814,1.199514 -0.37305,1.455078 l -0.008,0.0078 -0.006,0.0078 c -0.32738,0.418271 -0.94536,0.979638 -1.85547,1.585938 l -0.002,0.002 -0.002,0.002 c -1.78344,1.196713 -3.09882,2.442169 -3.79297,3.996094 -0.64668,1.447639 -0.87305,3.186838 -0.87305,5.322265 v 0.423828 1.375 6.740235 h 7.92578 v -1.798828 l -0.0195,-7.001954 -0.0176,-0.43164 c -0.0354,-0.869364 0.17768,-1.360114 0.33008,-1.583985 l 0.004,-0.0078 0.004,-0.0059 c 0.23625,-0.353582 0.78216,-0.904263 1.65235,-1.509766 l 0.006,-0.0039 c 1.83696,-1.26803 3.21112,-2.475794 4.12305,-3.802735 l 0.002,-0.0039 0.004,-0.0039 c 0.91006,-1.339417 1.37305,-2.928886 1.37305,-4.585938 0,-2.608285 -1.18049,-4.9962729 -3.24805,-6.675781 -2.08742,-1.7074663 -4.79633,-2.5214844 -7.86328,-2.5214844 z"
+         id="path4994"
+         sodipodi:nodetypes="sscccccssssccccccssccccccsccscccccscss" />
+    </g>
+    <path
+       d="m 283.8338,120.95901 q 0.27502,-3.41477 2.75014,-5.51343 2.47513,-2.09865 6.49032,-2.09865 4.14355,0 6.72867,2.11644 2.58513,2.09866 2.58513,5.28222 0,2.00973 -1.06339,3.57484 -1.06338,1.54731 -3.66685,3.34362 -1.48507,1.03155 -2.12677,1.99195 -0.6417,0.94262 -0.6417,2.59665 0,0.44463 0.0366,0.69362 h -4.32688 q 0,-2.98792 0.71504,-4.58859 0.71503,-1.60067 3.15349,-3.23692 1.52173,-1.01376 2.27344,-1.97416 0.77004,-0.9604 0.77004,-2.57886 0,-1.61846 -1.11839,-2.56108 -1.11839,-0.94262 -3.11682,-0.94262 -2.07177,0 -3.33684,1.15604 -1.26506,1.15605 -1.48507,3.32585 z m 11.42224,18.72788 h -4.6569 v -4.51746 h 4.6569 z"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:36.9821px;line-height:1.25;font-family:'Arial monospaced for SAP';-inkscape-font-specification:'Arial monospaced for SAP Bold';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.924552"
+       id="path4984" />
+  </g>
+</svg>

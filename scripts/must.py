@@ -46,14 +46,16 @@ class Tool(AbstractTool):
 
     def teardown(self): 
         subprocess.run("find -type f -a -executable | xargs rm -f", shell=True, check=True) # Remove generated cruft (binary files)
-        subprocess.run("rm -rf must_temp", shell=True, check=True)
+        subprocess.run("rm -rf must_temp core", shell=True, check=True)
 
     def parse(self, cachefile):
         # do not report timeouts ASAP, as MUST still deadlocks when it detects a root mismatch
-        if not os.path.exists(f'{cachefile}.txt') or not os.path.exists(f'{cachefile}.html'):
+        if not (os.path.exists(f'{cachefile}.txt') or os.path.exists(f'logs/must/{cachefile}.txt')):
+            return 'failure'
+        if not (os.path.exists(f'{cachefile}.html') or os.path.exists(f'logs/must/{cachefile}.html')):
             return 'failure'
 
-        with open(f'{cachefile}.html', 'r') as infile:
+        with open(f'{cachefile}.html' if os.path.exists(f'{cachefile}.html') else f'logs/must/{cachefile}.html', 'r') as infile:
             html = infile.read()
 
         if re.search('deadlock', html):
@@ -68,8 +70,11 @@ class Tool(AbstractTool):
         if re.search('unknown datatype', html) or re.search('has to be a non-negative integer', html) or re.search('must use equal type signatures', html):
             return 'mpierr'
 
-        with open(f'{cachefile}.txt', 'r') as infile:
+        with open(f'{cachefile}.txt' if os.path.exists(f'{cachefile}.txt') else f'logs/must/{cachefile}.txt', 'r') as infile:
             output = infile.read()
+
+        if re.search('Compilation of .*? raised an error \(retcode: ', output):
+            return 'UNIMPLEMENTED'
 
         if re.search('caught MPI error', output):
             return 'mpierr'
@@ -77,8 +82,11 @@ class Tool(AbstractTool):
         if re.search('Error', html):
             return 'mpierr'
 
+        if re.search('MUST detected no MPI usage errors nor any suspicious behavior during this application run', html):
+            return 'OK'
+
         # No interesting output found, so return the timeout as is if it exists
-        if os.path.exists(f'{cachefile}.timeout'):
+        if os.path.exists(f'{cachefile}.timeout') or os.path.exists(f'logs/must/{cachefile}.timeout'):
             return 'timeout'
 
-        return 'OK' # This is dangerous to trust the tool that much
+        return 'other'

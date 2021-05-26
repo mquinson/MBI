@@ -12,7 +12,7 @@ stages:
     - build
     - test
     - svg
-    - gather
+    - deploy
 
 codes:
     stage: build
@@ -411,7 +411,7 @@ build-isp:
         paths:
             - ./builds/ISP
 
-test-isp:
+test-isp-1:
     stage: test
     needs:
         - job: build-isp
@@ -419,7 +419,23 @@ test-isp:
         - job: codes
           artifacts: true
     script:
-        - scripts/ensure_python3 ./MBI.py -x isp
+        - scripts/ensure_python3 ./MBI.py -x isp -b 1/2
+    artifacts:
+        untracked: false
+        expire_in: 30 days
+        when: always
+        paths:
+            - logs
+
+test-isp-2:
+    stage: test
+    needs:
+        - job: build-isp
+          artifacts: true
+        - job: codes
+          artifacts: true
+    script:
+        - scripts/ensure_python3 ./MBI.py -x isp -b 2/2
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -470,7 +486,9 @@ parcoach-svg:
 isp-svg:
     stage: svg
     needs:
-        - job: test-isp
+        - job: test-isp-1
+          artifacts: true
+        - job: test-isp-2
           artifacts: true
     # before_script:
     #   - apt-get update
@@ -577,8 +595,8 @@ must-svg:
         paths:
             - logs/*
 
-data-collect:
-    stage: gather
+pages:
+    stage: deploy
     needs:
         - job: test-must-1
           artifacts: true
@@ -610,7 +628,9 @@ data-collect:
           artifacts: true
         - job: test-simgrid
           artifacts: true
-        - job: test-isp
+        - job: test-isp-1
+          artifacts: true
+        - job: test-isp-2
           artifacts: true
         - job: test-aislinn
           artifacts: true
@@ -626,19 +646,24 @@ data-collect:
           artifacts: true
         - job: aislinn-svg
           artifacts: true
+        - job: codes
+          artifacts: true
     # before_script:
     #     - apt-get update
     #     - apt-get install -y python3-pip libcairo2
     #     - pip3 install drawSvg
     script:
-        - echo "#filename;id;tool;TO;NP;buff;expected;result;elapsed_time;jobid" > result.csv
-        - cd Data
-        - cat ../logs/*/*.csv >> result.csv
-        - python3.8 gen_svg.py -i result.csv -o all_result_LOG --header true
-        - cp *svg ../logs
+        - python3.8 MBI.py -c stats
+        - mkdir public
+        - cp -r index.html summary.html img gencodes logs public/
+    #    - echo "#filename;id;tool;TO;NP;buff;expected;result;elapsed_time;jobid" > result.csv
+    #    - cd Data
+    #    - cat ../logs/*/*.csv >> result.csv
+    #    - python3.8 gen_svg.py -i result.csv -o all_result_LOG --header true
+    #    - cp *svg ../logs
     artifacts:
         untracked: false
         expire_in: 30 days
         when: always
         paths:
-            - logs
+            - public

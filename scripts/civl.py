@@ -28,13 +28,16 @@ class Tool(AbstractTool):
             timeout=timeout)
 
     def parse(self, cachefile):
-        if os.path.exists(f'{cachefile}.timeout'):
+        if os.path.exists(f'{cachefile}.timeout') or os.path.exists(f'logs/civl/{cachefile}.timeout'):
             outcome = 'timeout'
-        if not os.path.exists(f'{cachefile}.txt'):
+        if not (os.path.exists(f'{cachefile}.txt') or os.path.exists(f'logs/civl/{cachefile}.txt')):
             return 'failure'
 
-        with open(f'{cachefile}.txt', 'r') as infile:
+        with open(f'{cachefile}.txt' if os.path.exists(f'{cachefile}.txt') else f'logs/civl/{cachefile}.txt', 'r') as infile:
             output = infile.read()
+
+        if re.search('Compilation of .*? raised an error \(retcode: ', output):
+            return 'UNIMPLEMENTED'
 
         if re.search('DEADLOCK', output):
             return 'deadlock'
