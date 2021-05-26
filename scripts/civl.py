@@ -38,6 +38,8 @@ class Tool(AbstractTool):
 
         if re.search('Compilation of .*? raised an error \(retcode: ', output):
             return 'UNIMPLEMENTED'
+        if re.search("cannot be invoked without MPI_Init\(\) being called before", output):
+            return 'mpierr'
 
         if re.search('DEADLOCK', output):
             return 'deadlock'
