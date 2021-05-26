@@ -81,6 +81,9 @@ class Tool(AbstractTool):
         if re.search("INFO: Found error 'Invalid count'", output):
             return 'mpierr'
 
+        if re.search("INFO: Found error 'Invalid write'", output):
+            return 'concurrency error'
+
         if re.search('Collective operation: root mismatch', output):
             return 'various'
 
