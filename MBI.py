@@ -243,6 +243,9 @@ def categorize(toolname, test_ID, expected):
     elif outcome == 'UNIMPLEMENTED':
         res_category = 'unimplemented'
         diagnostic = f'portability issue'
+    elif outcome == 'other':
+        res_category = 'other'
+        diagnostic = f'inconclusive run'
     elif expected == 'OK':
         if outcome == 'OK':
             res_category = 'TRUE_NEG'
@@ -278,7 +281,7 @@ def cmd_stats(rootdir, toolnames=[]):
         if os.path.exists(f'logs/{toolname}'):
             used_toolnames.append(toolname)
             # To compute statistics on the performance of this tool
-            results[toolname]= {'failure':[], 'timeout':[], 'unimplemented':[], 'TRUE_NEG':[], 'TRUE_POS':[], 'FALSE_NEG':[], 'FALSE_POS':[]}
+            results[toolname]= {'failure':[], 'timeout':[], 'unimplemented':[], 'other':[], 'TRUE_NEG':[], 'TRUE_POS':[], 'FALSE_NEG':[], 'FALSE_POS':[]}
 
             # To compute timing statistics
             total_elapsed[toolname] = 0
@@ -431,7 +434,7 @@ iframe {
 
       # Display summary metrics for each tool
       def tool_stats(toolname):
-          return (len(results[toolname]['TRUE_POS']), len(results[toolname]['TRUE_NEG']),len(results[toolname]['FALSE_POS']),len(results[toolname]['FALSE_NEG']),len(results[toolname]['unimplemented']),len(results[toolname]['failure']),len(results[toolname]['timeout']))
+          return (len(results[toolname]['TRUE_POS']), len(results[toolname]['TRUE_NEG']),len(results[toolname]['FALSE_POS']),len(results[toolname]['FALSE_NEG']),len(results[toolname]['unimplemented']),len(results[toolname]['failure']),len(results[toolname]['timeout']),len(results[toolname]['other']))
 
       outHTML.write("\n<a name='metrics'/><h2>Metrics</h2><table border=1>\n<tr><td/>\n")
       for toolname in used_toolnames:
@@ -439,31 +442,31 @@ iframe {
 
       outHTML.write("</tr>\n<tr><td>Portability</td>")
       for toolname in used_toolnames:
-        (TP, TN, FP, FN, nPort, nFail, nTout) = tool_stats(toolname)
-        total = TP + TN + FP + FN + nTout + nPort + nFail
+        (TP, TN, FP, FN, nPort, nFail, nTout, nNocc) = tool_stats(toolname)
+        total = TP + TN + FP + FN + nTout + nPort + nFail + nNocc
         outHTML.write(f"<td><div class='tooltip'>{percent(1-nPort/total)}% <span class='tooltiptext'>{nPort} tests failed</span></div></td>")
 
       outHTML.write("</tr>\n<tr><td>Robustness</td>")
       for toolname in used_toolnames:
-        (TP, TN, FP, FN, nPort, nFail, nTout) = tool_stats(toolname)
-        total = TP + TN + FP + FN + nTout + nPort + nFail
-        outHTML.write(f"<td><div class='tooltip'>{percent(1-(nTout+nFail)/(total-nPort))}% <span class='tooltiptext'>{nTout} timeouts, {nFail} failures</span></div></td>")
+        (TP, TN, FP, FN, nPort, nFail, nTout, nNocc) = tool_stats(toolname)
+        totalPort = TP + TN + FP + FN + nTout + nFail + nNocc
+        outHTML.write(f"<td><div class='tooltip'>{percent(1-(nTout+nFail)/(totalPort))}% <span class='tooltiptext'>{nTout} timeouts, {nFail} failures</span></div></td>")
 
       outHTML.write("</tr>\n<tr><td>Recall</td>")
       for toolname in used_toolnames:
-        (TP, TN, FP, FN, nPort, nFail, nTout) = tool_stats(toolname)
+        (TP, TN, FP, FN, nPort, nFail, nTout, nNocc) = tool_stats(toolname)
         outHTML.write(f"<td><div class='tooltip'>{percent(TP/(TP+FN))}% <span class='tooltiptext'>found {TP} errors out of {TP+FN}</span></div></td>")
       outHTML.write("</tr>\n<tr><td>Specificity</td>")
       for toolname in used_toolnames:
-        (TP, TN, FP, FN, nPort, nFail, nTout) = tool_stats(toolname)
+        (TP, TN, FP, FN, nPort, nFail, nTout, nNocc) = tool_stats(toolname)
         outHTML.write(f"<td><div class='tooltip'>{percent(TN/(TN+FP))}%  <span class='tooltiptext'>recognized {TN} correct codes out of {TN+FP}</span></div></td>")
       outHTML.write("</tr>\n<tr><td>Precision</td>")
       for toolname in used_toolnames:
-        (TP, TN, FP, FN, nPort, nFail, nTout) = tool_stats(toolname)
+        (TP, TN, FP, FN, nPort, nFail, nTout, nNocc) = tool_stats(toolname)
         outHTML.write(f"<td><div class='tooltip'>{percent(TP/(TP+FP))}% <span class='tooltiptext'>{TP} diagnostics of error are correct out of {TP+FP})</span></div></td>")
       outHTML.write("</tr>\n<tr><td>Accuracy</td>")
       for toolname in used_toolnames:
-        (TP, TN, FP, FN, nPort, nFail, nTout) = tool_stats(toolname)
+        (TP, TN, FP, FN, nPort, nFail, nTout, nNocc) = tool_stats(toolname)
         outHTML.write(f"<td><div class='tooltip'>{percent((TP+TN)/(TP+TN+FP+FN))}% <span class='tooltiptext'>{TP+TN} correct diagnostics in total, out of {TP+TN+FP+FN} diagnostics</span></div></td>")
       outHTML.write("</tr></table>")
       outHTML.write("<p>Hover over the values for details. Portability issues, timeout and failures are not considered when computing the other metrics, thus differences in the total amount of tests.</p>")
