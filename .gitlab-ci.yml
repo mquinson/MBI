@@ -411,7 +411,7 @@ build-isp:
         paths:
             - ./builds/ISP
 
-test-isp:
+test-isp-1:
     stage: test
     needs:
         - job: build-isp
@@ -419,7 +419,23 @@ test-isp:
         - job: codes
           artifacts: true
     script:
-        - scripts/ensure_python3 ./MBI.py -x isp
+        - scripts/ensure_python3 ./MBI.py -x isp -b 1/2
+    artifacts:
+        untracked: false
+        expire_in: 30 days
+        when: always
+        paths:
+            - logs
+
+test-isp-2:
+    stage: test
+    needs:
+        - job: build-isp
+          artifacts: true
+        - job: codes
+          artifacts: true
+    script:
+        - scripts/ensure_python3 ./MBI.py -x isp -b 2/2
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -470,7 +486,9 @@ parcoach-svg:
 isp-svg:
     stage: svg
     needs:
-        - job: test-isp
+        - job: test-isp-1
+          artifacts: true
+        - job: test-isp-2
           artifacts: true
     # before_script:
     #   - apt-get update
@@ -610,7 +628,9 @@ pages:
           artifacts: true
         - job: test-simgrid
           artifacts: true
-        - job: test-isp
+        - job: test-isp-1
+          artifacts: true
+        - job: test-isp-2
           artifacts: true
         - job: test-aislinn
           artifacts: true
