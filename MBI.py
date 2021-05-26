@@ -40,6 +40,7 @@ possible_details = {
     'RequestLeak':'BProcess', 'LocalConcurrency':'BProcess',
     # scope: communicator
     'MessageRace':'CComm', 'CallMatching':'CComm', 'CommunicatorMatching':'CComm', 'DatatypeMatching':'CComm', 'InvalidSrcDest':'CComm', 'OperatorMatching':'CComm', 'OtherArgMatching':'CComm', 'RootMatching':'CComm', 'TagMatching':'CComm',
+    'GlobalConcurrency':'CComm',
     # larger scope
     'BufferingHazard':'DSystem',
     'OK':'EOK'}
@@ -263,7 +264,7 @@ def categorize(toolname, test_ID, expected):
     else:
         raise Exception(f"Unexpected expectation: {expected} (must be OK or ERROR)")
 
-    return (res_category, elapsed, diagnostic)
+    return (res_category, elapsed, diagnostic, outcome)
 def percent(ratio):
     """Returns the ratio as a percentage, rounded to 2 digits only"""
     return int(ratio*10000)/100
@@ -299,8 +300,8 @@ iframe {
 }
 </script>
 <body>
-<iframe width="100%" height="35%" src="summary.html"></iframe>
-<iframe width="100%" height="65%" name="MBI_details"></iframe>
+<iframe width="100%" height="45%" src="summary.html"></iframe>
+<iframe width="100%" height="55%" name="MBI_details"></iframe>
 </body></html>
 """)
 
@@ -354,7 +355,7 @@ iframe {
       previous_scope=''
       previous_detail=''  # To open a new section for each possible detailed outcome
       outHTML.write("<h2>Table of contents</h2>\n<ul>\n")
-      for test in sorted(todo, key=lambda t: f"{possible_details[t['detail']]}|{t['detail']}"):
+      for test in sorted(todo, key=lambda t: f"{possible_details[t['detail']]}|{t['detail']}|{t['filename']}|{t['id']}"):
         if previous_scope != possible_details[test['detail']]:
             if previous_scope != '': # Close the previous item, if we are not generating the first one
                 outHTML.write(f"  </ul>\n")
@@ -372,7 +373,7 @@ iframe {
       previous_scope=''
       previous_detail=''  # To open a new section for each possible detailed outcome
       testcount=0 # To repeat the table header every 25 lines
-      for test in sorted(todo, key=lambda t: f"{possible_details[t['detail']]}|{t['detail']}"):
+      for test in sorted(todo, key=lambda t: f"{possible_details[t['detail']]}|{t['detail']}|{t['filename']}|{t['id']}"):
         testcount += 1
         if previous_scope != possible_details[test['detail']]:
             if previous_scope != '': # Close the previous table, if we are not generating the first one
@@ -403,10 +404,10 @@ iframe {
         outHTML.write(f"<td><a href='gencodes/{binary}.c'>{binary}</a></td>")
 
         for toolname in used_toolnames:
-            (res_category, elapsed, diagnostic) = categorize(toolname=toolname, test_ID=test_ID, expected=expected)
+            (res_category, elapsed, diagnostic, outcome) = categorize(toolname=toolname, test_ID=test_ID, expected=expected)
 
             results[toolname][res_category].append(f"{test_ID} expected {test['detail']}, outcome: {diagnostic}")
-            outHTML.write(f"<td align='center'><a href='logs/{toolname}/{test_ID}.txt' target='MBI_details'><img title='{diagnostic}' src='img/{res_category}.svg' width='24' /></a>")
+            outHTML.write(f"<td align='center'><a href='logs/{toolname}/{test_ID}.txt' target='MBI_details'><img title='{diagnostic} (returned {outcome})' src='img/{res_category}.svg' width='24' /></a>")
             extra=None
             if os.path.exists(f'logs/{toolname}/{test_ID}.html'):
                 extra=f'logs/{toolname}/{test_ID}.html'

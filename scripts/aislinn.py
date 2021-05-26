@@ -66,17 +66,19 @@ class Tool(AbstractTool):
         if re.search('Pending message', output):
             return 'deadlock'
 
-        if re.search('Invalid rank', output):
+        if re.search("INFO: Found error 'Invalid rank'", output):
             return 'mpierr'
-        if re.search('Invalid datatype', output):
+        if re.search("INFO: Found error 'Invalid tag'", output):
             return 'mpierr'
-        if re.search('Invalid communicator', output):
+        if re.search("INFO: Found error 'Invalid datatype'", output):
             return 'mpierr'
-        if re.search('Invalid color', output):
+        if re.search("INFO: Found error 'Invalid communicator'", output):
             return 'mpierr'
-        if re.search('Invalid operation', output):
+        if re.search("INFO: Found error 'Invalid color'", output):
             return 'mpierr'
-        if re.search('Invalid count', output):
+        if re.search("INFO: Found error 'Invalid operation'", output):
+            return 'mpierr'
+        if re.search("INFO: Found error 'Invalid count'", output):
             return 'mpierr'
 
         if re.search('Collective operation: root mismatch', output):
@@ -84,5 +86,8 @@ class Tool(AbstractTool):
 
         if re.search('Unkown function call', output) or re.search('Compilation of .*? raised an error \(retcode: ', output):
             return 'UNIMPLEMENTED'
+
+        if re.search("Traceback \(most recent call last\):", output):
+            return 'failure'
 
         return 'other'

@@ -8,19 +8,20 @@ cd "$(dirname "$0")"/..
 ./MBI.py -c generate
 
 scripts/CIVL-build
-./MBI.py -x civl
+./MBI.py -x civl -c run
 
 scripts/ISP-build
-./MBI.py -x isp
+./MBI.py -x isp -c run
 
 scripts/MUST-build
-./MBI.py -x must
+./MBI.py -x must -c run
 
-./MBI.py -x mpisv
+./MBI.py -x mpisv -c run
 
 scripts/SimGrid-build
-./MBI.py -x simgrid
+./MBI.py -x simgrid -c run
 
 scripts/Parcoach-build
-./MBI.py -x parcoach
+./MBI.py -x parcoach -c run
 
+./MBI.py -c stats
