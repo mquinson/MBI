@@ -185,15 +185,11 @@ def cmd_gencodes():
 ########################
 # cmd_run(): what to do when '-c run' is used (running the tests)
 ########################
-def cmd_run(rootdir, toolname, logdir=""):
-    # Go to the tools' logs directory
-    here=os.getcwd()
+def cmd_run(rootdir, toolname):
+    # Go to the tools' logs directory on need
     rootdir = os.path.dirname(os.path.abspath(__file__))
-    if logdir == "":
-        logdir = f'{rootdir}/logs/{toolname}' 
-    print(f"Enter logdir: {logdir}")
-    os.makedirs(logdir, exist_ok=True)
-    os.chdir(logdir)
+    os.makedirs(f'{rootdir}/logs/{toolname}', exist_ok=True)
+    os.chdir(f'{rootdir}/logs/{toolname}')
 
     # Basic verification
     tools[toolname].ensure_image()
@@ -218,8 +214,6 @@ def cmd_run(rootdir, toolname, logdir=""):
             p.terminate()
 
     tools[toolname].teardown()
-    print(f"Leave logdir, back to {here}")
-    os.chdir(here)
 
 ########################
 # cmd_stats(): what to do when '-c stats' is used (extract the statistics of this tool)
@@ -552,9 +546,6 @@ parser.add_argument('-x', metavar='tool', default='mpirun',
 parser.add_argument('-t', '--timeout', metavar='int', default=300, type=int,
                     help='timeout value at execution time, given in seconds (default: 300)')
 
-parser.add_argument('-l', '--logdir', default="", 
-                    help='Directory in which to store the logs with the run command (ignored when generating the stats -- default: logs/{toolname})')
-
 parser.add_argument('-b', metavar='batch', default='1/1',
                     help="Limits the test executions to the batch #N out of M batches (Syntax: 'N/M'). To get 3 runners, use 1/3 2/3 3/3")
 
@@ -572,13 +563,13 @@ if args.c != 'generate' and args.c != 'stats':
 
 if args.c == 'all':
     extract_all_todo(args.b)
-    cmd_run(rootdir=rootdir, toolname=args.x, logdir=args.l)
+    cmd_run(rootdir=rootdir, toolname=args.x)
     cmd_stats(rootdir, toolnames=[args.x])
 elif args.c == 'generate':
     cmd_gencodes()
 elif args.c == 'run':
     extract_all_todo(args.b)
-    cmd_run(rootdir=rootdir, toolname=args.x, logdir=args.l)
+    cmd_run(rootdir=rootdir, toolname=args.x)
 elif args.c == 'stats':
     extract_all_todo(args.b)
     cmd_stats(rootdir, toolnames=['aislinn', 'civl', 'isp', 'simgrid', 'mpisv', 'must', 'parcoach'])
