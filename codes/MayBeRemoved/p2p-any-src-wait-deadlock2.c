@@ -1,23 +1,27 @@
 ////////////////// MPI bugs collection header //////////////////
 //
-// Origin: ISP (http://formalverification.cs.utah.edu/ISP_Tests/)
+// Origin: ISP(http://formalverification.cs.utah.edu/ISP_Tests/)
 //
-// Description: Two send/recv with different tags are performed. The Irecv
-// function uses MPI_ANY_SOURCE. This code is correct.
+// Description: A deadlock occurs if P0 receives from P1 first. Uncomment sleeps
+// to force the deadlock
+//      				(sleeps generally make order 1 before 2
+//      with all task, 0 ops being posted after both 1 and 2)
 //
 //				 Communication pattern:
 //
-// Feat_persistent: Lacking
-//				     P0                    P1
-//          barrier            barrier
-//				  Irecv(any, tag=1)  send(0, tag=0)
-//				  recv(1, tag=0)     send(0, tag=1)
-//				  wait
-//          barrier            barrier
+//				  P0         P1        P2
+//         barrier     barrier  barrier
+//				 Irecv(any)  send(0)  send(0)
+//				 recv(1)     recv(0)
+//				 send(1)     send(0)
+//				 recv(any)
+//				 wait
+//         barrier     barrier  barrier
+//
 //
 //// List of features
-// P2P: Correct
-// iP2P: Correct
+// P2P: Incorrect
+// iP2P: Incorrect
 // PERS: Lacking
 // COLL: Correct
 // iCOLL: Lacking
@@ -31,7 +35,7 @@
 // OP: Lacking
 //
 //// List of errors
-// deadlock: never
+// deadlock: transient
 // numstab: never
 // segfault: never
 // mpierr: never
@@ -40,8 +44,8 @@
 // datarace: never
 /*
   BEGIN_MBI_TESTS
-   $ mpirun -np 2 ${EXE}
-   | OK
+   $ mpirun -np 3 ${EXE}
+   | ERROR: deadlock
   END_MBI_TESTS
 */
 ////////////////// End of MPI bugs collection header //////////////////
@@ -75,17 +79,25 @@ int main(int argc, char **argv) {
 
   MPI_Barrier(MPI_COMM_WORLD);
 
-  if (nprocs < 2) {
-    printf("\033[0;31m! This test needs at least 2 processes !\033[0;0m\n");
+  if (nprocs < 3) {
+    printf("\033[0;31m! This test needs at least 3 processes !\033[0;0m\n");
   } else if (rank == 0) {
-    MPI_Irecv(buf1, buf_size, MPI_INT, MPI_ANY_SOURCE, 1, MPI_COMM_WORLD, &req);
-    MPI_Recv(buf0, buf_size, MPI_INT, 1, 0, MPI_COMM_WORLD, &status);
+    // sleep(60);
+    MPI_Irecv(buf0, buf_size, MPI_INT, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &req);
+    MPI_Recv(buf1, buf_size, MPI_INT, 1, 0, MPI_COMM_WORLD, &status);
+    MPI_Send(buf1, buf_size, MPI_INT, 1, 0, MPI_COMM_WORLD);
+    MPI_Recv(buf1, buf_size, MPI_INT, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD,
+             &status);
     MPI_Wait(&req, &status);
   } else if (rank == 1) {
     memset(buf0, 0, buf_size * sizeof(int));
-    memset(buf1, 1, buf_size * sizeof(int));
     MPI_Send(buf0, buf_size, MPI_INT, 0, 0, MPI_COMM_WORLD);
-    MPI_Send(buf1, buf_size, MPI_INT, 0, 1, MPI_COMM_WORLD);
+    MPI_Recv(buf1, buf_size, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
+    MPI_Send(buf1, buf_size, MPI_INT, 0, 0, MPI_COMM_WORLD);
+  } else if (rank == 2) {
+    memset(buf1, 1, buf_size * sizeof(int));
+    // sleep(30);
+    MPI_Send(buf1, buf_size, MPI_INT, 0, 0, MPI_COMM_WORLD);
   }
 
   MPI_Barrier(MPI_COMM_WORLD);

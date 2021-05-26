@@ -1,20 +1,20 @@
 ////////////////// MPI bugs collection header //////////////////
 //
-// Origin: MPI Correctness Benchmark
+// Origin: MUST
 //
-// Description: A split function is used to create a communicator
+// Description: This code performs a MPI_Comm_compare on MPI_COMM_NULL
 //
 //// List of features
 // P2P: Lacking
 // iP2P: Lacking
 // PERS: Lacking
-// COLL: Correct
+// COLL: Lacking
 // iCOLL: Lacking
 // TOPO: Lacking
 // IO: Lacking
 // RMA: Lacking
 // PROB: Lacking
-// COM: Correct
+// COM: Incorrect
 // GRP: Lacking
 // DATA: Lacking
 // OP: Lacking
@@ -23,14 +23,14 @@
 // deadlock: never
 // numstab: never
 // segfault: never
-// mpierr: never
+// mpierr: transient
 // resleak: never
 // livelock: never
 // datarace: never
 /*
   BEGIN_MBI_TESTS
    $ mpirun -np 2 ${EXE}
-   | OK
+   | ERROR: mpierr
   END_MBI_TESTS
 */
 ////////////////// End of MPI bugs collection header //////////////////
@@ -46,9 +46,9 @@
 int main(int argc, char **argv) {
   int nprocs = -1;
   int rank = -1;
-  MPI_Comm newcomm;
   char processor_name[MPI_MAX_PROCESSOR_NAME];
   int namelen = 128;
+  MPI_Comm comm;
 
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
@@ -56,16 +56,16 @@ int main(int argc, char **argv) {
   MPI_Get_processor_name(processor_name, &namelen);
   printf("rank %d is alive on %s\n", rank, processor_name);
 
-  MPI_Barrier(MPI_COMM_WORLD);
+  if (nprocs < 2) {
+    printf("\033[0;31m! This test needs at least 2 processes !\033[0;0m\n");
+    MPI_Finalize();
+    return 1;
+  }
 
-  int color = rank % 2;
-  int key = 1;
-  MPI_Comm_split(MPI_COMM_WORLD, color, key, &newcomm);
-
-  MPI_Barrier(newcomm);
-
-	if(newcomm != MPI_COMM_NULL)
-		MPI_Comm_free(&newcomm);
+  // create a second intracommunicator
+  comm = MPI_COMM_NULL;
+  int res = 0;
+  MPI_Comm_compare(MPI_COMM_WORLD, comm, &res);
 
   MPI_Finalize();
   printf("\033[0;32mrank %d Finished normally\033[0;0m\n", rank);
