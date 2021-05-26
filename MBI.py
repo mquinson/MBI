@@ -180,7 +180,7 @@ def cmd_gencodes():
     print("Test count: ", end='')
     sys.stdout.flush()
     subprocess.run("ls *.c|wc -l", shell=True, check=True)
-    subprocess.run("for n in *.c ; do cp $n $n.txt ; done", shell=True, check=True)
+    subprocess.run("for n in *.c ; do cat -n $n > $n.txt ; done", shell=True, check=True)
     os.chdir(here)
 
 
