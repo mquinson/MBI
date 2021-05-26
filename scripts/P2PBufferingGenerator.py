@@ -26,7 +26,7 @@ BEGIN_MBI_TESTS
   $ mpirun -np 2 $zero_buffer ${EXE}
   | @{outcome1}@
   | @{errormsg1}@
-  $ mpirun -np 2 $infinity_buffer ${EXE}
+  $ mpirun -np 2 $infty_buffer ${EXE}
   | @{outcome2}@
   | @{errormsg2}@
 END_MBI_TESTS

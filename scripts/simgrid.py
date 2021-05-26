@@ -55,6 +55,8 @@ class Tool(AbstractTool):
         if re.search('Compilation of .*? raised an error \(retcode: ', output):
             return 'UNIMPLEMENTED'
 
+        if re.search('MC is currently not supported here', output):
+            return 'failure'
         if re.search('DEADLOCK DETECTED', output):
             return 'deadlock'
         if re.search('returned MPI_ERR', output):
