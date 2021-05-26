@@ -46,6 +46,9 @@ int main(int argc, char **argv) {
   if (nprocs < 2)
     printf("MBI ERROR: This test needs at least 2 processes to produce a bug!\\n");
 
+	int recv_buffer=-1;
+	int send_buffer=rank;
+
   @{init1}@
   @{init2}@
 
@@ -53,6 +56,11 @@ int main(int argc, char **argv) {
     for (int i = 0; i < nprocs - 1; i++) {
   		@{operation1}@ /* MBIERROR */
 			@{fini1}@
+    }
+	if (recv_buffer != 3) {
+      printf("The last received message is not 3 but %d!\n", recv_buffer);
+      fflush(stdout);
+      abort();
     }
   }else{
   	@{operation2}@
@@ -77,20 +85,20 @@ init = {}
 operation = {}
 fini = {}
 
-init['MPI_Send'] = lambda n: f'int buf{n}=rank;'
-operation['MPI_Send'] = lambda n: f'MPI_Send(&buf{n}, 1, MPI_INT, 0, 42, MPI_COMM_WORLD);'
+init['MPI_Send'] = lambda n: ""
+operation['MPI_Send'] = lambda n: f'MPI_Send(&send_buffer, 1, MPI_INT, 0, 42, MPI_COMM_WORLD);'
 fini['MPI_Send'] = lambda n: ""
 
-init['MPI_Recv'] = lambda n: f'int buf{n}; MPI_Status sta{n};'
-operation['MPI_Recv'] = lambda n: f'MPI_Recv(&buf{n}, 1, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &sta{n});'
+init['MPI_Recv'] = lambda n: f'MPI_Status sta{n};'
+operation['MPI_Recv'] = lambda n: f'MPI_Recv(&recv_buffer, 1, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &sta{n});'
 fini['MPI_Recv'] = lambda n: ""
 
-init['MPI_Isend'] = lambda n: f'int buf{n}=rank; MPI_Request req{n};'
-operation['MPI_Isend'] = lambda n: f'MPI_Isend(&buf{n}, 1, MPI_INT, 0, 42, MPI_COMM_WORLD, &req{n});'
+init['MPI_Isend'] = lambda n: f'MPI_Request req{n};'
+operation['MPI_Isend'] = lambda n: f'MPI_Isend(&send_buff, 1, MPI_INT, 0, 42, MPI_COMM_WORLD, &req{n});'
 fini['MPI_Isend'] = lambda n: f'MPI_Wait(&req{n}, MPI_STATUS_IGNORE);'
 
-init['MPI_Irecv'] = lambda n: f'int buf{n}; MPI_Request req{n};'
-operation['MPI_Irecv'] = lambda n: f'MPI_Irecv(&buf{n}, 1, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &req{n});'
+init['MPI_Irecv'] = lambda n: f'MPI_Request req{n};'
+operation['MPI_Irecv'] = lambda n: f'MPI_Irecv(&recv_buffer, 1, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &req{n});'
 fini['MPI_Irecv'] = lambda n: f'MPI_Wait(&req{n}, MPI_STATUS_IGNORE);'
 
 
@@ -114,7 +122,7 @@ for s in send + isend:
         replace = patterns 
         replace['shortdesc'] = 'The message ordering is non-deterministic.'
         replace['longdesc'] = f'The code assumes a fixed order in the reception of messages while the message ordering is non-deterministic.' 
-        replace['outcome'] = 'ERROR: CallMatching' 
-        replace['errormsg'] = 'P2P mistmatch which can cause a deadlock. @{r}@ at @{filename}@:@{line:MBIERROR}@ is called with ANY_SRC.'
-        make_file(template, f'P2PCallMatching_ANYSRC_{r}_{s}_nok.c', replace)
+        replace['outcome'] = 'ERROR: MessageRace' 
+        replace['errormsg'] = 'P2P message race which can cause a deadlock. @{r}@ at @{filename}@:@{line:MBIERROR}@ is called with ANY_SRC.'
+        make_file(template, f'P2PMessageRace_{r}_{s}_nok.c', replace)
 
