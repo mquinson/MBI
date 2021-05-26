@@ -46,7 +46,7 @@ class Tool(AbstractTool):
 
     def teardown(self): 
         subprocess.run("find -type f -a -executable | xargs rm -f", shell=True, check=True) # Remove generated cruft (binary files)
-        subprocess.run("rm -rf must_temp", shell=True, check=True)
+        subprocess.run("rm -rf must_temp core", shell=True, check=True)
 
     def parse(self, cachefile):
         # do not report timeouts ASAP, as MUST still deadlocks when it detects a root mismatch
