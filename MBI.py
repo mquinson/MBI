@@ -286,6 +286,21 @@ def cmd_stats(rootdir, toolnames=[]):
     ########################
     # Analyse each test, grouped by expectation, and all tools for a given test
     ########################
+    with open(f"{rootdir}/index.html", "w") as outHTML:
+      outHTML.write("""
+<html><head><title>MBI results</title></head>
+<script>
+iframe {
+  resize: both;
+  overflow: auto;
+}
+</script>
+<body>
+<iframe width="100%" height="35%" src="summary.html"></iframe>
+<iframe width="100%" height="65%" name="MBI_details"></iframe>
+</body></html>
+""")
+
     with open(f"{rootdir}/summary.html", "w") as outHTML:
       outHTML.write(f"<html><head><title>MBI outcomes for all tests</title></head>\n")
       outHTML.write("""
@@ -388,14 +403,14 @@ def cmd_stats(rootdir, toolnames=[]):
             (res_category, elapsed, diagnostic) = categorize(toolname=toolname, test_ID=test_ID, expected=expected)
 
             results[toolname][res_category].append(f"{test_ID} expected {test['detail']}, outcome: {diagnostic}")
-            outHTML.write(f"<td align='center'><a href='logs/{toolname}/{test_ID}.txt'><img title='{diagnostic}' src='img/{res_category}.svg' width='24' /></a>")
+            outHTML.write(f"<td align='center'><a href='logs/{toolname}/{test_ID}.txt' target='MBI_details'><img title='{diagnostic}' src='img/{res_category}.svg' width='24' /></a>")
             extra=None
             if os.path.exists(f'logs/{toolname}/{test_ID}.html'):
                 extra=f'logs/{toolname}/{test_ID}.html'
             if os.path.exists(f'logs/{toolname}/{test_ID}-klee-out'): # MPI-SV 
                 extra=f'logs/{toolname}/{test_ID}-klee-out'
             if extra is not None:
-                outHTML.write(f"&nbsp;<a href='{extra}'><img title='more info' src='img/html.svg' height='24' /></a>")
+                outHTML.write(f"&nbsp;<a href='{extra}' target='MBI_details'><img title='more info' src='img/html.svg' height='24' /></a>")
             outHTML.write("</td>")
 
             if res_category != 'timeout' and elapsed is not None:

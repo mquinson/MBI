@@ -635,7 +635,7 @@ pages:
     script:
         - python3.8 MBI.py -c stats
         - mkdir public
-        - cp -r summary.html img gencodes logs public
+        - cp -r index.html summary.html img gencodes logs public/
     #    - echo "#filename;id;tool;TO;NP;buff;expected;result;elapsed_time;jobid" > result.csv
     #    - cd Data
     #    - cat ../logs/*/*.csv >> result.csv
