@@ -264,7 +264,7 @@ def categorize(toolname, test_ID, expected):
     else:
         raise Exception(f"Unexpected expectation: {expected} (must be OK or ERROR)")
 
-    return (res_category, elapsed, diagnostic)
+    return (res_category, elapsed, diagnostic, outcome)
 def percent(ratio):
     """Returns the ratio as a percentage, rounded to 2 digits only"""
     return int(ratio*10000)/100
@@ -300,8 +300,8 @@ iframe {
 }
 </script>
 <body>
-<iframe width="100%" height="35%" src="summary.html"></iframe>
-<iframe width="100%" height="65%" name="MBI_details"></iframe>
+<iframe width="100%" height="45%" src="summary.html"></iframe>
+<iframe width="100%" height="55%" name="MBI_details"></iframe>
 </body></html>
 """)
 
@@ -404,10 +404,10 @@ iframe {
         outHTML.write(f"<td><a href='gencodes/{binary}.c'>{binary}</a></td>")
 
         for toolname in used_toolnames:
-            (res_category, elapsed, diagnostic) = categorize(toolname=toolname, test_ID=test_ID, expected=expected)
+            (res_category, elapsed, diagnostic, outcome) = categorize(toolname=toolname, test_ID=test_ID, expected=expected)
 
             results[toolname][res_category].append(f"{test_ID} expected {test['detail']}, outcome: {diagnostic}")
-            outHTML.write(f"<td align='center'><a href='logs/{toolname}/{test_ID}.txt' target='MBI_details'><img title='{diagnostic}' src='img/{res_category}.svg' width='24' /></a>")
+            outHTML.write(f"<td align='center'><a href='logs/{toolname}/{test_ID}.txt' target='MBI_details'><img title='{diagnostic} (returned {outcome})' src='img/{res_category}.svg' width='24' /></a>")
             extra=None
             if os.path.exists(f'logs/{toolname}/{test_ID}.html'):
                 extra=f'logs/{toolname}/{test_ID}.html'
