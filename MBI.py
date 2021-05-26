@@ -261,6 +261,9 @@ def categorize(toolname, test_ID, expected):
         raise Exception(f"Unexpected expectation: {expected} (must be OK or ERROR)")
 
     return (res_category, elapsed, diagnostic)
+def percent(ratio):
+    """Returns the ratio as a percentage, rounded to 2 digits only"""
+    return int(ratio*10000)/100
 
 def cmd_stats(rootdir, toolnames=[]):
     here = os.getcwd()
@@ -284,7 +287,50 @@ def cmd_stats(rootdir, toolnames=[]):
     # Analyse each test, grouped by expectation, and all tools for a given test
     ########################
     with open(f"{rootdir}/summary.html", "w") as outHTML:
-      outHTML.write(f"<html><head><title>MBI outcomes for all tests</title></head>\n<body>\n")
+      outHTML.write(f"<html><head><title>MBI outcomes for all tests</title></head>\n")
+      outHTML.write("""
+<style>
+.tooltip {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -60px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltip .tooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555 transparent transparent transparent;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+</style>
+<body>
+""")
 
       # Generate the table of contents
       previous_scope=''
@@ -302,7 +348,7 @@ def cmd_stats(rootdir, toolnames=[]):
         if previous_detail != f"{possible_details[test['detail']]}|{test['detail']}" and test['detail'] != 'OK':
             previous_detail = f"{possible_details[test['detail']]}|{test['detail']}"
             outHTML.write(f"   <li>Error: <a href='#{test['detail']}'>{test['detail']}</a></li>\n")
-      outHTML.write("  </ul>\n</ul>\n")
+      outHTML.write("  </ul>\n <li><a href='#metrics'>Summary metrics</a></li></ul>\n")
 
       # Generate the actual content
       previous_scope=''
@@ -366,7 +412,48 @@ def cmd_stats(rootdir, toolnames=[]):
                     result_file.write(
                         f"{binary};{test['id']};{args.x};{args.timeout};{np};0;{expected};{res_category};{elapsed}\n")
         outHTML.write(f"</tr>\n")
-      outHTML.write(f"</table></body></html>\n")
+      outHTML.write(f"</table>\n")
+
+      # Display summary metrics for each tool
+      def tool_stats(toolname):
+          return (len(results[toolname]['TRUE_POS']), len(results[toolname]['TRUE_NEG']),len(results[toolname]['FALSE_POS']),len(results[toolname]['FALSE_NEG']),len(results[toolname]['unimplemented']),len(results[toolname]['failure']),len(results[toolname]['timeout']))
+
+      outHTML.write("\n<a name='metrics'/><h2>Metrics</h2><table border=1>\n<tr><td/>\n")
+      for toolname in used_toolnames:
+        outHTML.write(f"<td>{displayed_name[toolname]}</td>")
+
+      outHTML.write("</tr>\n<tr><td>Portability</td>")
+      for toolname in used_toolnames:
+        (TP, TN, FP, FN, nPort, nFail, nTout) = tool_stats(toolname)
+        total = TP + TN + FP + FN + nTout + nPort + nFail
+        outHTML.write(f"<td><div class='tooltip'>{percent(1-nPort/total)}% <span class='tooltiptext'>{nPort} tests failed</span></div></td>")
+
+      outHTML.write("</tr>\n<tr><td>Robustness</td>")
+      for toolname in used_toolnames:
+        (TP, TN, FP, FN, nPort, nFail, nTout) = tool_stats(toolname)
+        total = TP + TN + FP + FN + nTout + nPort + nFail
+        outHTML.write(f"<td><div class='tooltip'>{percent(1-(nTout+nFail)/(total-nPort))}% <span class='tooltiptext'>{nTout} timeouts, {nFail} failures</span></div></td>")
+
+      outHTML.write("</tr>\n<tr><td>Recall</td>")
+      for toolname in used_toolnames:
+        (TP, TN, FP, FN, nPort, nFail, nTout) = tool_stats(toolname)
+        outHTML.write(f"<td><div class='tooltip'>{percent(TP/(TP+FN))}% <span class='tooltiptext'>found {TP} errors out of {TP+FN}</span></div></td>")
+      outHTML.write("</tr>\n<tr><td>Specificity</td>")
+      for toolname in used_toolnames:
+        (TP, TN, FP, FN, nPort, nFail, nTout) = tool_stats(toolname)
+        outHTML.write(f"<td><div class='tooltip'>{percent(TN/(TN+FP))}%  <span class='tooltiptext'>recognized {TN} correct codes out of {TN+FP}</span></div></td>")
+      outHTML.write("</tr>\n<tr><td>Precision</td>")
+      for toolname in used_toolnames:
+        (TP, TN, FP, FN, nPort, nFail, nTout) = tool_stats(toolname)
+        outHTML.write(f"<td><div class='tooltip'>{percent(TP/(TP+FP))}% <span class='tooltiptext'>{TP} diagnostics of error are correct out of {TP+FP})</span></div></td>")
+      outHTML.write("</tr>\n<tr><td>Accuracy</td>")
+      for toolname in used_toolnames:
+        (TP, TN, FP, FN, nPort, nFail, nTout) = tool_stats(toolname)
+        outHTML.write(f"<td><div class='tooltip'>{percent((TP+TN)/(TP+TN+FP+FN))}% <span class='tooltiptext'>{TP+TN} correct diagnostics in total, out of {TP+TN+FP+FN} diagnostics</span></div></td>")
+      outHTML.write("</tr></table>")
+      outHTML.write("<p>Hover over the values for details. Portability issues, timeout and failures are not considered when computing the other metrics, thus differences in the total amount of tests.</p>")
+
+      outHTML.write(f"</body></html>\n")
 
     ########################
     # Per tool statistics summary
@@ -409,9 +496,6 @@ def cmd_stats(rootdir, toolnames=[]):
                 for p in results[toolname]['failure']:
                     print(f"  {p}")
 
-        def percent(ratio):
-            """Returns the ratio as a percentage, rounded to 2 digits only"""
-            return int(ratio*10000)/100
         print(f"\nXXXX Summary for {args.x} XXXX  {passed} test{'' if passed == 1 else 's'} passed (out of {total})")
         try:
             print(f"Portability: {percent(1-nPort/total)}% ({nPort} tests failed)")
