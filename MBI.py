@@ -39,8 +39,8 @@ possible_details = {
     'OutOfInitFini':'BProcess', 'CommunicatorLeak':'BProcess', 'DatatypeLeak':'BProcess', 'GroupLeak':'BProcess', 'OperatorLeak':'BProcess', 'TypeLeak':'BProcess', 'MissingStart':'BProcess', 'MissingWait':'BProcess',
     'RequestLeak':'BProcess', 'LocalConcurrency':'BProcess',
     # scope: communicator
-    'MessageRace':'CComm', 'CallMatching':'CComm', 'CommunicatorMatching':'CComm', 'DatatypeMatching':'CComm', 'InvalidSrcDest':'CComm', 'OperatorMatching':'CComm', 'OtherArgMatching':'CComm', 'RootMatching':'CComm', 'TagMatching':'CComm',
-    'GlobalConcurrency':'CComm',
+    'MessageRace':'CComm', 'CallMatching':'CComm', 'CommunicatorMatching':'CComm', 'DatatypeMatching':'CComm', 'InvalidSrcDest':'CComm', 'OperatorMatching':'CComm', 'RootMatching':'CComm', 'TagMatching':'CComm',
+    'GlobalConcurrency':'CComm', #MPI_Comm_split 'OtherArgMatching':'CComm'
     # larger scope
     'BufferingHazard':'DSystem',
     'OK':'EOK'}
