@@ -57,13 +57,9 @@ class Tool(AbstractTool):
         if re.search('No errors found', output):
             return 'OK'
 
-        if re.search('Deadlock', output):
+        if re.search("INFO: Found error 'Deadlock'", output):
             return 'deadlock'
-        if re.search('Collective operation mismatch', output):
-            return 'deadlock'
-        if re.search('Mixing blocking and nonblocking collective operation', output):
-            return 'deadlock'
-        if re.search('Pending message', output):
+        if re.search("INFO: Found error 'Pending message'", output):
             return 'deadlock'
 
         if re.search("INFO: Found error 'Invalid rank'", output):
@@ -80,9 +76,23 @@ class Tool(AbstractTool):
             return 'mpierr'
         if re.search("INFO: Found error 'Invalid count'", output):
             return 'mpierr'
+        if re.search("INFO: Found error 'Invalid request'", output):
+            return 'mpierr'
 
-        if re.search('Collective operation: root mismatch', output):
+        if re.search("INFO: Found error 'Invalid write'", output):
+            return 'concurrency error'
+        if re.search("INFO: Found error 'Request is not persistent'", output):
+            return 'mpierr'
+        if re.search("INFO: Found error 'Pending request'", output):
+            return 'mpierr'
+
+        if re.search("INFO: Found error 'Collective operation: root mismatch'", output):
             return 'various'
+        if re.search("INFO: Found error 'Collective operation mismatch'", output):
+            return 'deadlock'
+        if re.search("INFO: Found error 'Mixing blocking and nonblocking collective operation'", output):
+            return 'deadlock'
+
 
         if re.search('Unkown function call', output) or re.search('Compilation of .*? raised an error \(retcode: ', output):
             return 'UNIMPLEMENTED'

@@ -93,7 +93,16 @@ def run_cmd(buildcmd, execcmd, cachefile, binary, timeout, read_line_lambda=None
             with open(f'{cachefile}.timeout', 'w') as outfile:
                 outfile.write(f'{time.time() - start_time} seconds')
             break
-        if process.poll() is not None:  # The subprocess ended
+        if process.poll() is not None:  # The subprocess ended. Grab all existing output, and return
+            line = 'more'
+            while line != None and line != '':
+                line = process.stdout.readline()
+                if line is not None:
+                    # From byte array to string, replacing non-representable strings with question marks
+                    line = str(line, errors='replace')
+                    output = output + line
+                    print(f"| {line}", end='', file=sys.stderr)
+
             break
 
     # We want to clean all forked processes in all cases, no matter whether they are still running (timeout) or supposed to be off. The runners easily get clogged with zombies :(

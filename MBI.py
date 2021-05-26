@@ -180,6 +180,7 @@ def cmd_gencodes():
     print("Test count: ", end='')
     sys.stdout.flush()
     subprocess.run("ls *.c|wc -l", shell=True, check=True)
+    subprocess.run("for n in *.c ; do cat -n $n > $n.txt ; done", shell=True, check=True)
     os.chdir(here)
 
 
@@ -401,7 +402,7 @@ iframe {
         test_ID = f"{binary}_{test['id']}"
         expected=test['expect']
 
-        outHTML.write(f"<td><a href='gencodes/{binary}.c'>{binary}</a></td>")
+        outHTML.write(f"<td><a href='gencodes/{binary}.c.txt' target='MBI_details'>{binary}</a>&nbsp;<a href='gencodes/{binary}.c'><img title='Download source' src='img/html.svg' height='24' /></a></td>")
 
         for toolname in used_toolnames:
             (res_category, elapsed, diagnostic, outcome) = categorize(toolname=toolname, test_ID=test_ID, expected=expected)

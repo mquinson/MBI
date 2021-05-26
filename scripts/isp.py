@@ -57,6 +57,8 @@ class Tool(AbstractTool):
         if re.search('ISP detected no deadlocks', output):
             return 'OK'
 
+        if re.search('Rank [0-9]: WARNING: Waited on non-existant request in', output):
+            return 'mpierr'
         if re.search('Fatal error in PMPI', output):
             return 'mpierr'
         if re.search('Fatal error in MPI', output):
