@@ -23,9 +23,12 @@ BEGIN_MPI_FEATURES
 END_MPI_FEATURES
 
 BEGIN_MBI_TESTS
-  $ mpirun -np 2 ${EXE}
-  | @{outcome}@
-  | @{errormsg}@
+  $ mpirun -np 2 $zero_buffer ${EXE}
+  | @{outcome1}@
+  | @{errormsg1}@
+  $ mpirun -np 2 $infinity_buffer ${EXE}
+  | @{outcome2}@
+  | @{errormsg2}@
 END_MBI_TESTS
 //////////////////////       End of MBI headers        /////////////////// */
 
@@ -112,15 +115,17 @@ for p1 in send + isend:
         replace = patterns 
         replace['shortdesc'] = 'Point to point @{p1}@ and @{p2}@ may not be matched' 
         replace['longdesc'] = f'Processes 0 and 1 both call @{p1}@ and @{p2}@. This results in a deadlock depending on the buffering mode' 
-        replace['outcome'] = 'ERROR: BufferingHazard' 
-        replace['errormsg'] = 'ERROR: BufferingHazard' 
+        replace['outcome1'] = 'ERROR: BufferingHazard' 
+        replace['errormsg1'] = 'ERROR: BufferingHazard' 
+        replace['outcome2'] = 'OK'
+        replace['errormsg2'] = 'OK'
         make_file(template, f'P2PBuffering_{p1}_{p2}_nok.c', replace)
     		# Generate the incorrect matching depending on the buffering mode (recv + send)
         replace = patterns 
         replace['shortdesc'] = 'Point to point @{p1}@ and @{p2}@ may not be matched' 
         replace['longdesc'] = f'Processes 0 and 1 both call @{p1}@ and @{p2}@. This results in a deadlock depending on the buffering mode' 
-        replace['outcome'] = 'ERROR: BufferingHazard' 
-        replace['errormsg'] = 'ERROR: BufferingHazard' 
+        replace['outcome1'] = 'ERROR: BufferingHazard' 
+        replace['errormsg1'] = 'ERROR: BufferingHazard' 
         replace['operation1a'] =  operation[p2]("2")
         replace['operation2a'] = operation[p1]("1")
         replace['operation1b'] =  operation[p2]("2")
@@ -130,8 +135,8 @@ for p1 in send + isend:
         replace = patterns 
         replace['shortdesc'] = 'Point to point @{p1}@ and @{p2}@ are correctly  matched' 
         replace['longdesc'] = f'Process 0 calls @{p1}@ and process 1 calls @{p2}@.' 
-        replace['outcome'] = 'OK' 
-        replace['errormsg'] = 'OK' 
+        replace['outcome1'] = 'OK' 
+        replace['errormsg1'] = 'OK' 
         replace['operation1a'] =  operation[p1]("1")
         replace['operation2a'] = operation[p2]("2")
         make_file(template, f'P2PCallMatching_{p1}_{p2}_ok.c', replace)

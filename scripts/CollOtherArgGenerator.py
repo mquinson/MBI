@@ -90,12 +90,3 @@ for op in toolfunc:
     replace['errormsg'] = 'Invalid Argument in collective. @{op}@ has an invalid color (see line @{line:MBIERROR}@)'
     replace['change_color'] = 'color=-10;'
     make_file(template, f'CollInvalidOtherArg_{op}.c', replace)
-
-    # Generate the code with mismatch color
-    replace = patterns
-    replace['shortdesc'] = 'Color mismatch in @{op}@'
-    replace['longdesc'] = f'Color mismatch in @{op}@'
-    replace['outcome'] = 'ERROR: OtherArgMatching'
-    replace['errormsg'] = 'Color mismatch in collective. Process 1 has a different color in @{op}@ than other processes (see line @{line:MBIERROR}@)'
-    replace['change_color'] = 'color=5;'
-    make_file(template, f'CollOtherArgMatching_{op}.c', replace)
