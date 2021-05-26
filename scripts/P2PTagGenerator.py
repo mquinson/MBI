@@ -57,13 +57,13 @@ int main(int argc, char **argv) {
   	@{operation1}@ /* MBIERROR1 */
 	  @{start1}@
 	  @{fini1}@
+    @{free1}@
 	}else if (rank == 1) {
   	@{operation2}@ /* MBIERROR2 */
 	  @{start2}@
 	  @{fini2}@
+    @{free2}@
 	}
-  @{free1}@
-  @{free2}@
 
   MPI_Finalize();
   printf("Rank %d finished normally\\n", rank);

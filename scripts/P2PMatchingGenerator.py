@@ -39,6 +39,7 @@ int main(int argc, char **argv) {
   int nprocs = -1;
   int rank = -1;
   int its_raining = 0;
+	int src, dest;
 
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
@@ -47,6 +48,8 @@ int main(int argc, char **argv) {
 
   if (nprocs < 2)
     printf("MBI ERROR: This test needs at least 2 processes to produce a bug!\\n");
+
+	dest=1; src=0;
 
   @{init1}@
   @{init2}@
@@ -76,19 +79,19 @@ operation = {}
 fini = {}
 
 init['MPI_Send'] = lambda n: f'int buf{n}[buff_size];'
-operation['MPI_Send'] = lambda n: f'MPI_Send(buf{n}, buff_size, MPI_INT, 1, 0, MPI_COMM_WORLD);'
+operation['MPI_Send'] = lambda n: f'MPI_Send(buf{n}, buff_size, MPI_INT, dest, 0, MPI_COMM_WORLD);'
 fini['MPI_Send'] = lambda n: ""
 
 init['MPI_Recv'] = lambda n: f'int buf{n}[buff_size]; MPI_Status sta{n};'
-operation['MPI_Recv'] = lambda n: f'MPI_Recv(buf{n}, buff_size, MPI_INT, 1, 0, MPI_COMM_WORLD, &sta{n});'
+operation['MPI_Recv'] = lambda n: f'MPI_Recv(buf{n}, buff_size, MPI_INT, src, 0, MPI_COMM_WORLD, &sta{n});'
 fini['MPI_Recv'] = lambda n: ""
 
 init['MPI_Isend'] = lambda n: f'int buf{n}[buff_size]; MPI_Request req{n};'
-operation['MPI_Isend'] = lambda n: f'MPI_Isend(buf{n}, buff_size, MPI_INT, 1, 0, MPI_COMM_WORLD, &req{n});'
+operation['MPI_Isend'] = lambda n: f'MPI_Isend(buf{n}, buff_size, MPI_INT, dest, 0, MPI_COMM_WORLD, &req{n});'
 fini['MPI_Isend'] = lambda n: f'MPI_Wait(&req{n}, MPI_STATUS_IGNORE);'
 
 init['MPI_Irecv'] = lambda n: f'int buf{n}[buff_size]; MPI_Request req{n};'
-operation['MPI_Irecv'] = lambda n: f'MPI_Irecv(buf{n}, buff_size, MPI_INT, 1, 0, MPI_COMM_WORLD, &req{n});'
+operation['MPI_Irecv'] = lambda n: f'MPI_Irecv(buf{n}, buff_size, MPI_INT, src, 0, MPI_COMM_WORLD, &req{n});'
 fini['MPI_Irecv'] = lambda n: f'MPI_Wait(&req{n}, MPI_STATUS_IGNORE);'
 
 for p in p2p + ip2p:
