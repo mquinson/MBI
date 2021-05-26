@@ -355,7 +355,7 @@ iframe {
       previous_scope=''
       previous_detail=''  # To open a new section for each possible detailed outcome
       outHTML.write("<h2>Table of contents</h2>\n<ul>\n")
-      for test in sorted(todo, key=lambda t: f"{possible_details[t['detail']]}|{t['detail']}"):
+      for test in sorted(todo, key=lambda t: f"{possible_details[t['detail']]}|{t['detail']}|{t['filename']}|{t['id']}"):
         if previous_scope != possible_details[test['detail']]:
             if previous_scope != '': # Close the previous item, if we are not generating the first one
                 outHTML.write(f"  </ul>\n")
@@ -373,7 +373,7 @@ iframe {
       previous_scope=''
       previous_detail=''  # To open a new section for each possible detailed outcome
       testcount=0 # To repeat the table header every 25 lines
-      for test in sorted(todo, key=lambda t: f"{possible_details[t['detail']]}|{t['detail']}"):
+      for test in sorted(todo, key=lambda t: f"{possible_details[t['detail']]}|{t['detail']}|{t['filename']}|{t['id']}"):
         testcount += 1
         if previous_scope != possible_details[test['detail']]:
             if previous_scope != '': # Close the previous table, if we are not generating the first one
