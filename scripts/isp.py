@@ -54,10 +54,15 @@ class Tool(AbstractTool):
         if re.search('resource leaks detected', output):
             return 'resleak'
 
+        if re.search("Attempting to use an MPI routine after finalizing MPI", output):
+            return 'mpierr'
+
         if re.search('ISP detected no deadlocks', output):
             return 'OK'
 
         if re.search('Rank [0-9]: WARNING: Waited on non-existant request in', output):
+            return 'mpierr'
+        if re.search('Rank [0-9]: Invalid rank in MPI_.*? at ',output):
             return 'mpierr'
         if re.search('Fatal error in PMPI', output):
             return 'mpierr'

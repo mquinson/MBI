@@ -58,7 +58,7 @@ int main(int argc, char **argv) {
   @{operation}@ 
 	@{fini}@
 
-	if(newcom != MPI_COMM_NULL && newcom =! MPI_COMM_WORLD)
+	if(newcom != MPI_COMM_NULL && newcom != MPI_COMM_WORLD)
 		MPI_Comm_free(&newcom);
 
   MPI_Finalize();

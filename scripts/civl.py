@@ -44,8 +44,10 @@ class Tool(AbstractTool):
         if re.search('DEADLOCK', output):
             return 'deadlock'
 
-        if re.search('has a different root', output):
-            return 'various'
+        if re.search('which has an inconsistent datatype specification with at least one of others', output):
+            return 'datatype mismatch'
+        if re.search('which has a different root with at least one of others', output):
+            return 'root mismatch'
         if re.search('has a different MPI_Op', output):
             return 'various'
 
@@ -62,6 +64,9 @@ class Tool(AbstractTool):
 
         if re.search('A CIVL internal error has occurred', output):
             return 'failure'
+
+        if re.search('kind: UNDEFINED_VALUE, certainty: MAYBE', output):
+            return 'UNDEFINED_VALUE'
 
         if re.search('This feature is not yet implemented', output):
             return 'UNIMPLEMENTED'
