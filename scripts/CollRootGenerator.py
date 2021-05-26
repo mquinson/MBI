@@ -62,7 +62,7 @@ int main(int argc, char **argv) {
 """
 
 collectives = ['MPI_Bcast', 'MPI_Reduce', 'MPI_Gather', 'MPI_Scatter']
-icollectives = ['MPI_Ireduce']
+icollectives = ['MPI_Ireduce', 'MPI_Ibcast', 'MPI_Igather']
 
 init = {}
 operation = {}
@@ -87,6 +87,14 @@ fini['MPI_Scatter'] = lambda n: ""
 init['MPI_Ireduce'] = lambda n: f"MPI_Request req{n}; MPI_Status sta{n}; int sum{n}, val{n} = 1;"
 operation['MPI_Ireduce'] = lambda n: f"MPI_Ireduce(&sum{n}, &val{n}, 1, MPI_INT, MPI_SUM, root, MPI_COMM_WORLD, &req{n}); MPI_Wait(&req{n},&sta{n});"
 fini['MPI_Ireduce'] = lambda n: ""
+
+init['MPI_Ibcast'] = lambda n: f'int buf{n};MPI_Request req{n};MPI_Status sta{n};'
+operation['MPI_Ibcast'] = lambda n: f'MPI_Ibcast(&buf{n}, buff_size, MPI_INT, root, MPI_COMM_WORLD,&req{n});MPI_Wait(&req{n},&sta{n});'
+fini['MPI_Ibcast'] = lambda n: ""
+
+init['MPI_Igather'] = lambda n: f"int val{n}, buf{n}[buff_size];MPI_Request req{n};MPI_Status sta{n};"
+operation['MPI_Igather'] = lambda n: f"MPI_Igather(&val{n}, 1, MPI_INT, buf{n},1, MPI_INT, root, MPI_COMM_WORLD); MPI_Wait(&req{n},&sta{n});"
+fini['MPI_Igather'] = lambda n: ""
 
 # Generate code with one collective
 for coll in collectives + icollectives:
