@@ -18,7 +18,6 @@ BEGIN_MPI_FEATURES
 	COLL!basic: Lacking
 	COLL!nonblocking: Lacking
 	COLL!persistent: Lacking
-	COLL!probe: Lacking
 	COLL!tools: Lacking
 	RMA: @{rmafeature}@
 END_MPI_FEATURES
@@ -66,6 +65,8 @@ int main(int argc, char **argv) {
  		@{operation2}@ /* MBIERROR2 */
 	}
 
+	@{add_store}@ /* MBIERROR3 */ 
+
   @{finEpoch}@
 	
 
@@ -78,10 +79,6 @@ int main(int argc, char **argv) {
 """
 
 epoch = ['MPI_Win_fence', 'MPI_Win_lock', 'MPI_Win_lockall']
-store = ['store']
-load = ['load']
-loadstore = ['loadstore']
-# Local memory accesses (in a process)
 get = ['MPI_Get']
 put = ['MPI_Put'] 
 
@@ -91,15 +88,12 @@ operation = {}
 
 epoch['MPI_Win_fence'] =lambda n: 'MPI_Win_fence(0, win);'
 finEpoch['MPI_Win_fence'] =lambda n: 'MPI_Win_fence(0, win);'
-epoch['MPI_Win_lock'] =lambda n: 'if (rank == 0 || rank == 2) {\n 	MPI_Win_lock(MPI_LOCK_EXCLUSIVE, target, 0, win);'
-finEpoch['MPI_Win_lock'] =lambda n: 'MPI_Win_unlock(target, win);\n }'
+epoch['MPI_Win_lock'] =lambda n: 'MPI_Win_lock(MPI_LOCK_SHARED, target, 0, win);'
+finEpoch['MPI_Win_lock'] =lambda n: 'MPI_Win_unlock(target, win);'
 epoch['MPI_Win_lockall'] =lambda n: 'MPI_Win_lock_all(0,win);'
 finEpoch['MPI_Win_lockall'] =lambda n: 'MPI_Win_unlock_all(win);'
 
 operation['MPI_Put'] = lambda n: 'MPI_Put(&localbuf1, NUM_ELEMT, MPI_INT, target, 0, NUM_ELEMT, MPI_INT, win);'
-operation['store'] = lambda n: 'localbuf = 8;'
-operation['loadstore'] = lambda n: 'if (localbuf % 2 == 0) {\n   localbuf++;\n   }'
-operation['load'] = lambda n: 'if (localbuf % 2 == 0) {\n   /* do nothing */\n   }'
 operation['MPI_Get'] = lambda n: 'MPI_Get(&localbuf2, NUM_ELEMT, MPI_INT, target, 0, NUM_ELEMT, MPI_INT, win);' 
 
 
@@ -119,6 +113,7 @@ for e in epoch:
             patterns['finEpoch'] = finEpoch[e]("1") 
             patterns['operation1'] = operation[p1]("1") #put
             patterns['operation2'] = operation[p2]("2") #get or put
+            patterns['add_store'] = "" 
 
     		    # Generate a data race (Put + Get/Put)
             replace = patterns 
@@ -127,3 +122,13 @@ for e in epoch:
             replace['outcome'] = 'ERROR: GlobalConcurrency' 
             replace['errormsg'] = 'Global Concurrency error. @{p2}@ at @{filename}@:@{line:MBIERROR2}@ conflicts with @{p1}@ line @{line:MBIERROR1}@ on the target side'
             make_file(template, f'GlobalConcurrency_{e}_{p1}_{p2}_nok.c', replace)
+
+    		    # Generate a data race (Get/Put + store)
+            replace = patterns 
+            replace['shortdesc'] = 'Global Concurrency error.' 
+            replace['longdesc'] = 'Global Concurrency error. @{p2}@ conflicts with @{p1}@ on the target side' 
+            replace['outcome'] = 'ERROR: GlobalConcurrency' 
+            replace['errormsg'] = 'Global Concurrency error. @{p2}@ at @{filename}@:@{line:MBIERROR2}@ conflicts with the store on W line @{line:MBIERROR3}@ on the target side'
+            replace['add_store'] = 'if(rank == target){ W++;}' 
+            replace['operation1'] = ""
+            make_file(template, f'GlobalConcurrency_{e}_{p2}_store_nok.c', replace)

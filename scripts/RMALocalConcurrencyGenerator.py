@@ -18,7 +18,6 @@ BEGIN_MPI_FEATURES
 	COLL!basic: Lacking
 	COLL!nonblocking: Lacking
 	COLL!persistent: Lacking
-	COLL!probe: Lacking
 	COLL!tools: Lacking
 	RMA: @{rmafeature}@
 END_MPI_FEATURES
