@@ -41,6 +41,7 @@ END_MBI_TESTS
 int main(int argc, char **argv) {
   int nprocs = -1;
   int rank = -1;
+	int dest, src;
 
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
@@ -53,9 +54,11 @@ int main(int argc, char **argv) {
   @{init1}@
   @{init2}@
 	if (rank == 0) {
+		src=1,dest=1;
   	@{operation1a}@ /* MBIERROR1 */
   	@{operation2a}@ 
 	}else if (rank == 1) {
+		src=0,dest=0;
   	@{operation1b}@ /* MBIERROR2 */
   	@{operation2b}@ 
 	}
@@ -78,19 +81,19 @@ operation = {}
 fini = {}
 
 init['MPI_Send'] = lambda n: f'int buf{n}[buff_size];'
-operation['MPI_Send'] = lambda n: f'MPI_Send(buf{n}, buff_size, MPI_INT, 1, 0, MPI_COMM_WORLD);'
+operation['MPI_Send'] = lambda n: f'MPI_Send(buf{n}, buff_size, MPI_INT, dest, 0, MPI_COMM_WORLD);'
 fini['MPI_Send'] = lambda n: ""
 
 init['MPI_Recv'] = lambda n: f'int buf{n}[buff_size]; MPI_Status sta{n};'
-operation['MPI_Recv'] = lambda n: f'MPI_Recv(buf{n}, buff_size, MPI_INT, 1, 0, MPI_COMM_WORLD, &sta{n});'
+operation['MPI_Recv'] = lambda n: f'MPI_Recv(buf{n}, buff_size, MPI_INT, src, 0, MPI_COMM_WORLD, &sta{n});'
 fini['MPI_Recv'] = lambda n: ""
 
 init['MPI_Isend'] = lambda n: f'int buf{n}[buff_size]; MPI_Request req{n};'
-operation['MPI_Isend'] = lambda n: f'MPI_Isend(buf{n}, buff_size, MPI_INT, 1, 0, MPI_COMM_WORLD, &req{n});\n 		MPI_Wait(&req{n}, MPI_STATUS_IGNORE);'
+operation['MPI_Isend'] = lambda n: f'MPI_Isend(buf{n}, buff_size, MPI_INT, dest, 0, MPI_COMM_WORLD, &req{n});\n 		MPI_Wait(&req{n}, MPI_STATUS_IGNORE);'
 fini['MPI_Isend'] = lambda n: ""
 
 init['MPI_Irecv'] = lambda n: f'int buf{n}[buff_size]; MPI_Request req{n};'
-operation['MPI_Irecv'] = lambda n: f'MPI_Irecv(buf{n}, buff_size, MPI_INT, 1, 0, MPI_COMM_WORLD, &req{n});\n 		MPI_Wait(&req{n}, MPI_STATUS_IGNORE);'
+operation['MPI_Irecv'] = lambda n: f'MPI_Irecv(buf{n}, buff_size, MPI_INT, src, 0, MPI_COMM_WORLD, &req{n});\n 		MPI_Wait(&req{n}, MPI_STATUS_IGNORE);'
 fini['MPI_Irecv'] = lambda n: ""
 
 for p1 in send + isend:
