@@ -399,16 +399,20 @@ iframe {
         outHTML.write(f"     <tr>")
 
         binary=re.sub('\.c', '', os.path.basename(test['filename']))
-        test_ID = f"{binary}_{test['id']}"
+        ID=test['id']
+        test_ID = f"{binary}_{ID}"
         expected=test['expect']
 
-        outHTML.write(f"<td><a href='gencodes/{binary}.c.txt' target='MBI_details'>{binary}</a>&nbsp;<a href='gencodes/{binary}.c'><img title='Download source' src='img/html.svg' height='24' /></a></td>")
+        outHTML.write(f"<td><a href='gencodes/{binary}.c.txt' target='MBI_details'>{binary}</a>&nbsp;<a href='gencodes/{binary}.c'><img title='Download source' src='img/html.svg' height='24' /></a>")
+        if ID != 0:
+            outHTML.write(f' (test {ID+1}) ')
+        outHTML.write("</td>")
 
         for toolname in used_toolnames:
             (res_category, elapsed, diagnostic, outcome) = categorize(toolname=toolname, test_ID=test_ID, expected=expected)
 
             results[toolname][res_category].append(f"{test_ID} expected {test['detail']}, outcome: {diagnostic}")
-            outHTML.write(f"<td align='center'><a href='logs/{toolname}/{test_ID}.txt' target='MBI_details'><img title='{diagnostic} (returned {outcome})' src='img/{res_category}.svg' width='24' /></a>")
+            outHTML.write(f"<td align='center'><a href='logs/{toolname}/{test_ID}.txt' target='MBI_details'><img title='{displayed_name[toolname]} {diagnostic} (returned {outcome})' src='img/{res_category}.svg' width='24' /></a>")
             extra=None
             if os.path.exists(f'logs/{toolname}/{test_ID}.html'):
                 extra=f'logs/{toolname}/{test_ID}.html'
