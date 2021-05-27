@@ -446,7 +446,7 @@ iframe {
       for toolname in used_toolnames:
         (TP, TN, FP, FN, nPort, nFail, nTout, nNocc) = tool_stats(toolname)
         total = TP + TN + FP + FN + nTout + nPort + nFail + nNocc
-        outHTML.write(f"<td><div class='tooltip'>{percent(1-nPort/total)}% <span class='tooltiptext'>{nPort} failures, {nNocc} inconclusive runs</span></div></td>")
+        outHTML.write(f"<td><div class='tooltip'>{percent(1-nPort/total)}% <span class='tooltiptext'>{nPort} unimplemented calls, {nNocc} inconclusive runs</span></div></td>")
 
       outHTML.write("</tr>\n<tr><td>Robustness</td>")
       for toolname in used_toolnames:
