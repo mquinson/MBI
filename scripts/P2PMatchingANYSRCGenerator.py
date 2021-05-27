@@ -94,7 +94,7 @@ operation['MPI_Recv'] = lambda n: f'MPI_Recv(&recv_buffer, 1, MPI_INT, MPI_ANY_S
 fini['MPI_Recv'] = lambda n: ""
 
 init['MPI_Isend'] = lambda n: f'MPI_Request req{n};'
-operation['MPI_Isend'] = lambda n: f'MPI_Isend(&send_buff, 1, MPI_INT, 0, 42, MPI_COMM_WORLD, &req{n});'
+operation['MPI_Isend'] = lambda n: f'MPI_Isend(&send_buffer, 1, MPI_INT, 0, 42, MPI_COMM_WORLD, &req{n});'
 fini['MPI_Isend'] = lambda n: f'MPI_Wait(&req{n}, MPI_STATUS_IGNORE);'
 
 init['MPI_Irecv'] = lambda n: f'MPI_Request req{n};'
