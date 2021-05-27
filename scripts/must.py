@@ -26,7 +26,7 @@ class Tool(AbstractTool):
     def run(self, execcmd, filename, binary, id, timeout):
         cachefile = f'{binary}_{id}'
 
-        execcmd = re.sub("mpirun", "mustrun --must:distributed", execcmd)
+        execcmd = re.sub("/builds/MUST/bin/mpirun", "mustrun --must:distributed", execcmd)
         execcmd = re.sub('\${EXE}', binary, execcmd)
         execcmd = re.sub('\$zero_buffer', "", execcmd)
         execcmd = re.sub('\$infty_buffer', "", execcmd)
