@@ -339,7 +339,7 @@ test-civl-3:
         when: always
         paths:
             - logs
-test-civl-4
+test-civl-4:
     stage: test
     needs:
         - job: build-civl
