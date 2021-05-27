@@ -34,23 +34,45 @@ os.environ["LC_ALL"] = "C"
 # Associate all possible detailed outcome to a given error scope. Scopes must be sorted alphabetically.
 possible_details = {
     # scope limited to one call
-    'InvalidCommunicator':'ACall', 'InvalidDatatype':'ACall', 'InvalidRoot':'ACall', 'InvalidTag':'ACall', 'InvalidWindow':'ACall', 'InvalidOperator':'ACall', 'InvalidOtherArg':'ACall', 'ActualDatatype':'ACall',
+    'InvalidCommunicator':'AInvalidParam', 'InvalidDatatype':'AInvalidParam', 'InvalidRoot':'AInvalidParam', 'InvalidTag':'AInvalidParam', 'InvalidWindow':'AInvalidParam', 'InvalidOperator':'AInvalidParam', 'InvalidOtherArg':'AInvalidParam', 'ActualDatatype':'AInvalidParam',
+    'InvalidSrcDest':'AInvalidParam', 
     # scope: Process-wide
-    'OutOfInitFini':'BProcess', 'CommunicatorLeak':'BProcess', 'DatatypeLeak':'BProcess', 'GroupLeak':'BProcess', 'OperatorLeak':'BProcess', 'TypeLeak':'BProcess', 'MissingStart':'BProcess', 'MissingWait':'BProcess',
-    'RequestLeak':'BProcess', 'LocalConcurrency':'BProcess',
+    'OutOfInitFini':'BInitFini', 
+    'CommunicatorLeak':'BResLeak', 'DatatypeLeak':'BResLeak', 'GroupLeak':'BResLeak', 'OperatorLeak':'BResLeak', 'TypeLeak':'BResLeak', 'RequestLeak':'BResLeak',
+    'MissingStart':'BReqLifecycle', 'MissingWait':'BReqLifecycle',
+    'LocalConcurrency':'BLocalConcurrency',
     # scope: communicator
-    'MessageRace':'CComm', 'CallMatching':'CComm', 'CommunicatorMatching':'CComm', 'DatatypeMatching':'CComm', 'InvalidSrcDest':'CComm', 'OperatorMatching':'CComm', 'RootMatching':'CComm', 'TagMatching':'CComm',
-    'GlobalConcurrency':'CComm', #MPI_Comm_split 'OtherArgMatching':'CComm'
+    'CallMatching':'CMatch', 'CommunicatorMatching':'CMatch', 'DatatypeMatching':'CMatch', 'OperatorMatching':'CMatch', 'RootMatching':'CMatch', 'TagMatching':'CMatch',
+    'MessageRace':'DRace', 
+    
+    'GlobalConcurrency':'DGlobalConcurrency',
     # larger scope
-    'BufferingHazard':'DSystem',
-    'OK':'EOK'}
+    'BufferingHazard':'EBufferingHazard',
+    'OK':'FOK'}
+
+error_scope = {
+    'AInvalidParam':'single call',
+    'BResLeak':'single process',
+    'BInitFini':'single process',
+    'BReqLifecycle':'single process',
+    'BLocalConcurrency':'single process',
+    'CMatch':'communicator',
+    'DRace':'application',
+    'DGlobalConcurrency':'application',
+    'EBufferingHazard':'system',
+}
 
 displayed_name = {
-    'ACall':'Error scope: single call',
-    'BProcess':'Error scope: single process',
-    'CComm':'Error scope: communicator',
-    'DSystem':'Error scope: system-wide',
-    'EOK':'Correct codes',
+    'AInvalidParam':'Invalid parameter',
+    'BResLeak':'Resource leak',
+    'BInitFini':'MPI call before initialization/after finalization',
+    'BReqLifecycle':'Request lifecycle',
+    'BLocalConcurrency':'Local concurrency',
+    'CMatch':'Parameter matching',
+    'DRace':'Message race',
+    'DGlobalConcurrency':'Global concurrency',
+    'EBufferingHazard':'Buffering hazard',
+    'FOK':"Correct code",
 
     'aislinn':'Aislinn','civl':'CIVL', 'isp':'ISP', 'simgrid':'SimGrid', 'mpisv':'MPI-SV', 'must':'MUST', 'parcoach':'PARCOACH'
 }
@@ -64,7 +86,7 @@ displayed_name = {
 todo = []
 
 
-def extract_todo(filename):
+def parse_one_code(filename):
     """
     Reads the header of the provided filename, and extract a list of todo item, each of them being a (cmd, expect, test_num) tupple.
     The test_num is useful to build a log file containing both the binary and the test_num, when there is more than one test in the same binary.
@@ -143,7 +165,7 @@ def extract_all_todo(batch):
 
     global todo
     for filename in filenames[min_rank:max_rank]:
-        todo = todo + extract_todo(filename)
+        todo = todo + parse_one_code(filename)
 
 ########################
 # cmd_gencodes(): what to do when '-c generate' is used (Generating the codes)
@@ -353,43 +375,35 @@ iframe {
 """)
 
       # Generate the table of contents
-      previous_scope=''
-      previous_detail=''  # To open a new section for each possible detailed outcome
+      previous_detail ='' # To open a new section for each possible detailed outcome
       outHTML.write("<h2>Table of contents</h2>\n<ul>\n")
       for test in sorted(todo, key=lambda t: f"{possible_details[t['detail']]}|{t['detail']}|{t['filename']}|{t['id']}"):
-        if previous_scope != possible_details[test['detail']]:
-            if previous_scope != '': # Close the previous item, if we are not generating the first one
-                outHTML.write(f"  </ul>\n")
+        if previous_detail != possible_details[test['detail']]:
+            if previous_detail != '': # Close the previous item, if we are not generating the first one
                 outHTML.write(f" </li>\n")
-            previous_scope = possible_details[test['detail']]
-            previous_detail = '' # This is a new section
-            outHTML.write(f" <li><a href='#{possible_details[test['detail']]}'>{displayed_name[ possible_details[test['detail']]]}</a>\n  <ul>\n")
+            previous_detail = possible_details[test['detail']]
+            if test['detail'] != 'OK':
+                outHTML.write(f" <li><a href='#{possible_details[test['detail']]}'>{displayed_name[ possible_details[test['detail']]]}</a> (scope: {error_scope[possible_details[test['detail']]]})\n")
+            else:
+                outHTML.write(f" <li><a href='OK'>{displayed_name[ possible_details[test['detail']]]}</a>\n")
 
-        if previous_detail != f"{possible_details[test['detail']]}|{test['detail']}" and test['detail'] != 'OK':
-            previous_detail = f"{possible_details[test['detail']]}|{test['detail']}"
-            outHTML.write(f"   <li>Error: <a href='#{test['detail']}'>{test['detail']}</a></li>\n")
       outHTML.write("  </ul>\n <li><a href='#metrics'>Summary metrics</a></li></ul>\n")
 
       # Generate the actual content
-      previous_scope=''
       previous_detail=''  # To open a new section for each possible detailed outcome
       testcount=0 # To repeat the table header every 25 lines
       for test in sorted(todo, key=lambda t: f"{possible_details[t['detail']]}|{t['detail']}|{t['filename']}|{t['id']}"):
         testcount += 1
-        if previous_scope != possible_details[test['detail']]:
-            if previous_scope != '': # Close the previous table, if we are not generating the first one
-                outHTML.write(f"</table>\n")
-            previous_scope = possible_details[test['detail']]
-            previous_detail = '' # This is a new section
-            outHTML.write(f"  <a name='{possible_details[test['detail']]}'/><h2>{displayed_name[ possible_details[test['detail']]]}</h2>\n")
-
-        if previous_detail != f"{possible_details[test['detail']]}|{test['detail']}" or testcount == 25:
+        if previous_detail != possible_details[test['detail']] or testcount == 25:
             if testcount != 25: # Write the expected outcome only once, not every 25 tests
-                if previous_detail != '': # Close the previous table, if we are not generating the first one of this scope
+                if previous_detail != '': # Close the previous table, if we are not generating the first one
                     outHTML.write(f"</table>\n")
-                previous_detail = f"{possible_details[test['detail']]}|{test['detail']}"
+                previous_detail = possible_details[test['detail']]
                 if test['detail'] != 'OK':
-                    outHTML.write(f"  <a name='{test['detail']}'/><h3>Expected outcome: {test['detail']}</h3>\n")
+                    outHTML.write(f"  <a name='{possible_details[test['detail']]}'/><h3>{displayed_name[possible_details[test['detail']]]} errors (scope: {error_scope[possible_details[test['detail']]]})</h3>\n")
+                else: 
+                    outHTML.write(f"  <a name='OK'/><h3>Correct codes</h3>\n")
+
                 outHTML.write( '  <table border=1>\n')
             testcount=0
             outHTML.write("   <tr><td>Test</td>")
@@ -412,7 +426,7 @@ iframe {
             (res_category, elapsed, diagnostic, outcome) = categorize(toolname=toolname, test_ID=test_ID, expected=expected)
 
             results[toolname][res_category].append(f"{test_ID} expected {test['detail']}, outcome: {diagnostic}")
-            outHTML.write(f"<td align='center'><a href='logs/{toolname}/{test_ID}.txt' target='MBI_details'><img title='{displayed_name[toolname]} {diagnostic} (returned {outcome})' src='img/{res_category}.svg' width='24' /></a>")
+            outHTML.write(f"<td align='center'><a href='logs/{toolname}/{test_ID}.txt' target='MBI_details'><img title='{displayed_name[toolname]} {diagnostic} (returned {outcome})' src='img/{res_category}.svg' width='24' /></a> ({outcome})")
             extra=None
             if os.path.exists(f'logs/{toolname}/{test_ID}.html'):
                 extra=f'logs/{toolname}/{test_ID}.html'
