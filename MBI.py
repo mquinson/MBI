@@ -542,6 +542,7 @@ parser = argparse.ArgumentParser(
 
 parser.add_argument('-c', metavar='cmd', default='all',
                     help="The command you want to execute. By default, 'all', runs all commands in sequence. Other choices:\n"
+                    "  generate: redo all the test codes.\n"
                     "  run: run the tests on all codes.\n"
                     "  stats: produce the statistics, using the cached values from a previous 'run'.\n")
 
