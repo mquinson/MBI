@@ -55,6 +55,9 @@ class Tool(AbstractTool):
         if re.search('found deadlock', output):
             return 'deadlock'
 
+        if re.search('klee: .*? Assertion `.*? failed.', output):
+            return 'failure'
+
         if re.search('No Violation detected by MPI-SV', info):
             return 'OK'
 

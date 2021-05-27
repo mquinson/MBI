@@ -44,7 +44,11 @@ class Tool(AbstractTool):
         if re.search('DEADLOCK', output):
             return 'deadlock'
 
+        if re.search('reaches an MPI collective routine .*? while at least one of others are collectively reaching MPI_', output):
+            return 'collective mismatch'
         if re.search('which has an inconsistent datatype specification with at least one of others', output):
+            return 'datatype mismatch'
+        if re.search('of MPI routines is not consistent with the specified MPI_Datatype', output):
             return 'datatype mismatch'
         if re.search('which has a different root with at least one of others', output):
             return 'root mismatch'
@@ -52,9 +56,7 @@ class Tool(AbstractTool):
             return 'various'
 
         if re.search('MPI message leak', output):
-            return 'mpierr'
-        if re.search('MPI_ERROR', output):
-            return 'mpierr'
+            return 'resleak'
 
         if re.search('MEMORY_LEAK', output):
             return 'resleak'
@@ -67,6 +69,10 @@ class Tool(AbstractTool):
 
         if re.search('kind: UNDEFINED_VALUE, certainty: MAYBE', output):
             return 'UNDEFINED_VALUE'
+        if re.search('kind: DEREFERENCE, certainty: MAYBE', output):
+            return 'DEREFERENCE'
+        if re.search('kind: MPI_ERROR, certainty: MAYBE', output):
+            return 'MPI_ERROR'
 
         if re.search('This feature is not yet implemented', output):
             return 'UNIMPLEMENTED'
@@ -75,4 +81,14 @@ class Tool(AbstractTool):
         if re.search('Undeclared identifier', output):
             return 'UNIMPLEMENTED'
 
+        # The following is categorized as a CIVL bug, because it reports an inexistant error when a communicator is tested for inequality 
+        #
+        # Error: Incompatible types for operator NEQ:
+        # struct MPI_Comm
+        # struct MPI_Comm
+        # at CollInvalidDim_Cart_create_nok.c:67.7-27
+        # if (comm != MPI_COMM_NULL)
+        #     ^^^^^^^^^^^^^^^^^^^^^
+        if re.search('Error: Incompatible types for operator NEQ:\nstruct MPI_Comm\nstruct MPI_Comm\nat', output):
+            return 'failure'
         return 'other'

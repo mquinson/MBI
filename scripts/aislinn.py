@@ -60,41 +60,41 @@ class Tool(AbstractTool):
         if re.search("INFO: Found error 'Deadlock'", output):
             return 'deadlock'
         if re.search("INFO: Found error 'Pending message'", output):
-            return 'deadlock'
+            return 'Pending message'
 
         if re.search("INFO: Found error 'Invalid rank'", output):
-            return 'mpierr'
+            return 'Invalid rank'
         if re.search("INFO: Found error 'Invalid tag'", output):
-            return 'mpierr'
+            return 'Invalid tag'
         if re.search("INFO: Found error 'Invalid datatype'", output):
-            return 'mpierr'
+            return 'Invalid datatype'
         if re.search("INFO: Found error 'Invalid communicator'", output):
-            return 'mpierr'
+            return 'Invalid communicator'
         if re.search("INFO: Found error 'Invalid color'", output):
-            return 'mpierr'
+            return 'Invalid color'
         if re.search("INFO: Found error 'Invalid operation'", output):
-            return 'mpierr'
+            return 'Invalid operation'
         if re.search("INFO: Found error 'Invalid count'", output):
-            return 'mpierr'
+            return 'Invalid count'
         if re.search("INFO: Found error 'Invalid request'", output):
-            return 'mpierr'
+            return 'Invalid request'
 
         if re.search("INFO: Found error 'Invalid write'", output):
             return 'concurrency error'
         if re.search("INFO: Found error 'Request is not persistent'", output):
-            return 'mpierr'
+            return 'Request is not persistent'
         if re.search("INFO: Found error 'Pending request'", output):
-            return 'mpierr'
+            return 'Pending request'
 
         if re.search("INFO: Found error 'Collective operation: root mismatch'", output):
-            return 'various'
+            return 'Collective operation: root mismatch'
         if re.search("INFO: Found error 'Collective operation mismatch'", output):
-            return 'deadlock'
+            return 'Collective operation mismatch'
         if re.search("INFO: Found error 'Mixing blocking and nonblocking collective operation'", output):
-            return 'deadlock'
+            return 'Mixing blocking and nonblocking collective operation'
 
 
-        if re.search('Unkown function call', output) or re.search('Compilation of .*? raised an error \(retcode: ', output):
+        if re.search('Unkn?own function call', output) or re.search('Compilation of .*? raised an error \(retcode: ', output):
             return 'UNIMPLEMENTED'
 
         if re.search("Traceback \(most recent call last\):", output):

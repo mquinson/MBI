@@ -68,7 +68,7 @@ class Tool(AbstractTool):
             return 'various'
 
         if re.search('unknown datatype', html) or re.search('has to be a non-negative integer', html) or re.search('must use equal type signatures', html):
-            return 'mpierr'
+            return 'conflicting roots'
 
         with open(f'{cachefile}.txt' if os.path.exists(f'{cachefile}.txt') else f'logs/must/{cachefile}.txt', 'r') as infile:
             output = infile.read()
