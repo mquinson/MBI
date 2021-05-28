@@ -1,2 +1,7 @@
 builds
 logs
+gencodes
+*.log
+*.html
+*.csv
+*~
