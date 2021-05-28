@@ -15,18 +15,6 @@ stages:
     - svg
     - deploy
 
-codes:
-    stage: build
-    needs: []
-    script:
-        - scripts/ensure_python3 ./MBI.py -c generate
-    artifacts:
-        untracked: false
-        expire_in: 30 days
-        when: always
-        paths:
-            - gencodes
-
 build-must:
     stage: build
     needs: []
@@ -43,11 +31,10 @@ test-must-1:
     needs:
         - job: build-must
           artifacts: true
-        - job: codes
-          artifacts: true
     before_script:
         - apt-get install -y psmisc
     script:
+        - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x must -c run -b 1/10
     artifacts:
         untracked: false
@@ -61,11 +48,10 @@ test-must-2:
     needs:
         - job: build-must
           artifacts: true
-        - job: codes
-          artifacts: true
     before_script:
         - apt-get install -y psmisc
     script:
+        - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x must -c run -b 2/10
     artifacts:
         untracked: false
@@ -79,11 +65,10 @@ test-must-3:
     needs:
         - job: build-must
           artifacts: true
-        - job: codes
-          artifacts: true
     before_script:
         - apt-get install -y psmisc
     script:
+        - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x must -c run -b 3/10
     artifacts:
         untracked: false
@@ -97,11 +82,10 @@ test-must-4:
     needs:
         - job: build-must
           artifacts: true
-        - job: codes
-          artifacts: true
     before_script:
         - apt-get install -y psmisc
     script:
+        - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x must -c run -b 4/10
     artifacts:
         untracked: false
@@ -115,11 +99,10 @@ test-must-5:
     needs:
         - job: build-must
           artifacts: true
-        - job: codes
-          artifacts: true
     before_script:
         - apt-get install -y psmisc
     script:
+        - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x must -c run -b 5/10
     artifacts:
         untracked: false
@@ -133,11 +116,10 @@ test-must-6:
     needs:
         - job: build-must
           artifacts: true
-        - job: codes
-          artifacts: true
     before_script:
         - apt-get install -y psmisc
     script:
+        - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x must -c run -b 6/10
     artifacts:
         untracked: false
@@ -151,11 +133,10 @@ test-must-7:
     needs:
         - job: build-must
           artifacts: true
-        - job: codes
-          artifacts: true
     before_script:
         - apt-get install -y psmisc
     script:
+        - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x must -c run -b 7/10
     artifacts:
         untracked: false
@@ -169,11 +150,10 @@ test-must-8:
     needs:
         - job: build-must
           artifacts: true
-        - job: codes
-          artifacts: true
     before_script:
         - apt-get install -y psmisc
     script:
+        - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x must -c run -b 8/10
     artifacts:
         untracked: false
@@ -187,11 +167,10 @@ test-must-9:
     needs:
         - job: build-must
           artifacts: true
-        - job: codes
-          artifacts: true
     before_script:
         - apt-get install -y psmisc
     script:
+        - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x must -c run -b 9/10
     artifacts:
         untracked: false
@@ -205,11 +184,10 @@ test-must-10:
     needs:
         - job: build-must
           artifacts: true
-        - job: codes
-          artifacts: true
     before_script:
         - apt-get install -y psmisc
     script:
+        - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x must -c run -b 10/10
     artifacts:
         untracked: false
@@ -240,9 +218,8 @@ test-aislinn:
     needs:
         - job: build-aislinn
           artifacts: true
-        - job: codes
-          artifacts: true
     script:
+        - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x aislinn
     artifacts:
         untracked: false
@@ -272,9 +249,8 @@ test-aislinn:
 #    needs:
 ##        - job: build-mpisv
 ##          artifacts: true
-#        - job: codes
-#          artifacts: true
 #    script:
+#        - scripts/ensure_python3 ./MBI.py -c generate
 #        - scripts/ensure_python3 ./MBI.py -x mpisv
 #    artifacts:
 #        untracked: false
@@ -299,10 +275,9 @@ test-civl-1:
     stage: test
     needs:
         - job: build-civl
-          artifacts: false
-        - job: codes
           artifacts: true
     script:
+        - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x civl -c run -b 1/4
     artifacts:
         untracked: false
@@ -314,10 +289,9 @@ test-civl-2:
     stage: test
     needs:
         - job: build-civl
-          artifacts: false
-        - job: codes
           artifacts: true
     script:
+        - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x civl -c run -b 2/4
     artifacts:
         untracked: false
@@ -329,10 +303,9 @@ test-civl-3:
     stage: test
     needs:
         - job: build-civl
-          artifacts: false
-        - job: codes
           artifacts: true
     script:
+        - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x civl -c run -b 3/4
     artifacts:
         untracked: false
@@ -344,10 +317,9 @@ test-civl-4:
     stage: test
     needs:
         - job: build-civl
-          artifacts: false
-        - job: codes
           artifacts: true
     script:
+        - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x civl -c run -b 4/4
     artifacts:
         untracked: false
@@ -373,9 +345,8 @@ test-parcoach:
     needs:
         - job: build-parcoach
           artifacts: true
-        - job: codes
-          artifacts: true
     script:
+        - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x parcoach
     artifacts:
         untracked: false
@@ -404,9 +375,8 @@ test-simgrid:
     needs:
         - job: build-simgrid
           artifacts: true
-        - job: codes
-          artifacts: true
     script:
+        - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x simgrid
     artifacts:
         untracked: false
@@ -432,9 +402,8 @@ test-isp-1:
     needs:
         - job: build-isp
           artifacts: true
-        - job: codes
-          artifacts: true
     script:
+        - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x isp -c run -b 1/2
     artifacts:
         untracked: false
@@ -448,9 +417,8 @@ test-isp-2:
     needs:
         - job: build-isp
           artifacts: true
-        - job: codes
-          artifacts: true
     script:
+        - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x isp -c run -b 2/2
     artifacts:
         untracked: false
@@ -552,18 +520,9 @@ civl-svg:
           artifacts: true
         - job: test-civl-4
           artifacts: true
-        - job: codes
-          artifacts: true
-    # before_script:
-    #   - apt-get update
-    #   - apt-get install -y python3-pip libcairo2
-    #   - pip3 install drawSvg
     script:
+        - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x civl
-        - cd Data
-        - cat ../logs/civl/*.csv > result.csv
-#        - python3.8 gen_svg.py -i result.csv -o civl_result_LOG --header false
-#        - cp *svg ../logs/
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -594,18 +553,9 @@ must-svg:
           artifacts: true
         - job: test-must-10
           artifacts: true
-        - job: codes
-          artifacts: true
-    # before_script:
-    #   - apt-get update
-    #   - apt-get install -y python3-pip libcairo2
-    #   - pip3 install drawSvg
     script:
+        - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x must
-        - cd Data
-#        - cat ../logs/must/*.csv > result.csv
-#        - python3.8 gen_svg.py -i result.csv -o must_result_LOG --header false
-#        - cp *svg ../logs/
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -691,21 +641,11 @@ pages:
         - job: aislinn-svg
           artifacts: true
           optional: true
-        - job: codes
-          artifacts: true
-    # before_script:
-    #     - apt-get update
-    #     - apt-get install -y python3-pip libcairo2
-    #     - pip3 install drawSvg
     script:
+        - scripts/ensure_python3 ./MBI.py -c generate
         - python3.8 MBI.py -c stats
         - mkdir public
         - cp -r index.html summary.html img gencodes logs public/
-    #    - echo "#filename;id;tool;TO;NP;buff;expected;result;elapsed_time;jobid" > result.csv
-    #    - cd Data
-    #    - cat ../logs/*/*.csv >> result.csv
-    #    - python3.8 gen_svg.py -i result.csv -o all_result_LOG --header true
-    #    - cp *svg ../logs
     artifacts:
         untracked: false
         expire_in: 30 days
