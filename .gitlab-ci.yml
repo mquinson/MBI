@@ -48,7 +48,7 @@ test-must-1:
     before_script:
         - apt-get install -y psmisc
     script:
-        - scripts/ensure_python3 ./MBI.py -x must -b 1/10
+        - scripts/ensure_python3 ./MBI.py -x must -c run -b 1/10
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -66,7 +66,7 @@ test-must-2:
     before_script:
         - apt-get install -y psmisc
     script:
-        - scripts/ensure_python3 ./MBI.py -x must -b 2/10
+        - scripts/ensure_python3 ./MBI.py -x must -c run -b 2/10
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -84,7 +84,7 @@ test-must-3:
     before_script:
         - apt-get install -y psmisc
     script:
-        - scripts/ensure_python3 ./MBI.py -x must -b 3/10
+        - scripts/ensure_python3 ./MBI.py -x must -c run -b 3/10
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -102,7 +102,7 @@ test-must-4:
     before_script:
         - apt-get install -y psmisc
     script:
-        - scripts/ensure_python3 ./MBI.py -x must -b 4/10
+        - scripts/ensure_python3 ./MBI.py -x must -c run -b 4/10
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -120,7 +120,7 @@ test-must-5:
     before_script:
         - apt-get install -y psmisc
     script:
-        - scripts/ensure_python3 ./MBI.py -x must -b 5/10
+        - scripts/ensure_python3 ./MBI.py -x must -c run -b 5/10
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -138,7 +138,7 @@ test-must-6:
     before_script:
         - apt-get install -y psmisc
     script:
-        - scripts/ensure_python3 ./MBI.py -x must -b 6/10
+        - scripts/ensure_python3 ./MBI.py -x must -c run -b 6/10
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -156,7 +156,7 @@ test-must-7:
     before_script:
         - apt-get install -y psmisc
     script:
-        - scripts/ensure_python3 ./MBI.py -x must -b 7/10
+        - scripts/ensure_python3 ./MBI.py -x must -c run -b 7/10
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -174,7 +174,7 @@ test-must-8:
     before_script:
         - apt-get install -y psmisc
     script:
-        - scripts/ensure_python3 ./MBI.py -x must -b 8/10
+        - scripts/ensure_python3 ./MBI.py -x must -c run -b 8/10
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -192,7 +192,7 @@ test-must-9:
     before_script:
         - apt-get install -y psmisc
     script:
-        - scripts/ensure_python3 ./MBI.py -x must -b 9/10
+        - scripts/ensure_python3 ./MBI.py -x must -c run -b 9/10
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -210,7 +210,7 @@ test-must-10:
     before_script:
         - apt-get install -y psmisc
     script:
-        - scripts/ensure_python3 ./MBI.py -x must -b 10/10
+        - scripts/ensure_python3 ./MBI.py -x must -c run -b 10/10
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -303,7 +303,7 @@ test-civl-1:
         - job: codes
           artifacts: true
     script:
-        - scripts/ensure_python3 ./MBI.py -x civl -b 1/4
+        - scripts/ensure_python3 ./MBI.py -x civl -c run -b 1/4
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -318,7 +318,7 @@ test-civl-2:
         - job: codes
           artifacts: true
     script:
-        - scripts/ensure_python3 ./MBI.py -x civl -b 2/4
+        - scripts/ensure_python3 ./MBI.py -x civl -c run -b 2/4
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -333,7 +333,7 @@ test-civl-3:
         - job: codes
           artifacts: true
     script:
-        - scripts/ensure_python3 ./MBI.py -x civl -b 3/4
+        - scripts/ensure_python3 ./MBI.py -x civl -c run -b 3/4
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -348,7 +348,7 @@ test-civl-4:
         - job: codes
           artifacts: true
     script:
-        - scripts/ensure_python3 ./MBI.py -x civl -b 4/4
+        - scripts/ensure_python3 ./MBI.py -x civl -c run -b 4/4
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -435,7 +435,7 @@ test-isp-1:
         - job: codes
           artifacts: true
     script:
-        - scripts/ensure_python3 ./MBI.py -x isp -b 1/2
+        - scripts/ensure_python3 ./MBI.py -x isp -c run -b 1/2
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -451,7 +451,7 @@ test-isp-2:
         - job: codes
           artifacts: true
     script:
-        - scripts/ensure_python3 ./MBI.py -x isp -b 2/2
+        - scripts/ensure_python3 ./MBI.py -x isp -c run -b 2/2
     artifacts:
         untracked: false
         expire_in: 30 days
