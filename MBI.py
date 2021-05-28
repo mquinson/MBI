@@ -56,9 +56,9 @@ error_scope = {
     'BInitFini':'single process',
     'BReqLifecycle':'single process',
     'BLocalConcurrency':'single process',
-    'CMatch':'communicator',
-    'DRace':'application',
-    'DGlobalConcurrency':'application',
+    'CMatch':'multi-processes',
+    'DRace':'multi-processes',
+    'DGlobalConcurrency':'multi-processes',
     'EBufferingHazard':'system',
 }
 
