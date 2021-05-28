@@ -97,7 +97,7 @@ fini['MPI_Comm_group'] = lambda n: "MPI_Group_free(&grp[j]);"
 init['MPI_Group_excl'] = lambda n: 'MPI_Group worldgroup, grp[size];\n MPI_Comm_group(MPI_COMM_WORLD, &worldgroup);'
 operation['MPI_Group_excl'] = lambda n: 'MPI_Group_excl(worldgroup, 1, &rank, &grp[j]);' 
 error['MPI_Group_excl'] = 'GroupLeak'
-fini['MPI_Group_excl'] = lambda n: "MPI_Group_free(&grp[j]);"
+fini['MPI_Group_excl'] = lambda n: "MPI_Group_free(&grp[j]);\nMPI_Group_free(&worldgroup);"
 
 init['MPI_Comm_create'] = lambda n: 'MPI_Comm com[size]; MPI_Group grp[size];'
 operation['MPI_Comm_create'] = lambda n: 'MPI_Comm_group(MPI_COMM_WORLD, &grp[j]);\n MPI_Comm_create(MPI_COMM_WORLD, grp[j], &com[j]);\n MPI_Group_free(&grp[j]);'
