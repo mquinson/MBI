@@ -38,6 +38,7 @@ END_MBI_TESTS
 int main(int argc, char **argv) {
   int nprocs = -1;
   int rank = -1;
+  int dest, src;
 
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
@@ -53,11 +54,13 @@ int main(int argc, char **argv) {
   @{init2}@
   @{init3}@
 	if (rank == 0) {
+		dest=1;src=1;
   	@{operation3}@ /* MBIERROR1 */
 		@{fini3}@
   	@{operation1}@ 
 		@{fini1}@
 	}else if (rank==1) {
+		dest=0;src=0;
   	@{operation2}@ /* MBIERROR2 */
 		@{fini2}@
   	@{operation3}@ 
@@ -85,19 +88,19 @@ fini = {}
 ## P2P
 
 init['MPI_Send'] = lambda n: f'int buf{n}[buff_size];'
-operation['MPI_Send'] = lambda n: f'MPI_Send(buf{n}, buff_size, MPI_INT, 1, 0, MPI_COMM_WORLD);'
+operation['MPI_Send'] = lambda n: f'MPI_Send(buf{n}, buff_size, MPI_INT, dest, 0, MPI_COMM_WORLD);'
 fini['MPI_Send'] = lambda n: ""
 
 init['MPI_Recv'] = lambda n: f'int buf{n}[buff_size]; MPI_Status sta{n};'
-operation['MPI_Recv'] = lambda n: f'MPI_Recv(buf{n}, buff_size, MPI_INT, 0, 0, MPI_COMM_WORLD, &sta{n});'
+operation['MPI_Recv'] = lambda n: f'MPI_Recv(buf{n}, buff_size, MPI_INT, src, 0, MPI_COMM_WORLD, &sta{n});'
 fini['MPI_Recv'] = lambda n: ""
 
 init['MPI_Isend'] = lambda n: f'int buf{n}[buff_size]; MPI_Request req{n};'
-operation['MPI_Isend'] = lambda n: f'MPI_Isend(buf{n}, buff_size, MPI_INT, 1, 0, MPI_COMM_WORLD, &req{n});'
+operation['MPI_Isend'] = lambda n: f'MPI_Isend(buf{n}, buff_size, MPI_INT, dest, 0, MPI_COMM_WORLD, &req{n});'
 fini['MPI_Isend'] = lambda n: f'MPI_Wait(&req{n}, MPI_STATUS_IGNORE);'
 
 init['MPI_Irecv'] = lambda n: f'int buf{n}[buff_size]; MPI_Request req{n};'
-operation['MPI_Irecv'] = lambda n: f'MPI_Irecv(buf{n}, buff_size, MPI_INT, 0, 0, MPI_COMM_WORLD, &req{n});'
+operation['MPI_Irecv'] = lambda n: f'MPI_Irecv(buf{n}, buff_size, MPI_INT, src, 0, MPI_COMM_WORLD, &req{n});'
 fini['MPI_Irecv'] = lambda n: f'MPI_Wait(&req{n}, MPI_STATUS_IGNORE);'
 
 ## COLL
@@ -181,4 +184,18 @@ for s in send + isend:
             replace['outcome'] = 'ERROR: CallMatching' 
             replace['errormsg'] = 'P2P & Collective mistmatch. @{r}@ at @{filename}@:@{line:MBIERROR2}@ is matched with @{c}@ at @{filename}@:@{line:MBIERROR1}@ wich causes a deadlock.'
             make_file(template, f'CollP2PCallMatching_{r}_{s}_{c}_nok.c', replace)
+
+            # Generate the incorrect code depending on buffering
+            replace = patterns 
+            replace['shortdesc'] = 'Point to point & collective mismatch'
+            replace['longdesc'] = 'Point to point @{s}@ is matched with @{c}@ which causes a deadlock depending on the buffering mode.' 
+            replace['outcome'] = 'ERROR: BufferingHazard' 
+            replace['errormsg'] = 'P2P & Collective mistmatch. @{s}@ at @{filename}@:@{line:MBIERROR2}@ is matched with @{c}@ at @{filename}@:@{line:MBIERROR1}@ wich causes a deadlock.'
+            replace['init1'] = init[s]("1") 
+            replace['init2'] = init[r]("2") 
+            replace['operation1'] = operation[r]("2")
+            replace['operation2'] = operation[s]("1")
+            replace['fini1'] = fini[r]("2") 
+            replace['fini2'] = fini[s]("1") 
+            make_file(template, f'CollP2PBuffering_{r}_{s}_{c}_nok.c', replace)
 
