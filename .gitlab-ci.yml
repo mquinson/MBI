@@ -470,8 +470,8 @@ simgrid-svg:
     #   - pip3 install drawSvg
     script:
         - cd Data
-        - python3.8 gen_svg.py -i ../logs/simgrid/bench_simgrid.csv -o simgrid_result_LOG --header false
-        - cp *svg ../logs/
+#        - python3.8 gen_svg.py -i ../logs/simgrid/bench_simgrid.csv -o simgrid_result_LOG --header false
+#        - cp *svg ../logs/
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -490,8 +490,8 @@ parcoach-svg:
     #   - pip3 install drawSvg
     script:
         - cd Data
-        - python3.8 gen_svg.py -i ../logs/parcoach/bench_parcoach.csv -o parcoach_result_LOG --header false
-        - cp *svg ../logs/
+#        - python3.8 gen_svg.py -i ../logs/parcoach/bench_parcoach.csv -o parcoach_result_LOG --header false
+#        - cp *svg ../logs/
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -512,8 +512,8 @@ isp-svg:
     #   - pip3 install drawSvg
     script:
         - cd Data
-        - python3.8 gen_svg.py -i ../logs/isp/bench_isp.csv -o isp_result_LOG --header false
-        - cp *svg ../logs/
+#        - python3.8 gen_svg.py -i ../logs/isp/bench_isp.csv -o isp_result_LOG --header false
+#        - cp *svg ../logs/
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -532,8 +532,8 @@ aislinn-svg:
     #   - pip3 install drawSvg
     script:
         - cd Data
-        - python3.8 gen_svg.py -i ../logs/aislinn/bench_aislinn.csv -o aislinn_result_LOG --header false
-        - cp *svg ../logs/
+#        - python3.8 gen_svg.py -i ../logs/aislinn/bench_aislinn.csv -o aislinn_result_LOG --header false
+#        - cp *svg ../logs/
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -562,8 +562,8 @@ civl-svg:
         - scripts/ensure_python3 ./MBI.py -x civl
         - cd Data
         - cat ../logs/civl/*.csv > result.csv
-        - python3.8 gen_svg.py -i result.csv -o civl_result_LOG --header false
-        - cp *svg ../logs/
+#        - python3.8 gen_svg.py -i result.csv -o civl_result_LOG --header false
+#        - cp *svg ../logs/
     artifacts:
         untracked: false
         expire_in: 30 days
@@ -603,9 +603,9 @@ must-svg:
     script:
         - scripts/ensure_python3 ./MBI.py -x must
         - cd Data
-        - cat ../logs/must/*.csv > result.csv
-        - python3.8 gen_svg.py -i result.csv -o must_result_LOG --header false
-        - cp *svg ../logs/
+#        - cat ../logs/must/*.csv > result.csv
+#        - python3.8 gen_svg.py -i result.csv -o must_result_LOG --header false
+#        - cp *svg ../logs/
     artifacts:
         untracked: false
         expire_in: 30 days
