@@ -25,8 +25,8 @@ class Tool(AbstractTool):
                 outfile.write(' <cluster id="acme" prefix="node-" radical="0-99" suffix="" speed="1Gf" bw="125MBps" lat="50us"/>\n')
                 outfile.write('</platform>\n')
 
-        execcmd = re.sub("mpirun", "smpirun -wrapper simgrid-mc -platform ./cluster.xml -analyze --cfg=smpi/list-leaks:10 --cfg=model-check/reduction:none", execcmd)
-        if re.search("rma", binary):  # DPOR reduction in simgrid cannot deal with RMA calls as they contain mutexes
+        execcmd = re.sub("mpirun", "smpirun -wrapper simgrid-mc -platform ./cluster.xml -analyze --cfg=smpi/list-leaks:10 ", execcmd)
+        if re.search("Concurrency", binary):  # DPOR reduction in simgrid cannot deal with RMA calls as they contain mutexes
             execcmd = re.sub("smpirun", "smpirun --cfg=model-check/reduction:none", execcmd)
         execcmd = re.sub('\${EXE}', binary, execcmd)
         execcmd = re.sub('\$zero_buffer', "--cfg=smpi/buffering:zero", execcmd)
