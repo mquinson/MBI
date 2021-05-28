@@ -22,3 +22,4 @@ cd /tmp/build-must
 
 CC=$(which gcc) CXX=$(which gcc++) FC=$(which gfortran) cmake ${rootdir}/tools/MUST-v1.7 -DCMAKE_INSTALL_PREFIX=${rootdir}/builds/MUST -DCMAKE_BUILD_TYPE=Release
 make -j$(nproc) install VERBOSE=1
+make install install-prebuilds VERBOSE=1
