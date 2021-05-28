@@ -259,24 +259,11 @@ test-aislinn:
 #        paths:
 #            - logs
 
-build-civl:
-    stage: build
+test-civl-1:
+    stage: test
     needs: []
     script:
         - ./scripts/CIVL-build
-    artifacts:
-        untracked: false
-        expire_in: 30 days
-        when: always
-        paths:
-            - tools/CIVL*
-
-test-civl-1:
-    stage: test
-    needs:
-        - job: build-civl
-          artifacts: true
-    script:
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x civl -c run -b 1/4
     artifacts:
@@ -287,10 +274,9 @@ test-civl-1:
             - logs
 test-civl-2:
     stage: test
-    needs:
-        - job: build-civl
-          artifacts: true
+    needs: []
     script:
+        - ./scripts/CIVL-build
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x civl -c run -b 2/4
     artifacts:
@@ -301,10 +287,9 @@ test-civl-2:
             - logs
 test-civl-3:
     stage: test
-    needs:
-        - job: build-civl
-          artifacts: true
+    needs: []
     script:
+        - ./scripts/CIVL-build
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x civl -c run -b 3/4
     artifacts:
@@ -315,10 +300,9 @@ test-civl-3:
             - logs
 test-civl-4:
     stage: test
-    needs:
-        - job: build-civl
-          artifacts: true
+    needs: []
     script:
+        - ./scripts/CIVL-build
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x civl -c run -b 4/4
     artifacts:
