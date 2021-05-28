@@ -88,7 +88,7 @@ init['MPI_Ireduce'] = lambda n: f"MPI_Request req{n}; MPI_Status sta{n}; int sum
 operation['MPI_Ireduce'] = lambda n: f"MPI_Ireduce(&sum{n}, &val{n}, 1, MPI_INT, MPI_SUM, root, MPI_COMM_WORLD, &req{n}); MPI_Wait(&req{n},&sta{n});"
 fini['MPI_Ireduce'] = lambda n: ""
 
-init['MPI_Ibcast'] = lambda n: f'int buf{n};MPI_Request req{n};MPI_Status sta{n};'
+init['MPI_Ibcast'] = lambda n: f'int buf{n}[128]; MPI_Request req{n};MPI_Status sta{n};'
 operation['MPI_Ibcast'] = lambda n: f'MPI_Ibcast(&buf{n}, buff_size, MPI_INT, root, MPI_COMM_WORLD,&req{n});MPI_Wait(&req{n},&sta{n});'
 fini['MPI_Ibcast'] = lambda n: ""
 
