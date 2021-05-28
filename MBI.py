@@ -37,12 +37,13 @@ possible_details = {
     'InvalidCommunicator':'AInvalidParam', 'InvalidDatatype':'AInvalidParam', 'InvalidRoot':'AInvalidParam', 'InvalidTag':'AInvalidParam', 'InvalidWindow':'AInvalidParam', 'InvalidOperator':'AInvalidParam', 'InvalidOtherArg':'AInvalidParam', 'ActualDatatype':'AInvalidParam',
     'InvalidSrcDest':'AInvalidParam', 
     # scope: Process-wide
-    'OutOfInitFini':'BInitFini', 
+#    'OutOfInitFini':'BInitFini', 
     'CommunicatorLeak':'BResLeak', 'DatatypeLeak':'BResLeak', 'GroupLeak':'BResLeak', 'OperatorLeak':'BResLeak', 'TypeLeak':'BResLeak', 'RequestLeak':'BResLeak',
     'MissingStart':'BReqLifecycle', 'MissingWait':'BReqLifecycle',
     'LocalConcurrency':'BLocalConcurrency',
     # scope: communicator
-    'CallMatching':'CMatch', 'CommunicatorMatching':'CMatch', 'DatatypeMatching':'CMatch', 'OperatorMatching':'CMatch', 'RootMatching':'CMatch', 'TagMatching':'CMatch',
+    'CallMatching':'DMatch', 
+    'CommunicatorMatching':'CMatch', 'DatatypeMatching':'CMatch', 'OperatorMatching':'CMatch', 'RootMatching':'CMatch', 'TagMatching':'CMatch',
     'MessageRace':'DRace', 
     
     'GlobalConcurrency':'DGlobalConcurrency',
@@ -53,22 +54,25 @@ possible_details = {
 error_scope = {
     'AInvalidParam':'single call',
     'BResLeak':'single process',
-    'BInitFini':'single process',
+#    'BInitFini':'single process',
     'BReqLifecycle':'single process',
     'BLocalConcurrency':'single process',
     'CMatch':'multi-processes',
     'DRace':'multi-processes',
+    'DMatch':'multi-processes',
     'DGlobalConcurrency':'multi-processes',
     'EBufferingHazard':'system',
+    'FOK':'correct codes'
 }
 
 displayed_name = {
     'AInvalidParam':'Invalid parameter',
     'BResLeak':'Resource leak',
-    'BInitFini':'MPI call before initialization/after finalization',
+#    'BInitFini':'MPI call before initialization/after finalization',
     'BReqLifecycle':'Request lifecycle',
     'BLocalConcurrency':'Local concurrency',
     'CMatch':'Parameter matching',
+    'DMatch':"Call matching",
     'DRace':'Message race',
     'DGlobalConcurrency':'Global concurrency',
     'EBufferingHazard':'Buffering hazard',
@@ -550,6 +554,101 @@ iframe {
 
     os.chdir(here)
 
+def cmd_latex(rootdir, toolnames):
+    here = os.getcwd()
+    os.chdir(rootdir)
+    results = {}
+    total_elapsed = {}
+    used_toolnames = []
+
+    # select the tools for which we have some results
+    print("Produce the stats for:", end='')
+    for toolname in toolnames:
+        if not toolname in tools:
+            raise Exception(f"Tool {toolname} does not seem to be a valid name.")
+
+        if os.path.exists(f'logs/{toolname}'):
+            used_toolnames.append(toolname)
+            print(f' {toolname}', end="")
+
+            # To compute timing statistics
+            total_elapsed[toolname] = 0
+    print(".")
+
+    # Initialize the data structure to gather all results
+    results = {}
+    timing = {}
+    for error in error_scope:
+        results[error] = {}
+        timing[error] = {}
+        for toolname in used_toolnames:
+            results[error][toolname] = {'failure':[], 'timeout':[], 'unimplemented':[], 'other':[], 'TRUE_NEG':[], 'TRUE_POS':[], 'FALSE_NEG':[], 'FALSE_POS':[]}
+            timing[error][toolname] = 0
+
+    # Get all data from the caches
+    for test in todo:
+        binary=re.sub('\.c', '', os.path.basename(test['filename']))
+        ID=test['id']
+        test_ID = f"{binary}_{ID}"
+        expected=test['expect']
+
+        for toolname in used_toolnames:
+            (res_category, elapsed, diagnostic, outcome) = categorize(toolname=toolname, test_ID=test_ID, expected=expected)
+            error = possible_details[test['detail']]
+            results[error][toolname][res_category].append(test_ID)
+
+    # Produce the summary per tool and per category
+    with open(f'{rootdir}/summary-per-category.tex', 'w') as outfile:
+        outfile.write("\\begin{table*}[htbp]\n")
+        outfile.write("\\resizebox{\\linewidth}{!}{\n")
+        outfile.write("\\begin{tabular}{|l|*{"+str(len(used_toolnames))+"}{c|c|c|c||}}\n")
+        outfile.write("\\cline{2-"+str(len(used_toolnames)*4+1)+"}\n")
+        # First title line: Tool names
+        outfile.write("  \\multicolumn{1}{c|}{}")
+        for t in used_toolnames: 
+            outfile.write("& \\multicolumn{4}{c||}{"+displayed_name[t]+"}")
+        outfile.write("\\\\\n")
+        outfile.write("\\cline{2-"+str(len(used_toolnames)*4+1)+"}\n")
+        # Second title line: TP&TN&FP&FN per tool
+        outfile.write("  \\multicolumn{1}{c|}{}")
+        for t in used_toolnames: 
+            outfile.write("& \\rotatebox{90}{Build error~~} &\\rotatebox{90}{Failure} & \\rotatebox{90}{Incorrect} & \\rotatebox{90}{Correct~~} ")
+        outfile.write("\\\\\\hline\n")
+#       &  & \textbf{Recall} & \textbf{Specificity}  & \textbf{Precision}  & \textbf{Accuracy}  & \textbf{F1 Score}
+
+        for error in error_scope:
+            if error == 'FOK':
+                outfile.write("\\hline\n")
+            outfile.write(displayed_name[error])
+            for toolname in used_toolnames:
+                port = len(results[error][toolname]['unimplemented'])
+                othr = len(results[error][toolname]['other'])
+                fail = len(results[error][toolname]['failure'])
+                tout = len(results[error][toolname]['timeout'])
+                good = len(results[error][toolname]['TRUE_POS']) + len(results[error][toolname]['TRUE_NEG'])
+                bad  = len(results[error][toolname]['FALSE_POS']) + len(results[error][toolname]['FALSE_NEG'])
+                outfile.write(f"&{port+othr} & {fail+tout} &{bad}&{good}")
+                #results[error][toolname] = {'failure':[], 'timeout':[], 'unimplemented':[], 'other':[], 'TRUE_NEG':[], 'TRUE_POS':[], 'FALSE_NEG':[], 'FALSE_POS':[]}
+            outfile.write("\\\\\\hline\n")
+        outfile.write("\\hline\n \\textbf{Total}")
+        for toolname in used_toolnames:
+            port = othr = fail = tout = good = bad = 0
+            for error in error_scope:
+                port += len(results[error][toolname]['unimplemented'])
+                othr += len(results[error][toolname]['other'])
+                fail += len(results[error][toolname]['failure'])
+                tout += len(results[error][toolname]['timeout'])
+                good += len(results[error][toolname]['TRUE_POS']) + len(results[error][toolname]['TRUE_NEG'])
+                bad  += len(results[error][toolname]['FALSE_POS']) + len(results[error][toolname]['FALSE_NEG'])
+            outfile.write(f"&{port+othr} & {fail+tout} &{bad}&{good}")
+        outfile.write("\\\\\\hline\n")
+
+        # Finish the table
+        outfile.write("\\end{tabular}\n")
+        outfile.write("}\n")
+        outfile.write("\\end{table*}\n")
+
+    os.chdir(here)
 ########################
 # Main script argument parsing
 ########################
@@ -561,8 +660,9 @@ parser = argparse.ArgumentParser(
 parser.add_argument('-c', metavar='cmd', default='all',
                     help="The command you want to execute. By default, 'all', runs all commands in sequence. Other choices:\n"
                     "  generate: redo all the test codes.\n"
+                    "  latex: Produce the LaTeX tables we need for the article, using the cached values from a previous 'run'.\n"
                     "  run: run the tests on all codes.\n"
-                    "  stats: produce the statistics, using the cached values from a previous 'run'.\n")
+                    "  stats: produce the HTML statistics, using the cached values from a previous 'run'.\n")
 
 parser.add_argument('-x', metavar='tool', default='mpirun',
                     help='the tool you want at execution: one among [aislinn, civl, isp, mpisv, must, simgrid, parcoach]')
@@ -577,7 +677,7 @@ args = parser.parse_args()
 rootdir = os.path.dirname(os.path.abspath(__file__))
 
 # Parameter checking: Did we get a valid tool to use?
-if args.c != 'generate' and args.c != 'stats':
+if args.c == 'all' or args.c == 'run':
     if args.x == 'mpirun':
         raise Exception("No tool was provided, please retry with -x parameter. (see -h for further information on usage)")
     elif args.x in ['aislinn', 'civl', 'isp', 'must', 'mpisv', 'simgrid', 'parcoach']:
@@ -594,6 +694,9 @@ elif args.c == 'generate':
 elif args.c == 'run':
     extract_all_todo(args.b)
     cmd_run(rootdir=rootdir, toolname=args.x)
+elif args.c == 'latex':
+    extract_all_todo(args.b)
+    cmd_latex(rootdir, toolnames=['aislinn', 'civl', 'isp', 'simgrid', 'mpisv', 'must', 'parcoach'])
 elif args.c == 'stats':
     extract_all_todo(args.b)
     cmd_stats(rootdir, toolnames=['aislinn', 'civl', 'isp', 'simgrid', 'mpisv', 'must', 'parcoach'])
