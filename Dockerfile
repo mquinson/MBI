@@ -50,6 +50,7 @@ RUN apt-get -y -qq install python-jinja2
 RUN apt-get -y -qq install python2.7
 RUN apt-get -y -qq install python3-pip
 RUN apt-get -y -qq install quilt
+RUN apt-get -y -qq install z3
 RUN apt-get -y -qq install zlib1g-dev
 
 RUN pip3 install drawSvg
