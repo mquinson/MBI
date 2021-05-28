@@ -89,11 +89,11 @@ operation['MPI_Ireduce'] = lambda n: f"MPI_Ireduce(&sum{n}, &val{n}, 1, MPI_INT,
 fini['MPI_Ireduce'] = lambda n: ""
 
 init['MPI_Ibcast'] = lambda n: f'int buf{n}[128]; MPI_Request req{n};MPI_Status sta{n};'
-operation['MPI_Ibcast'] = lambda n: f'MPI_Ibcast(&buf{n}, buff_size, MPI_INT, root, MPI_COMM_WORLD,&req{n});MPI_Wait(&req{n},&sta{n});'
+operation['MPI_Ibcast'] = lambda n: f'MPI_Ibcast(&buf{n}, buff_size, MPI_INT, root, MPI_COMM_WORLD, &req{n});MPI_Wait(&req{n},&sta{n});'
 fini['MPI_Ibcast'] = lambda n: ""
 
 init['MPI_Igather'] = lambda n: f"int val{n}, buf{n}[buff_size];MPI_Request req{n};MPI_Status sta{n};"
-operation['MPI_Igather'] = lambda n: f"MPI_Igather(&val{n}, 1, MPI_INT, buf{n},1, MPI_INT, root, MPI_COMM_WORLD); MPI_Wait(&req{n},&sta{n});"
+operation['MPI_Igather'] = lambda n: f"MPI_Igather(&val{n}, 1, MPI_INT, buf{n},1, MPI_INT, root, MPI_COMM_WORLD, &req{n}); MPI_Wait(&req{n},&sta{n});"
 fini['MPI_Igather'] = lambda n: ""
 
 # Generate code with one collective
