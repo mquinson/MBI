@@ -6,6 +6,10 @@
 # Personal notes: Push the image to the public Docker Hub
 #      docker image tag mpi-bugs-initiative:latest registry.hub.docker.com/mquinson/mbi
 #      docker push registry.hub.docker.com/mquinson/mbi
+# Personal notes: Push the image to the gitlab.com registery   It's failing on me :( 
+#      docker login registry.gitlab.com -u mquinson -p <token from journal.org>
+#      docker image tag mpi-bugs-initiative:latest registry.gitlab.com/mquinson/mbi:latest
+#      docker push registry.gitlab.com/mquinson/mbi
 FROM ubuntu:20.04
 USER root
 RUN apt-get update
