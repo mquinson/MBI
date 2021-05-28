@@ -89,4 +89,4 @@ for op in toolfunc:
     replace['outcome'] = 'ERROR: InvalidOtherArg'
     replace['errormsg'] = 'Invalid Argument in collective. @{op}@ has an invalid color (see line @{line:MBIERROR}@)'
     replace['change_color'] = 'color=-10;'
-    make_file(template, f'CollInvalidOtherArg_{op}.c', replace)
+    make_file(template, f'CollInvalidOtherArg_{op}_nok.c', replace)
