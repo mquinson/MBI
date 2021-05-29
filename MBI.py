@@ -62,7 +62,7 @@ error_scope = {
     'DMatch':'multi-processes',
     'DGlobalConcurrency':'multi-processes',
     'EBufferingHazard':'system',
-    'FOK':'correct codes'
+    'FOK':'correct executions'
 }
 
 displayed_name = {
@@ -76,7 +76,7 @@ displayed_name = {
     'DRace':'Message race',
     'DGlobalConcurrency':'Global concurrency',
     'EBufferingHazard':'Buffering hazard',
-    'FOK':"Correct code",
+    'FOK':"Correct execution",
 
     'aislinn':'Aislinn','civl':'CIVL', 'isp':'ISP', 'simgrid':'SimGrid', 'mpisv':'MPI-SV', 'must':'MUST', 'parcoach':'PARCOACH'
 }
@@ -292,14 +292,17 @@ def categorize(toolname, test_ID, expected):
         raise Exception(f"Unexpected expectation: {expected} (must be OK or ERROR)")
 
     return (res_category, elapsed, diagnostic, outcome)
-def percent(num, den, compl=False):
-    """Returns the ratio of num/den as a percentage, rounded to 2 digits only"""
+def percent(num, den, compl=False, one=False):
+    """Returns the ratio of num/den as a percentage, rounded to 2 digits only. If one=True, then return a ratio of 1 with 4 digits"""
     if den == 0:
         return "(error)"
     elif compl: # Complementary
-        return 100 - int(num/den*10000)/100
+        res = round (100 - num/den*100, 2)
     else:
-        return int(num/den*10000)/100
+        res = round (num/den*100, 2)
+    if int(res) == 100:
+        return "1" if one else "100" 
+    return round(res/100, 4) if one else res
 def seconds2human(secs):
     """Returns the amount of seconds in human-friendly way"""
     days = int(secs//86400)
@@ -585,13 +588,14 @@ def cmd_latex(rootdir, toolnames):
     print(".")
 
     # Initialize the data structure to gather all results
-    results = {}
+    results = {'total':{}}
     timing = {}
     for error in error_scope:
         results[error] = {}
         timing[error] = {}
         for toolname in used_toolnames:
             results[error][toolname] = {'failure':[], 'timeout':[], 'unimplemented':[], 'other':[], 'TRUE_NEG':[], 'TRUE_POS':[], 'FALSE_NEG':[], 'FALSE_POS':[]}
+            results['total'][toolname] = {'failure':[], 'timeout':[], 'unimplemented':[], 'other':[], 'TRUE_NEG':[], 'TRUE_POS':[], 'FALSE_NEG':[], 'FALSE_POS':[],'error':[],'OK':[]}
             timing[error][toolname] = 0
 
     # Get all data from the caches
@@ -605,6 +609,11 @@ def cmd_latex(rootdir, toolnames):
             (res_category, elapsed, diagnostic, outcome) = categorize(toolname=toolname, test_ID=test_ID, expected=expected)
             error = possible_details[test['detail']]
             results[error][toolname][res_category].append(test_ID)
+            results['total'][toolname][res_category].append(test_ID)
+            if expected == 'OK':
+                results['total'][toolname]['OK'].append(test_ID)
+            else:
+                results['total'][toolname]['error'].append(test_ID)
 
     # Produce the results per tool and per category
     with open(f'{rootdir}/results-per-category.tex', 'w') as outfile:
@@ -652,6 +661,68 @@ def cmd_latex(rootdir, toolnames):
 
         # Finish the table
         outfile.write("\\end{tabular}\n")
+
+    # Produce the landscape results+metric per tool for all category
+    with open(f'{rootdir}/results-summary.tex', 'w') as outfile:
+        outfile.write('\\begin{tabular}{|l|*{7}{c|}}\\hline\n')
+        outfile.write('  \\multirow{2}{*}{ \\textbf{Tool}} &  \\multicolumn{3}{c|}{Errors} &\\multicolumn{4}{c|}{Results}\\\\\\cline{2-8}\n')
+        outfile.write('& \\textbf{Compilation}&\\textbf{Timeout}&\\textbf{Failure}  & \\textbf{TP} & \\textbf{TN} & \\textbf{FP} & \\textbf{FN} \\\\\\hline \n')
+
+        for toolname in used_toolnames:
+            outfile.write(f'{displayed_name[toolname]}&\n')
+
+            port = len(results['total'][toolname]['unimplemented'])
+            fail = len(results['total'][toolname]['failure'])
+            othr = len(results['total'][toolname]['other'])
+            tout = len(results['total'][toolname]['timeout'])
+            TP = len(results['total'][toolname]['TRUE_POS'])
+            TN = len(results['total'][toolname]['TRUE_NEG'])
+            FP = len(results['total'][toolname]['FALSE_NEG'])
+            FN = len(results['total'][toolname]['FALSE_POS']) 
+            outfile.write(f'{port}&{tout}&{fail+othr}&{TP}&{TN}&{FP}&{FN}')
+            outfile.write(f'\\\\\\hline\\hline\n')
+
+        outfile.write('\\textit{Ideal tool}&\\textit{0}&\\textit{0}&\\textit{0}&')
+        outfile.write(f"\\textit{{{len(results['total'][toolname]['error'])}}}&\\textit{{{len(results['total'][toolname]['OK'])}}}&\\textit{{0}}&\\textit{{0}} \\\\\\hline\n")
+
+        outfile.write('\\end{tabular}\n')
+
+    with open(f'{rootdir}/results-metrics.tex', 'w') as outfile:
+        outfile.write('\\begin{tabular}{|l|*{7}{c|}}\\hline\n')
+        outfile.write('  \\multirow{2}{*}{ \\textbf{Tool}} &  \\multicolumn{2}{c|}{Robustness} &\\multicolumn{4}{c|}{Usefulness}&\\textbf{Overall}\\\\\\cline{2-7}\n')
+
+        outfile.write('  &  \\textbf{Coverage} & \\textbf{Conclusiveness} & \\textbf{Specificity}&\\textbf{Recall}& \\textbf{Precision}& \\textbf{F1 Score}    & \\textbf{accuracy}   \\\\\\hline \n')
+
+        for toolname in used_toolnames:
+            outfile.write(f'{displayed_name[toolname]}&\n')
+
+            nPort = len(results['total'][toolname]['unimplemented'])
+            nFail = len(results['total'][toolname]['failure']) + len(results['total'][toolname]['other'])
+            nTout = len(results['total'][toolname]['timeout'])
+            TP = len(results['total'][toolname]['TRUE_POS'])
+            TN = len(results['total'][toolname]['TRUE_NEG'])
+            FP = len(results['total'][toolname]['FALSE_NEG'])
+            FN = len(results['total'][toolname]['FALSE_POS']) 
+
+            total = TP + TN + FP + FN + nTout + nPort + nFail
+            precision = TP/(TP+FP)
+            recall = TP/(TP+FN)
+
+            # Coverage & Completion
+            outfile.write(f'{percent(nPort,total,compl=True,one=True)} &{percent((nTout+nFail+nPort),(total),compl=True,one=True)}&')
+            # Specificity: recognized {TN} correct codes out of {TN+FP}
+            outfile.write(f'{percent(TN,(TN+FP),one=True)}&')
+            # Recall: found {TP} errors out of {TP+FN} ;Precision: {TP} diagnostic of error are correct out of {TP+FP}) ; 
+            outfile.write(f'{percent(TP,(TP+FN),one=True)} & {percent(TP,(TP+FP),one=True)} &')
+            # F1 Score
+            outfile.write(f'{percent(2*precision*recall,(precision+recall),one=True)}&')
+            # Accuracy: {TP+TN} correct diagnostics in total, out of all tests {TP+TN+FP+FN+nTout+nFail+nPort} diagnostics
+            outfile.write(f'{percent(TP+TN,(TP+TN+FP+FN+nTout+nFail+nPort),one=True)}')
+            outfile.write(f'\\\\\\hline\n')
+
+        outfile.write("\\hline\n\\textit{Ideal tool}&\\textit{1}&\\textit{1}&\\textit{1}&\\textit{1}&\\textit{1}&\\textit{1}&\\textit{1}\\\\\\hline\n")
+
+        outfile.write('\\end{tabular}\n')
 
     os.chdir(here)
 ########################
