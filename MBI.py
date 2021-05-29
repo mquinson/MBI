@@ -72,7 +72,7 @@ displayed_name = {
     'BReqLifecycle':'Request lifecycle',
     'BLocalConcurrency':'Local concurrency',
     'CMatch':'Parameter matching',
-    'DMatch':"Call matching",
+    'DMatch':"Call ordering",
     'DRace':'Message race',
     'DGlobalConcurrency':'Global concurrency',
     'EBufferingHazard':'Buffering hazard',
