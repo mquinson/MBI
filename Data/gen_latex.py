@@ -199,11 +199,16 @@ def generate_errors(files, outfile):
         count = {'total':0}
         for feat in possible_features:
             count[feat] = 0
+        seen = []
         for (file,test) in files_per_expected[category]:
-            (features,  _) = parse_file_features(file)
-            count['total'] += 1
-            for feat in features:
-                count[feat] += 1
+            if not file in seen:
+                seen.append(file)
+                (features,  _) = parse_file_features(file)
+                count['total'] += 1
+                for feat in features:
+                    count[feat] += 1
+            else:
+                print(f"Ignore duplicate {file} while counting files per feature.")
         return count
     def show_counts(category):
         count = get_counts(category)
