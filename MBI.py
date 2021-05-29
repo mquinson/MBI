@@ -201,7 +201,7 @@ def cmd_gencodes():
             print(m.group(1), end=", ")
         else:
             print(generator, end=", ")
-        subprocess.run(generator, check=True)
+        subprocess.run(f'../scripts/ensure_python3 {generator}', shell=True, check=True)
     print("\nTest count: ", end='')
     sys.stdout.flush()
     subprocess.run("ls *.c|wc -l", shell=True, check=True)
