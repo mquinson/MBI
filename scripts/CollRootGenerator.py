@@ -68,7 +68,7 @@ operation = {}
 fini = {}
 
 init['MPI_Bcast'] = lambda n: f'int buf{n}[buff_size];'
-operation['MPI_Bcast'] = lambda n: f'MPI_Bcast(buf{n}, buff_size, MPI_INT, root, MPI_COMM_WORLD);'
+operation['MPI_Bcast'] = lambda n: f'MPI_Bcast(&buf{n}, buff_size, MPI_INT, root, MPI_COMM_WORLD);'
 fini['MPI_Bcast'] = lambda n: ""
 
 init['MPI_Reduce'] = lambda n: f"int sum{n}, val{n} = 1;"
