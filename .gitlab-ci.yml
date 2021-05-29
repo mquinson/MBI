@@ -554,7 +554,8 @@ pages:
         - scripts/ensure_python3 ./MBI.py -c stats
         - mkdir public
         - pwd ; ls
-        - cp -r index.html summary.html img gencodes logs public/
+        - cp -r index.html summary.html img logs public/
+        - cp -r /MBI/gencodes public
     artifacts:
         untracked: false
         expire_in: 30 days
