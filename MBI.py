@@ -300,6 +300,13 @@ def percent(num, den, compl=False):
         return 100 - int(num/den*10000)/100
     else:
         return int(num/den*10000)/100
+def seconds2human(secs):
+    """Returns the amount of seconds in human-friendly way"""
+    days = int(secs//86400)
+    hours = int((secs - days*86400)//3600)
+    minutes = int((secs - days*86400 - hours*3600)//60)
+    seconds = secs - days*86400 - hours*3600 - minutes*60
+    return (f"{days} days, " if days else "") + (f"{hours} hours, " if hours else "") + (f"{minutes} minutes, " if minutes else "") + (f"{int(seconds*100)/100} seconds" if seconds else "")
 
 def cmd_stats(rootdir, toolnames=[]):
     here = os.getcwd()
@@ -552,7 +559,7 @@ iframe {
         print(f"Specificity: {percent(TN,(TN+FP))}% (recognized {TN} correct codes out of {TN+FP})")
         print(f"Precision: {percent(TP,(TP+FP))}% ({TP} diagnostic of error are correct out of {TP+FP})")
         print(f"Accuracy: {percent((TP+TN),(TP+TN+FP+FN))}% ({TP+TN} correct diagnostics in total, out of {TP+TN+FP+FN} diagnostics)")
-        print(f"\nTotal time of all tests (not counting the timeouts): {total_elapsed[toolname]}")
+        print(f"\nTotal time of {toolname} for all tests (not counting the timeouts): {seconds2human(total_elapsed[toolname])} ({total_elapsed[toolname]} seconds)")
 
     os.chdir(here)
 
