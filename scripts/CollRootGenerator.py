@@ -45,10 +45,10 @@ int main(int argc, char **argv) {
   if (nprocs < 2)
     printf("MBI ERROR: This test needs at least 2 processes to produce a bug!\\n");
 
-	int dbs = sizeof(int)*nprocs; /* Size of the dynamic buffers for alltoall and friends */
-  @{init}@
-  
+	int dbs = sizeof(int)*nprocs; /* Size of the dynamic buffers for alltoall and friends */  
 	int root = 0;
+
+  @{init}@
   @{change_root}@
 
   @{operation}@ 

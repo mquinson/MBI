@@ -103,25 +103,25 @@ init['MPI_Isend'] = lambda n: f'int buf{n}[buff_size]; MPI_Request req{n};'
 start['MPI_Isend'] = lambda n: ""
 operation['MPI_Isend'] = lambda n: f'MPI_Isend(buf{n}, buff_size, MPI_INT, dest, 0, newcom, &req{n});'
 fini['MPI_Isend'] = lambda n: f'MPI_Wait(&req{n}, MPI_STATUS_IGNORE);'
-free['MPI_Isend'] = lambda n: ""
+free['MPI_Isend'] = lambda n: f'if(req{n} != MPI_REQUEST_NULL) MPI_Request_free(&req{n});'
 
 init['MPI_Irecv'] = lambda n: f'int buf{n}[buff_size]; MPI_Request req{n};'
 start['MPI_Irecv'] = lambda n: "" 
 operation['MPI_Irecv'] = lambda n: f'MPI_Irecv(buf{n}, buff_size, MPI_INT, src, 0, newcom, &req{n});'
 fini['MPI_Irecv'] = lambda n: f'MPI_Wait(&req{n}, MPI_STATUS_IGNORE);'
-free['MPI_Irecv'] = lambda n: "" 
+free['MPI_Irecv'] = lambda n: f'if(req{n} != MPI_REQUEST_NULL) MPI_Request_free(&req{n});' 
 
 init['MPI_Send_init'] = lambda n: f'int buf{n}[buff_size]; MPI_Request req{n};'
 operation['MPI_Send_init'] = lambda n: f'MPI_Send_init(buf{n}, buff_size, MPI_INT, dest, 0, newcom, &req{n});' 
 start['MPI_Send_init'] = lambda n: f'MPI_Start(&req{n});'
 fini['MPI_Send_init'] = lambda n: f'MPI_Wait(&req{n}, MPI_STATUS_IGNORE);'
-free['MPI_Send_init'] = lambda n: f'MPI_Request_free(&req{n});'
+free['MPI_Send_init'] = lambda n: f'if(req{n} != MPI_REQUEST_NULL) MPI_Request_free(&req{n});'
 
 init['MPI_Recv_init'] = lambda n: f'int buf{n}[buff_size]; MPI_Request req{n};'
 start['MPI_Recv_init'] = lambda n: f'MPI_Start(&req{n});'
 operation['MPI_Recv_init'] = lambda n: f'MPI_Recv_init(buf{n}, buff_size, MPI_INT, src, 0, newcom, &req{n});'
 fini['MPI_Recv_init'] = lambda n: f'MPI_Wait(&req{n}, MPI_STATUS_IGNORE);'
-free['MPI_Recv_init'] = lambda n: f'MPI_Request_free(&req{n});'
+free['MPI_Recv_init'] = lambda n: f'if(req{n} != MPI_REQUEST_NULL) MPI_Request_free(&req{n});'
 
 
 for p1 in send + isend + perssend:
