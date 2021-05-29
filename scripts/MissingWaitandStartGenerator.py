@@ -51,12 +51,15 @@ int main(int argc, char **argv) {
 
   @{init1}@
   @{init2}@
+
   @{operation1}@ /* MBIERROR */ 
   @{start1}@
   @{operation2}@ 
   @{start2}@
+
 	@{fini1}@ 
 	@{fini2}@  
+
 	@{free1}@
 	@{free2}@
 

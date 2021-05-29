@@ -69,7 +69,7 @@ int main(int argc, char **argv) {
 """
 
 collectives = ['MPI_Allgather', 'MPI_Allgatherv', 'MPI_Allreduce', 'MPI_Alltoall', 'MPI_Alltoallv', 'MPI_Barrier', 'MPI_Bcast', 'MPI_Gather', 'MPI_Reduce', 'MPI_Scatter']
-icollectives = ['MPI_Ibarrier', 'MPI_Ireduce', 'MPI_Ibcast']
+icollectives = ['MPI_Ibarrier', 'MPI_Ireduce', 'MPI_Ibcast', 'MPI_Igather']
 
 init = {}
 fini = {}
@@ -136,6 +136,10 @@ fini['MPI_Scatter'] = lambda n: ""
 init['MPI_Gather'] = lambda n: f"int val{n}, buf{n}[buff_size];"
 operation['MPI_Gather'] = lambda n: f"MPI_Gather(&val{n}, 1, MPI_INT, buf{n},1, MPI_INT, root, MPI_COMM_WORLD);"
 fini['MPI_Gather'] = lambda n: ""
+
+init['MPI_Igather'] = lambda n: f"MPI_Request req{n}; MPI_Status sta{n}; int val{n}, buf{n}[buff_size];"
+operation['MPI_Igather'] = lambda n: f"MPI_Igather(&val{n}, 1, MPI_INT, buf{n},1, MPI_INT, root, MPI_COMM_WORLD, &req{n}); MPI_Wait(&req{n},&sta{n});"
+fini['MPI_Igather'] = lambda n: "if (req{n} != MPI_REQUEST_NULL) MPI_Request_free(&req{n});"
 
 for coll1 in collectives + icollectives:
     for coll2 in collectives + icollectives:
