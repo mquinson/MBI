@@ -22,7 +22,6 @@ build-must:
         - scripts/MUST-build
     artifacts:
         untracked: false
-        expire_in: 30 days
         paths:
             - builds/MUST
 
@@ -38,7 +37,6 @@ test-must-1:
         - scripts/ensure_python3 ./MBI.py -x must -c run -b 1/10
     artifacts:
         untracked: false
-        expire_in: 30 days
         when: always
         paths:
             - logs
@@ -55,7 +53,6 @@ test-must-2:
         - scripts/ensure_python3 ./MBI.py -x must -c run -b 2/10
     artifacts:
         untracked: false
-        expire_in: 30 days
         when: always
         paths:
             - logs
@@ -72,7 +69,6 @@ test-must-3:
         - scripts/ensure_python3 ./MBI.py -x must -c run -b 3/10
     artifacts:
         untracked: false
-        expire_in: 30 days
         when: always
         paths:
             - logs
@@ -89,7 +85,6 @@ test-must-4:
         - scripts/ensure_python3 ./MBI.py -x must -c run -b 4/10
     artifacts:
         untracked: false
-        expire_in: 30 days
         when: always
         paths:
             - logs
@@ -106,7 +101,6 @@ test-must-5:
         - scripts/ensure_python3 ./MBI.py -x must -c run -b 5/10
     artifacts:
         untracked: false
-        expire_in: 30 days
         when: always
         paths:
             - logs
@@ -123,7 +117,6 @@ test-must-6:
         - scripts/ensure_python3 ./MBI.py -x must -c run -b 6/10
     artifacts:
         untracked: false
-        expire_in: 30 days
         when: always
         paths:
             - logs
@@ -140,7 +133,6 @@ test-must-7:
         - scripts/ensure_python3 ./MBI.py -x must -c run -b 7/10
     artifacts:
         untracked: false
-        expire_in: 30 days
         when: always
         paths:
             - logs
@@ -157,7 +149,6 @@ test-must-8:
         - scripts/ensure_python3 ./MBI.py -x must -c run -b 8/10
     artifacts:
         untracked: false
-        expire_in: 30 days
         when: always
         paths:
             - logs
@@ -174,7 +165,6 @@ test-must-9:
         - scripts/ensure_python3 ./MBI.py -x must -c run -b 9/10
     artifacts:
         untracked: false
-        expire_in: 30 days
         when: always
         paths:
             - logs
@@ -191,7 +181,6 @@ test-must-10:
         - scripts/ensure_python3 ./MBI.py -x must -c run -b 10/10
     artifacts:
         untracked: false
-        expire_in: 30 days
         when: always
         paths:
             - logs
@@ -207,7 +196,6 @@ build-aislinn:
         - ./scripts/Aislinn-build
     artifacts:
         untracked: false
-        expire_in: 30 days
         when: always
         paths:
             - tools/aislinn-git/*
@@ -223,7 +211,6 @@ test-aislinn:
         - scripts/ensure_python3 ./MBI.py -x aislinn
     artifacts:
         untracked: false
-        expire_in: 30 days
         when: always
         paths:
             - logs
@@ -237,7 +224,6 @@ test-aislinn:
 #        - ./scripts/mpisv-build
 #    artifacts:
 #        untracked: false
-#        expire_in: 30 days
 #        when: always
 #        paths:
 #            - tools/mpisv
@@ -254,7 +240,6 @@ test-aislinn:
 #        - scripts/ensure_python3 ./MBI.py -x mpisv
 #    artifacts:
 #        untracked: false
-#        expire_in: 30 days
 #        when: always
 #        paths:
 #            - logs
@@ -268,7 +253,6 @@ test-civl-1:
         - scripts/ensure_python3 ./MBI.py -x civl -c run -b 1/4
     artifacts:
         untracked: false
-        expire_in: 30 days
         when: always
         paths:
             - logs
@@ -281,7 +265,6 @@ test-civl-2:
         - scripts/ensure_python3 ./MBI.py -x civl -c run -b 2/4
     artifacts:
         untracked: false
-        expire_in: 30 days
         when: always
         paths:
             - logs
@@ -294,7 +277,6 @@ test-civl-3:
         - scripts/ensure_python3 ./MBI.py -x civl -c run -b 3/4
     artifacts:
         untracked: false
-        expire_in: 30 days
         when: always
         paths:
             - logs
@@ -307,7 +289,6 @@ test-civl-4:
         - scripts/ensure_python3 ./MBI.py -x civl -c run -b 4/4
     artifacts:
         untracked: false
-        expire_in: 30 days
         when: always
         paths:
             - logs
@@ -319,7 +300,6 @@ build-parcoach:
         - ./scripts/Parcoach-build
     artifacts:
         untracked: false
-        expire_in: 30 days
         when: always
         paths:
             - builds/parcoach/*
@@ -334,7 +314,6 @@ test-parcoach:
         - scripts/ensure_python3 ./MBI.py -x parcoach
     artifacts:
         untracked: false
-        expire_in: 30 days
         when: always
         paths:
             - logs
@@ -349,7 +328,6 @@ build-simgrid:
             - SimGrid/*
     artifacts:
         untracked: false
-        expire_in: 30 days
         when: always
         paths:
             - builds/SimGrid
@@ -364,7 +342,6 @@ test-simgrid:
         - scripts/ensure_python3 ./MBI.py -x simgrid
     artifacts:
         untracked: false
-        expire_in: 30 days
         when: always
         paths:
             - logs
@@ -376,7 +353,6 @@ build-isp:
         - sh -x ./scripts/ISP-build
     artifacts:
         untracked: false
-        expire_in: 30 days
         when: always
         paths:
             - ./builds/ISP
@@ -391,7 +367,6 @@ test-isp-1:
         - scripts/ensure_python3 ./MBI.py -x isp -c run -b 1/2
     artifacts:
         untracked: false
-        expire_in: 30 days
         when: always
         paths:
             - logs
@@ -406,7 +381,6 @@ test-isp-2:
         - scripts/ensure_python3 ./MBI.py -x isp -c run -b 2/2
     artifacts:
         untracked: false
-        expire_in: 30 days
         when: always
         paths:
             - logs
@@ -426,7 +400,6 @@ simgrid-svg:
 #        - cp *svg ../logs/
     artifacts:
         untracked: false
-        expire_in: 30 days
         when: always
         paths:
             - logs/*
@@ -446,7 +419,6 @@ parcoach-svg:
 #        - cp *svg ../logs/
     artifacts:
         untracked: false
-        expire_in: 30 days
         when: always
         paths:
             - logs/*
@@ -468,7 +440,6 @@ isp-svg:
 #        - cp *svg ../logs/
     artifacts:
         untracked: false
-        expire_in: 30 days
         when: always
         paths:
             - logs/*
@@ -488,7 +459,6 @@ aislinn-svg:
 #        - cp *svg ../logs/
     artifacts:
         untracked: false
-        expire_in: 30 days
         when: always
         paths:
             - logs/*
@@ -509,7 +479,6 @@ civl-svg:
         - scripts/ensure_python3 ./MBI.py -x civl
     artifacts:
         untracked: false
-        expire_in: 30 days
         when: always
         paths:
             - logs/*
@@ -542,7 +511,6 @@ must-svg:
         - scripts/ensure_python3 ./MBI.py -x must
     artifacts:
         untracked: false
-        expire_in: 30 days
         when: always
         paths:
             - logs/*
@@ -558,7 +526,6 @@ pages:
         - cp -r /MBI/gencodes public
     artifacts:
         untracked: false
-        expire_in: 30 days
         when: always
         paths:
             - public
