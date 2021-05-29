@@ -270,7 +270,7 @@ def categorize(toolname, test_ID, expected):
         diagnostic = f'tool error, or test not run'
     elif outcome == 'UNIMPLEMENTED':
         res_category = 'unimplemented'
-        diagnostic = f'portability issue'
+        diagnostic = f'coverage issue'
     elif outcome == 'other':
         res_category = 'other'
         diagnostic = f'inconclusive run'
@@ -292,10 +292,12 @@ def categorize(toolname, test_ID, expected):
         raise Exception(f"Unexpected expectation: {expected} (must be OK or ERROR)")
 
     return (res_category, elapsed, diagnostic, outcome)
-def percent(num, den):
+def percent(num, den, compl=False):
     """Returns the ratio of num/den as a percentage, rounded to 2 digits only"""
     if den == 0:
         return "(error)"
+    elif compl: # Complementary
+        return 100 - int(num/den*10000)/100
     else:
         return int(num/den*10000)/100
 
@@ -467,17 +469,17 @@ iframe {
       for toolname in used_toolnames:
         outHTML.write(f"<td>{displayed_name[toolname]}</td>")
 
-      outHTML.write("</tr>\n<tr><td>Portability</td>")
+      outHTML.write("</tr>\n<tr><td>API coverage</td>")
       for toolname in used_toolnames:
         (TP, TN, FP, FN, nPort, nFail, nTout, nNocc) = tool_stats(toolname)
         total = TP + TN + FP + FN + nTout + nPort + nFail + nNocc
-        outHTML.write(f"<td><div class='tooltip'>{percent(1-nPort,total)}% <span class='tooltiptext'>{nPort} unimplemented calls, {nNocc} inconclusive runs</span></div></td>")
+        outHTML.write(f"<td><div class='tooltip'>{percent(nPort,total,compl=True)}% <span class='tooltiptext'>{nPort} unimplemented calls, {nNocc} inconclusive runs out of {total}</span></div></td>")
 
       outHTML.write("</tr>\n<tr><td>Robustness</td>")
       for toolname in used_toolnames:
         (TP, TN, FP, FN, nPort, nFail, nTout, nNocc) = tool_stats(toolname)
-        totalPort = TP + TN + FP + FN + nTout + nFail + nNocc
-        outHTML.write(f"<td><div class='tooltip'>{percent(1-(nTout+nFail),(totalPort))}% <span class='tooltiptext'>{nTout} timeouts, {nFail} failures</span></div></td>")
+        totalPort = TP + TN + FP + FN + nTout + nFail
+        outHTML.write(f"<td><div class='tooltip'>{percent((nTout+nFail),(totalPort),compl=True)}% <span class='tooltiptext'>{nTout} timeouts, {nFail} failures out of {totalPort}</span></div></td>")
 
       outHTML.write("</tr>\n<tr><td>Recall</td>")
       for toolname in used_toolnames:
@@ -496,7 +498,7 @@ iframe {
         (TP, TN, FP, FN, nPort, nFail, nTout, nNocc) = tool_stats(toolname)
         outHTML.write(f"<td><div class='tooltip'>{percent((TP+TN),(TP+TN+FP+FN))}% <span class='tooltiptext'>{TP+TN} correct diagnostics in total, out of {TP+TN+FP+FN} diagnostics</span></div></td>")
       outHTML.write("</tr></table>")
-      outHTML.write("<p>Hover over the values for details. Portability issues, timeout and failures are not considered when computing the other metrics, thus differences in the total amount of tests.</p>")
+      outHTML.write("<p>Hover over the values for details. API coverage issues, timeouts and failures are not considered when computing the other metrics, thus differences in the total amount of tests.</p>")
 
       outHTML.write(f"</body></html>\n")
 
@@ -531,7 +533,7 @@ iframe {
                 for p in results[toolname]['timeout']:
                     print(f"  {p}")
         if nPort > 0:
-            print(f"XXX {nPort} portability issues")
+            print(f"XXX {nPort} API coverage issues")
             if len(used_toolnames) == 1:
                 for p in results[toolname]['unimplemented']:
                     print(f"  {p}")
@@ -541,16 +543,16 @@ iframe {
                 for p in results[toolname]['failure']:
                     print(f"  {p}")
 
-        print(f"\nXXXX Summary for {args.x} XXXX  {passed} test{'' if passed == 1 else 's'} passed (out of {total})")
-        print(f"Portability: {percent(1-nPort,total)}% ({nPort} tests failed)")
+        print(f"\nXXXX Summary for {toolname} XXXX  {passed} test{'' if passed == 1 else 's'} passed (out of {total})")
+        print(f"API coverage: {percent(nPort,total,compl=True)}% ({nPort} tests failed out of {total})")
         print(
-            f"Robustness: {percent(1-(nTout+nFail),(total-nPort))}% ({nTout} timeouts and {nFail} failures)\n")
+            f"Robustness: {percent((nTout+nFail),(total-nPort),compl=True)}% ({nTout} timeouts and {nFail} failures out of {total-nPort})\n")
 
         print(f"Recall: {percent(TP,(TP+FN))}% (found {TP} errors out of {TP+FN})")
         print(f"Specificity: {percent(TN,(TN+FP))}% (recognized {TN} correct codes out of {TN+FP})")
         print(f"Precision: {percent(TP,(TP+FP))}% ({TP} diagnostic of error are correct out of {TP+FP})")
         print(f"Accuracy: {percent((TP+TN),(TP+TN+FP+FN))}% ({TP+TN} correct diagnostics in total, out of {TP+TN+FP+FN} diagnostics)")
-        print(f"\nTotal time of all tests (not counting the timeouts): {total_elapsed}")
+        print(f"\nTotal time of all tests (not counting the timeouts): {total_elapsed[toolname]}")
 
     os.chdir(here)
 
