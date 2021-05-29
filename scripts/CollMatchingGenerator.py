@@ -139,7 +139,7 @@ fini['MPI_Gather'] = lambda n: ""
 
 init['MPI_Igather'] = lambda n: f"MPI_Request req{n}; MPI_Status sta{n}; int val{n}, buf{n}[buff_size];"
 operation['MPI_Igather'] = lambda n: f"MPI_Igather(&val{n}, 1, MPI_INT, buf{n},1, MPI_INT, root, MPI_COMM_WORLD, &req{n}); MPI_Wait(&req{n},&sta{n});"
-fini['MPI_Igather'] = lambda n: "if (req{n} != MPI_REQUEST_NULL) MPI_Request_free(&req{n});"
+fini['MPI_Igather'] = lambda n: f"if (req{n} != MPI_REQUEST_NULL) MPI_Request_free(&req{n});"
 
 for coll1 in collectives + icollectives:
     for coll2 in collectives + icollectives:

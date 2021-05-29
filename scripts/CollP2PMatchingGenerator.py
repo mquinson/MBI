@@ -116,8 +116,8 @@ init['MPI_Allgatherv'] = lambda n: (f"int *rbuf{n} = malloc(dbs), *rcounts{n}=ma
 operation['MPI_Allgatherv'] = lambda n: f"MPI_Allgatherv(&rank, 1, MPI_INT, rbuf{n}, rcounts{n}, displs{n}, MPI_INT, MPI_COMM_WORLD);"
 fini['MPI_Allgatherv'] = lambda n: f"free(rbuf{n});free(rcounts{n});free(displs{n});"
 
-init['MPI_Allreduce'] = lambda n: f"int sum{n}, val{n} = 1;"
-operation['MPI_Allreduce'] = lambda n: f"MPI_Allreduce(&sum{n}, &val{n}, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);"
+init['MPI_Allreduce'] = lambda n: f"int send{n} = 1, recv{n}[buff_size];"
+operation['MPI_Allreduce'] = lambda n: f"MPI_Allreduce(&send{n}, &recv{n}, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);"
 fini['MPI_Allreduce'] = lambda n: ""
 
 init['MPI_Alltoall'] = lambda n: f"int *sbuf{n} = malloc(dbs), *rbuf{n} = malloc(dbs);"
