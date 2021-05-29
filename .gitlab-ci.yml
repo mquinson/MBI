@@ -520,6 +520,8 @@ pages:
     script:
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -c stats
+        - scripts/ensure_python3 ./MBI.py -c latex
+	- cd Data ; ./gen_latex.py ; mv *.tex ..; cd ..
         - mkdir public
         - pwd ; ls
         - cp -r *.html *.tex img logs public/
