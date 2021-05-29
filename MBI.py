@@ -616,7 +616,8 @@ def cmd_latex(rootdir, toolnames):
                 results['total'][toolname]['error'].append(test_ID)
 
     # Produce the results per tool and per category
-    with open(f'{rootdir}/results-per-category.tex', 'w') as outfile:
+    with open(f'{rootdir}/results-per-category-landscape.tex', 'w') as outfile:
+        outfile.write('\\setlength\\tabcolsep{3pt} % default value: 6pt\n')
         outfile.write("\\begin{tabular}{|l|*{"+str(len(used_toolnames))+"}{c|c|c|c||}}\n")
         outfile.write("\\cline{2-"+str(len(used_toolnames)*4+1)+"}\n")
         # First title line: Tool names
@@ -661,6 +662,97 @@ def cmd_latex(rootdir, toolnames):
 
         # Finish the table
         outfile.write("\\end{tabular}\n")
+        outfile.write('\\setlength\\tabcolsep{6pt} % Back to default value\n')
+
+    # Produce the results per tool and per category
+    with open(f'{rootdir}/results-per-category-portrait.tex', 'w') as outfile:
+        outfile.write('\\setlength\\tabcolsep{3.5pt} % default value: 6pt\n')
+        for errors in [['FOK','AInvalidParam','BResLeak','BReqLifecycle','BLocalConcurrency'], ['CMatch','DRace','DMatch','DGlobalConcurrency','EBufferingHazard']]:
+            outfile.write("\\begin{tabular}{|l|*{"+str(len(errors))+"}{c|c|c|c|c||}}\n")
+            outfile.write(f"\\cline{{2-{len(errors)*5+1}}}\n")
+            # First title line: error categories
+            outfile.write("  \\multicolumn{1}{c|}{}")
+            for error in errors:
+                outfile.write(f"&\\multicolumn{{5}}{{c||}}{{{displayed_name[error].split(' ')[0]}}}")
+            outfile.write("\\\\\n  \\multicolumn{1}{c|}{}")
+            for error in errors:
+                outfile.write(f"&\\multicolumn{{5}}{{c||}}{{{displayed_name[error].split(' ')[1]}}}")
+            outfile.write(f"\\\\\\cline{{2-{len(errors)*5+1}}}\n")
+            outfile.write("\\multicolumn{1}{c|}{}")
+            for error in errors:
+                outfile.write("& \\rotatebox{90}{Build error~~} & \\rotatebox{90}{Timeout~~}&\\rotatebox{90}{Failure} &")
+                if error == 'FOK':
+                    outfile.write(" \\rotatebox{90}{False \\textbf{Positive}} & \\rotatebox{90}{True \\textbf{Negative}~~} \n")
+                else:
+                    outfile.write(" \\rotatebox{90}{False Negative} & \\rotatebox{90}{True Positive~} \n")
+            outfile.write("\\\\\\hline\n")
+
+            for toolname in used_toolnames:
+                outfile.write(f'{displayed_name[toolname]}')
+                for error in errors:
+                    port = len(results[error][toolname]['unimplemented'])
+                    othr = len(results[error][toolname]['other'])
+                    fail = len(results[error][toolname]['failure'])
+                    tout = len(results[error][toolname]['timeout'])
+                    good = len(results[error][toolname]['TRUE_POS']) + len(results[error][toolname]['TRUE_NEG'])
+                    bad  = len(results[error][toolname]['FALSE_POS']) + len(results[error][toolname]['FALSE_NEG'])
+                    outfile.write(f"&{port}&{tout}&{othr+fail}&{bad}&{good}")
+                outfile.write("\\\\\\hline\n")
+
+            outfile.write("\\hline\\textit{Ideal tool}")
+            for error in errors:
+                toolname = used_toolnames[0]
+                total  = len(results[error][toolname]['unimplemented']) + len(results[error][toolname]['other']) + len(results[error][toolname]['failure'])
+                total += len(results[error][toolname]['timeout']) + len(results[error][toolname]['TRUE_POS']) + len(results[error][toolname]['TRUE_NEG'])
+                total += len(results[error][toolname]['FALSE_POS']) + len(results[error][toolname]['FALSE_NEG'])
+
+                outfile.write(f"& \\textit{{0}} & \\textit{{0}}&\\textit{{0}} & \\textit{{0}} & \\textit{total} \n")
+            outfile.write("\\\\\\hline\n")
+
+            # Finish the table
+            outfile.write("\\end{tabular}\n\n\medskip\n")
+        outfile.write('\\setlength\\tabcolsep{6pt} % Back to default value\n')
+
+
+    ignore_me="""
+        for t in used_toolnames: 
+            outfile.write("& \\multicolumn{4}{c||}{"+displayed_name[t]+"}")
+        outfile.write("\\\\\n")
+        outfile.write("\\cline{2-"+str(len(used_toolnames)*4+1)+"}\n")
+        # Second title line: TP&TN&FP&FN per tool
+        outfile.write("  \\multicolumn{1}{c|}{}")
+        for t in used_toolnames: 
+            outfile.write("& \\rotatebox{90}{Build error~~} &\\rotatebox{90}{Failure} & \\rotatebox{90}{Incorrect} & \\rotatebox{90}{Correct~~} ")
+        outfile.write("\\\\\\hline\n")
+#       &  & \textbf{Recall} & \textbf{Specificity}  & \textbf{Precision}  & \textbf{Accuracy}  & \textbf{F1 Score}
+
+        for error in error_scope:
+            if error == 'FOK':
+                outfile.write("\\hline\n")
+            outfile.write(displayed_name[error])
+            for toolname in used_toolnames:
+                port = len(results[error][toolname]['unimplemented'])
+                othr = len(results[error][toolname]['other'])
+                fail = len(results[error][toolname]['failure'])
+                tout = len(results[error][toolname]['timeout'])
+                good = len(results[error][toolname]['TRUE_POS']) + len(results[error][toolname]['TRUE_NEG'])
+                bad  = len(results[error][toolname]['FALSE_POS']) + len(results[error][toolname]['FALSE_NEG'])
+                outfile.write(f"&{port+othr} & {fail+tout} &{bad}&{good}")
+                #results[error][toolname] = {'failure':[], 'timeout':[], 'unimplemented':[], 'other':[], 'TRUE_NEG':[], 'TRUE_POS':[], 'FALSE_NEG':[], 'FALSE_POS':[]}
+            outfile.write("\\\\\\hline\n")
+        outfile.write("\\hline\n \\textbf{Total}")
+        for toolname in used_toolnames:
+            port = othr = fail = tout = good = bad = 0
+            for error in error_scope:
+                port += len(results[error][toolname]['unimplemented'])
+                othr += len(results[error][toolname]['other'])
+                fail += len(results[error][toolname]['failure'])
+                tout += len(results[error][toolname]['timeout'])
+                good += len(results[error][toolname]['TRUE_POS']) + len(results[error][toolname]['TRUE_NEG'])
+                bad  += len(results[error][toolname]['FALSE_POS']) + len(results[error][toolname]['FALSE_NEG'])
+            outfile.write(f"&{port+othr} & {fail+tout} &{bad}&{good}")
+        outfile.write("\\\\\\hline\n")
+"""
 
     # Produce the landscape results+metric per tool for all category
     with open(f'{rootdir}/results-summary.tex', 'w') as outfile:
