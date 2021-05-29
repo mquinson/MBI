@@ -532,11 +532,13 @@ latex:
 
 pages:
     stage: deploy
+    when: always
     script:
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -c stats
-        - mkdir public
+        - mkdir latex || true # Just in case the 'latex' job failed
         - pwd ; ls
+        - mkdir public
         - cp -r *.html img logs latex public/
         - cp -r /MBI/gencodes public
     artifacts:
