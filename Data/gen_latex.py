@@ -195,23 +195,24 @@ def generate_features(files, outfile):
 
 def generate_errors(files, outfile):
     files_per_expected = parse_files_per_expected(files)
-    def get_counts(category):
+    def get_counts(categories):
         count = {'total':0}
         for feat in possible_features:
             count[feat] = 0
         seen = []
-        for (file,test) in files_per_expected[category]:
-            if not file in seen:
-                seen.append(file)
-                (features,  _) = parse_file_features(file)
-                count['total'] += 1
-                for feat in features:
-                    count[feat] += 1
-            else:
-                print(f"Ignore duplicate {file} while counting files per feature.")
+        for category in categories:
+            for (file,test) in files_per_expected[category]:
+                if not file in seen:
+                    seen.append(file)
+                    (features,  _) = parse_file_features(file)
+                    count['total'] += 1
+                    for feat in features:
+                        count[feat] += 1
+                else:
+                    print(f"Ignore duplicate {file} while counting files per feature.")
         return count
-    def show_counts(category):
-        count = get_counts(category)
+    def show_counts(categories):
+        count = get_counts(categories)
         output.write(f"{count['P2P!basic']}&{count['P2P!nonblocking']}&{count['P2P!persistent']}&")
         output.write(f"{count['COLL!basic']}&{count['COLL!nonblocking']}&{count['COLL!tools']} & {count['RMA']} & {count['total']} \\\\")
 
@@ -220,19 +221,23 @@ def generate_errors(files, outfile):
         output.write('\\multicolumn{2}{c|}{}&\\multicolumn{3}{c|}{Point-to-point}&\\multicolumn{3}{c|}{Collective}&\multirow{6}{*}{RMA}&\multirow{6}{*}{Unique files}\\\\\\cline{3-8}\n')
         output.write('\\multicolumn{2}{c|}{}&\\R{base calls}&\\R{~nonblocking~}&\R{persistent} & \\R{base calls}&\R{~nonblocking~}& \\R{tools} &&\\\\\\hline\n')
 
-        output.write('\\multirow{1}{*}{{Single call}} &Invalid Parameter & ');   show_counts('AInvalidParam'); output.write(' \\hline')
+        output.write('\\multirow{1}{*}{{Single call}} &Invalid Parameter & ');   show_counts(['AInvalidParam']); output.write(' \\hline')
 
-        output.write('\\multirow{3}{*}{{Single process}}&Resource Leak    & ');  show_counts('BResLeak')     ; output.write('\\cline{2-10}\n')
-        output.write( '                                 &Request lifecycle& ');  show_counts('BReqLifecycle'); output.write('\\cline{2-10}\n')
-        output.write( '                                 &Local concurrency& ');  show_counts('BLocalConcurrency'); output.write('\\hline\n')
+        output.write('\\multirow{3}{*}{{Single process}}&Resource Leak    & ');  show_counts(['BResLeak'])     ; output.write('\\cline{2-10}\n')
+        output.write( '                                 &Request lifecycle& ');  show_counts(['BReqLifecycle']); output.write('\\cline{2-10}\n')
+        output.write( '                                 &Local concurrency& ');  show_counts(['BLocalConcurrency']); output.write('\\hline\n')
 
-        output.write('\\multirow{4}{*}{{Multi-processes}}&Parameter matching& ');  show_counts('CMatch')        ; output.write('\\cline{2-10}\n')
-        output.write( '                                  &Message Race      & ');  show_counts('DRace')        ; output.write('\\cline{2-10}\n')
-        output.write( '                                  &Call ordering     & ');  show_counts('DMatch')       ; output.write('\\cline{2-10}\n')
-        output.write( '                                  &Global concurrency& ');  show_counts('DGlobalConcurrency'); output.write('\\hline\n')
+        output.write('\\multirow{4}{*}{{Multi-processes}}&Parameter matching& ');  show_counts(['CMatch'])        ; output.write('\\cline{2-10}\n')
+        output.write( '                                  &Message Race      & ');  show_counts(['DRace'])        ; output.write('\\cline{2-10}\n')
+        output.write( '                                  &Call ordering     & ');  show_counts(['DMatch'])       ; output.write('\\cline{2-10}\n')
+        output.write( '                                  &Global concurrency& ');  show_counts(['DGlobalConcurrency']); output.write('\\hline\n')
 
-        output.write( '      System & Buffering Hazard    &') ; show_counts('EBufferingHazard');output.write('\\hline\n')
-        output.write('\\multicolumn{2}{|c|}{Correct codes}&') ; show_counts('FOK');output.write('\\hline\n')
+        output.write( '      System & Buffering Hazard    &') ; show_counts(['EBufferingHazard']);output.write('\\hline\\hline\n')
+        output.write('\\multicolumn{2}{|c|}{Correct codes}&') ; show_counts(['FOK']);output.write('\\hline\\hline\n')
+
+        output.write('\\multicolumn{2}{|c|}{\\textbf{Total}}&')
+        show_counts(['AInvalidParam', 'BResLeak','BReqLifecycle','BLocalConcurrency', 'CMatch', 'DRace','DMatch','DGlobalConcurrency', 'EBufferingHazard', 'FOK'])
+        output.write('\\hline\n')
 
         output.write('\\end{tabular}\n')
 
