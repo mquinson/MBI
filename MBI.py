@@ -168,6 +168,7 @@ def extract_all_todo(batch):
     print(f'Handling files from #{min_rank} to #{max_rank}, out of {len(filenames)} in {os.getcwd()}')
 
     global todo
+    filename = sorted(filenames)
     for filename in filenames[min_rank:max_rank]:
         todo = todo + parse_one_code(filename)
 
