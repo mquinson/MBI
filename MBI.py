@@ -194,16 +194,15 @@ def cmd_gencodes():
     subprocess.run(f"rm -rf {dir} ; mkdir {dir}", shell=True, check=True)
     here = os.getcwd()
     os.chdir(dir)
-    print("Generate the codes: ", end='')
+    print(f"Generate the codes (in {os.getcwd()}): ", end='')
     for generator in generators:
         m = re.match("^.*?/([^/]*)Generator.py$", generator)
         if m:
             print(m.group(1), end=", ")
         else:
             print(generator, end=", ")
-        subprocess.run(generator, check=True)
-    print(f" (files generated in {os.getcwd()})")
-    print("Test count: ", end='')
+        subprocess.run(generator, check=True))
+    print("\nTest count: ", end='')
     sys.stdout.flush()
     subprocess.run("ls *.c|wc -l", shell=True, check=True)
     subprocess.run("for n in *.c ; do cat -n $n > $n.txt ; done", shell=True, check=True)
