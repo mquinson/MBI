@@ -5,6 +5,10 @@ set -e # Fail on error
 # Go to the main MBI/ directory
 cd "$(dirname "$0")"/..
 
+docker build -f Dockerfile -t mpi-bugs-initiative:latest .
+docker pull mpisv/mpi-sv
+docker pull ubuntu:18.04
+
 docker run -it --rm --name MIB --volume $(pwd):/MBI mpi-bugs-initiative /MBI/MBI.py -c generate
 
 docker run -it --rm --name MIB --volume $(pwd):/MBI ubuntu:18.04 /MBI/scripts/Aislinn-build
