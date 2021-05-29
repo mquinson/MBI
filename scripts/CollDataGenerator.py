@@ -62,7 +62,7 @@ int main(int argc, char **argv) {
 """
 
 collectives = ['MPI_Allgather','MPI_Reduce', 'MPI_Allreduce', 'MPI_Gather', 'MPI_Scatter', 'MPI_Allgatherv', 'MPI_Alltoall', 'MPI_Alltoallv', 'MPI_Bcast']
-icollectives = ['MPI_Ireduce']  
+icollectives = ['MPI_Ireduce', 'MPI_Ibcast']  
 
 init = {}
 operation = {}
@@ -81,6 +81,10 @@ fini['MPI_Alltoallv'] = lambda n: f"free(sbuf{n});free(rbuf{n});free(scounts{n})
 init['MPI_Bcast'] = lambda n: f'int buf{n}[buff_size];'
 operation['MPI_Bcast'] = lambda n: f'MPI_Bcast(buf{n}, buff_size, type, 0, MPI_COMM_WORLD);'
 fini['MPI_Bcast'] = lambda n: ""
+
+init['MPI_Ibcast'] = lambda n: f'MPI_Request req{n}; MPI_Status sta{n};int buf{n}[buff_size];'
+operation['MPI_Ibcast'] = lambda n: f'MPI_Ibcast(buf{n}, buff_size, type, 0, MPI_COMM_WORLD, &req{n});MPI_Wait(&req{n},&sta{n});'
+fini['MPI_Ibcast'] = lambda n: ""
 
 init['MPI_Alltoall'] = lambda n: f"int *sbuf{n} = malloc(dbs), *rbuf{n} = malloc(dbs);"
 operation['MPI_Alltoall'] = lambda n: f"MPI_Alltoall(sbuf{n}, 1, type, rbuf{n}, 1, type, MPI_COMM_WORLD);"

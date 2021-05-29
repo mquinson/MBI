@@ -74,6 +74,7 @@ irecv = ['MPI_Irecv']
 persrecv = ['MPI_Recv_init']  
 #COLL
 pers=[]
+#icoll=['MPI_Ireduce', 'MPI_Ibarrier']
 icoll=['MPI_Ireduce']
 
 init = {}
@@ -87,32 +88,37 @@ init['MPI_Send_init'] = lambda n: f'int buf{n}[buff_size]; MPI_Request req{n};'
 operation['MPI_Send_init'] = lambda n: f'MPI_Send_init(buf{n}, buff_size, MPI_INT, dest, 0, MPI_COMM_WORLD, &req{n});' 
 start['MPI_Send_init'] = lambda n: f'MPI_Start(&req{n});'
 fini['MPI_Send_init'] = lambda n: f'MPI_Wait(&req{n}, MPI_STATUS_IGNORE);'
-free['MPI_Send_init'] = lambda n: f'MPI_Request_free(&req{n});'
+free['MPI_Send_init'] = lambda n: f'if(req{n} != MPI_REQUEST_NULL) MPI_Request_free(&req{n});'
 
 init['MPI_Isend'] = lambda n: f'int buf{n}[buff_size]; MPI_Request req{n};'
 start['MPI_Isend'] = lambda n: "" 
 operation['MPI_Isend'] = lambda n: f'MPI_Isend(buf{n}, buff_size, MPI_INT, dest, 0, MPI_COMM_WORLD, &req{n});'
 fini['MPI_Isend'] = lambda n: f'MPI_Wait(&req{n}, MPI_STATUS_IGNORE);'
-free['MPI_Isend'] = lambda n: f'MPI_Request_free(&req{n});'
+free['MPI_Isend'] = lambda n: f'if(req{n} != MPI_REQUEST_NULL) MPI_Request_free(&req{n});'
 
 init['MPI_Irecv'] = lambda n: f'int buf{n}[buff_size]; MPI_Request req{n};'
 start['MPI_Irecv'] = lambda n: "" 
 operation['MPI_Irecv'] = lambda n: f'MPI_Irecv(buf{n}, buff_size, MPI_INT, src, 0, MPI_COMM_WORLD, &req{n});'
 fini['MPI_Irecv'] = lambda n: f' MPI_Wait(&req{n}, MPI_STATUS_IGNORE);'
-free['MPI_Irecv'] = lambda n: f'MPI_Request_free(&req{n});'
+free['MPI_Irecv'] = lambda n: f'if(req{n} != MPI_REQUEST_NULL) MPI_Request_free(&req{n});'
 
 init['MPI_Recv_init'] = lambda n: f'int buf{n}[buff_size]; MPI_Request req{n};'
 start['MPI_Recv_init'] = lambda n: f'MPI_Start(&req{n});'
 operation['MPI_Recv_init'] = lambda n: f'MPI_Recv_init(buf{n}, buff_size, MPI_INT, src, 0, MPI_COMM_WORLD, &req{n});'
 fini['MPI_Recv_init'] = lambda n: f'MPI_Wait(&req{n}, MPI_STATUS_IGNORE);'
-free['MPI_Recv_init'] = lambda n: f'MPI_Request_free(&req{n});'
+free['MPI_Recv_init'] = lambda n: f'if(req{n} != MPI_REQUEST_NULL) MPI_Request_free(&req{n});'
 
 init['MPI_Ireduce'] = lambda n: f'MPI_Request req{n}; MPI_Status sta{n}; int sum{n}, val{n} = 1;'
 start['MPI_Ireduce'] = lambda n: "" 
-operation['MPI_Ireduce'] = lambda n: f"MPI_Ireduce(&sum{n}, &val{n}, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD, &req{n});"
-fini['MPI_Ireduce'] = lambda n: f"MPI_Wait(&req{n},&sta{n});"
-free['MPI_Ireduce'] = lambda n: f'MPI_Request_free(&req{n});'
+operation['MPI_Ireduce'] = lambda n: f'MPI_Ireduce(&sum{n}, &val{n}, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD, &req{n});'
+fini['MPI_Ireduce'] = lambda n: f'MPI_Wait(&req{n},&sta{n});'
+free['MPI_Ireduce'] = lambda n: f'if(req{n} != MPI_REQUEST_NULL) MPI_Request_free(&req{n});'
 
+init['MPI_Ibarrier'] = lambda n: f'MPI_Request req{n}; MPI_Status sta{n};'
+start['MPI_Ibarrier'] = lambda n: "" 
+operation['MPI_Ibarrier'] = lambda n: f'MPI_Ibarrier(MPI_COMM_WORLD, &req{n});'
+fini['MPI_Ibarrier'] = lambda n: f'MPI_Wait(&req{n},&sta{n});'
+free['MPI_Ibarrier'] = lambda n: f'if(req{n} != MPI_REQUEST_NULL) MPI_Request_free(&req{n});'
 
 for s in isend + perssend:
     for r in irecv + persrecv:
@@ -189,11 +195,11 @@ for c in pers + icoll:
     patterns['c'] = c
     patterns['init1'] = init[c]("1")
     patterns['operation1'] = operation[c]("1")
-    patterns['start1'] = start[c]("1")
-    start = patterns['start1']
+    patterns['start1'] = start[c]("1") 
     patterns['fini1'] = fini[c]("1")
-    wait = patterns['fini1'] 
     patterns['free1'] = free[c]("1")
+    start = patterns['start1']
+    wait = patterns['fini1'] 
     free = patterns['free1'] 
     patterns['init2'] = ""
     patterns['operation2'] = ""

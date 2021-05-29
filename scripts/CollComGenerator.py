@@ -67,7 +67,7 @@ int main(int argc, char **argv) {
 """
 
 collectives = ['MPI_Bcast', 'MPI_Barrier', 'MPI_Reduce', 'MPI_Gather', 'MPI_Scatter', 'MPI_Scan', 'MPI_Exscan', 'MPI_Allgather', 'MPI_Allreduce']
-icollectives = ['MPI_Ibarrier']  # 'ibarrier', 'ireduce']
+icollectives = ['MPI_Ibarrier', 'MPI_Ireduce']
 
 init = {}
 operation = {}
@@ -88,6 +88,10 @@ fini['MPI_Ibarrier'] = lambda n: f"MPI_Wait(&req{n}, &stat{n});"
 init['MPI_Reduce'] = lambda n: f"int sum{n}, val{n} = 1;"
 operation['MPI_Reduce'] = lambda n: f"MPI_Reduce(&sum{n}, &val{n}, 1, MPI_INT, MPI_SUM, 0, newcom);"
 fini['MPI_Reduce'] = lambda n: ""
+
+init['MPI_Ireduce'] = lambda n: f"MPI_Request req{n}; MPI_Status sta{n}; int sum{n}, val{n} = 1;"
+operation['MPI_Ireduce'] = lambda n: f"MPI_Ireduce(&sum{n}, &val{n}, 1, MPI_INT, MPI_SUM, 0, newcom, &req{n});"
+fini['MPI_Ireduce'] = lambda n: f"MPI_Wait(&req{n}, &stat{n});" 
 
 init['MPI_Gather'] = lambda n: f"int val{n}, buf{n}[buff_size];"
 operation['MPI_Gather'] = lambda n: f"MPI_Gather(&val{n}, 1, MPI_INT, buf{n},1, MPI_INT, 0, newcom);"
