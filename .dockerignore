@@ -3,5 +3,6 @@ logs
 gencodes
 *.log
 *.html
+*.tex
 *.csv
 *~

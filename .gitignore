@@ -1,3 +1,7 @@
 *~
+gencodes/
 builds/
 logs
+*.tex
+*.log
+*.html
