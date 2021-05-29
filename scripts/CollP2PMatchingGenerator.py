@@ -108,7 +108,7 @@ init['MPI_Allgather'] = lambda n: f"int *rbuf{n} = malloc(dbs);"
 operation['MPI_Allgather'] = lambda n: f"MPI_Allgather(&rank, 1, MPI_INT, rbuf{n}, 1, MPI_INT, MPI_COMM_WORLD);"
 fini['MPI_Allgather'] = lambda n: f"free(rbuf{n});"
 
-init['MPI_Allgatherv'] = lambda n: (f"int *rbuf{n} = malloc(dbs), *rcounts{n}=malloc(dbs),  *displs{n}=malloc(dbs);\n" 
+init['MPI_Allgatherv'] = lambda n: (f"int *rbuf{n} = malloc(dbs*2);\nint *rcounts{n}=malloc(dbs);\nint  *displs{n}=malloc(dbs);\n" 
   +  "  for (int i = 0; i < nprocs; i++) {\n"
   + f"    rcounts{n}[i] = 1;\n"
   + f"    displs{n}[i] = 2 * (nprocs - (i + 1));\n"
@@ -124,7 +124,7 @@ init['MPI_Alltoall'] = lambda n: f"int *sbuf{n} = malloc(dbs), *rbuf{n} = malloc
 operation['MPI_Alltoall'] = lambda n: f"MPI_Alltoall(sbuf{n}, 1, MPI_INT, rbuf{n}, 1, MPI_INT, MPI_COMM_WORLD);"
 fini['MPI_Alltoall'] = lambda n: f"free(sbuf{n});free(rbuf{n});"
 
-init['MPI_Alltoallv'] = lambda n: (f"int *sbuf{n}=malloc(dbs*2), *rbuf{n}=malloc(dbs*2), *scounts{n}=malloc(dbs), *rcounts{n}=malloc(dbs), *sdispls{n}=malloc(dbs), *rdispls{n}=malloc(dbs);\n"
+init['MPI_Alltoallv'] = lambda n: (f"int *sbuf{n}=malloc(dbs*2);\nint *rbuf{n}=malloc(dbs*2);\nint *scounts{n}=malloc(dbs);\nint *rcounts{n}=malloc(dbs);\nint *sdispls{n}=malloc(dbs);\nint *rdispls{n}=malloc(dbs);\n"
   +  "  for (int i = 0; i < nprocs; i++) {\n"
   + f"    scounts{n}[i] = 2;\n"
   + f"    rcounts{n}[i] = 2;\n"
