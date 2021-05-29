@@ -14,7 +14,6 @@ BEGIN_MPI_FEATURES
 	P2P!basic: @{p2pfeature}@ 
 	P2P!nonblocking: @{ip2pfeature}@
 	P2P!persistent: Lacking
-	P2P!probe: Lacking
 	COLL!basic: @{collfeature}@ 
 	COLL!nonblocking: Lacking
 	COLL!persistent: Lacking
