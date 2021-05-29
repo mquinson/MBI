@@ -89,7 +89,7 @@ init['MPI_Reduce'] = lambda n: f"int sum{n}, val{n} = 1;"
 operation['MPI_Reduce'] = lambda n: f"MPI_Reduce(&sum{n}, &val{n}, 1, MPI_INT, MPI_SUM, 0, newcom);"
 fini['MPI_Reduce'] = lambda n: ""
 
-init['MPI_Ireduce'] = lambda n: f"MPI_Request req{n}; MPI_Status sta{n}; int sum{n}, val{n} = 1;"
+init['MPI_Ireduce'] = lambda n: f"MPI_Request req{n}; MPI_Status stat{n}; int sum{n}, val{n} = 1;"
 operation['MPI_Ireduce'] = lambda n: f"MPI_Ireduce(&sum{n}, &val{n}, 1, MPI_INT, MPI_SUM, 0, newcom, &req{n});"
 fini['MPI_Ireduce'] = lambda n: f"MPI_Wait(&req{n}, &stat{n});" 
 
