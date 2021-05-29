@@ -516,7 +516,7 @@ must-svg:
             - logs/*
 
 latex:
-  stage: svg
+    stage: svg
     script:
         - scripts/ensure_python3 ./MBI.py -c generate
         - ln -s /MBI/gencodes .
