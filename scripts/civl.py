@@ -68,11 +68,11 @@ class Tool(AbstractTool):
         if re.search('A CIVL internal error has occurred', output):
             return 'failure'
 
-        if re.search('kind: UNDEFINED_VALUE, certainty: MAYBE', output):
+        if re.search('kind: UNDEFINED_VALUE, certainty: MAYBE', output) or re.search('kind: UNDEFINED_VALUE, certainty: PROVEABLE', output):
             return 'UNDEFINED_VALUE'
-        if re.search('kind: DEREFERENCE, certainty: MAYBE', output):
+        if re.search('kind: DEREFERENCE, certainty: MAYBE', output) or re.search('kind: DEREFERENCE, certainty: PROVEABLE', output):
             return 'DEREFERENCE'
-        if re.search('kind: MPI_ERROR, certainty: MAYBE', output):
+        if re.search('kind: MPI_ERROR, certainty: MAYBE', output) or re.search('kind: MPI_ERROR, certainty: PROVEABLE', output):
             return 'MPI_ERROR'
 
         if re.search('This feature is not yet implemented', output):
