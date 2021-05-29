@@ -16,7 +16,7 @@ class Tool(AbstractTool):
             print("  docker run -it --rm --name MIB --volume $(pwd):/MBI mpisv/mpi-sv /MBI/MBI.py -x mpisv")
             sys.exit(1)
 
-    def run(self, execcmd, filename, binary, id, timeout):
+    def run(self, execcmd, filename, binary, id, timeout, batchinfo):
         cachefile = f'{binary}_{id}'
 
         execcmd = re.sub("mpirun", "mpisv", execcmd)
@@ -30,7 +30,8 @@ class Tool(AbstractTool):
             execcmd=execcmd,
             cachefile=cachefile,
             binary=binary,
-            timeout=timeout)
+            timeout=timeout,
+            batchinfo=batchinfo)
         
         if os.path.exists('klee-last') and not os.path.exists(f"{binary}_{id}-klee-out"):
             os.rename(os.readlink('klee-last'), f"{binary}_{id}-klee-out")

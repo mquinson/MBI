@@ -9,7 +9,7 @@ class Tool(AbstractTool):
     def ensure_image(self):
         AbstractTool.ensure_image(self, "-x parcoach")
 
-    def run(self, execcmd, filename, binary, id, timeout):
+    def run(self, execcmd, filename, binary, id, timeout, batchinfo):
         cachefile = f'{binary}_{id}'
 
         run_cmd(
@@ -17,7 +17,8 @@ class Tool(AbstractTool):
             execcmd=f"opt-9 -load ../../builds/parcoach/src/aSSA/aSSA.so -parcoach -check-mpi {binary}.bc -o /dev/null",
             cachefile=cachefile,
             binary=binary,
-            timeout=timeout)
+            timeout=timeout,
+            batchinfo=batchinfo)
 
     def teardown(self): 
         subprocess.run("rm -f *.bc core", shell=True, check=True)

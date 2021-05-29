@@ -12,7 +12,7 @@ class Tool(AbstractTool):
     def setup(self, rootdir):
         os.environ['PATH'] = os.environ['PATH'] + ":" + rootdir + "/builds/ISP/bin/"
 
-    def run(self, execcmd, filename, binary, id, timeout):
+    def run(self, execcmd, filename, binary, id, timeout, batchinfo):
         cachefile = f'{binary}_{id}'
 
         execcmd = re.sub("mpirun", "isp.exe", execcmd)
@@ -29,7 +29,8 @@ class Tool(AbstractTool):
             execcmd=execcmd,
             cachefile=cachefile,
             binary=binary,
-            timeout=timeout)
+            timeout=timeout,
+            batchinfo=batchinfo)
 
     def teardown(self): # Remove generated cruft (binary files)
         subprocess.run("find -type f -a -executable | xargs rm -f", shell=True, check=True)

@@ -9,7 +9,7 @@ class Tool(AbstractTool):
     def ensure_image(self):
         AbstractTool.ensure_image(self, "-x civl")
 
-    def run(self, execcmd, filename, binary, id, timeout):
+    def run(self, execcmd, filename, binary, id, timeout, batchinfo):
         cachefile = f'{binary}_{id}'
 
         execcmd = re.sub("mpirun", "java -jar ../../tools/CIVL-1.20_5259/lib/civl-1.20_5259.jar verify", execcmd)
@@ -25,7 +25,8 @@ class Tool(AbstractTool):
             execcmd=execcmd,
             cachefile=cachefile,
             binary=binary,
-            timeout=timeout)
+            timeout=timeout,
+            batchinfo=batchinfo)
 
     def parse(self, cachefile):
         if os.path.exists(f'{cachefile}.timeout') or os.path.exists(f'logs/civl/{cachefile}.timeout'):

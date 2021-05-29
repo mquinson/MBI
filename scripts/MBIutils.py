@@ -39,7 +39,7 @@ class AbstractTool:
         """Read the result of a previous run from the cache, and compute the test outcome"""
         return 'failure'
 
-def run_cmd(buildcmd, execcmd, cachefile, binary, timeout, read_line_lambda=None):
+def run_cmd(buildcmd, execcmd, cachefile, binary, timeout, batchinfo, read_line_lambda=None):
     if os.path.exists(f'{cachefile}.txt') and os.path.exists(f'{cachefile}.elapsed'):
         print(f" (cached result found for {cachefile})")
         return
@@ -48,9 +48,9 @@ def run_cmd(buildcmd, execcmd, cachefile, binary, timeout, read_line_lambda=None
 
     start_time = time.time()
     if buildcmd == None:
-        output = f"No need to compile {binary}.c\n\n"
+        output = f"No need to compile {binary}.c (batchinfo:{batchinfo})\n\n"
     else:
-        output = f"Compiling {binary}.c\n\n"
+        output = f"Compiling {binary}.c (batchinfo:{batchinfo})\n\n"
         output += f"$ {buildcmd}\n"
 
         compil = subprocess.run(buildcmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)

@@ -5,31 +5,39 @@ set -e # Fail on error
 # Go to the main MBI/ directory
 cd "$(dirname "$0")"/..
 
-docker build -f Dockerfile -t mpi-bugs-initiative:latest .
-docker pull mpisv/mpi-sv
-docker pull ubuntu:18.04
+cmd_docker() {
+    docker build -f Dockerfile -t mpi-bugs-initiative:latest .
+    docker pull mpisv/mpi-sv
+    docker pull ubuntu:18.04
+}
 
-docker run -it --rm --name MIB --volume $(pwd):/MBI mpi-bugs-initiative /MBI/MBI.py -c generate
+cmd_build() {
+    docker run -it --rm --name MIB --volume $(pwd):/MBI ubuntu:18.04 /MBI/scripts/Aislinn-build
+    docker run -it --rm --name MIB --volume $(pwd):/MBI mpi-bugs-initiative /MBI/scripts/CIVL-build
+    docker run -it --rm --name MIB --volume $(pwd):/MBI mpi-bugs-initiative /MBI/scripts/ISP-build
+    docker run -it --rm --name MIB --volume $(pwd):/MBI mpi-bugs-initiative /MBI/scripts/MUST-build
+    docker run -it --rm --name MIB --volume $(pwd):/MBI mpi-bugs-initiative /MBI/scripts/SimGrid-build
+    docker run -it --rm --name MIB --volume $(pwd):/MBI mpi-bugs-initiative /MBI/scripts/Parcoach-build
+}
 
-docker run -it --rm --name MIB --volume $(pwd):/MBI ubuntu:18.04 /MBI/scripts/Aislinn-build
-docker run -it --rm --name MIB --volume $(pwd):/MBI ubuntu:18.04 /MBI/MBI.py -x aislinn -c run
+cmd_run() {
+    docker run -it --rm --name MIB --volume $(pwd):/MBI mpi-bugs-initiative /MBI/MBI.py -c generate
 
-docker run -it --rm --name MIB --volume $(pwd):/MBI mpi-bugs-initiative /MBI/scripts/CIVL-build
-docker run -it --rm --name MIB --volume $(pwd):/MBI mpi-bugs-initiative /MBI/MBI.py -x civl -c run
+    docker run -it --rm --name MIB --volume $(pwd):/MBI mpi-bugs-initiative /MBI/MBI.py -x parcoach -c run $@
+    docker run -it --rm --name MIB --volume $(pwd):/MBI mpi-bugs-initiative /MBI/MBI.py -x isp -c run $@
+    docker run -it --rm --name MIB --volume $(pwd):/MBI mpi-bugs-initiative /MBI//MBI.py -x simgrid -c run $@
+    docker run -it --rm --name MIB --volume $(pwd):/MBI ubuntu:18.04 /MBI/MBI.py -x aislinn -c run $@
+    docker run -it --rm --name MIB --volume $(pwd):/MBI mpi-bugs-initiative /MBI/MBI.py -x civl -c run $@
+    docker run -it --rm --name MIB --volume $(pwd):/MBI mpisv/mpi-sv /MBI/MBI.py -x mpisv -c run $@
+    docker run -it --rm --name MIB --volume $(pwd):/MBI mpi-bugs-initiative /MBI/MBI.py -x must -c run $@
+}
 
-docker run -it --rm --name MIB --volume $(pwd):/MBI mpi-bugs-initiative /MBI/scripts/ISP-build
-docker run -it --rm --name MIB --volume $(pwd):/MBI mpi-bugs-initiative /MBI/MBI.py -x isp -c run
+cmd_stats() {
+    docker run -it --rm --name MIB --volume $(pwd):/MBI mpi-bugs-initiative /MBI/MBI.py -c stats
+    docker run -it --rm --name MIB --volume $(pwd):/MBI mpi-bugs-initiative /MBI/MBI.py -c latex
+}
 
-docker run -it --rm --name MIB --volume $(pwd):/MBI mpi-bugs-initiative /MBI/scripts/MUST-build
-docker run -it --rm --name MIB --volume $(pwd):/MBI mpi-bugs-initiative /MBI/MBI.py -x must -c run
-
-docker run -it --rm --name MIB --volume $(pwd):/MBI mpisv/mpi-sv /MBI/MBI.py -x mpisv
-
-docker run -it --rm --name MIB --volume $(pwd):/MBI mpi-bugs-initiative /MBI/scripts/SimGrid-build
-docker run -it --rm --name MIB --volume $(pwd):/MBI mpi-bugs-initiative /MBI//MBI.py -x simgrid -c run
-
-docker run -it --rm --name MIB --volume $(pwd):/MBI mpi-bugs-initiative /MBI/scripts/Parcoach-build
-docker run -it --rm --name MIB --volume $(pwd):/MBI mpi-bugs-initiative /MBI/MBI.py -x parcoach -c run
-
-docker run -it --rm --name MIB --volume $(pwd):/MBI mpi-bugs-initiative /MBI/MBI.py -c stats
-docker run -it --rm --name MIB --volume $(pwd):/MBI mpi-bugs-initiative /MBI/MBI.py -c latex
+#cmd_docker
+#cmd_build
+cmd_run $@
+cmd_stats

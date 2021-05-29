@@ -14,7 +14,7 @@ class Tool(AbstractTool):
         os.environ['PATH'] = os.environ['PATH'] + ":" + rootdir + "/builds/SimGrid/bin"
         os.environ['VERBOSE'] = '1'
 
-    def run(self, execcmd, filename, binary, id, timeout):
+    def run(self, execcmd, filename, binary, id, timeout, batchinfo):
         cachefile = f'{binary}_{id}'
 
         if not os.path.exists("cluster.xml"):
@@ -37,7 +37,8 @@ class Tool(AbstractTool):
             execcmd=execcmd,
             cachefile=cachefile,
             binary=binary,
-            timeout=timeout)
+            timeout=timeout,
+            batchinfo=batchinfo)
 
     def teardown(self): 
         subprocess.run("find -type f -a -executable | xargs rm -f", shell=True, check=True) # Remove generated cruft (binary files)

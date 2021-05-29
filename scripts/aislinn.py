@@ -23,7 +23,7 @@ class Tool(AbstractTool):
         subprocess.run("apt-get install -y gcc python2.7 python-jinja2", shell=True, check=True)
         os.environ['PATH'] = os.environ['PATH'] + ":" + rootdir + "/tools/aislinn-git/bin/"
 
-    def run(self, execcmd, filename, binary, id, timeout):
+    def run(self, execcmd, filename, binary, id, timeout, batchinfo):
         cachefile = f'{binary}_{id}'
 
         execcmd = re.sub("mpirun", "aislinn", execcmd)
@@ -37,7 +37,8 @@ class Tool(AbstractTool):
             execcmd=execcmd,
             cachefile=cachefile,
             binary=binary,
-            timeout=timeout)
+            timeout=timeout,
+            batchinfo=batchinfo)
 
         if os.path.exists("./report.html"):
             os.rename("./report.html", f"{binary}_{id}.html")

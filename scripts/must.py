@@ -23,7 +23,7 @@ class Tool(AbstractTool):
     def setup(self, rootdir):
         os.environ['PATH'] = os.environ['PATH'] + ":" + rootdir + "/builds/MUST/bin/"
 
-    def run(self, execcmd, filename, binary, id, timeout):
+    def run(self, execcmd, filename, binary, id, timeout, batchinfo):
         cachefile = f'{binary}_{id}'
 
         execcmd = re.sub("mpirun", "/MBI/builds/MUST/bin/mustrun --must:distributed", execcmd)
@@ -39,6 +39,7 @@ class Tool(AbstractTool):
             cachefile=cachefile,
             binary=binary,
             timeout=timeout,
+            batchinfo=batchinfo,
             read_line_lambda=must_filter)
 
         if os.path.isfile("./MUST_Output.html"):

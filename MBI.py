@@ -201,7 +201,7 @@ def cmd_gencodes():
             print(m.group(1), end=", ")
         else:
             print(generator, end=", ")
-        subprocess.run(generator, check=True))
+        subprocess.run(generator, check=True)
     print("\nTest count: ", end='')
     sys.stdout.flush()
     subprocess.run("ls *.c|wc -l", shell=True, check=True)
@@ -212,7 +212,7 @@ def cmd_gencodes():
 ########################
 # cmd_run(): what to do when '-c run' is used (running the tests)
 ########################
-def cmd_run(rootdir, toolname):
+def cmd_run(rootdir, toolname, batchinfo):
     # Go to the tools' logs directory on need
     rootdir = os.path.dirname(os.path.abspath(__file__))
     os.makedirs(f'{rootdir}/logs/{toolname}', exist_ok=True)
@@ -232,7 +232,7 @@ def cmd_run(rootdir, toolname):
         count += 1
         sys.stdout.flush()
 
-        p = mp.Process(target=tools[toolname].run, args=(test['cmd'], test['filename'], binary, test['id'], args.timeout))
+        p = mp.Process(target=tools[toolname].run, args=(test['cmd'], test['filename'], binary, test['id'], args.timeout, batchinfo))
         p.start()
         sys.stdout.flush()
         p.join(args.timeout+60)
@@ -695,13 +695,13 @@ if args.c == 'all' or args.c == 'run':
 
 if args.c == 'all':
     extract_all_todo(args.b)
-    cmd_run(rootdir=rootdir, toolname=args.x)
+    cmd_run(rootdir=rootdir, toolname=args.x, batchinfo=args.b)
     cmd_stats(rootdir, toolnames=[args.x])
 elif args.c == 'generate':
     cmd_gencodes()
 elif args.c == 'run':
     extract_all_todo(args.b)
-    cmd_run(rootdir=rootdir, toolname=args.x)
+    cmd_run(rootdir=rootdir, toolname=args.x, batchinfo=args.b)
 elif args.c == 'latex':
     extract_all_todo(args.b)
     cmd_latex(rootdir, toolnames=['aislinn', 'civl', 'isp', 'simgrid', 'mpisv', 'must', 'parcoach'])
