@@ -606,10 +606,8 @@ def cmd_latex(rootdir, toolnames):
             error = possible_details[test['detail']]
             results[error][toolname][res_category].append(test_ID)
 
-    # Produce the summary per tool and per category
-    with open(f'{rootdir}/summary-per-category.tex', 'w') as outfile:
-        outfile.write("\\begin{table*}[htbp]\n")
-        outfile.write("\\resizebox{\\linewidth}{!}{\n")
+    # Produce the results per tool and per category
+    with open(f'{rootdir}/results-per-category.tex', 'w') as outfile:
         outfile.write("\\begin{tabular}{|l|*{"+str(len(used_toolnames))+"}{c|c|c|c||}}\n")
         outfile.write("\\cline{2-"+str(len(used_toolnames)*4+1)+"}\n")
         # First title line: Tool names
@@ -654,8 +652,6 @@ def cmd_latex(rootdir, toolnames):
 
         # Finish the table
         outfile.write("\\end{tabular}\n")
-        outfile.write("}\n")
-        outfile.write("\\end{table*}\n")
 
     os.chdir(here)
 ########################
