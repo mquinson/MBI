@@ -204,28 +204,26 @@ def generate_errors(files, outfile):
             count['total'] += 1
             for feat in features:
                 count[feat] += 1
-#                if feat == 'COLL!tools':
-#                    print(file)
         return count
     def show_counts(category):
         count = get_counts(category)
         output.write(f"{count['P2P!basic']}&{count['P2P!nonblocking']}&{count['P2P!persistent']}&")
-        output.write(f"{count['COLL!basic']}&{count['COLL!nonblocking']}&{count['COLL!persistent']}&{count['COLL!tools']}&{count['RMA']}&{count['total']} \\\\")
+        output.write(f"{count['COLL!basic']}&{count['COLL!nonblocking']}&{count['COLL!tools']} & {count['RMA']} & {count['total']} \\\\")
 
     with open(outfile, 'w') as output:
-        output.write('\\begin{tabular}{|l|l|c|c|c| c|c|c|c |c||c|}\\cline{3-11}\n')
-        output.write('\\multicolumn{2}{c|}{}&\\multicolumn{3}{c|}{Point-to-point}&\\multicolumn{4}{c|}{Collective}&\multirow{6}{*}{RMA}&\multirow{6}{*}{Unique files}\\\\\\cline{3-9}\n')
-        output.write('\\multicolumn{2}{c|}{}&\\R{base calls}&\\R{~nonblocking~}&\R{persistent} & \\R{base calls}&\R{~nonblocking~}&\\R{persistent} & \\R{tools} &&\\\\\\hline\n')
+        output.write('\\begin{tabular}{|l|l|c|c|c| c|c|c |c||c|}\\cline{3-10}\n')
+        output.write('\\multicolumn{2}{c|}{}&\\multicolumn{3}{c|}{Point-to-point}&\\multicolumn{3}{c|}{Collective}&\multirow{6}{*}{RMA}&\multirow{6}{*}{Unique files}\\\\\\cline{3-8}\n')
+        output.write('\\multicolumn{2}{c|}{}&\\R{base calls}&\\R{~nonblocking~}&\R{persistent} & \\R{base calls}&\R{~nonblocking~}& \\R{tools} &&\\\\\\hline\n')
 
         output.write('\\multirow{1}{*}{{Single call}} &Invalid Parameter & ');   show_counts('AInvalidParam'); output.write(' \\hline')
 
-        output.write('\\multirow{3}{*}{{Single process}}&Resource Leak    & ');  show_counts('BResLeak')     ; output.write('\\cline{2-11}\n')
-        output.write( '                                 &Request lifecycle& ');  show_counts('BReqLifecycle'); output.write('\\cline{2-11}\n')
+        output.write('\\multirow{3}{*}{{Single process}}&Resource Leak    & ');  show_counts('BResLeak')     ; output.write('\\cline{2-10}\n')
+        output.write( '                                 &Request lifecycle& ');  show_counts('BReqLifecycle'); output.write('\\cline{2-10}\n')
         output.write( '                                 &Local concurrency& ');  show_counts('BLocalConcurrency'); output.write('\\hline\n')
 
-        output.write('\\multirow{4}{*}{{Multi-processes}}&Parameter matching& ');  show_counts('CMatch')        ; output.write('\\cline{2-11}\n')
-        output.write( '                                  &Message Race      & ');  show_counts('DRace')        ; output.write('\\cline{2-11}\n')
-        output.write( '                                  &Call ordering     & ');  show_counts('DMatch')       ; output.write('\\cline{2-11}\n')
+        output.write('\\multirow{4}{*}{{Multi-processes}}&Parameter matching& ');  show_counts('CMatch')        ; output.write('\\cline{2-10}\n')
+        output.write( '                                  &Message Race      & ');  show_counts('DRace')        ; output.write('\\cline{2-10}\n')
+        output.write( '                                  &Call ordering     & ');  show_counts('DMatch')       ; output.write('\\cline{2-10}\n')
         output.write( '                                  &Global concurrency& ');  show_counts('DGlobalConcurrency'); output.write('\\hline\n')
 
         output.write( '      System & Buffering Hazard    &') ; show_counts('EBufferingHazard');output.write('\\hline\n')
