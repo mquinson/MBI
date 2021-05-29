@@ -193,4 +193,60 @@ def generate_features(files, outfile):
                 line -= 1
         output.write("\\end{tikzpicture}}\n")
 
+def generate_errors(files, outfile):
+    files_per_expected = parse_files_per_expected(files)
+    def get_counts(category):
+        count = {}
+        for feat in possible_features:
+            count[feat] = 0
+        for (file,test) in files_per_expected[category]:
+            (features,  _) = parse_file_features(file)
+            for feat in features:
+                count[feat] += 1
+#                if feat == 'COLL!tools':
+#                    print(file)
+        return count
+    def show_counts(category):
+        count = get_counts(category)
+        output.write(f"{count['P2P!basic']}&{count['P2P!nonblocking']}&{count['P2P!persistent']}&")
+        output.write(f"{count['COLL!basic']}&{count['COLL!nonblocking']}&{count['COLL!persistent']}&{count['COLL!tools']}&{count['RMA']} \\\\ \\hline")
+
+    with open(outfile, 'w') as output:
+        output.write('\\begin{tabular}{|l|l|c|c|c| c|c|c|c |c|}\\cline{3-10}\n')
+        output.write('\\multicolumn{2}{c|}{}&\\multicolumn{3}{c|}{Point-to-point}&\\multicolumn{4}{c|}{Collective}&\multirow{6}{*}{RMA}\\\\\\cline{3-9}\n')
+        output.write('\\multicolumn{2}{c|}{}&\\R{base calls}&\\R{~nonblocking~}&\R{persistent} & \\R{base calls}&\R{~nonblocking~}&\\R{persistent} & \\R{tools} &\\\\\\hline\n')
+
+        output.write('\\multirow{1}{*}{{Single call}} &Invalid Parameter & ')
+        show_counts('AInvalidParam')
+
+        output.write('\\end{tabular}\n')
+
+    ignoreme =    """
+possible_features=['P2P!basic', 'P2P!nonblocking', 'P2P!persistent', 'P2P!probe', 'COLL!basic', 'COLL!nonblocking', 'COLL!persistent', 'COLL!tools', 'RMA']
+    
+    \\multirow{1}{*}{{Single call}} &Invalid Parameter & \\OK & \\OK & \\OK & \\OK & \\OK & \\MISS &  \\OK &  \\MISS \\\\ \\hline
+   
+ 
+  \\multirow{3}{*}{{Single process}}&Resource Leak& \\NO& \\MISS & \\OK &  \\NO & \\MISS & \\OK &  \\OK & \\NO\\\\\\cline{2-10}    
+%    &CommunicatorLeak& \\NO & \\NO & \\NO  & \\NO& \\NO& \\NO&  \\OK & \\NO\\\\\\cline{2-10}
+ %  &DatatypeLeak& \\NO& \\NO& \\NO&  \\NO& \\NO& \\NO&  \\OK & \\NO\\\\\\cline{2-10}
+ %   &OperatorLeak& \\NO& \\NO& \\NO&  \\NO& \\NO& \\NO&  \\OK & \\NO\\\\\\cline{2-10}
+ %   &GroupLeak& \\NO& \\NO& \\NO&  \\NO& \\NO& \\NO&  \\OK & \\NO\\\\\\cline{2-10}
+ %   &RequestLeak& \\NO& o & \\OK & \\NO& o & \\OK &  \\NO& \\NO\\\\\\cline{2-10}
+    &Request Lifecycle& \\NO& \\OK & \\OK & \\NO& \\MISS & \\OK &  \\NO& \\NO\\\\\\cline{2-10}
+    &Local Concurrency& \\NO& \\OK & \\OK & \\NO & \\OK & \\MISS &  \\NO& \\OK \\\\\\hline
+
+   \\multirow{4}{*}{{Multi-processes}}& Message Race& \\OK & \\OK & \\MISS & \\NO& \\NO  & \\NO &  \\NO& \\NO\\\\\\cline{2-10}
+    &Parameter Matching& \\OK & \\OK & \\OK  & \\OK & \\OK & \\MISS & \\NO& \\NO\\\\\\cline{2-10}
+    &Call Matching& \\OK  & \\OK & \\MISS & \\OK & \\OK & \\MISS & \\NO & \\NO \\\\\\cline{2-10}
+    &Global Concurrency& \\NO& \\NO& \\NO& \\NO& \\NO& \\NO&  \\NO& \\OK \\\\\\hline
+    
+    System & Buffering Hazard& \\OK & \\MISS & \\MISS & \\NO& \\NO& \\NO& \\NO& \\NO\\\\\\hline
+    
+    \\multicolumn{2}{|c|}{Correct}& \\OK & \\OK & \\OK & \\OK & \\OK & \\OK & \\OK & \\OK\\\\\\hline
+    
+  \\end{tabular}
+"""
+
 generate_features(get_C_files_from_dir("../gencodes"), "features.tex")
+generate_errors(get_C_files_from_dir("../gencodes"), "errors.tex")
