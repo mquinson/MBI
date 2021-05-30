@@ -828,6 +828,22 @@ def cmd_latex(rootdir, toolnames):
         outfile.write('\\hline\n')
         show_line('total', '\\textbf{All tests}')
 
+        outfile.write(f"\\multicolumn{{2}}{{|c|}}{{\\textbf{{Total time}}}} ")
+        for toolname in used_toolnames:
+            secs = sum(timing['total'][toolname])
+            days = int(secs//86400)
+            hours = int((secs - days*86400)//3600)
+            minutes = int((secs - days*86400 - hours*3600)//60)
+            seconds = secs - days*86400 - hours*3600 - minutes*60
+#            centi = int((seconds - int(seconds)*10)
+            outfile.write("&")
+            if hours > 0:
+                outfile.write(f"{hours}h")
+            if hours >0 or minutes > 0:
+                outfile.write(f"{minutes}m")
+            outfile.write(f"{int(seconds)}s")
+        outfile.write(f"\\\\\\hline\n")
+
 
         outfile.write(f"\\end{{tabular}}\n")
 
