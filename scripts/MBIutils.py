@@ -127,15 +127,16 @@ def run_cmd(buildcmd, execcmd, cachefile, filename, binary, timeout, batchinfo, 
     except ProcessLookupError:
         pass  # OK, it's gone now
 
+    elapsed = time.time() - start_time
+
     rc = process.poll()
     if rc < 0:
-        status = f"Command killed by signal {-rc}\n"
+        status = f"Command killed by signal {-rc}, elapsed time: {elapsed}\n"
     else:
-        status = f"Command return code: {rc}\n"
+        status = f"Command return code: {rc}, elapsed time: {elapsed}\n"
     print(status)
     output += status
 
-    elapsed = time.time() - start_time
     with open(f'{cachefile}.elapsed', 'w') as outfile:
         outfile.write(str(elapsed))
 
