@@ -524,9 +524,10 @@ iframe {
         FN = len(results[toolname]['FALSE_NEG'])
         nPort = len(results[toolname]['unimplemented'])
         nFail = len(results[toolname]['failure'])
+        other = len(results[toolname]['other'])
         nTout = len(results[toolname]['timeout'])
         passed = TP + TN
-        total = passed + FP + FN + nTout + nPort + nFail
+        total = passed + FP + FN + nTout + nPort + nFail + other
 
         print(f"XXXXXXXXX Final results for {toolname}")
         if FP > 0:
@@ -553,6 +554,11 @@ iframe {
             print(f"XXX {nFail} tool failures")
             if len(used_toolnames) == 1:
                 for p in results[toolname]['failure']:
+                    print(f"  {p}")
+        if other > 0:
+            print(f"XXX {nFail} inconclusive runs (output parsing failure)")
+            if len(used_toolnames) == 1:
+                for p in results[toolname]['other']:
                     print(f"  {p}")
 
         print(f"\nXXXX Summary for {toolname} XXXX  {passed} test{'' if passed == 1 else 's'} passed (out of {total})")
