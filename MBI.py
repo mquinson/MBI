@@ -19,6 +19,7 @@ sys.path.append(f'{os.path.dirname(os.path.abspath(__file__))}/scripts')
 
 import parcoach
 import simgrid
+import sgvg # SimGrid with valgrind instead of MC 
 import must
 import mpisv
 import isp
@@ -26,7 +27,7 @@ import civl
 import aislinn
 
 tools = {'aislinn': aislinn.Tool(), 'civl': civl.Tool(), 'isp': isp.Tool(), 'mpisv': mpisv.Tool(),
-         'must': must.Tool(), 'simgrid': simgrid.Tool(), 'parcoach': parcoach.Tool()}
+         'must': must.Tool(), 'simgrid': simgrid.Tool(), 'sgvg':sgvg.Tool(), 'parcoach': parcoach.Tool()}
 
 # Some scripts may fail if error messages get translated
 os.environ["LC_ALL"] = "C"
@@ -78,7 +79,7 @@ displayed_name = {
     'EBufferingHazard':'Buffering hazard',
     'FOK':"Correct execution",
 
-    'aislinn':'Aislinn','civl':'CIVL', 'isp':'ISP', 'simgrid':'SimGrid', 'mpisv':'MPI-SV', 'must':'MUST', 'parcoach':'PARCOACH'
+    'aislinn':'Aislinn','civl':'CIVL', 'isp':'ISP', 'simgrid':'SimGrid', 'sgvg':'SimGridVG', 'mpisv':'MPI-SV', 'must':'MUST', 'parcoach':'PARCOACH'
 }
 
 # BufferLength/BufferOverlap
@@ -713,52 +714,11 @@ def cmd_latex(rootdir, toolnames):
             outfile.write("\\end{tabular}\n\n\medskip\n")
         outfile.write('\\setlength\\tabcolsep{6pt} % Back to default value\n')
 
-
-    ignore_me="""
-        for t in used_toolnames: 
-            outfile.write("& \\multicolumn{4}{c||}{"+displayed_name[t]+"}")
-        outfile.write("\\\\\n")
-        outfile.write("\\cline{2-"+str(len(used_toolnames)*4+1)+"}\n")
-        # Second title line: TP&TN&FP&FN per tool
-        outfile.write("  \\multicolumn{1}{c|}{}")
-        for t in used_toolnames: 
-            outfile.write("& \\rotatebox{90}{Build error~~} &\\rotatebox{90}{Failure} & \\rotatebox{90}{Incorrect} & \\rotatebox{90}{Correct~~} ")
-        outfile.write("\\\\\\hline\n")
-#       &  & \textbf{Recall} & \textbf{Specificity}  & \textbf{Precision}  & \textbf{Accuracy}  & \textbf{F1 Score}
-
-        for error in error_scope:
-            if error == 'FOK':
-                outfile.write("\\hline\n")
-            outfile.write(displayed_name[error])
-            for toolname in used_toolnames:
-                port = len(results[error][toolname]['unimplemented'])
-                othr = len(results[error][toolname]['other'])
-                fail = len(results[error][toolname]['failure'])
-                tout = len(results[error][toolname]['timeout'])
-                good = len(results[error][toolname]['TRUE_POS']) + len(results[error][toolname]['TRUE_NEG'])
-                bad  = len(results[error][toolname]['FALSE_POS']) + len(results[error][toolname]['FALSE_NEG'])
-                outfile.write(f"&{port+othr} & {fail+tout} &{bad}&{good}")
-                #results[error][toolname] = {'failure':[], 'timeout':[], 'unimplemented':[], 'other':[], 'TRUE_NEG':[], 'TRUE_POS':[], 'FALSE_NEG':[], 'FALSE_POS':[]}
-            outfile.write("\\\\\\hline\n")
-        outfile.write("\\hline\n \\textbf{Total}")
-        for toolname in used_toolnames:
-            port = othr = fail = tout = good = bad = 0
-            for error in error_scope:
-                port += len(results[error][toolname]['unimplemented'])
-                othr += len(results[error][toolname]['other'])
-                fail += len(results[error][toolname]['failure'])
-                tout += len(results[error][toolname]['timeout'])
-                good += len(results[error][toolname]['TRUE_POS']) + len(results[error][toolname]['TRUE_NEG'])
-                bad  += len(results[error][toolname]['FALSE_POS']) + len(results[error][toolname]['FALSE_NEG'])
-            outfile.write(f"&{port+othr} & {fail+tout} &{bad}&{good}")
-        outfile.write("\\\\\\hline\n")
-"""
-
     # Produce the landscape results+metric per tool for all category
     with open(f'{rootdir}/results-summary.tex', 'w') as outfile:
         outfile.write('\\begin{tabular}{|l|*{7}{c|}}\\hline\n')
         outfile.write('  \\multirow{2}{*}{ \\textbf{Tool}} &  \\multicolumn{3}{c|}{Errors} &\\multicolumn{4}{c|}{Results}\\\\\\cline{2-8}\n')
-        outfile.write('& \\textbf{Compilation}&\\textbf{Timeout}&\\textbf{Failure}  & \\textbf{TP} & \\textbf{TN} & \\textbf{FP} & \\textbf{FN} \\\\\\hline \n')
+        outfile.write('& \\textbf{Build}&\\textbf{Timeout}&\\textbf{Failure}  & \\textbf{TP} & \\textbf{TN} & \\textbf{FP} & \\textbf{FN} \\\\\\hline \n')
 
         for toolname in used_toolnames:
             outfile.write(f'{displayed_name[toolname]}&\n')
@@ -848,7 +808,7 @@ rootdir = os.path.dirname(os.path.abspath(__file__))
 if args.c == 'all' or args.c == 'run':
     if args.x == 'mpirun':
         raise Exception("No tool was provided, please retry with -x parameter. (see -h for further information on usage)")
-    elif args.x in ['aislinn', 'civl', 'isp', 'must', 'mpisv', 'simgrid', 'parcoach']:
+    elif args.x in ['aislinn', 'civl', 'isp', 'must', 'mpisv', 'simgrid', 'sgvg', 'parcoach']:
         pass
     else:
         raise Exception(f"The tool parameter you provided ({args.x}) is either incorect or not yet implemented.")
