@@ -80,7 +80,7 @@ displayed_name = {
     'EBufferingHazard':'Buffering hazard',
     'FOK':"Correct execution",
 
-    'aislinn':'Aislinn','civl':'CIVL', 'isp':'ISP', 'simgrid':'SimGrid', 'sgvg':'SimGridVG', 'mpisv':'MPI-SV', 'must':'MUST', 'parcoach':'PARCOACH'
+    'aislinn':'Aislinn','civl':'CIVL', 'isp':'ISP', 'simgrid':'Mc SimGrid', 'sgvg':'SimGridVG', 'mpisv':'MPI-SV', 'must':'MUST', 'parcoach':'PARCOACH'
 }
 
 # BufferLength/BufferOverlap
@@ -740,7 +740,8 @@ def cmd_latex(rootdir, toolnames):
             FP = len(results['total'][toolname]['FALSE_NEG'])
             FN = len(results['total'][toolname]['FALSE_POS']) 
             outfile.write(f'{port}&{tout}&{fail+othr}&{TP}&{TN}&{FP}&{FN}')
-            outfile.write(f'\\\\\\hline\\hline\n')
+            outfile.write(f'\\\\\\hline\n')
+        outfile.write(f'\\hline\n')
 
         outfile.write('\\textit{Ideal tool}&\\textit{0}&\\textit{0}&\\textit{0}&')
         outfile.write(f"\\textit{{{len(results['total'][toolname]['error'])}}}&\\textit{{{len(results['total'][toolname]['OK'])}}}&\\textit{{0}}&\\textit{{0}} \\\\\\hline\n")
