@@ -109,7 +109,7 @@ init['MPI_Barrier'] = lambda n: ""
 operation['MPI_Barrier'] = lambda n: 'MPI_Barrier(MPI_COMM_WORLD);'
 fini['MPI_Barrier'] = lambda n: ""
 
-init['MPI_Ibarrier'] = lambda n: f'MPI_Request req{n}; MPI_Status sta{n} = MPI_REQUEST_NULL;'
+init['MPI_Ibarrier'] = lambda n: f'MPI_Request req{n} = MPI_REQUEST_NULL; MPI_Status sta{n};'
 operation['MPI_Ibarrier'] = lambda n: f'MPI_Ibarrier(MPI_COMM_WORLD,&req{n});MPI_Wait(&req{n},&sta{n});'
 fini['MPI_Ibarrier'] = lambda n: f'if (req{n} != MPI_REQUEST_NULL)  MPI_Request_free(&req{n});'
 
