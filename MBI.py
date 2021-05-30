@@ -12,6 +12,7 @@ import argparse
 import time
 import glob
 import subprocess
+import statistics
 import multiprocessing as mp
 
 # Add our lib directory to the PYTHONPATH, and load our utilitary libraries
@@ -589,15 +590,18 @@ def cmd_latex(rootdir, toolnames):
     print(".")
 
     # Initialize the data structure to gather all results
-    results = {'total':{}}
-    timing = {}
+    results = {'total':{}, 'error':{}}
+    timing = {'total':{}, 'error':{}}
     for error in error_scope:
         results[error] = {}
         timing[error] = {}
         for toolname in used_toolnames:
             results[error][toolname] = {'failure':[], 'timeout':[], 'unimplemented':[], 'other':[], 'TRUE_NEG':[], 'TRUE_POS':[], 'FALSE_NEG':[], 'FALSE_POS':[]}
             results['total'][toolname] = {'failure':[], 'timeout':[], 'unimplemented':[], 'other':[], 'TRUE_NEG':[], 'TRUE_POS':[], 'FALSE_NEG':[], 'FALSE_POS':[],'error':[],'OK':[]}
-            timing[error][toolname] = 0
+            results['error'][toolname] = {'failure':[], 'timeout':[], 'unimplemented':[], 'other':[], 'TRUE_NEG':[], 'TRUE_POS':[], 'FALSE_NEG':[], 'FALSE_POS':[],'error':[],'OK':[]}
+            timing[error][toolname] = []
+            timing['total'][toolname] = []
+            timing['error'][toolname] = []
 
     # Get all data from the caches
     for test in todo:
@@ -611,10 +615,14 @@ def cmd_latex(rootdir, toolnames):
             error = possible_details[test['detail']]
             results[error][toolname][res_category].append(test_ID)
             results['total'][toolname][res_category].append(test_ID)
+            timing[error][toolname].append(float(elapsed))
+            timing['total'][toolname].append(float(elapsed))
             if expected == 'OK':
                 results['total'][toolname]['OK'].append(test_ID)
             else:
                 results['total'][toolname]['error'].append(test_ID)
+                results['error'][toolname][res_category].append(test_ID)
+                timing['error'][toolname].append(float(elapsed))
 
     # Produce the results per tool and per category
     with open(f'{rootdir}/latex/results-per-category-landscape.tex', 'w') as outfile:
@@ -739,6 +747,7 @@ def cmd_latex(rootdir, toolnames):
 
         outfile.write('\\end{tabular}\n')
 
+    # Produce the table with the metrics per tool per category
     with open(f'{rootdir}/latex/results-metrics.tex', 'w') as outfile:
         outfile.write('\\begin{tabular}{|l|*{7}{c|}}\\hline\n')
         outfile.write('  \\multirow{2}{*}{ \\textbf{Tool}} &  \\multicolumn{2}{c|}{Robustness} &\\multicolumn{4}{c|}{Usefulness}&\\textbf{Overall}\\\\\\cline{2-7}\n')
@@ -775,6 +784,52 @@ def cmd_latex(rootdir, toolnames):
         outfile.write("\\hline\n\\textit{Ideal tool}&\\textit{1}&\\textit{1}&\\textit{1}&\\textit{1}&\\textit{1}&\\textit{1}&\\textit{1}\\\\\\hline\n")
 
         outfile.write('\\end{tabular}\n')
+
+    # Produce the timing results
+    with open(f'{rootdir}/latex/results-timings.tex', 'w') as outfile:
+        outfile.write(f"\\begin{{tabular}}{{|c|c|*{{{len(used_toolnames)}}}{{c|}}}}\n")
+        outfile.write(f"\\cline{{3-{len(used_toolnames)+2}}}\n")
+        # First title line: Tool names
+        outfile.write("  \\multicolumn{2}{c|}{}")
+        for t in used_toolnames: 
+            outfile.write(f"& {displayed_name[t]}")
+        outfile.write(f"\\\\\\hline\n")
+
+        def show_line(key, display_name):
+            outfile.write(f"\\multirow{{3}}{{*}}{{{display_name}}} & Mean (sec) ")
+            for toolname in used_toolnames:
+                mean = statistics.mean(timing[key][toolname])
+                outfile.write(f"&{round(mean,2)}")
+            outfile.write(f"\\\\\\cline{{2-{len(used_toolnames)+2}}}\n")
+
+            outfile.write(f"& StdDev ")
+            for toolname in used_toolnames:
+                stdev = statistics.stdev(timing[key][toolname])
+                outfile.write(f"&{round(stdev,2)}")
+            outfile.write(f"\\\\\\cline{{2-{len(used_toolnames)+2}}}\n")
+
+            outfile.write(f" & \\# timout ")
+            for toolname in used_toolnames:
+                tout = len(results[key][toolname]['timeout'])
+                if tout == 0:
+                    tout = '-'
+                outfile.write(f"&{tout}")
+            outfile.write("\\\\\\hline\n")
+
+        for error in error_scope:
+            if error == 'FOK':
+                outfile.write('\\hline\n')
+                show_line('error', '\\textit{All incorrect tests}')
+                title = '\\textit{All correct tests}'
+            else:
+                title = f"\makecell{{{displayed_name[error]} \\\\ ({error_scope[error]})}}"
+
+            show_line(error, title)
+        outfile.write('\\hline\n')
+        show_line('total', '\\textbf{All tests}')
+
+
+        outfile.write(f"\\end{{tabular}}\n")
 
     os.chdir(here)
 ########################

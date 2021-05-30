@@ -4,6 +4,7 @@
 \usepackage{graphicx}
 \usepackage{tikz}
 \usepackage{rotating}
+\usepackage{makecell}
 
 \definecolor{viridis0}{rgb}{0.267,0.00487,0.32942}
 \definecolor{viridis1}{rgb}{0.28192,0.08966,0.41241}
@@ -88,6 +89,12 @@
     \end{tabular}
     \caption{Results, Metrics and Abbreviations used in the Tool Evaluation. Metrics do not account for codes leading to a tool error.}
   \end{center}
+\end{table*}
+
+\begin{table*}
+\centering
+\input{results-timings.tex}
+\caption{Timings.}
 \end{table*}
 
 %\input{Data/features.tex}
