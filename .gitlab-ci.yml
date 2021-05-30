@@ -519,7 +519,7 @@ latex:
     stage: deploy
     when: always
     script:
-        - apt install texlive-latex-base 
+        - apt -y install texlive-latex-base 
         - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -c latex
         - cd Data ; ./gen_latex.py ; cd ..
