@@ -796,7 +796,7 @@ def cmd_latex(rootdir, toolnames):
         outfile.write(f"\\\\\\hline\n")
 
         def show_line(key, display_name):
-            outfile.write(f"\\multirow{{3}}{{*}}{{{display_name}}} & Mean (sec) ")
+            outfile.write(f"\\multirow{{3}}{{*}}{{{display_name}}} & Mean time ")
             for toolname in used_toolnames:
                 mean = statistics.mean(timing[key][toolname])
                 outfile.write(f"&{round(mean,2)}")
