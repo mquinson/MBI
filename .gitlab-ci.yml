@@ -519,12 +519,14 @@ latex:
     stage: deploy
     when: always
     script:
+        - apt install texlive-latex-base 
         - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -c latex
         - cd Data ; ./gen_latex.py ; cd ..
         - cd latex ; pdflatex -batch dashboard.tex ; cd ..
     artifacts:
         untracked: false
+        when: always
         paths:
             - latex
 
