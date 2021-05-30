@@ -677,19 +677,19 @@ def cmd_latex(rootdir, toolnames):
     with open(f'{rootdir}/latex/results-per-category-portrait.tex', 'w') as outfile:
         outfile.write('\\setlength\\tabcolsep{3.5pt} % default value: 6pt\n')
         for errors in [['FOK','AInvalidParam','BResLeak','BReqLifecycle','BLocalConcurrency'], ['CMatch','DRace','DMatch','DGlobalConcurrency','EBufferingHazard']]:
-            outfile.write("\\begin{tabular}{|l|*{"+str(len(errors))+"}{c|c|c|c|c||}}\n")
-            outfile.write(f"\\cline{{2-{len(errors)*5+1}}}\n")
+            outfile.write("\\begin{tabular}{|l|*{"+str(len(errors))+"}{c|c|c|c||}}\n")
+            outfile.write(f"\\cline{{2-{len(errors)*4+1}}}\n")
             # First title line: error categories
             outfile.write("  \\multicolumn{1}{c|}{}")
             for error in errors:
-                outfile.write(f"&\\multicolumn{{5}}{{c||}}{{{displayed_name[error].split(' ')[0]}}}")
+                outfile.write(f"&\\multicolumn{{4}}{{c||}}{{{displayed_name[error].split(' ')[0]}}}")
             outfile.write("\\\\\n  \\multicolumn{1}{c|}{}")
             for error in errors:
-                outfile.write(f"&\\multicolumn{{5}}{{c||}}{{{displayed_name[error].split(' ')[1]}}}")
-            outfile.write(f"\\\\\\cline{{2-{len(errors)*5+1}}}\n")
+                outfile.write(f"&\\multicolumn{{4}}{{c||}}{{{displayed_name[error].split(' ')[1]}}}")
+            outfile.write(f"\\\\\\cline{{2-{len(errors)*4+1}}}\n")
             outfile.write("\\multicolumn{1}{c|}{}")
             for error in errors:
-                outfile.write("& \\rotatebox{90}{Build error~~} & \\rotatebox{90}{Timeout~~}&\\rotatebox{90}{Failure} &")
+                outfile.write("& \\rotatebox{90}{Build error~~} & \\rotatebox{90}{Runtime error} &") #\\rotatebox{90}{Timeout~~}&
                 if error == 'FOK':
                     outfile.write(" \\rotatebox{90}{False \\textbf{Positive}} & \\rotatebox{90}{True \\textbf{Negative}~~} \n")
                 else:
@@ -705,7 +705,7 @@ def cmd_latex(rootdir, toolnames):
                     tout = len(results[error][toolname]['timeout'])
                     good = len(results[error][toolname]['TRUE_POS']) + len(results[error][toolname]['TRUE_NEG'])
                     bad  = len(results[error][toolname]['FALSE_POS']) + len(results[error][toolname]['FALSE_NEG'])
-                    outfile.write(f"&{port}&{tout}&{othr+fail}&{bad}&{good}")
+                    outfile.write(f"&{port}&{tout+othr+fail}&{bad}&{good}")
                 outfile.write("\\\\\\hline\n")
 
             outfile.write("\\hline\\textit{Ideal tool}")
@@ -715,7 +715,7 @@ def cmd_latex(rootdir, toolnames):
                 total += len(results[error][toolname]['timeout']) + len(results[error][toolname]['TRUE_POS']) + len(results[error][toolname]['TRUE_NEG'])
                 total += len(results[error][toolname]['FALSE_POS']) + len(results[error][toolname]['FALSE_NEG'])
 
-                outfile.write(f"& \\textit{{0}} & \\textit{{0}}&\\textit{{0}} & \\textit{{0}} & \\textit{total} \n")
+                outfile.write(f"& \\textit{{0}} &\\textit{{0}} & \\textit{{0}} & \\textit{total} \n")
             outfile.write("\\\\\\hline\n")
 
             # Finish the table
