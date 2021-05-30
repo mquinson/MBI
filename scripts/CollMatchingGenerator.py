@@ -109,7 +109,7 @@ init['MPI_Barrier'] = lambda n: ""
 operation['MPI_Barrier'] = lambda n: 'MPI_Barrier(MPI_COMM_WORLD);'
 fini['MPI_Barrier'] = lambda n: ""
 
-init['MPI_Ibarrier'] = lambda n: f'MPI_Request req{n}; MPI_Status sta{n};'
+init['MPI_Ibarrier'] = lambda n: f'MPI_Request req{n}; MPI_Status sta{n} = MPI_REQUEST_NULL;'
 operation['MPI_Ibarrier'] = lambda n: f'MPI_Ibarrier(MPI_COMM_WORLD,&req{n});MPI_Wait(&req{n},&sta{n});'
 fini['MPI_Ibarrier'] = lambda n: f'if (req{n} != MPI_REQUEST_NULL)  MPI_Request_free(&req{n});'
 
@@ -117,7 +117,7 @@ init['MPI_Bcast'] = lambda n: f'int buf{n}[buff_size];'
 operation['MPI_Bcast'] = lambda n: f'MPI_Bcast(buf{n}, buff_size, MPI_INT, 0, MPI_COMM_WORLD);'
 fini['MPI_Bcast'] = lambda n: ""
 
-init['MPI_Ibcast'] = lambda n: f'int buf{n}[buff_size];MPI_Request req{n};MPI_Status sta{n};'
+init['MPI_Ibcast'] = lambda n: f'int buf{n}[buff_size];MPI_Request req{n} = MPI_REQUEST_NULL;MPI_Status sta{n};'
 operation['MPI_Ibcast'] = lambda n: f'MPI_Ibcast(buf{n}, buff_size, MPI_INT, 0, MPI_COMM_WORLD,&req{n});MPI_Wait(&req{n},&sta{n});'
 fini['MPI_Ibcast'] = lambda n: f'if (req{n} != MPI_REQUEST_NULL)	MPI_Request_free(&req{n});'
 
@@ -125,7 +125,7 @@ init['MPI_Reduce'] = lambda n: f"int sum{n}, val{n} = 1;"
 operation['MPI_Reduce'] = lambda n: f"MPI_Reduce(&sum{n}, &val{n}, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);"
 fini['MPI_Reduce'] = lambda n: ""
 
-init['MPI_Ireduce'] = lambda n: f"MPI_Request req{n}; MPI_Status sta{n}; int sum{n}, val{n} = 1;"
+init['MPI_Ireduce'] = lambda n: f"MPI_Request req{n }= MPI_REQUEST_NULL; MPI_Status sta{n}; int sum{n}, val{n} = 1;"
 operation['MPI_Ireduce'] = lambda n: f"MPI_Ireduce(&sum{n}, &val{n}, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD, &req{n}); MPI_Wait(&req{n},&sta{n});"
 fini['MPI_Ireduce'] = lambda n: f'if (req{n} != MPI_REQUEST_NULL) MPI_Request_free(&req{n});'
 
@@ -137,7 +137,7 @@ init['MPI_Gather'] = lambda n: f"int val{n}, buf{n}[buff_size];"
 operation['MPI_Gather'] = lambda n: f"MPI_Gather(&val{n}, 1, MPI_INT, buf{n},1, MPI_INT, root, MPI_COMM_WORLD);"
 fini['MPI_Gather'] = lambda n: ""
 
-init['MPI_Igather'] = lambda n: f"MPI_Request req{n}=MPI_REQUEST_NULL; MPI_Status sta{n}; int val{n}, buf{n}[buff_size];"
+init['MPI_Igather'] = lambda n: f"MPI_Request req{n} = MPI_REQUEST_NULL; MPI_Status sta{n}; int val{n}, buf{n}[buff_size];"
 operation['MPI_Igather'] = lambda n: f"MPI_Igather(&val{n}, 1, MPI_INT, &buf{n},1, MPI_INT, root, MPI_COMM_WORLD, &req{n}); MPI_Wait(&req{n},&sta{n});"
 fini['MPI_Igather'] = lambda n: f"if (req{n} != MPI_REQUEST_NULL) MPI_Request_free(&req{n});"
 
