@@ -32,7 +32,7 @@ END_MBI_TESTS
 #include <stdio.h>
 #include <stdlib.h>
 
-#define buff_size 1
+#define buff_size 128
 
 int main(int argc, char **argv) {
   int nprocs = -1;
@@ -76,7 +76,7 @@ write['MPI_Ibcast'] = lambda n: f'buf{n}++;'
 fini['MPI_Ibcast'] = lambda n: f'MPI_Wait(&req{n},&sta{n});'
 
 init['MPI_Igather'] = lambda n: f"int val{n}, buf{n}[buff_size];MPI_Request req{n};MPI_Status sta{n};"
-operation['MPI_Igather'] = lambda n: f'MPI_Igather(&val{n}, 1, MPI_INT, buf{n},1, MPI_INT, 0, MPI_COMM_WORLD, &req{n});'
+operation['MPI_Igather'] = lambda n: f'MPI_Igather(&val{n}, 1, MPI_INT, &buf{n},1, MPI_INT, 0, MPI_COMM_WORLD, &req{n});'
 write['MPI_Igather'] = lambda n: f'val{n}=3;'
 fini['MPI_Igather'] = lambda n: f'MPI_Wait(&req{n},&sta{n});'
 

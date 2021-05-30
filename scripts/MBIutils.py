@@ -53,6 +53,8 @@ def run_cmd(buildcmd, execcmd, cachefile, filename, binary, timeout, batchinfo, 
         if olddigest == newdigest:
             print(f" (cached result found for {cachefile})")
             return
+        else:
+            os.path.remove(f'{cachefile}.txt')
 
     print(f"Wait up to {timeout} seconds")
 
