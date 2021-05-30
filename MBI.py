@@ -743,8 +743,8 @@ def cmd_latex(rootdir, toolnames):
             tout = len(results['total'][toolname]['timeout'])
             TP = len(results['total'][toolname]['TRUE_POS'])
             TN = len(results['total'][toolname]['TRUE_NEG'])
-            FP = len(results['total'][toolname]['FALSE_NEG'])
-            FN = len(results['total'][toolname]['FALSE_POS']) 
+            FN = len(results['total'][toolname]['FALSE_NEG'])
+            FP = len(results['total'][toolname]['FALSE_POS']) 
             outfile.write(f'{port}&{tout}&{fail+othr}&{TP}&{TN}&{FP}&{FN}')
             outfile.write(f'\\\\\\hline\n')
         outfile.write(f'\\hline\n')
@@ -769,8 +769,8 @@ def cmd_latex(rootdir, toolnames):
             nTout = len(results['total'][toolname]['timeout'])
             TP = len(results['total'][toolname]['TRUE_POS'])
             TN = len(results['total'][toolname]['TRUE_NEG'])
-            FP = len(results['total'][toolname]['FALSE_NEG'])
-            FN = len(results['total'][toolname]['FALSE_POS']) 
+            FN = len(results['total'][toolname]['FALSE_NEG'])
+            FP = len(results['total'][toolname]['FALSE_POS']) 
 
             total = TP + TN + FP + FN + nTout + nPort + nFail
             precision = TP/(TP+FP)
