@@ -39,6 +39,8 @@ class Tool(AbstractTool):
             timeout=timeout,
             batchinfo=batchinfo)
 
+        subprocess.run("rm -f vgcore.*", shell=True, check=True) # Save disk space ASAP
+
     def teardown(self): 
         subprocess.run("find -type f -a -executable | xargs rm -f", shell=True, check=True) # Remove generated cruft (binary files)
         subprocess.run("rm -f smpitmp-* core", shell=True, check=True) 
