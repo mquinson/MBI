@@ -241,5 +241,5 @@ def generate_errors(files, outfile):
 
         output.write('\\end{tabular}\n')
 
-generate_features(get_C_files_from_dir("../gencodes"), "features.tex")
-generate_errors(get_C_files_from_dir("../gencodes"), "errors.tex")
+generate_features(get_C_files_from_dir("../gencodes"), "../latex/features.tex")
+generate_errors(get_C_files_from_dir("../gencodes"), "../latex/errors.tex")

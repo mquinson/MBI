@@ -617,7 +617,7 @@ def cmd_latex(rootdir, toolnames):
                 results['total'][toolname]['error'].append(test_ID)
 
     # Produce the results per tool and per category
-    with open(f'{rootdir}/results-per-category-landscape.tex', 'w') as outfile:
+    with open(f'{rootdir}/latex/results-per-category-landscape.tex', 'w') as outfile:
         outfile.write('\\setlength\\tabcolsep{3pt} % default value: 6pt\n')
         outfile.write("\\begin{tabular}{|l|*{"+str(len(used_toolnames))+"}{c|c|c|c||}}\n")
         outfile.write("\\cline{2-"+str(len(used_toolnames)*4+1)+"}\n")
@@ -666,7 +666,7 @@ def cmd_latex(rootdir, toolnames):
         outfile.write('\\setlength\\tabcolsep{6pt} % Back to default value\n')
 
     # Produce the results per tool and per category
-    with open(f'{rootdir}/results-per-category-portrait.tex', 'w') as outfile:
+    with open(f'{rootdir}/latex/results-per-category-portrait.tex', 'w') as outfile:
         outfile.write('\\setlength\\tabcolsep{3.5pt} % default value: 6pt\n')
         for errors in [['FOK','AInvalidParam','BResLeak','BReqLifecycle','BLocalConcurrency'], ['CMatch','DRace','DMatch','DGlobalConcurrency','EBufferingHazard']]:
             outfile.write("\\begin{tabular}{|l|*{"+str(len(errors))+"}{c|c|c|c|c||}}\n")
@@ -715,7 +715,7 @@ def cmd_latex(rootdir, toolnames):
         outfile.write('\\setlength\\tabcolsep{6pt} % Back to default value\n')
 
     # Produce the landscape results+metric per tool for all category
-    with open(f'{rootdir}/results-summary.tex', 'w') as outfile:
+    with open(f'{rootdir}/latex/results-summary.tex', 'w') as outfile:
         outfile.write('\\begin{tabular}{|l|*{7}{c|}}\\hline\n')
         outfile.write('  \\multirow{2}{*}{ \\textbf{Tool}} &  \\multicolumn{3}{c|}{Errors} &\\multicolumn{4}{c|}{Results}\\\\\\cline{2-8}\n')
         outfile.write('& \\textbf{Build}&\\textbf{Timeout}&\\textbf{Failure}  & \\textbf{TP} & \\textbf{TN} & \\textbf{FP} & \\textbf{FN} \\\\\\hline \n')
@@ -739,7 +739,7 @@ def cmd_latex(rootdir, toolnames):
 
         outfile.write('\\end{tabular}\n')
 
-    with open(f'{rootdir}/results-metrics.tex', 'w') as outfile:
+    with open(f'{rootdir}/latex/results-metrics.tex', 'w') as outfile:
         outfile.write('\\begin{tabular}{|l|*{7}{c|}}\\hline\n')
         outfile.write('  \\multirow{2}{*}{ \\textbf{Tool}} &  \\multicolumn{2}{c|}{Robustness} &\\multicolumn{4}{c|}{Usefulness}&\\textbf{Overall}\\\\\\cline{2-7}\n')
 

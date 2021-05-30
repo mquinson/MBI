@@ -516,16 +516,15 @@ must-svg:
             - logs/*
 
 latex:
-    stage: svg
+    stage: deploy
+    when: always
     script:
         - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -c latex
-        - cd Data ; ./gen_latex.py ; mv *.tex ..; cd ..
-        - mkdir latex
-        - mv *.tex latex
+        - cd Data ; ./gen_latex.py ; cd ..
+        - cd latex ; pdflatex -batch dashboard.tex ; cd ..
     artifacts:
         untracked: false
-        when: always
         paths:
             - latex
 
@@ -535,10 +534,9 @@ pages:
     script:
         - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -c stats
-        - mkdir latex || true # Just in case the 'latex' job failed
         - pwd ; ls
         - mkdir public
-        - cp -r *.html gencodes img logs latex public/
+        - cp -r *.html gencodes img logs public/
     artifacts:
         untracked: false
         when: always

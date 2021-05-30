@@ -1,0 +1,94 @@
+\documentclass{article}
+\usepackage{multirow}
+\usepackage{fullpage}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{rotating}
+
+\definecolor{viridis0}{rgb}{0.267,0.00487,0.32942}
+\definecolor{viridis1}{rgb}{0.28192,0.08966,0.41241}
+\definecolor{viridis2}{rgb}{0.28026,0.1657,0.4765}
+\definecolor{viridis3}{rgb}{0.26366,0.23763,0.51877}
+\definecolor{viridis4}{rgb}{0.23744,0.3052,0.54192}
+\definecolor{viridis5}{rgb}{0.20862,0.36775,0.55267}
+\definecolor{viridis6}{rgb}{0.18225,0.42618,0.55711}
+\definecolor{viridis7}{rgb}{0.1592,0.48224,0.55807}
+\definecolor{viridis8}{rgb}{0.13777,0.53749,0.5549}
+\definecolor{viridis9}{rgb}{0.12115,0.59274,0.54465}
+\definecolor{viridis10}{rgb}{0.12808,0.64775,0.5235}
+\definecolor{viridis11}{rgb}{0.18065,0.7014,0.48819}
+\definecolor{viridis12}{rgb}{0.27415,0.75198,0.4366}
+\definecolor{viridis13}{rgb}{0.39517,0.79747,0.36775}
+\definecolor{viridis14}{rgb}{0.53561,0.83578,0.2819}
+\definecolor{viridis15}{rgb}{0.68895,0.86545,0.18272}
+\definecolor{viridis16}{rgb}{0.84557,0.88733,0.0997}
+\definecolor{viridis17}{rgb}{0.99324,0.90616,0.14394}
+
+\newcommand{\R}[1]{\rotatebox[origin=c]{90}{#1}}
+
+%\input{tooltip.tex}
+
+\begin{document}
+
+\begin{table*}
+  \input{errors.tex}
+  \caption{Amount of files in each error categories.}
+\end{table*}
+
+%  \begin{sidewaystable}
+%    \input{results-per-category-landscape.tex}    
+%    \caption{Results of each tool per error category.}
+%  \end{sidewaystable}
+  
+  \begin{table*}
+    \input{results-per-category-portrait.tex}    
+    \caption{Results of each tool per error category.}
+  \end{table*}
+
+\newpage
+\begin{table*}[h]
+  \centering
+%  \resizebox{\linewidth}{!}{
+    \input{results-summary.tex}
+%  }
+  \caption{Results of each tool in summary.}
+
+  \bigskip
+  \bigskip
+  % \end{table*}
+%\begin{table*}[h]
+%  \resizebox{\linewidth}{!}{
+    \input{results-metrics.tex}
+%  }
+    \caption{Metrics of each tool.}
+    
+  \begin{center}
+    \begin{tabular}{|c|l|}\hline
+      \textbf{Result}&\textbf{Meaning}\\\hline
+      Compilation Error (CE) &The code uses a feature not supported by the tool.\\\hline
+      Timeout (TO) & Timeout (limit: 300s).\\\hline
+      Runtime Error (RE) & Tool failure during the evaluation of this code.\\\hline\hline
+      True Positive (TP)&Error correctly detected.\\\hline
+      False Negative (FN)&Error missed.\\\hline 
+      False Positive (FP)&Correct code reported as faulty.\\\hline
+      True Negative (TN) &Correct code reported as such.\\\hline\hline
+      \textbf{Metric}&\textbf{Definition and meaning}\\\hline
+      {Coverage}&\multirow{1.3}{*}{{Ability to compile codes. $Cov=1-\frac{CE}{total}$}}\\[4pt]\hline
+      {Conclusiveness}&\multirow{1.3}{*}{{Ability to draw a diagnostic on codes. $Cc=1-\frac{CE+RE+TO}{total}$}}  \\[4pt]\hline
+      Specificity&\multirow{1.3}{*}{Ability to not find errors in correct codes.  $S=\frac{TN}{TN + FP}$}\\[4pt]\hline
+      Recall&\multirow{1.3}{*}{Ability to find existing errors. $R=\frac{TP}{TP+FN}$}\\[4pt]\hline
+      Precision& \multirow{1.3}{*}{Potential confidence when a code is reported as correct. $P=\frac{TP}{TP+FP}$}\\[4pt]\hline
+      F1 Score&\multirow{1.3}{*}{Overall bug-finding quality. $F1=\frac{2 \times P \times R}{P+R}$}\\[4pt]\hline
+      Overall accuracy&\multirow{1.3}{*}{Proportion of correct diagnostics over all tests. $A=\frac{TP+TN}{CE+RE+TO+TP+FP+TN+FN}$}\\[4pt]\hline
+    % Recall: TP / ( TP + FN) 
+% Specificity: 
+% Precision: TP / ( TP + FP)
+% Accuracy: (TP+TN) / (TP + FP + TN+ FN)
+% F1 Score: 
+    \end{tabular}
+    \caption{Results, Metrics and Abbreviations used in the Tool Evaluation. Metrics do not account for codes leading to a tool error.}
+  \end{center}
+\end{table*}
+
+%\input{Data/features.tex}
+\end{document}
