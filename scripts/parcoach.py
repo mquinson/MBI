@@ -16,6 +16,7 @@ class Tool(AbstractTool):
             buildcmd=f"clang -c -g -emit-llvm {filename} -I/usr/lib/x86_64-linux-gnu/mpich/include/ -o {binary}.bc",
             execcmd=f"opt-9 -load ../../builds/parcoach/src/aSSA/aSSA.so -parcoach -check-mpi {binary}.bc -o /dev/null",
             cachefile=cachefile,
+            filename=filename,
             binary=binary,
             timeout=timeout,
             batchinfo=batchinfo)

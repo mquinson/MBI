@@ -24,6 +24,7 @@ class Tool(AbstractTool):
             buildcmd=None,
             execcmd=execcmd,
             cachefile=cachefile,
+            filename=filename,
             binary=binary,
             timeout=timeout,
             batchinfo=batchinfo)

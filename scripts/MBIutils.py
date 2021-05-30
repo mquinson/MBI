@@ -5,6 +5,7 @@ import sys
 import shlex
 import select
 import signal
+import hashlib
 
 class AbstractTool:
     def ensure_image(self, params=""):
@@ -39,10 +40,19 @@ class AbstractTool:
         """Read the result of a previous run from the cache, and compute the test outcome"""
         return 'failure'
 
-def run_cmd(buildcmd, execcmd, cachefile, binary, timeout, batchinfo, read_line_lambda=None):
-    if os.path.exists(f'{cachefile}.txt') and os.path.exists(f'{cachefile}.elapsed'):
-        print(f" (cached result found for {cachefile})")
-        return
+def run_cmd(buildcmd, execcmd, cachefile, filename, binary, timeout, batchinfo, read_line_lambda=None):
+    if os.path.exists(f'{cachefile}.txt') and os.path.exists(f'{cachefile}.elapsed') and os.path.exists(f'{cachefile}.md5sum'):
+        with open(filename, 'r') as sourcefile :
+            content = sourcefile.read().join('').encode(errors= "ignore")
+        md5_hash = hashlib.md5()
+        md5_hash.update( content )
+        newdigest = md5_hash.hexdigest()
+        with open(f'{cachefile}.md5sum', 'r') as md5file:
+            olddigest = md5file.read()
+        #print(f'Old digest: {olddigest}; New digest: {newdigest}')
+        if olddigest == newdigest:
+            print(f" (cached result found for {cachefile})")
+            return
 
     print(f"Wait up to {timeout} seconds")
 
@@ -129,3 +139,11 @@ def run_cmd(buildcmd, execcmd, cachefile, binary, timeout, batchinfo, read_line_
 
     with open(f'{cachefile}.txt', 'w') as outfile:
         outfile.write(output)
+    with open(f'{cachefile}.md5sum', 'w') as outfile:
+        with open(filename, 'r') as sourcefile :
+            content = sourcefile.read().join('').encode(errors= "ignore")
+        md5_hash = hashlib.md5()
+        md5_hash.update( content )
+        newdigest = md5_hash.hexdigest()
+
+        outfile.write(newdigest)

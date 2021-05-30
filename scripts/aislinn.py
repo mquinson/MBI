@@ -36,6 +36,7 @@ class Tool(AbstractTool):
             buildcmd=f"aislinn-cc -g {filename} -o {binary}",
             execcmd=execcmd,
             cachefile=cachefile,
+            filename=filename,
             binary=binary,
             timeout=timeout,
             batchinfo=batchinfo)

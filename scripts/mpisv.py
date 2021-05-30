@@ -29,6 +29,7 @@ class Tool(AbstractTool):
             buildcmd=f"mpisvcc {filename} -o {binary}.bc",
             execcmd=execcmd,
             cachefile=cachefile,
+            filename=filename,
             binary=binary,
             timeout=timeout,
             batchinfo=batchinfo)

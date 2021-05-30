@@ -34,6 +34,7 @@ class Tool(AbstractTool):
             buildcmd=f"smpicc {filename} -g -Wl,-znorelro -Wl,-znoseparate-code -o {binary}",
             execcmd=execcmd,
             cachefile=cachefile,
+            filename=filename,
             binary=binary,
             timeout=timeout,
             batchinfo=batchinfo)

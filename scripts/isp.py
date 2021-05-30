@@ -28,6 +28,7 @@ class Tool(AbstractTool):
             buildcmd=f"ispcc -o {binary} {filename}",
             execcmd=execcmd,
             cachefile=cachefile,
+            filename=filename,
             binary=binary,
             timeout=timeout,
             batchinfo=batchinfo)
