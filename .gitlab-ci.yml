@@ -3,8 +3,8 @@
 #   docker build -t registry.gitlab.inria.fr/quinson/mbi2 .
 #   docker push registry.gitlab.inria.fr/quinson/mbi2
 # image: registry.gitlab.com/mwapl/benchmarking-mpi:latest
-# image: registry.gitlab.inria.fr/quinson/mbi2:latest
-image: registry.hub.docker.com/mquinson/mbi
+image: registry.gitlab.inria.fr/quinson/mbi2:latest
+# image: registry.hub.docker.com/mquinson/mbi
 
 variables:
     GIT_SUBMODULE_STRATEGY: none
