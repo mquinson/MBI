@@ -64,22 +64,24 @@ class Tool(AbstractTool):
         if re.search("INFO: Found error 'Pending message'", output):
             return 'Pending message'
 
-        if re.search("INFO: Found error 'Invalid rank'", output):
-            return 'Invalid rank'
-        if re.search("INFO: Found error 'Invalid tag'", output):
-            return 'Invalid tag'
-        if re.search("INFO: Found error 'Invalid datatype'", output):
-            return 'Invalid datatype'
-        if re.search("INFO: Found error 'Invalid communicator'", output):
-            return 'Invalid communicator'
         if re.search("INFO: Found error 'Invalid color'", output):
             return 'Invalid color'
-        if re.search("INFO: Found error 'Invalid operation'", output):
-            return 'Invalid operation'
+        if re.search("INFO: Found error 'Invalid communicator'", output):
+            return 'Invalid communicator'
         if re.search("INFO: Found error 'Invalid count'", output):
             return 'Invalid count'
+        if re.search("INFO: Found error 'Invalid datatype'", output):
+            return 'Invalid datatype'
+        if re.search("INFO: Found error 'Invalid group'", output):
+            return 'Invalid group'
+        if re.search("INFO: Found error 'Invalid operation'", output):
+            return 'Invalid operation'
+        if re.search("INFO: Found error 'Invalid rank'", output):
+            return 'Invalid rank'
         if re.search("INFO: Found error 'Invalid request'", output):
             return 'Invalid request'
+        if re.search("INFO: Found error 'Invalid tag'", output):
+            return 'Invalid tag'
 
         if re.search("INFO: Found error 'Invalid write'", output):
             return 'concurrency error'
