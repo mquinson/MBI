@@ -646,7 +646,6 @@ def cmd_latex(rootdir, toolnames):
         for t in used_toolnames: 
             outfile.write("& \\rotatebox{90}{Build error~~} &\\rotatebox{90}{Failure} & \\rotatebox{90}{Incorrect} & \\rotatebox{90}{Correct~~} ")
         outfile.write("\\\\\\hline\n")
-#       &  & \textbf{Recall} & \textbf{Specificity}  & \textbf{Precision}  & \textbf{Accuracy}  & \textbf{F1 Score}
 
         for error in error_scope:
             if error == 'FOK':
@@ -773,7 +772,7 @@ def cmd_latex(rootdir, toolnames):
             FP = len(results['total'][toolname]['FALSE_POS']) 
 
             total = TP + TN + FP + FN + nTout + nPort + nFail
-            precision = TP/(TP+FP)
+            precision = TN/(TP+FP)
             recall = TP/(TP+FN)
 
             # Coverage & Completion
