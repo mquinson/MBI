@@ -12,6 +12,7 @@ variables:
 stages:
     - build
     - test
+    - gather # For the tests that are split in several jobs (ISP, MUST, CIVL), rerun them all in one
     - deploy
 
 build-must:
@@ -185,7 +186,7 @@ test-must-10:
             - logs
 
 test-must-all:
-    stage: test
+    stage: gather
     needs:
         - job: test-must-1
           artifacts: true
@@ -325,7 +326,7 @@ test-civl-4:
             - logs
 
 test-civl-all:
-    stage: test
+    stage: gather
     needs:
         - job: test-civl-1
           artifacts: true
@@ -450,7 +451,7 @@ test-isp-2:
             - logs
 
 test-isp-all:
-    stage: test
+    stage: gather
     needs:
         - job: test-isp-1
           artifacts: true
