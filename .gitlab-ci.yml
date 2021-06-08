@@ -487,8 +487,8 @@ test-smpi-all:
 test-itac-1:
     stage: test
     needs: []
-    tags:
-        - baremetal
+#    tags:
+#        - baremetal
     script:
         - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x itac -c run -b 1/6
