@@ -72,7 +72,7 @@ operation['MPI_Bcast'] = lambda n: f'MPI_Bcast(&buf{n}, buff_size, MPI_INT, root
 fini['MPI_Bcast'] = lambda n: ""
 
 init['MPI_Reduce'] = lambda n: f"int sum{n}, val{n} = 1;"
-operation['MPI_Reduce'] = lambda n: f"MPI_Reduce(&sum{n}, &val{n}, 1, MPI_INT, MPI_SUM, root, MPI_COMM_WORLD);"
+operation['MPI_Reduce'] = lambda n: f"MPI_Reduce(&val{n}, &sum{n}, 1, MPI_INT, MPI_SUM, root, MPI_COMM_WORLD);"
 fini['MPI_Reduce'] = lambda n: ""
 
 init['MPI_Gather'] = lambda n: f"int val{n}, buf{n}[buff_size];"
@@ -84,7 +84,7 @@ operation['MPI_Scatter'] = lambda n: f"MPI_Scatter(&buf{n}, 1, MPI_INT, &val{n},
 fini['MPI_Scatter'] = lambda n: ""
 
 init['MPI_Ireduce'] = lambda n: f"MPI_Request req{n}; MPI_Status sta{n}; int sum{n}, val{n} = 1;"
-operation['MPI_Ireduce'] = lambda n: f"MPI_Ireduce(&sum{n}, &val{n}, 1, MPI_INT, MPI_SUM, root, MPI_COMM_WORLD, &req{n}); MPI_Wait(&req{n},&sta{n});"
+operation['MPI_Ireduce'] = lambda n: f"MPI_Ireduce(&val{n}, &sum{n}, 1, MPI_INT, MPI_SUM, root, MPI_COMM_WORLD, &req{n}); MPI_Wait(&req{n},&sta{n});"
 fini['MPI_Ireduce'] = lambda n: ""
 
 init['MPI_Ibcast'] = lambda n: f'int buf{n}[buff_size]; MPI_Request req{n};MPI_Status sta{n};'

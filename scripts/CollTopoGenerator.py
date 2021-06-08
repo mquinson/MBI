@@ -98,7 +98,7 @@ operation['MPI_Barrier'] = lambda n: 'MPI_Barrier(newcom);'
 fini['MPI_Barrier'] = lambda n: ""
 
 init['MPI_Reduce'] = lambda n: f"int sum{n}, val{n} = 1;"
-operation['MPI_Reduce'] = lambda n: f"MPI_Reduce(&sum{n}, &val{n}, 1, MPI_INT, MPI_SUM, 0, newcom);"
+operation['MPI_Reduce'] = lambda n: f"MPI_Reduce(&val{n}, &sum{n}, 1, MPI_INT, MPI_SUM, 0, newcom);"
 fini['MPI_Reduce'] = lambda n: ""
 
 init['MPI_Gather'] = lambda n: f"int val{n}, buf{n}[buff_size];"
@@ -110,11 +110,11 @@ operation['MPI_Scatter'] = lambda n: f"MPI_Scatter(&buf{n}, 1, MPI_INT, &val{n},
 fini['MPI_Scatter'] = lambda n: ""
 
 init['MPI_Allreduce'] = lambda n: f"int sum{n}, val{n} = 1;"
-operation['MPI_Allreduce'] = lambda n: f"MPI_Allreduce(&sum{n}, &val{n}, 1, MPI_INT, MPI_SUM, newcom);"
+operation['MPI_Allreduce'] = lambda n: f"MPI_Allreduce(&val{n}, &sum{n}, 1, MPI_INT, MPI_SUM, newcom);"
 fini['MPI_Allreduce'] = lambda n: ""
 
 init['MPI_Allreduce'] = lambda n: f"int sum{n}, val{n} = 1;"
-operation['MPI_Allreduce'] = lambda n: f"MPI_Allreduce(&sum{n}, &val{n}, 1, MPI_INT, MPI_SUM, newcom);"
+operation['MPI_Allreduce'] = lambda n: f"MPI_Allreduce(&val{n}, &sum{n}, 1, MPI_INT, MPI_SUM, newcom);"
 fini['MPI_Allreduce'] = lambda n: ""
 
 for op in toolfunc: 

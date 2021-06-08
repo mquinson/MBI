@@ -116,10 +116,6 @@ init['MPI_Allgatherv'] = lambda n: (f"int *rbuf{n} = malloc(dbs*2);\nint *rcount
 operation['MPI_Allgatherv'] = lambda n: f"MPI_Allgatherv(&rank, 1, MPI_INT, rbuf{n}, rcounts{n}, displs{n}, MPI_INT, MPI_COMM_WORLD);"
 fini['MPI_Allgatherv'] = lambda n: f"free(rbuf{n});free(rcounts{n});free(displs{n});"
 
-init['MPI_Allreduce'] = lambda n: f"int send{n} = 1, recv{n}[buff_size];"
-operation['MPI_Allreduce'] = lambda n: f"MPI_Allreduce(&send{n}, &recv{n}, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);"
-fini['MPI_Allreduce'] = lambda n: ""
-
 init['MPI_Alltoall'] = lambda n: f"int *sbuf{n} = malloc(dbs), *rbuf{n} = malloc(dbs);"
 operation['MPI_Alltoall'] = lambda n: f"MPI_Alltoall(sbuf{n}, 1, MPI_INT, rbuf{n}, 1, MPI_INT, MPI_COMM_WORLD);"
 fini['MPI_Alltoall'] = lambda n: f"free(sbuf{n});free(rbuf{n});"
@@ -142,8 +138,12 @@ init['MPI_Bcast'] = lambda n: f'int buf{n}[buff_size];'
 operation['MPI_Bcast'] = lambda n: f'MPI_Bcast(buf{n}, buff_size, MPI_INT, 0, MPI_COMM_WORLD);'
 fini['MPI_Bcast'] = lambda n: ""
 
+init['MPI_Allreduce'] = lambda n: f"int sum{n}, val{n} = 1;"
+operation['MPI_Allreduce'] = lambda n: f"MPI_Allreduce(&val{n}, &sum{n}, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);"
+fini['MPI_Allreduce'] = lambda n: ""
+
 init['MPI_Reduce'] = lambda n: f"int sum{n}, val{n} = 1;"
-operation['MPI_Reduce'] = lambda n: f"MPI_Reduce(&sum{n}, &val{n}, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);"
+operation['MPI_Reduce'] = lambda n: f"MPI_Reduce(&val{n}, &sum{n}, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);"
 fini['MPI_Reduce'] = lambda n: ""
 
 init['MPI_Scatter'] = lambda n: f"int val{n}, buf{n}[buff_size];"

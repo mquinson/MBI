@@ -86,11 +86,11 @@ operation['MPI_Ibarrier'] = lambda n: f'MPI_Ibarrier(newcom, &req{n});'
 fini['MPI_Ibarrier'] = lambda n: f"MPI_Wait(&req{n}, &stat{n});"
 
 init['MPI_Reduce'] = lambda n: f"int sum{n}, val{n} = 1;"
-operation['MPI_Reduce'] = lambda n: f"MPI_Reduce(&sum{n}, &val{n}, 1, MPI_INT, MPI_SUM, 0, newcom);"
+operation['MPI_Reduce'] = lambda n: f"MPI_Reduce(&val{n}, &sum{n}, 1, MPI_INT, MPI_SUM, 0, newcom);"
 fini['MPI_Reduce'] = lambda n: ""
 
 init['MPI_Ireduce'] = lambda n: f"MPI_Request req{n}; MPI_Status stat{n}; int sum{n}, val{n} = 1;"
-operation['MPI_Ireduce'] = lambda n: f"MPI_Ireduce(&sum{n}, &val{n}, 1, MPI_INT, MPI_SUM, 0, newcom, &req{n});"
+operation['MPI_Ireduce'] = lambda n: f"MPI_Ireduce(&val{n}, &sum{n}, 1, MPI_INT, MPI_SUM, 0, newcom, &req{n});"
 fini['MPI_Ireduce'] = lambda n: f"MPI_Wait(&req{n}, &stat{n});" 
 
 init['MPI_Gather'] = lambda n: f"int val{n}, buf{n}[buff_size];"
@@ -102,7 +102,7 @@ operation['MPI_Scatter'] = lambda n: f"MPI_Scatter(&buf{n}, 1, MPI_INT, &val{n},
 fini['MPI_Scatter'] = lambda n: ""
 
 init['MPI_Allreduce'] = lambda n: f"int sum{n}, val{n} = 1;"
-operation['MPI_Allreduce'] = lambda n: f"MPI_Allreduce(&sum{n}, &val{n}, 1, MPI_INT, MPI_SUM, newcom);"
+operation['MPI_Allreduce'] = lambda n: f"MPI_Allreduce(&val{n}, &sum{n}, 1, MPI_INT, MPI_SUM, newcom);"
 fini['MPI_Allreduce'] = lambda n: ""
 
 init['MPI_Scan'] = lambda n: f"int outbuf{n}[buff_size], inbuf{n}[buff_size];"
@@ -116,10 +116,6 @@ fini['MPI_Exscan'] = lambda n: ""
 init['MPI_Allgather'] = lambda n: f"int *rbuf{n} = malloc(dbs);"
 operation['MPI_Allgather'] = lambda n: f"MPI_Allgather(&rank, 1, MPI_INT, rbuf{n}, 1, MPI_INT, newcom);"
 fini['MPI_Allgather'] = lambda n: f"free(rbuf{n});"
-
-init['MPI_Allreduce'] = lambda n: f"int sum{n}, val{n} = 1;"
-operation['MPI_Allreduce'] = lambda n: f"MPI_Allreduce(&sum{n}, &val{n}, 1, MPI_INT, MPI_SUM, newcom);"
-fini['MPI_Allreduce'] = lambda n: ""
 
 # Generate code with one collective
 for coll in collectives + icollectives:

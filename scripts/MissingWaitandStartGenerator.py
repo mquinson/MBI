@@ -113,7 +113,7 @@ free['MPI_Recv_init'] = lambda n: f'if(req{n} != MPI_REQUEST_NULL) MPI_Request_f
 
 init['MPI_Ireduce'] = lambda n: f'MPI_Request req{n}; MPI_Status sta{n}; int sum{n}, val{n} = 1;'
 start['MPI_Ireduce'] = lambda n: "" 
-operation['MPI_Ireduce'] = lambda n: f'MPI_Ireduce(&sum{n}, &val{n}, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD, &req{n});'
+operation['MPI_Ireduce'] = lambda n: f'MPI_Ireduce(&val{n}, &sum{n}, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD, &req{n});'
 fini['MPI_Ireduce'] = lambda n: f'MPI_Wait(&req{n},&sta{n});'
 free['MPI_Ireduce'] = lambda n: f'if(req{n} != MPI_REQUEST_NULL) MPI_Request_free(&req{n});'
 

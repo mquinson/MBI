@@ -88,7 +88,7 @@ operation['MPI_Allgatherv'] = lambda n: f"MPI_Allgatherv(&rank, 1, MPI_INT, rbuf
 fini['MPI_Allgatherv'] = lambda n: f"free(rbuf{n});free(rcounts{n});free(displs{n});"
 
 init['MPI_Allreduce'] = lambda n: f"int sum{n}, val{n} = 1;"
-operation['MPI_Allreduce'] = lambda n: f"MPI_Allreduce(&sum{n}, &val{n}, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);"
+operation['MPI_Allreduce'] = lambda n: f"MPI_Allreduce(&val{n}, &sum{n}, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);"
 fini['MPI_Allreduce'] = lambda n: ""
 
 init['MPI_Alltoall'] = lambda n: f"int *sbuf{n} = malloc(dbs), *rbuf{n} = malloc(dbs);"
@@ -122,11 +122,11 @@ operation['MPI_Ibcast'] = lambda n: f'MPI_Ibcast(buf{n}, buff_size, MPI_INT, 0, 
 fini['MPI_Ibcast'] = lambda n: f'if (req{n} != MPI_REQUEST_NULL)	MPI_Request_free(&req{n});'
 
 init['MPI_Reduce'] = lambda n: f"int sum{n}, val{n} = 1;"
-operation['MPI_Reduce'] = lambda n: f"MPI_Reduce(&sum{n}, &val{n}, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);"
+operation['MPI_Reduce'] = lambda n: f"MPI_Reduce(&val{n}, &sum{n}, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);"
 fini['MPI_Reduce'] = lambda n: ""
 
 init['MPI_Ireduce'] = lambda n: f"MPI_Request req{n }= MPI_REQUEST_NULL; MPI_Status sta{n}; int sum{n}, val{n} = 1;"
-operation['MPI_Ireduce'] = lambda n: f"MPI_Ireduce(&sum{n}, &val{n}, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD, &req{n}); MPI_Wait(&req{n},&sta{n});"
+operation['MPI_Ireduce'] = lambda n: f"MPI_Ireduce(&val{n}, &sum{n}, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD, &req{n}); MPI_Wait(&req{n},&sta{n});"
 fini['MPI_Ireduce'] = lambda n: f'if (req{n} != MPI_REQUEST_NULL) MPI_Request_free(&req{n});'
 
 init['MPI_Scatter'] = lambda n: f"int val{n}, buf{n}[buff_size];"
