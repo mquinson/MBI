@@ -12,7 +12,6 @@ variables:
 stages:
     - build
     - test
-    - svg
     - deploy
 
 build-must:
@@ -185,6 +184,38 @@ test-must-10:
         paths:
             - logs
 
+test-must-all:
+    stage: test
+    needs:
+        - job: test-must-1
+          artifacts: true
+        - job: test-must-2
+          artifacts: true
+        - job: test-must-3
+          artifacts: true
+        - job: test-must-4
+          artifacts: true
+        - job: test-must-5
+          artifacts: true
+        - job: test-must-6
+          artifacts: true
+        - job: test-must-7
+          artifacts: true
+        - job: test-must-8
+          artifacts: true
+        - job: test-must-9
+          artifacts: true
+        - job: test-must-10
+          artifacts: true
+    script:
+        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -x must
+    artifacts:
+        untracked: false
+        when: always
+        paths:
+            - logs/*
+
 build-aislinn:
     stage: build
     needs: []
@@ -293,6 +324,26 @@ test-civl-4:
         paths:
             - logs
 
+test-civl-all:
+    stage: test
+    needs:
+        - job: test-civl-1
+          artifacts: true
+        - job: test-civl-2
+          artifacts: true
+        - job: test-civl-3
+          artifacts: true
+        - job: test-civl-4
+          artifacts: true
+    script:
+        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -x civl
+    artifacts:
+        untracked: false
+        when: always
+        paths:
+            - logs/*
+
 build-parcoach:
     stage: build
     needs: []
@@ -398,135 +449,22 @@ test-isp-2:
         paths:
             - logs
 
-simgrid-svg:
-    stage: svg
-    needs:
-        - job: test-simgrid
-          artifacts: true
-    # before_script:
-    #   - apt-get update
-    #   - apt-get install -y python3-pip libcairo2
-    #   - pip3 install drawSvg
-    script:
-        - cd Data
-#        - python3.8 gen_svg.py -i ../logs/simgrid/bench_simgrid.csv -o simgrid_result_LOG --header false
-#        - cp *svg ../logs/
-    artifacts:
-        untracked: false
-        when: always
-        paths:
-            - logs/*
-
-parcoach-svg:
-    stage: svg
-    needs:
-        - job: test-parcoach
-          artifacts: true
-    # before_script:
-    #   - apt-get update
-    #   - apt-get install -y python3-pip libcairo2
-    #   - pip3 install drawSvg
-    script:
-        - cd Data
-#        - python3.8 gen_svg.py -i ../logs/parcoach/bench_parcoach.csv -o parcoach_result_LOG --header false
-#        - cp *svg ../logs/
-    artifacts:
-        untracked: false
-        when: always
-        paths:
-            - logs/*
-
-isp-svg:
-    stage: svg
+test-isp-all:
+    stage: test
     needs:
         - job: test-isp-1
           artifacts: true
         - job: test-isp-2
           artifacts: true
-    # before_script:
-    #   - apt-get update
-    #   - apt-get install -y python3-pip libcairo2
-    #   - pip3 install drawSvg
-    script:
-        - cd Data
-#        - python3.8 gen_svg.py -i ../logs/isp/bench_isp.csv -o isp_result_LOG --header false
-#        - cp *svg ../logs/
-    artifacts:
-        untracked: false
-        when: always
-        paths:
-            - logs/*
-
-aislinn-svg:
-    stage: svg
-    needs:
-        - job: test-aislinn
-          artifacts: true
-    # before_script:
-    #   - apt-get update
-    #   - apt-get install -y python3-pip libcairo2
-    #   - pip3 install drawSvg
-    script:
-        - cd Data
-#        - python3.8 gen_svg.py -i ../logs/aislinn/bench_aislinn.csv -o aislinn_result_LOG --header false
-#        - cp *svg ../logs/
-    artifacts:
-        untracked: false
-        when: always
-        paths:
-            - logs/*
-
-civl-svg:
-    stage: svg
-    needs:
-        - job: test-civl-1
-          artifacts: true
-        - job: test-civl-2
-          artifacts: true
-        - job: test-civl-3
-          artifacts: true
-        - job: test-civl-4
-          artifacts: true
     script:
         - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
-        - scripts/ensure_python3 ./MBI.py -x civl
+        - scripts/ensure_python3 ./MBI.py -x isp
     artifacts:
         untracked: false
         when: always
         paths:
             - logs/*
 
-must-svg:
-    stage: svg
-    needs:
-        - job: test-must-1
-          artifacts: true
-        - job: test-must-2
-          artifacts: true
-        - job: test-must-3
-          artifacts: true
-        - job: test-must-4
-          artifacts: true
-        - job: test-must-5
-          artifacts: true
-        - job: test-must-6
-          artifacts: true
-        - job: test-must-7
-          artifacts: true
-        - job: test-must-8
-          artifacts: true
-        - job: test-must-9
-          artifacts: true
-        - job: test-must-10
-          artifacts: true
-    script:
-        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
-        - scripts/ensure_python3 ./MBI.py -x must
-    artifacts:
-        untracked: false
-        when: always
-        paths:
-            - logs/*
 
 latex:
     stage: deploy
