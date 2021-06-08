@@ -20,7 +20,7 @@ sys.path.append(f'{os.path.dirname(os.path.abspath(__file__))}/scripts')
 
 import parcoach
 import simgrid
-import sgvg # SimGrid with valgrind instead of MC 
+import smpi # SimGrid with valgrind instead of MC
 import must
 import mpisv
 import isp
