@@ -46,7 +46,7 @@ class Tool(AbstractTool):
         execcmd = re.sub('\$infty_buffer', "", execcmd)
 
         run_cmd(
-            buildcmd=f"mpiicc {filename} -g -o {binary}",
+            buildcmd=f"mpiicc {filename} -O0 -g -o {binary}",
             execcmd=execcmd,
             cachefile=cachefile,
             filename=filename,
