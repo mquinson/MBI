@@ -484,6 +484,73 @@ test-smpi-all:
         paths:
             - logs
 
+test-itac-1:
+    stage: test
+    needs: []
+    script:
+        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -x itac -c run -b 1/6
+    artifacts:
+        untracked: false
+        when: always
+        paths:
+            - logs
+test-itac-2:
+    stage: test
+    needs: []
+    script:
+        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -x itac -c run -b 2/6
+    artifacts:
+        untracked: false
+        when: always
+        paths:
+            - logs
+test-itac-3:
+    stage: test
+    needs: []
+    script:
+        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -x itac -c run -b 3/6
+    artifacts:
+        untracked: false
+        when: always
+        paths:
+            - logs
+test-itac-4:
+    stage: test
+    needs: []
+    script:
+        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -x itac -c run -b 4/6
+    artifacts:
+        untracked: false
+        when: always
+        paths:
+            - logs
+test-itac-5:
+    stage: test
+    needs: []
+    script:
+        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -x itac -c run -b 5/6
+    artifacts:
+        untracked: false
+        when: always
+        paths:
+            - logs
+test-itac-6:
+    stage: test
+    needs: []
+    script:
+        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -x itac -c run -b 6/6
+    artifacts:
+        untracked: false
+        when: always
+        paths:
+            - logs
+
 build-isp:
     stage: build
     needs: []
