@@ -25,7 +25,10 @@ class Tool(AbstractTool):
                 outfile.write(' <cluster id="acme" prefix="node-" radical="0-99" suffix="" speed="1Gf" bw="125MBps" lat="50us"/>\n')
                 outfile.write('</platform>\n')
 
-        execcmd = re.sub("mpirun", "smpirun -wrapper 'valgrind --suppressions=../../tools/simgrid/tools/simgrid.supp' -platform ./cluster.xml", execcmd)
+        if not os.path.exists('simgrid.supp'):
+            subprocess.run("wget 'https://framagit.org/simgrid/simgrid/-/raw/master/tools/simgrid.supp?inline=false' -O simgrid.supp", shell=True, check=True)
+
+        execcmd = re.sub("mpirun", "smpirun -wrapper 'valgrind --suppressions=simgrid.supp' -platform ./cluster.xml", execcmd)
         execcmd = re.sub('\${EXE}', binary, execcmd)
         execcmd = re.sub('\$zero_buffer', "", execcmd)
         execcmd = re.sub('\$infty_buffer', "", execcmd)
