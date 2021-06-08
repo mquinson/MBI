@@ -6,3 +6,5 @@ gencodes
 *.tex
 *.csv
 *~
+.git
+.vscode
