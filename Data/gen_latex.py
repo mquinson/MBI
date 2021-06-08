@@ -40,7 +40,7 @@ displayed_name = {
     'COLL!basic':'Coll', 'COLL!nonblocking':'iColl', 'COLL!tools':'Coll+',
     'RMA':'RMA',
     
-    'aislinn':'Aislinn','civl':'CIVL', 'isp':'ISP', 'simgrid':'Mc SimGrid', 'mpisv':'MPI-SV', 'must':'MUST', 'parcoach':'PARCOACH'
+    'aislinn':'Aislinn','civl':'CIVL', 'isp':'ISP', 'simgrid':'Mc SimGrid','smpi':'SMPI', 'mpisv':'MPI-SV', 'must':'MUST', 'parcoach':'PARCOACH'
 }
 
 

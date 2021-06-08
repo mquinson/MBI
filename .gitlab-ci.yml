@@ -345,6 +345,19 @@ test-simgrid:
         when: always
         paths:
             - logs
+test-smpi:
+    stage: test
+    needs:
+        - job: build-simgrid
+          artifacts: true
+    script:
+        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -x smpi
+    artifacts:
+        untracked: false
+        when: always
+        paths:
+            - logs
 
 build-isp:
     stage: build

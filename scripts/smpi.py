@@ -4,11 +4,11 @@ from MBIutils import *
 
 class Tool(AbstractTool):
     def identify(self):
-        return "SimGrid with Valgrind wrapper"
+        return "SimGrid MPI with Valgrind wrapper"
 
 
     def ensure_image(self):
-        AbstractTool.ensure_image(self, "-x sgvg")
+        AbstractTool.ensure_image(self, "-x smpi")
 
     def setup(self, rootdir):
         os.environ['PATH'] = os.environ['PATH'] + ":" + rootdir + "/builds/SimGrid/bin"
@@ -25,7 +25,7 @@ class Tool(AbstractTool):
                 outfile.write(' <cluster id="acme" prefix="node-" radical="0-99" suffix="" speed="1Gf" bw="125MBps" lat="50us"/>\n')
                 outfile.write('</platform>\n')
 
-        execcmd = re.sub("mpirun", "smpirun -wrapper 'valgrind --suppressions=../../simgrid.supp' -platform ./cluster.xml", execcmd)
+        execcmd = re.sub("mpirun", "smpirun -wrapper 'valgrind --suppressions=../../tools/simgrid/tools/simgrid.supp' -platform ./cluster.xml", execcmd)
         execcmd = re.sub('\${EXE}', binary, execcmd)
         execcmd = re.sub('\$zero_buffer', "", execcmd)
         execcmd = re.sub('\$infty_buffer', "", execcmd)
@@ -56,6 +56,9 @@ class Tool(AbstractTool):
 
         if re.search('Compilation of .*? raised an error \(retcode: ', output):
             return 'UNIMPLEMENTED'
+
+        if re.search('ERROR SUMMARY: [^0]', output):
+            return 'failure'
 
         if re.search('MC is currently not supported here', output):
             return 'failure'

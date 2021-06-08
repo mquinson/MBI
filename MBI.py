@@ -28,7 +28,7 @@ import civl
 import aislinn
 
 tools = {'aislinn': aislinn.Tool(), 'civl': civl.Tool(), 'isp': isp.Tool(), 'mpisv': mpisv.Tool(),
-         'must': must.Tool(), 'simgrid': simgrid.Tool(), 'sgvg':sgvg.Tool(), 'parcoach': parcoach.Tool()}
+         'must': must.Tool(), 'simgrid': simgrid.Tool(), 'smpi':smpi.Tool(), 'parcoach': parcoach.Tool()}
 
 # Some scripts may fail if error messages get translated
 os.environ["LC_ALL"] = "C"
@@ -80,7 +80,7 @@ displayed_name = {
     'EBufferingHazard':'Buffering hazard',
     'FOK':"Correct execution",
 
-    'aislinn':'Aislinn','civl':'CIVL', 'isp':'ISP', 'simgrid':'Mc SimGrid', 'sgvg':'SimGridVG', 'mpisv':'MPI-SV', 'must':'MUST', 'parcoach':'PARCOACH'
+    'aislinn':'Aislinn','civl':'CIVL', 'isp':'ISP', 'simgrid':'Mc SimGrid', 'smpi':'SMPI', 'mpisv':'MPI-SV', 'must':'MUST', 'parcoach':'PARCOACH'
 }
 
 # BufferLength/BufferOverlap
@@ -885,7 +885,7 @@ rootdir = os.path.dirname(os.path.abspath(__file__))
 if args.c == 'all' or args.c == 'run':
     if args.x == 'mpirun':
         raise Exception("No tool was provided, please retry with -x parameter. (see -h for further information on usage)")
-    elif args.x in ['aislinn', 'civl', 'isp', 'must', 'mpisv', 'simgrid', 'sgvg', 'parcoach']:
+    elif args.x in ['aislinn', 'civl', 'isp', 'must', 'mpisv', 'simgrid', 'smpi', 'parcoach']:
         pass
     else:
         raise Exception(f"The tool parameter you provided ({args.x}) is either incorect or not yet implemented.")
@@ -901,10 +901,10 @@ elif args.c == 'run':
     cmd_run(rootdir=rootdir, toolname=args.x, batchinfo=args.b)
 elif args.c == 'latex':
     extract_all_todo(args.b)
-    cmd_latex(rootdir, toolnames=['aislinn', 'civl', 'isp', 'simgrid', 'mpisv', 'must', 'parcoach'])
+    cmd_latex(rootdir, toolnames=['aislinn', 'civl', 'isp', 'simgrid','smpi', 'mpisv', 'must', 'parcoach'])
 elif args.c == 'stats':
     extract_all_todo(args.b)
-    cmd_stats(rootdir, toolnames=['aislinn', 'civl', 'isp', 'simgrid', 'mpisv', 'must', 'parcoach'])
+    cmd_stats(rootdir, toolnames=['aislinn', 'civl', 'isp', 'simgrid','smpi', 'mpisv', 'must', 'parcoach'])
 else:
     print(f"Invalid command '{args.c}'. Please choose one of 'all', 'run', 'stats'")
     sys.exit(1)
