@@ -67,7 +67,7 @@ class Tool(AbstractTool):
         if re.search('Not yet implemented', output):
             return 'UNIMPLEMENTED'
         if re.search('CRASH IN THE PROGRAM', output):
-            return 'segfault'
+            return 'failure'
         if re.search('Probable memory leaks in your code: SMPI detected', output):
             return 'resleak'
         if re.search('No property violation found', output):
