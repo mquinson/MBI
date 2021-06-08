@@ -397,10 +397,83 @@ test-simgrid:
         when: always
         paths:
             - logs
-test-smpi:
+test-smpi-1:
     stage: test
     needs:
         - job: build-simgrid
+          artifacts: true
+    script:
+        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -x smpi -b 1/5
+    artifacts:
+        untracked: false
+        when: always
+        paths:
+            - logs
+test-smpi-2:
+    stage: test
+    needs:
+        - job: build-simgrid
+          artifacts: true
+    script:
+        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -x smpi -b 2/5
+    artifacts:
+        untracked: false
+        when: always
+        paths:
+            - logs
+test-smpi-3:
+    stage: test
+    needs:
+        - job: build-simgrid
+          artifacts: true
+    script:
+        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -x smpi -b 3/5
+    artifacts:
+        untracked: false
+        when: always
+        paths:
+            - logs
+test-smpi-4:
+    stage: test
+    needs:
+        - job: build-simgrid
+          artifacts: true
+    script:
+        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -x smpi -b 4/5
+    artifacts:
+        untracked: false
+        when: always
+        paths:
+            - logs
+test-smpi-5:
+    stage: test
+    needs:
+        - job: build-simgrid
+          artifacts: true
+    script:
+        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -x smpi -b 5/5
+    artifacts:
+        untracked: false
+        when: always
+        paths:
+            - logs
+test-smpi-all:
+    stage: gather
+    needs:
+        - job: test-smpi-1
+          artifacts: true
+        - job: test-smpi-2
+          artifacts: true
+        - job: test-smpi-3
+          artifacts: true
+        - job: test-smpi-4
+          artifacts: true
+        - job: test-smpi-5
           artifacts: true
     script:
         - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
