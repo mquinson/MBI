@@ -26,6 +26,8 @@ class Tool(AbstractTool):
                 outfile.write('</platform>\n')
 
         if not os.path.exists('simgrid.supp'):
+            subprocess.run("apt-get update", shell=True, check=True)
+            subprocess.run("apt-get install -y wget", shell=True, check=True)
             subprocess.run("wget 'https://framagit.org/simgrid/simgrid/-/raw/master/tools/simgrid.supp?inline=false' -O simgrid.supp", shell=True, check=True)
 
         execcmd = re.sub("mpirun", "smpirun -wrapper 'valgrind --suppressions=simgrid.supp' -platform ./cluster.xml", execcmd)
