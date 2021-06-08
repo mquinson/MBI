@@ -261,20 +261,20 @@ test-aislinn:
 #            - tools/mpisv
 
 # MPI-SV refuses to build on nested virtualization as we have when using docker on gitlab-CI
-# test-mpisv:
-#    stage: test
-#    image: mpisv/mpi-sv
-#    needs:
-##        - job: build-mpisv
-##          artifacts: true
-#    script:
-#        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
-#        - scripts/ensure_python3 ./MBI.py -x mpisv
-#    artifacts:
-#        untracked: false
-#        when: always
-#        paths:
-#            - logs
+test-mpisv:
+    stage: test
+    image: mpisv/mpi-sv
+    needs: []
+    tags:
+        - baremetal
+    script:
+        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -x mpisv
+    artifacts:
+        untracked: false
+        when: always
+        paths:
+            - logs
 
 test-civl-1:
     stage: test
@@ -487,6 +487,8 @@ test-smpi-all:
 test-itac-1:
     stage: test
     needs: []
+    tags:
+        - baremetal
     script:
         - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x itac -c run -b 1/6
@@ -498,6 +500,8 @@ test-itac-1:
 test-itac-2:
     stage: test
     needs: []
+    tags:
+        - baremetal
     script:
         - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x itac -c run -b 2/6
@@ -509,6 +513,8 @@ test-itac-2:
 test-itac-3:
     stage: test
     needs: []
+    tags:
+        - baremetal
     script:
         - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x itac -c run -b 3/6
@@ -520,6 +526,8 @@ test-itac-3:
 test-itac-4:
     stage: test
     needs: []
+    tags:
+        - baremetal
     script:
         - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x itac -c run -b 4/6
@@ -531,6 +539,8 @@ test-itac-4:
 test-itac-5:
     stage: test
     needs: []
+    tags:
+        - baremetal
     script:
         - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x itac -c run -b 5/6
@@ -542,6 +552,8 @@ test-itac-5:
 test-itac-6:
     stage: test
     needs: []
+    tags:
+        - baremetal
     script:
         - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x itac -c run -b 6/6
