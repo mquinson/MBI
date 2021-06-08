@@ -150,7 +150,7 @@ init['MPI_Scatter'] = lambda n: f"int val{n}, buf{n}[buff_size];"
 operation['MPI_Scatter'] = lambda n: f"MPI_Scatter(&buf{n}, 1, MPI_INT, &val{n}, 1, MPI_INT, 0, MPI_COMM_WORLD);"
 fini['MPI_Scatter'] = lambda n: ""
 
-init['MPI_Gather'] = lambda n: f"int val{n}, buf{n}[buff_size];"
+init['MPI_Gather'] = lambda n: f"int val{n}=1, buf{n}[buff_size];"
 operation['MPI_Gather'] = lambda n: f"MPI_Gather(&val{n}, 1, MPI_INT, buf{n},1, MPI_INT, 0, MPI_COMM_WORLD);"
 fini['MPI_Gather'] = lambda n: ""
 

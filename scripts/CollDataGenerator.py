@@ -114,7 +114,7 @@ init['MPI_Allreduce'] = lambda n: f"int sum{n}, val{n} = 1;"
 operation['MPI_Allreduce'] = lambda n: f"MPI_Allreduce(&val{n}, &sum{n}, 1, type, MPI_SUM, MPI_COMM_WORLD);"
 fini['MPI_Allreduce'] = lambda n: ""
 
-init['MPI_Gather'] = lambda n: f"int val{n}, buf{n}[buff_size];"
+init['MPI_Gather'] = lambda n: f"int val{n}=1, buf{n}[buff_size];"
 operation['MPI_Gather'] = lambda n: f"MPI_Gather(&val{n}, 1, type, buf{n},1, type, 0, MPI_COMM_WORLD);"
 fini['MPI_Gather'] = lambda n: ""
 
