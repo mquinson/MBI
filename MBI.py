@@ -911,7 +911,11 @@ elif args.c == 'latex':
     cmd_latex(rootdir, toolnames=['aislinn', 'civl', 'isp','itac', 'simgrid','smpi','smpivg', 'mpisv', 'must', 'parcoach'])
 elif args.c == 'stats':
     extract_all_todo(args.b)
-    cmd_stats(rootdir, toolnames=['aislinn', 'civl', 'isp','itac', 'simgrid','smpi','smpivg', 'mpisv', 'must', 'parcoach'])
+    if args.x == 'mpirun':
+        toolnames=['aislinn', 'civl', 'isp','itac', 'simgrid','smpi','smpivg', 'mpisv', 'must', 'parcoach']
+    else:
+        toolnames=[args.x]
+    cmd_stats(rootdir, toolnames=toolnames)
 else:
     print(f"Invalid command '{args.c}'. Please choose one of 'all', 'run', 'stats'")
     sys.exit(1)
