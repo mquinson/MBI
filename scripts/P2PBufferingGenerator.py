@@ -1,6 +1,6 @@
 #! /usr/bin/python3
 import sys
-from generator_utils import make_file
+from generator_utils import *
 
 template = """// @{generatedby}@
 /* ///////////////////////// The MPI Bugs Initiative ////////////////////////
@@ -35,12 +35,13 @@ END_MBI_TESTS
 #include <stdio.h>
 #include <stdlib.h>
 
-#define buff_size 128
 
 int main(int argc, char **argv) {
   int nprocs = -1;
   int rank = -1;
 	int dest, src;
+  int stag = 0, rtag = 0;
+  int buff_size = 1;
 
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
@@ -50,50 +51,30 @@ int main(int argc, char **argv) {
   if (nprocs < 2)
     printf("MBI ERROR: This test needs at least 2 processes to produce a bug!\\n");
 
+	MPI_Comm newcom = MPI_COMM_WORLD;
+	MPI_Datatype type = MPI_INT;
+
   @{init1}@
   @{init2}@
 	if (rank == 0) {
 		src=1,dest=1;
   	@{operation1a}@ /* MBIERROR1 */
+		@{fini1}@
   	@{operation2a}@ 
+		@{fini2}@
 	}else if (rank == 1) {
 		src=0,dest=0;
   	@{operation1b}@ /* MBIERROR2 */
+		@{fini1}@
   	@{operation2b}@ 
+		@{fini2}@
 	}
-	@{fini1}@
-	@{fini2}@
 
   MPI_Finalize();
   printf("Rank %d finished normally\\n", rank);
   return 0;
 }
 """
-
-send = ['MPI_Send'] 
-isend = ['MPI_Isend'] 
-recv = ['MPI_Recv'] 
-irecv = ['MPI_Irecv']  
-
-init = {}
-operation = {}
-fini = {}
-
-init['MPI_Send'] = lambda n: f'int buf{n}[buff_size];'
-operation['MPI_Send'] = lambda n: f'MPI_Send(buf{n}, buff_size, MPI_INT, dest, 0, MPI_COMM_WORLD);'
-fini['MPI_Send'] = lambda n: ""
-
-init['MPI_Recv'] = lambda n: f'int buf{n}[buff_size]; MPI_Status sta{n};'
-operation['MPI_Recv'] = lambda n: f'MPI_Recv(buf{n}, buff_size, MPI_INT, src, 0, MPI_COMM_WORLD, &sta{n});'
-fini['MPI_Recv'] = lambda n: ""
-
-init['MPI_Isend'] = lambda n: f'int buf{n}[buff_size]; MPI_Request req{n};'
-operation['MPI_Isend'] = lambda n: f'MPI_Isend(buf{n}, buff_size, MPI_INT, dest, 0, MPI_COMM_WORLD, &req{n});\n 		MPI_Wait(&req{n}, MPI_STATUS_IGNORE);'
-fini['MPI_Isend'] = lambda n: ""
-
-init['MPI_Irecv'] = lambda n: f'int buf{n}[buff_size]; MPI_Request req{n};'
-operation['MPI_Irecv'] = lambda n: f'MPI_Irecv(buf{n}, buff_size, MPI_INT, src, 0, MPI_COMM_WORLD, &req{n});\n 		MPI_Wait(&req{n}, MPI_STATUS_IGNORE);'
-fini['MPI_Irecv'] = lambda n: ""
 
 for s in send + isend:
     for r in recv + irecv:
@@ -129,6 +110,8 @@ for s in send + isend:
         replace['outcome1'] = 'ERROR: CallMatching' 
         replace['errormsg1'] = 'ERROR: CallMatching' 
         replace['operation1a'] =  operation[r]("2")
+        replace['fini1'] =  fini[r]("2")
+        replace['fini2'] =  fini[s]("1")
         replace['operation2a'] = operation[s]("1")
         replace['operation1b'] =  operation[r]("2")
         replace['operation2b'] = operation[s]("1")

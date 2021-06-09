@@ -1,6 +1,6 @@
 #! /usr/bin/python3
 import sys
-from generator_utils import make_file
+from generator_utils import *
 
 template = """// @{generatedby}@
 /* ///////////////////////// The MPI Bugs Initiative ////////////////////////
@@ -38,7 +38,8 @@ int main(int argc, char **argv) {
   int nprocs = -1;
   int rank = -1;
   int its_raining = 0;
-	int src, dest;
+	int src=0, dest=1;
+	int stag=0, rtag=0;
 
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
@@ -48,7 +49,8 @@ int main(int argc, char **argv) {
   if (nprocs < 2)
     printf("MBI ERROR: This test needs at least 2 processes to produce a bug!\\n");
 
-	dest=1; src=0;
+	MPI_Comm newcom = MPI_COMM_WORLD;
+	MPI_Datatype type = MPI_INT;
 
   @{init1}@
   @{init2}@
@@ -66,32 +68,6 @@ int main(int argc, char **argv) {
 }
 """
 
-p2p = ['MPI_Send', 'MPI_Recv'] 
-send = ['MPI_Send'] 
-recv = ['MPI_Recv'] 
-ip2p = ['MPI_Isend', 'MPI_Irecv']  
-isend = ['MPI_Isend']  
-irecv = ['MPI_Irecv']  
-
-init = {}
-operation = {}
-fini = {}
-
-init['MPI_Send'] = lambda n: f'int buf{n}[buff_size];'
-operation['MPI_Send'] = lambda n: f'MPI_Send(buf{n}, buff_size, MPI_INT, dest, 0, MPI_COMM_WORLD);'
-fini['MPI_Send'] = lambda n: ""
-
-init['MPI_Recv'] = lambda n: f'int buf{n}[buff_size]; MPI_Status sta{n};'
-operation['MPI_Recv'] = lambda n: f'MPI_Recv(buf{n}, buff_size, MPI_INT, src, 0, MPI_COMM_WORLD, &sta{n});'
-fini['MPI_Recv'] = lambda n: ""
-
-init['MPI_Isend'] = lambda n: f'int buf{n}[buff_size]; MPI_Request req{n};'
-operation['MPI_Isend'] = lambda n: f'MPI_Isend(buf{n}, buff_size, MPI_INT, dest, 0, MPI_COMM_WORLD, &req{n});'
-fini['MPI_Isend'] = lambda n: f'MPI_Wait(&req{n}, MPI_STATUS_IGNORE);\n 	MPI_Request_free(&req{n});'
-
-init['MPI_Irecv'] = lambda n: f'int buf{n}[buff_size]; MPI_Request req{n};'
-operation['MPI_Irecv'] = lambda n: f'MPI_Irecv(buf{n}, buff_size, MPI_INT, src, 0, MPI_COMM_WORLD, &req{n});'
-fini['MPI_Irecv'] = lambda n: f'MPI_Wait(&req{n}, MPI_STATUS_IGNORE);\n   MPI_Request_free(&req{n});'
 
 for p in p2p + ip2p:
     patterns = {}
@@ -111,7 +87,7 @@ for p in p2p + ip2p:
     # Generate the incorrect matching with one call
     replace = patterns
     replace['shortdesc'] = 'Point to point @{p}@ is not matched' 
-    replace['longdesc'] = f'Process 0 calls @{p}@ and is not matched'
+    replace['longdesc'] = 'Process 0 calls @{p}@ and is not matched'
     replace['outcome'] = 'ERROR: CallMatching'
     replace['errormsg'] = 'P2P mistmatch. @{p}@ at @{filename}@:@{line:MBIERROR1}@ is not matched.'
     make_file(template, f'P2PCallMatching_{p}_nok.c', replace)
@@ -119,10 +95,11 @@ for p in p2p + ip2p:
     # Generate the incorrect matching with two calls
     replace = patterns
     replace['shortdesc'] = 'Both point to point @{p}@ are not matched' 
-    replace['longdesc'] = f'Processes 0 and 1 both call @{p}@ which are not matched'
+    replace['longdesc'] = 'Processes 0 and 1 both call @{p}@ which are not matched'
     replace['outcome'] = 'ERROR: CallMatching'
     replace['errormsg'] = 'P2P mismatch. @{p}@ at @{filename}@:@{line:MBIERROR1}@ and @{p}@ at @{filename}@:@{line:MBIERROR2}@ are not matched.'
     replace['operation2'] = operation[p]("1")
+    replace['fini2'] = fini[p]("1")
     make_file(template, f'P2PCallMatching_{p}_{p}_nok.c', replace)
 
 for s in send + isend:
@@ -145,7 +122,7 @@ for s in send + isend:
         # Generate the incorrect matching because of the conditional
         replace = patterns 
         replace['shortdesc'] = 'Point to point @{r}@ is never called.'
-        replace['longdesc'] = f'Point to point @{r}@ is never executed. Process 1 calls MPI_Finalize and causes a deadlock.' 
+        replace['longdesc'] = 'Point to point @{r}@ is never executed. Process 1 calls MPI_Finalize and causes a deadlock.' 
         replace['outcome'] = 'ERROR: CallMatching' 
         replace['errormsg'] = 'P2P mistmatch. @{r}@ at @{filename}@:@{line:MBIERROR2}@ is never called because of the conditional (@{change_cond}@).' 
         replace['operation1'] =  operation[s]("1")

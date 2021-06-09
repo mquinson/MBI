@@ -1,6 +1,6 @@
 #! /usr/bin/python3
 import sys
-from generator_utils import make_file
+from generator_utils import *
 
 template = """// @{generatedby}@
 /* ///////////////////////// The MPI Bugs Initiative ////////////////////////
@@ -32,12 +32,14 @@ END_MBI_TESTS
 #include <stdio.h>
 #include <stdlib.h>
 
-#define buff_size 128
 
 int main(int argc, char **argv) {
   int nprocs = -1;
   int rank = -1;
   int dest, src;
+  int root = 0;
+	int stag = 0, rtag = 0;
+	int buff_size = 1;
 
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
@@ -48,7 +50,10 @@ int main(int argc, char **argv) {
     printf("MBI ERROR: This test needs at least 2 processes to produce a bug!\\n");
 
   int dbs = sizeof(int)*nprocs; /* Size of the dynamic buffers for alltoall and friends */
-  
+	MPI_Com newcom = MPI_COMM_WORLD;
+	MPI_Datatype type = MPI_INT;
+	MPI_Op op = MPI_SUM;  
+
   @{init1}@
   @{init2}@
   @{init3}@
@@ -72,87 +77,6 @@ int main(int argc, char **argv) {
 }
 """
 
-p2p = ['MPI_Send', 'MPI_Recv'] 
-send = ['MPI_Send'] 
-recv = ['MPI_Recv'] 
-ip2p = ['MPI_Isend', 'MPI_Irecv']  
-isend = ['MPI_Isend']  
-irecv = ['MPI_Irecv']  
-coll = ['MPI_Allgather', 'MPI_Allgatherv', 'MPI_Allreduce', 'MPI_Alltoall', 'MPI_Alltoallv', 'MPI_Barrier', 'MPI_Bcast', 'MPI_Gather', 'MPI_Reduce', 'MPI_Scatter']
-
-init = {}
-operation = {}
-fini = {}
-
-## P2P
-
-init['MPI_Send'] = lambda n: f'int buf{n}[buff_size];'
-operation['MPI_Send'] = lambda n: f'MPI_Send(buf{n}, buff_size, MPI_INT, dest, 0, MPI_COMM_WORLD);'
-fini['MPI_Send'] = lambda n: ""
-
-init['MPI_Recv'] = lambda n: f'int buf{n}[buff_size]; MPI_Status sta{n};'
-operation['MPI_Recv'] = lambda n: f'MPI_Recv(buf{n}, buff_size, MPI_INT, src, 0, MPI_COMM_WORLD, &sta{n});'
-fini['MPI_Recv'] = lambda n: ""
-
-init['MPI_Isend'] = lambda n: f'int buf{n}[buff_size]; MPI_Request req{n};'
-operation['MPI_Isend'] = lambda n: f'MPI_Isend(buf{n}, buff_size, MPI_INT, dest, 0, MPI_COMM_WORLD, &req{n});'
-fini['MPI_Isend'] = lambda n: f'MPI_Wait(&req{n}, MPI_STATUS_IGNORE);'
-
-init['MPI_Irecv'] = lambda n: f'int buf{n}[buff_size]; MPI_Request req{n};'
-operation['MPI_Irecv'] = lambda n: f'MPI_Irecv(buf{n}, buff_size, MPI_INT, src, 0, MPI_COMM_WORLD, &req{n});'
-fini['MPI_Irecv'] = lambda n: f'MPI_Wait(&req{n}, MPI_STATUS_IGNORE);'
-
-## COLL
-
-init['MPI_Allgather'] = lambda n: f"int *rbuf{n} = malloc(dbs);"
-operation['MPI_Allgather'] = lambda n: f"MPI_Allgather(&rank, 1, MPI_INT, rbuf{n}, 1, MPI_INT, MPI_COMM_WORLD);"
-fini['MPI_Allgather'] = lambda n: f"free(rbuf{n});"
-
-init['MPI_Allgatherv'] = lambda n: (f"int *rbuf{n} = malloc(dbs*2);\nint *rcounts{n}=malloc(dbs);\nint  *displs{n}=malloc(dbs);\n" 
-  +  "  for (int i = 0; i < nprocs; i++) {\n"
-  + f"    rcounts{n}[i] = 1;\n"
-  + f"    displs{n}[i] = 2 * (nprocs - (i + 1));\n"
-  +  "  }")
-operation['MPI_Allgatherv'] = lambda n: f"MPI_Allgatherv(&rank, 1, MPI_INT, rbuf{n}, rcounts{n}, displs{n}, MPI_INT, MPI_COMM_WORLD);"
-fini['MPI_Allgatherv'] = lambda n: f"free(rbuf{n});free(rcounts{n});free(displs{n});"
-
-init['MPI_Alltoall'] = lambda n: f"int *sbuf{n} = malloc(dbs), *rbuf{n} = malloc(dbs);"
-operation['MPI_Alltoall'] = lambda n: f"MPI_Alltoall(sbuf{n}, 1, MPI_INT, rbuf{n}, 1, MPI_INT, MPI_COMM_WORLD);"
-fini['MPI_Alltoall'] = lambda n: f"free(sbuf{n});free(rbuf{n});"
-
-init['MPI_Alltoallv'] = lambda n: (f"int *sbuf{n}=malloc(dbs*2);\nint *rbuf{n}=malloc(dbs*2);\nint *scounts{n}=malloc(dbs);\nint *rcounts{n}=malloc(dbs);\nint *sdispls{n}=malloc(dbs);\nint *rdispls{n}=malloc(dbs);\n"
-  +  "  for (int i = 0; i < nprocs; i++) {\n"
-  + f"    scounts{n}[i] = 2;\n"
-  + f"    rcounts{n}[i] = 2;\n"
-  + f"    sdispls{n}[i] = (nprocs - (i + 1)) * 2;\n"
-  + f"    rdispls{n}[i] = i * 2;\n"
-  +  "  }")
-operation['MPI_Alltoallv'] = lambda n: f"MPI_Alltoallv(sbuf{n}, scounts{n}, sdispls{n}, MPI_INT, rbuf{n}, rcounts{n}, rdispls{n}, MPI_INT, MPI_COMM_WORLD);"
-fini['MPI_Alltoallv'] = lambda n: f"free(sbuf{n});free(rbuf{n});free(scounts{n});free(rcounts{n});free(sdispls{n});free(rdispls{n});"
-
-init['MPI_Barrier'] = lambda n: ""
-operation['MPI_Barrier'] = lambda n: 'MPI_Barrier(MPI_COMM_WORLD);'
-fini['MPI_Barrier'] = lambda n: ""
-
-init['MPI_Bcast'] = lambda n: f'int buf{n}[buff_size];'
-operation['MPI_Bcast'] = lambda n: f'MPI_Bcast(buf{n}, buff_size, MPI_INT, 0, MPI_COMM_WORLD);'
-fini['MPI_Bcast'] = lambda n: ""
-
-init['MPI_Allreduce'] = lambda n: f"int sum{n}, val{n} = 1;"
-operation['MPI_Allreduce'] = lambda n: f"MPI_Allreduce(&val{n}, &sum{n}, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);"
-fini['MPI_Allreduce'] = lambda n: ""
-
-init['MPI_Reduce'] = lambda n: f"int sum{n}, val{n} = 1;"
-operation['MPI_Reduce'] = lambda n: f"MPI_Reduce(&val{n}, &sum{n}, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);"
-fini['MPI_Reduce'] = lambda n: ""
-
-init['MPI_Scatter'] = lambda n: f"int val{n}, buf{n}[buff_size];"
-operation['MPI_Scatter'] = lambda n: f"MPI_Scatter(&buf{n}, 1, MPI_INT, &val{n}, 1, MPI_INT, 0, MPI_COMM_WORLD);"
-fini['MPI_Scatter'] = lambda n: ""
-
-init['MPI_Gather'] = lambda n: f"int val{n}=1, buf{n}[buff_size];"
-operation['MPI_Gather'] = lambda n: f"MPI_Gather(&val{n}, 1, MPI_INT, buf{n},1, MPI_INT, 0, MPI_COMM_WORLD);"
-fini['MPI_Gather'] = lambda n: ""
 
 for s in send + isend:
     for r in recv + irecv:

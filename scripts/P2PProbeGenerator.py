@@ -1,6 +1,6 @@
 #! /usr/bin/python3
 import sys
-from generator_utils import make_file
+from generator_utils import *
 
 template = """// @{generatedby}@
 /* ///////////////////////// The MPI Bugs Initiative ////////////////////////
@@ -32,13 +32,14 @@ END_MBI_TESTS
 #include <stdio.h>
 #include <stdlib.h>
 
-#define buff_size 128
 
 int main(int argc, char **argv) {
   int nprocs = -1;
   int rank = -1;
 	MPI_Status sta;
 	int src,dest;
+	int stag=0, rtag=0;
+	int buff_size = 1;
 
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
@@ -47,6 +48,9 @@ int main(int argc, char **argv) {
 
   if (nprocs < 2)
     printf("MBI ERROR: This test needs at least 2 processes to produce a bug!\\n");
+
+	MPI_Comm newcom = MPI_COMM_WORLD;
+	MPI_Datatype type = MPI_INT;
 
   @{init1a}@
   @{init1b}@
@@ -73,31 +77,6 @@ int main(int argc, char **argv) {
 }
 """
 
-p2p = ['MPI_Send', 'MPI_Recv'] 
-send = ['MPI_Send'] 
-recv = ['MPI_Recv'] 
-ip2p = ['MPI_Isend', 'MPI_Irecv']  
-isend = ['MPI_Isend']  
-irecv = ['MPI_Irecv']  
-probe = ['MPI_Probe']
-
-init = {}
-operation = {}
-
-init['MPI_Send'] = lambda n: f'int buf{n}[buff_size];'
-operation['MPI_Send'] = lambda n: f'MPI_Send(buf{n}, buff_size, MPI_INT, dest, 0, MPI_COMM_WORLD);'
-
-init['MPI_Recv'] = lambda n: f'int buf{n}[buff_size];'
-operation['MPI_Recv'] = lambda n: f'MPI_Recv(buf{n}, buff_size, MPI_INT, src, 0, MPI_COMM_WORLD, &sta);'
-
-init['MPI_Isend'] = lambda n: f'int buf{n}[buff_size]; MPI_Request req{n};'
-operation['MPI_Isend'] = lambda n: f'MPI_Isend(buf{n}, buff_size, MPI_INT, dest, 0, MPI_COMM_WORLD, &req{n});\n		MPI_Wait(&req{n}, &sta);'
-
-init['MPI_Irecv'] = lambda n: f'int buf{n}[buff_size]; MPI_Request req{n};'
-operation['MPI_Irecv'] = lambda n: f'MPI_Irecv(buf{n}, buff_size, MPI_INT, src, 0, MPI_COMM_WORLD, &req{n});\n		MPI_Wait(&req{n}, &sta);'
-
-init['MPI_Probe'] = lambda n: ""
-operation['MPI_Probe'] = lambda n: f'MPI_Probe(src, 0, MPI_COMM_WORLD, &sta);'
 
 for p in probe:
     for s in send + isend:
@@ -126,7 +105,7 @@ for p in probe:
             # Generate the incorrect matching 
             replace = patterns 
             replace['shortdesc'] = 'MPI_Probe is called before MPI_Recv.'
-            replace['longdesc'] = f'MPI_Probe is a blocking call that returns only after a matching message has been found. By calling MPI_Probe before MPI_Recv, a deadlock is created.'
+            replace['longdesc'] = 'MPI_Probe is a blocking call that returns only after a matching message has been found. By calling MPI_Probe before MPI_Recv, a deadlock is created.'
             replace['outcome'] = 'ERROR: CallMatching' 
             replace['errormsg'] = 'P2P mistmatch. @{p}@ at @{filename}@:@{line:MBIERROR1}@ and @{filename}@:@{line:MBIERROR2}@ are called before @{r}@.' 
             make_file(template, f'P2PCallMatching_{p}_{r}_{s}_nok.c', replace)

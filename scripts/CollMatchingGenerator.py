@@ -1,6 +1,6 @@
 #! /usr/bin/python3
 import sys
-from generator_utils import make_file
+from generator_utils import *
 
 template = """// @{generatedby}@
 /* ///////////////////////// The MPI Bugs Initiative ////////////////////////
@@ -37,6 +37,7 @@ END_MBI_TESTS
 int main(int argc, char **argv) {
   int nprocs = -1;
   int rank = -1;
+	int root = 0;
 
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
@@ -45,6 +46,10 @@ int main(int argc, char **argv) {
 
   if (nprocs < 2)
     printf("MBI ERROR: This test needs at least 2 processes to produce a bug.\\n");
+
+	MPI_Comm newcom = MPI_COMM_WORLD;
+	MPI_Datatype type = MPI_INT;
+  MPI_Op op = MPI_SUM;
 
   int dbs = sizeof(int)*nprocs; /* Size of the dynamic buffers for alltoall and friends */
   @{init1}@
@@ -68,153 +73,81 @@ int main(int argc, char **argv) {
 }
 """
 
-collectives = ['MPI_Allgather', 'MPI_Allgatherv', 'MPI_Allreduce', 'MPI_Alltoall', 'MPI_Alltoallv', 'MPI_Barrier', 'MPI_Bcast', 'MPI_Gather', 'MPI_Reduce', 'MPI_Scatter']
-icollectives = ['MPI_Ibarrier', 'MPI_Ireduce', 'MPI_Ibcast', 'MPI_Igather']
-
-init = {}
-fini = {}
-operation = {}
-
-init['MPI_Allgather'] = lambda n: f"int *rbuf{n} = malloc(dbs);"
-operation['MPI_Allgather'] = lambda n: f"MPI_Allgather(&rank, 1, MPI_INT, rbuf{n}, 1, MPI_INT, MPI_COMM_WORLD);"
-fini['MPI_Allgather'] = lambda n: f"free(rbuf{n});"
-
-init['MPI_Allgatherv'] = lambda n: (f"int *rbuf{n} = malloc(dbs*2);\nint *rcounts{n}=malloc(dbs);\nint  *displs{n}=malloc(dbs);\n" 
-  +  "  for (int i = 0; i < nprocs; i++) {\n"
-  + f"    rcounts{n}[i] = 1;\n"
-  + f"    displs{n}[i] = 2 * (nprocs - (i + 1));\n"
-  +  "  }")
-operation['MPI_Allgatherv'] = lambda n: f"MPI_Allgatherv(&rank, 1, MPI_INT, rbuf{n}, rcounts{n}, displs{n}, MPI_INT, MPI_COMM_WORLD);"
-fini['MPI_Allgatherv'] = lambda n: f"free(rbuf{n});free(rcounts{n});free(displs{n});"
-
-init['MPI_Allreduce'] = lambda n: f"int sum{n}, val{n} = 1;"
-operation['MPI_Allreduce'] = lambda n: f"MPI_Allreduce(&val{n}, &sum{n}, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);"
-fini['MPI_Allreduce'] = lambda n: ""
-
-init['MPI_Alltoall'] = lambda n: f"int *sbuf{n} = malloc(dbs), *rbuf{n} = malloc(dbs);"
-operation['MPI_Alltoall'] = lambda n: f"MPI_Alltoall(sbuf{n}, 1, MPI_INT, rbuf{n}, 1, MPI_INT, MPI_COMM_WORLD);"
-fini['MPI_Alltoall'] = lambda n: f"free(sbuf{n});free(rbuf{n});"
-
-init['MPI_Alltoallv'] = lambda n: (f"int *sbuf{n}=malloc(dbs*2);\nint *rbuf{n}=malloc(dbs*2);\nint *scounts{n}=malloc(dbs);\nint *rcounts{n}=malloc(dbs);\nint *sdispls{n}=malloc(dbs);\nint *rdispls{n}=malloc(dbs);\n"
-  +  "  for (int i = 0; i < nprocs; i++) {\n"
-  + f"    scounts{n}[i] = 2;\n"
-  + f"    rcounts{n}[i] = 2;\n"
-  + f"    sdispls{n}[i] = (nprocs - (i + 1)) * 2;\n"
-  + f"    rdispls{n}[i] = i * 2;\n"
-  +  "  }")
-operation['MPI_Alltoallv'] = lambda n: f"MPI_Alltoallv(sbuf{n}, scounts{n}, sdispls{n}, MPI_INT, rbuf{n}, rcounts{n}, rdispls{n}, MPI_INT, MPI_COMM_WORLD);"
-fini['MPI_Alltoallv'] = lambda n: f"free(sbuf{n});free(rbuf{n});free(scounts{n});free(rcounts{n});free(sdispls{n});free(rdispls{n});"
-
-init['MPI_Barrier'] = lambda n: ""
-operation['MPI_Barrier'] = lambda n: 'MPI_Barrier(MPI_COMM_WORLD);'
-fini['MPI_Barrier'] = lambda n: ""
-
-init['MPI_Ibarrier'] = lambda n: f'MPI_Request req{n} = MPI_REQUEST_NULL; MPI_Status sta{n};'
-operation['MPI_Ibarrier'] = lambda n: f'MPI_Ibarrier(MPI_COMM_WORLD,&req{n});MPI_Wait(&req{n},&sta{n});'
-fini['MPI_Ibarrier'] = lambda n: f'if (req{n} != MPI_REQUEST_NULL)  MPI_Request_free(&req{n});'
-
-init['MPI_Bcast'] = lambda n: f'int buf{n}[buff_size];'
-operation['MPI_Bcast'] = lambda n: f'MPI_Bcast(buf{n}, buff_size, MPI_INT, 0, MPI_COMM_WORLD);'
-fini['MPI_Bcast'] = lambda n: ""
-
-init['MPI_Ibcast'] = lambda n: f'int buf{n}[buff_size];MPI_Request req{n} = MPI_REQUEST_NULL;MPI_Status sta{n};'
-operation['MPI_Ibcast'] = lambda n: f'MPI_Ibcast(buf{n}, buff_size, MPI_INT, 0, MPI_COMM_WORLD,&req{n});MPI_Wait(&req{n},&sta{n});'
-fini['MPI_Ibcast'] = lambda n: f'if (req{n} != MPI_REQUEST_NULL)	MPI_Request_free(&req{n});'
-
-init['MPI_Reduce'] = lambda n: f"int sum{n}, val{n} = 1;"
-operation['MPI_Reduce'] = lambda n: f"MPI_Reduce(&val{n}, &sum{n}, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);"
-fini['MPI_Reduce'] = lambda n: ""
-
-init['MPI_Ireduce'] = lambda n: f"MPI_Request req{n }= MPI_REQUEST_NULL; MPI_Status sta{n}; int sum{n}, val{n} = 1;"
-operation['MPI_Ireduce'] = lambda n: f"MPI_Ireduce(&val{n}, &sum{n}, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD, &req{n}); MPI_Wait(&req{n},&sta{n});"
-fini['MPI_Ireduce'] = lambda n: f'if (req{n} != MPI_REQUEST_NULL) MPI_Request_free(&req{n});'
-
-init['MPI_Scatter'] = lambda n: f"int val{n}, buf{n}[buff_size];"
-operation['MPI_Scatter'] = lambda n: f"MPI_Scatter(&buf{n}, 1, MPI_INT, &val{n}, 1, MPI_INT, root, MPI_COMM_WORLD);"
-fini['MPI_Scatter'] = lambda n: ""
-
-init['MPI_Gather'] = lambda n: f"int val{n}=1, buf{n}[buff_size];"
-operation['MPI_Gather'] = lambda n: f"MPI_Gather(&val{n}, 1, MPI_INT, buf{n},1, MPI_INT, root, MPI_COMM_WORLD);"
-fini['MPI_Gather'] = lambda n: ""
-
-init['MPI_Igather'] = lambda n: f"MPI_Request req{n} = MPI_REQUEST_NULL; MPI_Status sta{n}; int val{n}=1, buf{n}[buff_size];"
-operation['MPI_Igather'] = lambda n: f"MPI_Igather(&val{n}, 1, MPI_INT, &buf{n},1, MPI_INT, root, MPI_COMM_WORLD, &req{n}); MPI_Wait(&req{n},&sta{n});"
-fini['MPI_Igather'] = lambda n: f"if (req{n} != MPI_REQUEST_NULL) MPI_Request_free(&req{n});"
-
-for coll1 in collectives + icollectives:
-    for coll2 in collectives + icollectives:
+for c1 in coll + icoll + ibarrier:
+    for c2 in coll + icoll + ibarrier:
         patterns = {}
-        patterns = {'coll1': coll1, 'coll2': coll2}
+        patterns = {'c1': c1, 'c2': c2}
         patterns['generatedby'] = f'DO NOT EDIT: this file was generated by {sys.argv[0]}. DO NOT EDIT.'
-        patterns['collfeature'] = 'Yes' if coll1 in collectives or coll2 in collectives else 'Lacking'
-        patterns['icollfeature'] = 'Yes' if coll1 in icollectives or coll2 in icollectives else 'Lacking'
-        patterns['coll1'] = coll1
-        patterns['coll2'] = coll2
-        patterns['init1'] = init[coll1]("1")
-        patterns['init2'] = init[coll2]("2")
-        patterns['fini1'] = fini[coll1]("1")
-        patterns['fini2'] = fini[coll2]("2")
-        patterns['operation1a'] = operation[coll1]("1")
-        patterns['operation1b'] = operation[coll1]("1")
-        patterns['operation2a'] = operation[coll2]("2")
-        patterns['operation2b'] = operation[coll2]("2")
+        patterns['collfeature'] = 'Yes' if c1 in coll or c2 in coll else 'Lacking'
+        patterns['icollfeature'] = 'Yes' if c1 in icoll + ibarrier or c2 in icoll + ibarrier else 'Lacking'
+        patterns['c1'] = c1
+        patterns['c2'] = c2
+        patterns['init1'] = init[c1]("1")
+        patterns['init2'] = init[c2]("2")
+        patterns['fini1'] = fini[c1]("1")
+        patterns['fini2'] = fini[c2]("2")
+        patterns['operation1a'] = operation[c1]("1")
+        patterns['operation1b'] = operation[c1]("1")
+        patterns['operation2a'] = operation[c2]("2")
+        patterns['operation2b'] = operation[c2]("2")
         patterns['change_cond'] = 'rank % 2'
 
-        if coll1 == coll2:
+        if c1 == c2:
             # Generate the correct code using the same collective twice
             replace = patterns
             replace['shortdesc'] = 'Correct collective ordering'
-            replace['longdesc'] = f'All ranks call {coll1} twice'
+            replace['longdesc'] = f'All ranks call {c1} twice'
             replace['outcome'] = 'OK'
             replace['errormsg'] = ''
-            make_file(template, f'CollCorrect_{coll1}_{coll2}.c', replace)
+            make_file(template, f'CollCorrect_{c1}_{c2}.c', replace)
             # Generate the correct code using the collective once
             replace = patterns
             replace['shortdesc'] = 'Correct collective ordering'
-            replace['longdesc'] = f'All ranks call {coll1} once'
+            replace['longdesc'] = f'All ranks call {c1} once'
             replace['outcome'] = 'OK'
             replace['errormsg'] = ''
             replace['init2'] = ''
             replace['operation2a'] = ''
             replace['operation2b'] = ''
             replace['fini2'] = ''
-            make_file(template, f'CollCorrect_{coll1}.c', replace)
+            make_file(template, f'CollCorrect_{c1}.c', replace)
         else:
             # Generate the correct ordering with two different collectives
             replace = patterns
             replace['shortdesc'] = 'Correct collective ordering'
-            replace['longdesc'] = f'All ranks call {coll1} and then {coll2}'
+            replace['longdesc'] = f'All ranks call {c1} and then {c2}'
             replace['outcome'] = 'OK'
             replace['errormsg'] = ''
-            make_file(template, f'CollCorrect_{coll1}_{coll2}.c', replace)
+            make_file(template, f'CollCorrect_{c1}_{c2}.c', replace)
             # Generate the incorrect ordering with two different collectives
             replace = patterns
             replace['shortdesc'] = 'Incorrect collective ordering'
-            replace['longdesc'] = f'Odd ranks call {coll1} and then {coll2} while even ranks call these collectives in the other order'
+            replace['longdesc'] = f'Odd ranks call {c1} and then {c2} while even ranks call these collectives in the other order'
             replace['outcome'] = 'ERROR: CallMatching'
-            replace['errormsg'] = 'Collective mistmatch. @{coll1}@ at @{filename}@:@{line:MBIERROR1}@ is matched with @{coll2}@ line @{filename}@:@{line:MBIERROR2}@.'
-            replace['operation1b'] = operation[coll2]("2")  # Inversion
-            replace['operation2b'] = operation[coll1]("1")
-            make_file(template, f'CollCallOrder_{coll1}_{coll2}_nok.c', replace)
-            # Generate the incorrect ordering with one collective
-            replace = patterns
-            replace['shortdesc'] = 'Incorrect collective ordering'
-            replace['longdesc'] = f'Odd ranks call {coll1} while even ranks do not call any collective'
-            replace['outcome'] = 'ERROR: CallMatching'
-            replace['errormsg'] = 'Collective mistmatch. @{coll1}@ at @{filename}@:@{line:MBIERROR1}@ is not matched.'
-            replace['operation1b'] = ''  # Remove functions
-            replace['operation2b'] = ''
-            replace['operation2a'] = ''
-            replace['fini2'] = ''
-            make_file(template, f'CollCallOrder_{coll1}_none_nok.c', replace)
-            # Generate a correct ordering with a conditional not depending on ranks
-            replace = patterns
-            replace['shortdesc'] = 'Correct collective ordering'
-            replace['longdesc'] = f'All ranks call {coll1} and then {coll2} or inversely'
-            replace['outcome'] = 'OK'
-            replace['errormsg'] = ''
-            replace['change_cond'] = 'nprocs<256'
-            replace['operation2b'] = '' # Remove functions
-            replace['operation2a'] = ''
-            replace['fini2'] = ''
-            make_file(template, f'CollCallOrder_{coll1}_none_ok.c', replace)
+            replace['errormsg'] = 'Collective mistmatch. @{c1}@ at @{filename}@:@{line:MBIERROR1}@ is matched with @{c2}@ line @{filename}@:@{line:MBIERROR2}@.'
+            replace['operation1b'] = operation[c2]("2")  # Inversion
+            replace['operation2b'] = operation[c1]("1")
+            make_file(template, f'CollCallOrder_{c1}_{c2}_nok.c', replace)
+
+    # Generate the incorrect ordering with one collective
+    replace = patterns
+    replace['shortdesc'] = 'Incorrect collective ordering'
+    replace['longdesc'] = f'Odd ranks call {c1} while even ranks do not call any collective'
+    replace['outcome'] = 'ERROR: CallMatching'
+    replace['errormsg'] = 'Collective mistmatch. @{c1}@ at @{filename}@:@{line:MBIERROR1}@ is not matched.'
+    replace['operation1b'] = ''  # Remove functions
+    replace['operation2b'] = ''
+    replace['operation2a'] = ''
+    replace['fini2'] = ''
+    make_file(template, f'CollCallOrder_{c1}_none_nok.c', replace)
+    # Generate a correct ordering with a conditional not depending on ranks
+    replace = patterns
+    replace['shortdesc'] = 'Correct collective ordering'
+    replace['longdesc'] = f'All ranks call {c1} and then {c2} or inversely'
+    replace['outcome'] = 'OK'
+    replace['errormsg'] = ''
+    replace['change_cond'] = 'nprocs<256'
+    replace['operation2b'] = '' # Remove functions
+    replace['operation2a'] = ''
+    replace['fini2'] = ''
+    make_file(template, f'CollCallOrder_{c1}_none_ok.c', replace)

@@ -1,6 +1,6 @@
 #! /usr/bin/python3
 import sys
-from generator_utils import make_file
+from generator_utils import *
 
 template = """// @{generatedby}@
 /* ///////////////////////// The MPI Bugs Initiative ////////////////////////
@@ -36,6 +36,9 @@ END_MBI_TESTS
 int main(int argc, char **argv) {
   int nprocs = -1;
   int rank = -1;
+	int src=MPI_ANY_SOURCE, dest=0;
+	int stag = 42, rtag = MPI_ANY_TAG;
+	int buff_size = 1;
 
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
@@ -48,6 +51,9 @@ int main(int argc, char **argv) {
 	int recv_buffer=-1;
 	int send_buffer=rank;
 
+	MPI_Datatype type = MPI_INT;
+	MPI_Comm newcom = MPI_COMM_WORLD;
+
   @{init1}@
   @{init2}@
 
@@ -56,7 +62,7 @@ int main(int argc, char **argv) {
   		@{operation1}@ /* MBIERROR */
 			@{fini1}@
     }
-	if (recv_buffer != 3) {
+	if (@{cond}@ != 3) {
       printf("The last received message is not 3 but %d!\\n", recv_buffer);
       fflush(stdout);
       abort();
@@ -73,33 +79,6 @@ int main(int argc, char **argv) {
 }
 """
 
-p2p = ['MPI_Send', 'MPI_Recv'] 
-send = ['MPI_Send'] 
-recv = ['MPI_Recv'] 
-ip2p = ['MPI_Isend', 'MPI_Irecv']  
-isend = ['MPI_Isend']  
-irecv = ['MPI_Irecv']  
-
-init = {}
-operation = {}
-fini = {}
-
-init['MPI_Send'] = lambda n: ""
-operation['MPI_Send'] = lambda n: f'MPI_Send(&send_buffer, 1, MPI_INT, 0, 42, MPI_COMM_WORLD);'
-fini['MPI_Send'] = lambda n: ""
-
-init['MPI_Recv'] = lambda n: f'MPI_Status sta{n};'
-operation['MPI_Recv'] = lambda n: f'MPI_Recv(&recv_buffer, 1, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &sta{n});'
-fini['MPI_Recv'] = lambda n: ""
-
-init['MPI_Isend'] = lambda n: f'MPI_Request req{n};'
-operation['MPI_Isend'] = lambda n: f'MPI_Isend(&send_buffer, 1, MPI_INT, 0, 42, MPI_COMM_WORLD, &req{n});'
-fini['MPI_Isend'] = lambda n: f'MPI_Wait(&req{n}, MPI_STATUS_IGNORE);'
-
-init['MPI_Irecv'] = lambda n: f'MPI_Request req{n};'
-operation['MPI_Irecv'] = lambda n: f'MPI_Irecv(&recv_buffer, 1, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &req{n});'
-fini['MPI_Irecv'] = lambda n: f'MPI_Wait(&req{n}, MPI_STATUS_IGNORE);'
-
 
 for s in send + isend:
     for r in recv + irecv:
@@ -110,6 +89,7 @@ for s in send + isend:
         patterns['ip2pfeature'] = 'Yes' if s in isend or r in irecv else 'Lacking'
         patterns['s'] = s
         patterns['r'] = r
+        patterns['cond'] = 'buf1'
         patterns['init2'] = init[s]("2")
         patterns['init1'] = init[r]("1")
         patterns['fini2'] = fini[s]("2")
