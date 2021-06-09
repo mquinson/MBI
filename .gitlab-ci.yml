@@ -261,20 +261,21 @@ test-aislinn:
 #            - tools/mpisv
 
 # MPI-SV refuses to build on nested virtualization as we have when using docker on gitlab-CI
-# test-mpisv:
-#    stage: test
-#    image: mpisv/mpi-sv
-#    needs:
-##        - job: build-mpisv
-##          artifacts: true
-#    script:
-#        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
-#        - scripts/ensure_python3 ./MBI.py -x mpisv
-#    artifacts:
-#        untracked: false
-#        when: always
-#        paths:
-#            - logs
+test-mpisv:
+    stage: test
+    image: mpisv/mpi-sv
+    needs: []
+    tags:
+        - baremetal
+    image: registry.hub.docker.com/mquinson/mbi
+    script:
+        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -x mpisv
+    artifacts:
+        untracked: false
+        when: always
+        paths:
+            - logs
 
 test-civl-1:
     stage: test
@@ -397,14 +398,172 @@ test-simgrid:
         when: always
         paths:
             - logs
-test-smpi:
+test-smpi-1:
     stage: test
     needs:
         - job: build-simgrid
           artifacts: true
     script:
         - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -x smpi -b 1/5
+    artifacts:
+        untracked: false
+        when: always
+        paths:
+            - logs
+test-smpi-2:
+    stage: test
+    needs:
+        - job: build-simgrid
+          artifacts: true
+    script:
+        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -x smpi -b 2/5
+    artifacts:
+        untracked: false
+        when: always
+        paths:
+            - logs
+test-smpi-3:
+    stage: test
+    needs:
+        - job: build-simgrid
+          artifacts: true
+    script:
+        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -x smpi -b 3/5
+    artifacts:
+        untracked: false
+        when: always
+        paths:
+            - logs
+test-smpi-4:
+    stage: test
+    needs:
+        - job: build-simgrid
+          artifacts: true
+    script:
+        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -x smpi -b 4/5
+    artifacts:
+        untracked: false
+        when: always
+        paths:
+            - logs
+test-smpi-5:
+    stage: test
+    needs:
+        - job: build-simgrid
+          artifacts: true
+    script:
+        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -x smpi -b 5/5
+    artifacts:
+        untracked: false
+        when: always
+        paths:
+            - logs
+test-smpi-all:
+    stage: gather
+    needs:
+        - job: test-smpi-1
+          artifacts: true
+        - job: test-smpi-2
+          artifacts: true
+        - job: test-smpi-3
+          artifacts: true
+        - job: test-smpi-4
+          artifacts: true
+        - job: test-smpi-5
+          artifacts: true
+    script:
+        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x smpi
+    artifacts:
+        untracked: false
+        when: always
+        paths:
+            - logs
+
+test-itac-1:
+    stage: test
+    needs: []
+    tags:
+        - baremetal
+    image: registry.hub.docker.com/mquinson/mbi
+    script:
+        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -x itac -c run -b 1/6
+    artifacts:
+        untracked: false
+        when: always
+        paths:
+            - logs
+test-itac-2:
+    stage: test
+    needs: []
+    tags:
+        - baremetal
+    image: registry.hub.docker.com/mquinson/mbi
+    script:
+        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -x itac -c run -b 2/6
+    artifacts:
+        untracked: false
+        when: always
+        paths:
+            - logs
+test-itac-3:
+    stage: test
+    needs: []
+    tags:
+        - baremetal
+    image: registry.hub.docker.com/mquinson/mbi
+    script:
+        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -x itac -c run -b 3/6
+    artifacts:
+        untracked: false
+        when: always
+        paths:
+            - logs
+test-itac-4:
+    stage: test
+    needs: []
+    tags:
+        - baremetal
+    image: registry.hub.docker.com/mquinson/mbi
+    script:
+        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -x itac -c run -b 4/6
+    artifacts:
+        untracked: false
+        when: always
+        paths:
+            - logs
+test-itac-5:
+    stage: test
+    needs: []
+    tags:
+        - baremetal
+    image: registry.hub.docker.com/mquinson/mbi
+    script:
+        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -x itac -c run -b 5/6
+    artifacts:
+        untracked: false
+        when: always
+        paths:
+            - logs
+test-itac-6:
+    stage: test
+    needs: []
+    tags:
+        - baremetal
+    image: registry.hub.docker.com/mquinson/mbi
+    script:
+        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -x itac -c run -b 6/6
     artifacts:
         untracked: false
         when: always
