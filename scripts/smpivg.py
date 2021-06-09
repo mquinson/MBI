@@ -1,6 +1,7 @@
 import re
 import os
 import smpi 
+import subprocess
 
 class Tool(smpi.Tool):
     def identify(self):
