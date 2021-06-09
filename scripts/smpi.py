@@ -70,5 +70,7 @@ class Tool(AbstractTool):
             return 'resleak'
         if re.search('No property violation found', output):
             return 'OK'
+        if re.search('Command return code: 0,', output):
+            return 'OK'
 
         return 'other'
