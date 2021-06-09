@@ -72,7 +72,7 @@ fini['MPI_Ireduce'] = lambda n: f"MPI_Wait(&req{n},&sta{n});"
 
 init['MPI_Ibcast'] = lambda n: f'int buf{n}[buff_size];MPI_Request req{n};MPI_Status sta{n};'
 operation['MPI_Ibcast'] = lambda n: f'MPI_Ibcast(&buf{n}, buff_size, MPI_INT, 0, MPI_COMM_WORLD, &req{n});'
-write['MPI_Ibcast'] = lambda n: f'buf{n}++;'
+write['MPI_Ibcast'] = lambda n: f'buf{n}[0]++;'
 fini['MPI_Ibcast'] = lambda n: f'MPI_Wait(&req{n},&sta{n});'
 
 init['MPI_Igather'] = lambda n: f"int val{n}=1, buf{n}[buff_size];MPI_Request req{n};MPI_Status sta{n};"
