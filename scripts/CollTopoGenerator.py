@@ -99,7 +99,7 @@ for c in tcoll4topo:
     replace['longdesc'] = 'The code creates a cartesian communicator, and tries to get cartesian information of MPI_COMM_WORLD.'
     replace['outcome'] = 'ERROR: InvalidCommunicator'
     replace['errormsg'] = 'Invalid Communicator in a collective. @{c}@ at @{filename}@:@{line:MBIERROR2}@ tries to get cartesian information of MPI_COMM_WORLD.'
-    replace['change_com'] = 'newcomm = MPI_COMM_WORLD; /* MBIERROR1 */'
+    replace['change_com'] = 'newcom = MPI_COMM_WORLD; /* MBIERROR1 */'
     make_file(template, f'CollInvalidCom_{c}_nok.c', replace)
 
     # Generate the code with newcom=MPI_COMM_NULL
@@ -108,7 +108,7 @@ for c in tcoll4topo:
     replace['longdesc'] = 'Function @{c}@ called with comm=MPI_COMM_NULL'
     replace['outcome'] = 'ERROR: InvalidCommunicator'
     replace['errormsg'] = 'Invalid communicator. @{c}@ at @{filename}@:@{line:MBIERROR2}@ has MPI_COMM_NULL as a communicator.'
-    replace['change_com'] = 'newcomm = MPI_COMM_NULL; /* MBIERROR1 */'
+    replace['change_com'] = 'newcom = MPI_COMM_NULL; /* MBIERROR1 */'
     make_file(template, f'CollComNull_{c}_nok.c', replace)
 
     # Generate the code with invalid dimension
