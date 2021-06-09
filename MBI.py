@@ -774,8 +774,6 @@ def cmd_latex(rootdir, toolnames):
             FP = len(results['total'][toolname]['FALSE_POS']) 
 
             total = TP + TN + FP + FN + nTout + nPort + nFail
-            precision = TN/(TP+FP)
-            recall = TP/(TP+FN)
 
             # Coverage & Completion
             outfile.write(f'{percent(nPort,total,compl=True,one=True)} &{percent((nTout+nFail+nPort),(total),compl=True,one=True)}&')
@@ -784,7 +782,12 @@ def cmd_latex(rootdir, toolnames):
             # Recall: found {TP} errors out of {TP+FN} ;Precision: {TP} diagnostic of error are correct out of {TP+FP}) ; 
             outfile.write(f'{percent(TP,(TP+FN),one=True)} & {percent(TP,(TP+FP),one=True)} &')
             # F1 Score
-            outfile.write(f'{percent(2*precision*recall,(precision+recall),one=True)}&')
+            if TP+FP >0 and TP+FN >0:
+                precision = TN/(TP+FP)
+                recall = TP/(TP+FN)
+                outfile.write(f'{percent(2*precision*recall,(precision+recall),one=True)}&')
+            else:
+                outfile.write('(error)&')
             # Accuracy: {TP+TN} correct diagnostics in total, out of all tests {TP+TN+FP+FN+nTout+nFail+nPort} diagnostics
             outfile.write(f'{percent(TP+TN,(TP+TN+FP+FN+nTout+nFail+nPort),one=True)}')
             outfile.write(f'\\\\\\hline\n')
