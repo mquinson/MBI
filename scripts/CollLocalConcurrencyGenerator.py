@@ -1,6 +1,6 @@
 #! /usr/bin/python3
 import sys
-from generator_utils import make_file
+from generator_utils import *
 
 template = """// @{generatedby}@
 /* ///////////////////////// The MPI Bugs Initiative ////////////////////////
@@ -37,6 +37,7 @@ END_MBI_TESTS
 int main(int argc, char **argv) {
   int nprocs = -1;
   int rank = -1;
+	int root = 0;
 
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
@@ -46,40 +47,22 @@ int main(int argc, char **argv) {
   if (nprocs < 2)
     printf("MBI ERROR: This test needs at least 2 processes to produce a bug!\\n");
 
+  MPI_Op op = MPI_SUM;
+	MPI_Comm newcom = MPI_COMM_WORLD;
+	MPI_Datatype type = MPI_INT;
+
   @{init}@
+  @{start}@
  	@{operation}@ 
 	@{write}@ /* MBIERROR */ 
 	@{fini}@
+	@{free}@
 
   MPI_Finalize();
   printf("Rank %d finished normally\\n", rank);
   return 0;
 }
 """
-
-icoll = ['MPI_Ireduce', 'MPI_Ibcast', 'MPI_Igather']  
-pcoll= []
-
-init = {}
-operation = {}
-fini = {}
-write= {}
-
-init['MPI_Ireduce'] = lambda n: f"MPI_Request req{n}; MPI_Status sta{n}; int sum{n}, val{n} = 1;"
-operation['MPI_Ireduce'] = lambda n: f"MPI_Ireduce(&val{n}, &sum{n}, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD, &req{n});"
-write['MPI_Ireduce'] = lambda n: f"sum{n}++;;"
-fini['MPI_Ireduce'] = lambda n: f"MPI_Wait(&req{n},&sta{n});"
-
-init['MPI_Ibcast'] = lambda n: f'int buf{n}[buff_size];MPI_Request req{n};MPI_Status sta{n};'
-operation['MPI_Ibcast'] = lambda n: f'MPI_Ibcast(&buf{n}, buff_size, MPI_INT, 0, MPI_COMM_WORLD, &req{n});'
-write['MPI_Ibcast'] = lambda n: f'buf{n}[0]++;'
-fini['MPI_Ibcast'] = lambda n: f'MPI_Wait(&req{n},&sta{n});'
-
-init['MPI_Igather'] = lambda n: f"int val{n}=1, buf{n}[buff_size];MPI_Request req{n};MPI_Status sta{n};"
-operation['MPI_Igather'] = lambda n: f'MPI_Igather(&val{n}, 1, MPI_INT, &buf{n},1, MPI_INT, 0, MPI_COMM_WORLD, &req{n});'
-write['MPI_Igather'] = lambda n: f'val{n}=3;'
-fini['MPI_Igather'] = lambda n: f'MPI_Wait(&req{n},&sta{n});'
-
 
 for c in icoll + pcoll:
     patterns = {}
@@ -89,9 +72,11 @@ for c in icoll + pcoll:
     patterns['pcollfeature'] = 'Yes' if c in pcoll else 'Lacking'
     patterns['c'] = c
     patterns['init'] = init[c]("1")
+    patterns['start'] = start[c]("1")
     patterns['fini'] = fini[c]("1")
     patterns['operation'] = operation[c]("1")
     patterns['write'] = write[c]("1")
+    patterns['free'] = free[c]("1")
 
     replace = patterns 
     replace['shortdesc'] = 'Local concurrency with a collective'
