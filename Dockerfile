@@ -23,5 +23,5 @@ RUN apt-get update --fix-missing && apt-get -y -qq install autoconf automake aut
     apt-get autoremove -yq && \
     apt-get clean -yq
 
-RUN pip3 install drawSvg
+# RUN pip3 install drawSvg
 COPY . /MBI
