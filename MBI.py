@@ -20,7 +20,8 @@ sys.path.append(f'{os.path.dirname(os.path.abspath(__file__))}/scripts')
 
 import parcoach
 import simgrid
-import smpi # SimGrid with valgrind instead of MC
+import smpi # SimGrid without MC
+import smpivg # SimGrid with valgrind instead of MC
 import must
 import mpisv
 import isp
@@ -29,7 +30,7 @@ import civl
 import aislinn
 
 tools = {'aislinn': aislinn.Tool(), 'civl': civl.Tool(), 'isp': isp.Tool(), 'itac': itac.Tool(), 'mpisv': mpisv.Tool(),
-         'must': must.Tool(), 'simgrid': simgrid.Tool(), 'smpi':smpi.Tool(), 'parcoach': parcoach.Tool()}
+         'must': must.Tool(), 'simgrid': simgrid.Tool(), 'smpi':smpi.Tool(),'smpivg':smpivg.Tool(), 'parcoach': parcoach.Tool()}
 
 # Some scripts may fail if error messages get translated
 os.environ["LC_ALL"] = "C"
@@ -81,7 +82,7 @@ displayed_name = {
     'EBufferingHazard':'Buffering hazard',
     'FOK':"Correct execution",
 
-    'aislinn':'Aislinn','civl':'CIVL', 'isp':'ISP', 'simgrid':'Mc SimGrid', 'smpi':'SMPI', 'mpisv':'MPI-SV', 'must':'MUST', 'parcoach':'PARCOACH'
+    'aislinn':'Aislinn','civl':'CIVL', 'isp':'ISP','itac':'ITAC', 'simgrid':'Mc SimGrid', 'smpi':'SMPI','smpivg':'SMPI+VG', 'mpisv':'MPI-SV', 'must':'MUST', 'parcoach':'PARCOACH'
 }
 
 # BufferLength/BufferOverlap
@@ -773,8 +774,6 @@ def cmd_latex(rootdir, toolnames):
             FP = len(results['total'][toolname]['FALSE_POS']) 
 
             total = TP + TN + FP + FN + nTout + nPort + nFail
-            precision = TN/(TP+FP)
-            recall = TP/(TP+FN)
 
             # Coverage & Completion
             outfile.write(f'{percent(nPort,total,compl=True,one=True)} &{percent((nTout+nFail+nPort),(total),compl=True,one=True)}&')
@@ -783,7 +782,12 @@ def cmd_latex(rootdir, toolnames):
             # Recall: found {TP} errors out of {TP+FN} ;Precision: {TP} diagnostic of error are correct out of {TP+FP}) ; 
             outfile.write(f'{percent(TP,(TP+FN),one=True)} & {percent(TP,(TP+FP),one=True)} &')
             # F1 Score
-            outfile.write(f'{percent(2*precision*recall,(precision+recall),one=True)}&')
+            if TP+FP >0 and TP+FN >0:
+                precision = TN/(TP+FP)
+                recall = TP/(TP+FN)
+                outfile.write(f'{percent(2*precision*recall,(precision+recall),one=True)}&')
+            else:
+                outfile.write('(error)&')
             # Accuracy: {TP+TN} correct diagnostics in total, out of all tests {TP+TN+FP+FN+nTout+nFail+nPort} diagnostics
             outfile.write(f'{percent(TP+TN,(TP+TN+FP+FN+nTout+nFail+nPort),one=True)}')
             outfile.write(f'\\\\\\hline\n')
@@ -851,6 +855,11 @@ def cmd_latex(rootdir, toolnames):
             outfile.write(f"{int(seconds)}s")
         outfile.write(f"\\\\\\hline\n")
 
+        # Last line: Tool names again
+        outfile.write("  \\multicolumn{2}{c|}{}")
+        for t in used_toolnames: 
+            outfile.write(f"& {displayed_name[t]}")
+        outfile.write(f"\\\\\\cline{{3-{len(used_toolnames)+2}}}\n")
 
         outfile.write(f"\\end{{tabular}}\n")
 
@@ -886,7 +895,7 @@ rootdir = os.path.dirname(os.path.abspath(__file__))
 if args.c == 'all' or args.c == 'run':
     if args.x == 'mpirun':
         raise Exception("No tool was provided, please retry with -x parameter. (see -h for further information on usage)")
-    elif args.x in ['aislinn', 'civl', 'isp', 'itac', 'must', 'mpisv', 'simgrid', 'smpi', 'parcoach']:
+    elif args.x in ['aislinn', 'civl', 'isp', 'itac', 'must', 'mpisv', 'simgrid', 'smpi','smpivg', 'parcoach']:
         pass
     else:
         raise Exception(f"The tool parameter you provided ({args.x}) is either incorect or not yet implemented.")
@@ -902,10 +911,14 @@ elif args.c == 'run':
     cmd_run(rootdir=rootdir, toolname=args.x, batchinfo=args.b)
 elif args.c == 'latex':
     extract_all_todo(args.b)
-    cmd_latex(rootdir, toolnames=['aislinn', 'civl', 'isp', 'simgrid','smpi', 'mpisv', 'must', 'parcoach'])
+    cmd_latex(rootdir, toolnames=['aislinn', 'civl', 'isp','itac', 'simgrid','smpi','smpivg', 'mpisv', 'must', 'parcoach'])
 elif args.c == 'stats':
     extract_all_todo(args.b)
-    cmd_stats(rootdir, toolnames=['aislinn', 'civl', 'isp', 'simgrid','smpi', 'mpisv', 'must', 'parcoach'])
+    if args.x == 'mpirun':
+        toolnames=['aislinn', 'civl', 'isp','itac', 'simgrid','smpi','smpivg', 'mpisv', 'must', 'parcoach']
+    else:
+        toolnames=[args.x]
+    cmd_stats(rootdir, toolnames=toolnames)
 else:
     print(f"Invalid command '{args.c}'. Please choose one of 'all', 'run', 'stats'")
     sys.exit(1)

@@ -162,9 +162,9 @@ write['MPI_Ireduce'] = lambda n: f"sum{n}++;;"
 init['MPI_Ibcast'] = lambda n: f'MPI_Request req{n}; MPI_Status sta{n};int buf{n}[buff_size];'
 start['MPI_Ibcast'] = lambda n: ""
 operation['MPI_Ibcast'] = lambda n: f'MPI_Ibcast(buf{n}, buff_size, type, 0, newcom, &req{n});'
-fini['MPI_Ibcast'] = lambda n: "MPI_Wait(&req{n},&sta{n});"
+fini['MPI_Ibcast'] = lambda n: f"MPI_Wait(&req{n},&sta{n});"
 free['MPI_Ibcast'] = lambda n: f'if(req{n} != MPI_REQUEST_NULL) MPI_Request_free(&req{n});'
-write['MPI_Ibcast'] = lambda n: f'buf{n}++;'
+write['MPI_Ibcast'] = lambda n: f'buf{n}[0]++;'
 
 init['MPI_Igather'] = lambda n: f"int val{n}=1, buf{n}[buff_size];MPI_Request req{n};MPI_Status sta{n};"
 start['MPI_Igather'] = lambda n: "" 

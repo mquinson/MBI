@@ -61,19 +61,25 @@ class Tool(AbstractTool):
         subprocess.run("rm -f smpitmp-* core", shell=True, check=True) 
 
     def parse(self, cachefile):
-        if os.path.exists(f'{cachefile}.timeout') or os.path.exists(f'logs/simgrid/{cachefile}.timeout'):
+        if os.path.exists(f'{cachefile}.timeout') or os.path.exists(f'logs/itac/{cachefile}.timeout'):
             outcome = 'timeout'
-        if not (os.path.exists(f'{cachefile}.txt') or os.path.exists(f'logs/simgrid/{cachefile}.txt')):
+        if not (os.path.exists(f'{cachefile}.txt') or os.path.exists(f'logs/itac/{cachefile}.txt')):
             return 'failure'
 
-        with open(f'{cachefile}.txt' if os.path.exists(f'{cachefile}.txt') else f'logs/simgrid/{cachefile}.txt', 'r') as infile:
+        with open(f'{cachefile}.txt' if os.path.exists(f'{cachefile}.txt') else f'logs/itac/{cachefile}.txt', 'r') as infile:
             output = infile.read()
 
         if re.search('Compilation of .*? raised an error \(retcode: ', output):
             return 'UNIMPLEMENTED'
 
-        match = re.search('^| \[0\] ERROR: (.*?): error$', output)
+        match = re.search('ERROR: (.*?): (fatal )?error', output)
         if match:
+#            print ('<Match: %r, groups=%r>' % (match.group(), match.groups()))
             return match.group(1)
+        if re.search('Command return code: 0,', output):
+            return 'OK'
 
+        print (">>>>[ INCONCLUSIVE ]>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+        print(output)
+        print ("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
         return 'other'

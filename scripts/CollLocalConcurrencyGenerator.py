@@ -64,7 +64,6 @@ int main(int argc, char **argv) {
 }
 """
 
-
 for c in icoll + pcoll:
     patterns = {}
     patterns = {'c': c} 

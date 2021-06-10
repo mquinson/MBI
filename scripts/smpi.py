@@ -4,7 +4,7 @@ from MBIutils import *
 
 class Tool(AbstractTool):
     def identify(self):
-        return "SimGrid MPI with Valgrind wrapper"
+        return "SimGrid MPI"
 
 
     def ensure_image(self):
@@ -14,7 +14,7 @@ class Tool(AbstractTool):
         os.environ['PATH'] = os.environ['PATH'] + ":" + rootdir + "/builds/SimGrid/bin"
         os.environ['VERBOSE'] = '1'
 
-    def run(self, execcmd, filename, binary, id, timeout, batchinfo):
+    def run(self, execcmd, filename, binary, id, timeout, batchinfo, extraargs=""):
         cachefile = f'{binary}_{id}'
 
         if not os.path.exists("cluster.xml"):
@@ -25,12 +25,7 @@ class Tool(AbstractTool):
                 outfile.write(' <cluster id="acme" prefix="node-" radical="0-99" suffix="" speed="1Gf" bw="125MBps" lat="50us"/>\n')
                 outfile.write('</platform>\n')
 
-        if not os.path.exists('simgrid.supp'):
-            subprocess.run("apt-get update", shell=True, check=True)
-            subprocess.run("apt-get install -y wget", shell=True, check=True)
-            subprocess.run("wget 'https://framagit.org/simgrid/simgrid/-/raw/master/tools/simgrid.supp?inline=false' -O simgrid.supp", shell=True, check=True)
-
-        execcmd = re.sub("mpirun", "smpirun -wrapper 'valgrind --suppressions=simgrid.supp' -platform ./cluster.xml", execcmd)
+        execcmd = re.sub("mpirun", f"smpirun {extraargs} -platform ./cluster.xml", execcmd)
         execcmd = re.sub('\${EXE}', binary, execcmd)
         execcmd = re.sub('\$zero_buffer', "", execcmd)
         execcmd = re.sub('\$infty_buffer', "", execcmd)
@@ -44,26 +39,21 @@ class Tool(AbstractTool):
             timeout=timeout,
             batchinfo=batchinfo)
 
-        subprocess.run("rm -f vgcore.*", shell=True, check=True) # Save disk space ASAP
-
     def teardown(self): 
         subprocess.run("find -type f -a -executable | xargs rm -f", shell=True, check=True) # Remove generated cruft (binary files)
         subprocess.run("rm -f smpitmp-* core", shell=True, check=True) 
 
     def parse(self, cachefile):
-        if os.path.exists(f'{cachefile}.timeout') or os.path.exists(f'logs/simgrid/{cachefile}.timeout'):
+        if os.path.exists(f'{cachefile}.timeout') or os.path.exists(f'logs/smpi/{cachefile}.timeout'):
             outcome = 'timeout'
-        if not (os.path.exists(f'{cachefile}.txt') or os.path.exists(f'logs/simgrid/{cachefile}.txt')):
+        if not (os.path.exists(f'{cachefile}.txt') or os.path.exists(f'logs/smpi/{cachefile}.txt')):
             return 'failure'
 
-        with open(f'{cachefile}.txt' if os.path.exists(f'{cachefile}.txt') else f'logs/simgrid/{cachefile}.txt', 'r') as infile:
+        with open(f'{cachefile}.txt' if os.path.exists(f'{cachefile}.txt') else f'logs/smpi/{cachefile}.txt', 'r') as infile:
             output = infile.read()
 
         if re.search('Compilation of .*? raised an error \(retcode: ', output):
             return 'UNIMPLEMENTED'
-
-        if re.search('ERROR SUMMARY: [^0]', output):
-            return 'failure'
 
         if re.search('MC is currently not supported here', output):
             return 'failure'
@@ -79,6 +69,8 @@ class Tool(AbstractTool):
         if re.search('Probable memory leaks in your code: SMPI detected', output):
             return 'resleak'
         if re.search('No property violation found', output):
+            return 'OK'
+        if re.search('Command return code: 0,', output):
             return 'OK'
 
         return 'other'

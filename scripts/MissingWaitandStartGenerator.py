@@ -47,6 +47,8 @@ int main(int argc, char **argv) {
     printf("MBI ERROR: This test needs at least 2 processes to produce a bug!\\n");
 
 	MPI_Comm newcom = MPI_COMM_WORLD;
+	MPI_Datatype type = MPI_INT;
+  MPI_Op op = MPI_SUM;
 	int stag = 0, rtag = 0;
   int buff_size = 1;
 

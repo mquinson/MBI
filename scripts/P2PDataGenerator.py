@@ -39,6 +39,7 @@ int main(int argc, char **argv) {
 	int src=0, dest=1;
 	int stag = 0, rtag = 0;
  	int buff_size = 1;
+	MPI_Comm newcom = MPI_COMM_WORLD;
 
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
