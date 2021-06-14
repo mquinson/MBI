@@ -65,6 +65,8 @@ int main(int argc, char **argv) {
 
   @{fini1}@
   @{fini2}@
+  @{free1}@
+  @{free2}@
   
   MPI_Finalize();
   printf("Rank %d finished normally\\n", rank);
@@ -85,6 +87,8 @@ for c1 in coll + icoll + ibarrier:
         patterns['init2'] = init[c2]("2")
         patterns['fini1'] = fini[c1]("1")
         patterns['fini2'] = fini[c2]("2")
+        patterns['free1'] = free[c1]("1")
+        patterns['free2'] = free[c2]("2")
         patterns['operation1a'] = operation[c1]("1")
         patterns['operation1b'] = operation[c1]("1")
         patterns['operation2a'] = operation[c2]("2")
@@ -109,6 +113,7 @@ for c1 in coll + icoll + ibarrier:
             replace['operation2a'] = ''
             replace['operation2b'] = ''
             replace['fini2'] = ''
+            replace['free2'] = ''
             make_file(template, f'CollCorrect_{c1}.c', replace)
         else:
             # Generate the correct ordering with two different collectives
@@ -149,4 +154,5 @@ for c1 in coll + icoll + ibarrier:
     replace['operation2b'] = '' # Remove functions
     replace['operation2a'] = ''
     replace['fini2'] = ''
+    replace['free2'] = ''
     make_file(template, f'CollCallOrder_{c1}_none_ok.c', replace)

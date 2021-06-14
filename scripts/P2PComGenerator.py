@@ -68,6 +68,9 @@ int main(int argc, char **argv) {
   @{free1}@
   @{free2}@
 
+	if(newcom != MPI_COMM_NULL && newcom != MPI_COMM_WORLD)
+		MPI_Comm_free(&newcom);
+
   MPI_Finalize();
   printf("Rank %d finished normally\\n", rank);
   return 0;

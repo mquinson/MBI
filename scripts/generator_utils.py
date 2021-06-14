@@ -10,10 +10,9 @@ icoll4op = ['MPI_Ireduce']
 coll4root =  ['MPI_Bcast', 'MPI_Reduce', 'MPI_Gather', 'MPI_Scatter']
 icoll4root = ['MPI_Ireduce', 'MPI_Ibcast', 'MPI_Igather']
 pcoll = []
-tcoll = ['MPI_Comm_split', 'MPI_Cart_get']
+tcoll = ['MPI_Comm_split', 'MPI_Op_create', 'MPI_Comm_group', 'MPI_Comm_dup', 'MPI_Type_contiguous', 'MPI_Comm_create', 'MPI_Group_excl']
 tcoll4color = ['MPI_Comm_split'] 
 tcoll4topo = ['MPI_Cart_get']
-
 
 # P2P
 p2p = ['MPI_Send', 'MPI_Recv'] 
@@ -26,6 +25,15 @@ irecv = ['MPI_Irecv']
 precv = ['MPI_Recv_init'] 
 probe = ['MPI_Probe']
 
+# RMA
+epoch = ['MPI_Win_fence', 'MPI_Win_lock', 'MPI_Win_lock_all']
+get = ['MPI_Get']
+put = ['MPI_Put'] 
+store = ['store']
+load = ['load']
+loadstore = ['loadstore']
+
+
 # setup
 init = {}
 start = {}
@@ -33,6 +41,10 @@ operation = {}
 fini = {}
 free = {} 
 write = {}
+error = {}
+epoch = {}
+finEpoch = {}
+
 
 ### COLL:basic
 
@@ -166,12 +178,11 @@ free['MPI_Igather'] = lambda n: f'if(req{n} != MPI_REQUEST_NULL) MPI_Request_fre
 
 ### COLL:tools
 
-init['MPI_Comm_split'] = lambda n: ""
-start['MPI_Comm_split'] = lambda n: ""
-operation['MPI_Comm_split'] = lambda n: f'MPI_Comm_split(MPI_COMM_WORLD, color, 0, &newcom);'
-write['MPI_Comm_split'] = lambda n: ""
-fini['MPI_Comm_split'] = lambda n: ""
-free['MPI_Comm_split'] = lambda n: ""
+init['MPI_Comm_split'] = lambda n: f'MPI_Comm com[size]; int color = rank % 2; int key = 1;'
+operation['MPI_Comm_split'] = lambda n: 'MPI_Comm_split(MPI_COMM_WORLD,color,key, &com[j]);'
+error['MPI_Comm_split'] = 'CommunicatorLeak'
+fini['MPI_Comm_split'] = lambda n: "MPI_Comm_free(&com[j]);"
+free['MPI_Comm_split'] = lambda n: "" 
 
 
 init['MPI_Cart_get'] = lambda n: ""
@@ -180,6 +191,46 @@ operation['MPI_Cart_get'] = lambda n: f'MPI_Cart_get(newcom, 2, dims, periods, c
 write['MPI_Cart_get'] = lambda n: ""
 fini['MPI_Cart_get'] = lambda n: ""
 free['MPI_Cart_get'] = lambda n: ""
+
+
+init['MPI_Op_create'] = lambda n: 'MPI_Op op[size];'
+operation['MPI_Op_create'] = lambda n: 'MPI_Op_create((MPI_User_function *)myOp, 0, &op[j]);'
+error['MPI_Op_create'] = 'OperatorLeak'
+fini['MPI_Op_create'] = lambda n: "MPI_Op_free(&op[j]);"
+free['MPI_Op_create'] = lambda n: ""
+
+init['MPI_Comm_group'] = lambda n: 'MPI_Group grp[size];'
+operation['MPI_Comm_group'] = lambda n: 'MPI_Comm_group(MPI_COMM_WORLD, &grp[j]);'
+error['MPI_Comm_group'] = 'GroupLeak'
+fini['MPI_Comm_group'] = lambda n: "MPI_Group_free(&grp[j]);"
+free['MPI_Comm_group'] = lambda n: "" 
+
+init['MPI_Group_excl'] = lambda n: 'MPI_Group worldgroup, grp[size];\n MPI_Comm_group(MPI_COMM_WORLD, &worldgroup);'
+operation['MPI_Group_excl'] = lambda n: 'MPI_Group_excl(worldgroup, 1, &rank, &grp[j]);' 
+error['MPI_Group_excl'] = 'GroupLeak'
+fini['MPI_Group_excl'] = lambda n: "MPI_Group_free(&grp[j]);"
+free['MPI_Group_excl'] = lambda n: "MPI_Group_free(&worldgroup);"
+
+init['MPI_Comm_create'] = lambda n: 'MPI_Comm com[size]; MPI_Group grp[size];'
+operation['MPI_Comm_create'] = lambda n: 'MPI_Comm_group(MPI_COMM_WORLD, &grp[j]);\n MPI_Comm_create(MPI_COMM_WORLD, grp[j], &com[j]);\n MPI_Group_free(&grp[j]);'
+error['MPI_Comm_create'] = 'CommunicatorLeak'
+fini['MPI_Comm_create'] = lambda n: "MPI_Comm_free(&com[j]);"
+free['MPI_Comm_create'] = lambda n: ""
+
+init['MPI_Comm_dup'] = lambda n: f'MPI_Comm com[size];'
+operation['MPI_Comm_dup'] = lambda n: 'MPI_Comm_dup(MPI_COMM_WORLD, &com[j]);'
+error['MPI_Comm_dup'] = 'CommunicatorLeak'
+fini['MPI_Comm_dup'] = lambda n: "MPI_Comm_free(&com[j]);"
+free['MPI_Comm_dup'] = lambda n: "" 
+
+init['MPI_Type_contiguous'] = lambda n: 'MPI_Datatype type[size];'
+operation['MPI_Type_contiguous'] = lambda n: 'MPI_Type_contiguous(2, MPI_DOUBLE, &type[j]);'
+error['MPI_Type_contiguous'] = 'TypeLeak'
+fini['MPI_Type_contiguous'] = lambda n: "MPI_Type_free(&type[j]);"
+free['MPI_Type_contiguous'] = lambda n: "" 
+
+
+
 
 ### P2P:basic 
 
@@ -237,6 +288,30 @@ operation['MPI_Recv_init'] = lambda n: f'MPI_Recv_init(&buf{n}, buff_size, type,
 fini['MPI_Recv_init'] = lambda n: f'MPI_Wait(&req{n}, MPI_STATUS_IGNORE);'
 free['MPI_Recv_init'] = lambda n: f'if(req{n} != MPI_REQUEST_NULL) MPI_Request_free(&req{n});'
 write['MPI_Recv_init'] = lambda n: f'buf{n}++;' 
+
+### RMA
+
+epoch['MPI_Win_fence'] =lambda n: 'MPI_Win_fence(0, win);'
+finEpoch['MPI_Win_fence'] =lambda n: 'MPI_Win_fence(0, win);'
+epoch['MPI_Win_lock'] =lambda n: 'MPI_Win_lock(MPI_LOCK_SHARED, target, 0, win);'
+finEpoch['MPI_Win_lock'] =lambda n: 'MPI_Win_unlock(target, win);'
+epoch['MPI_Win_lock_all'] =lambda n: 'MPI_Win_lock_all(0,win);'
+finEpoch['MPI_Win_lock_all'] =lambda n: 'MPI_Win_unlock_all(win);'
+
+init['MPI_Put'] = lambda n: f'int localbuf{n} = 0;'
+operation['MPI_Put'] = lambda n: f'MPI_Put(&localbuf{n}, NUM_ELEMT, MPI_INT, target, 0, NUM_ELEMT, type, win);'
+
+init['MPI_Get'] = lambda n: f'int localbuf{n} = 10;'
+operation['MPI_Get'] = lambda n: f'MPI_Get(&localbuf{n}, NUM_ELEMT, MPI_INT, target, 0, NUM_ELEMT, type, win);' 
+
+init['store'] = lambda n: f'int localbuf{n} = 0;'
+operation['store'] = lambda n: f'localbuf{n} = 8;'
+
+init['load'] = lambda n: f'int localbuf{n} = 0;'
+operation['load'] = lambda n: f'int load = localbuf{n} % 2;'
+
+init['loadstore'] = lambda n: f'int localbuf{n} = 0;'
+operation['loadstore'] = lambda n: f'if (localbuf{n} % 2 == 0)  localbuf{n}++; '
 
 
 
