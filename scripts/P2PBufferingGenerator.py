@@ -115,7 +115,7 @@ for s in send + isend:
         replace['operation2a'] = operation[s]("1")
         replace['operation1b'] =  operation[r]("2")
         replace['operation2b'] = operation[s]("1")
-        make_file(template, f'P2PCallMatching_{r}_{s}_nok.c', replace)
+        make_file(template, f'P2PCallMatching_{r}_{s}_{r}_{s}_nok.c', replace)
     		# Generate the correct matching
         replace = patterns 
         replace['shortdesc'] = 'Point to point @{s}@ and @{r}@ are correctly  matched' 
