@@ -1,6 +1,6 @@
 #! /usr/bin/python3
 import sys
-from generator_utils import make_file
+from generator_utils import *
 
 template = """// @{generatedby}@
 /* ///////////////////////// The MPI Bugs Initiative ////////////////////////
@@ -32,15 +32,14 @@ END_MBI_TESTS
 #include <stdio.h>
 #include <stdlib.h>
 
-#define NUM_ELEMT 1
 
 int main(int argc, char **argv) {
   int nprocs = -1;
   int rank = -1;
 	MPI_Win win;
   int W; // Window buffer
-  int localbuf1, localbuf2; // Local buffers
 	int target=1;
+  int NUM_ELEMT=1;
 
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
@@ -50,13 +49,15 @@ int main(int argc, char **argv) {
   if (nprocs < 2)
     printf("MBI ERROR: This test needs at least 2 processes to produce a bug!\\n");
 
-  localbuf1 = 0;
-  localbuf2 = 10;
+	MPI_Datatype type = MPI_INT;
   W = 4;
 
   MPI_Win_create(&W, NUM_ELEMT * sizeof(int), sizeof(int), MPI_INFO_NULL, MPI_COMM_WORLD, &win);
 
   @{epoch}@
+
+	@{init1}@
+	@{init2}@
 
 	if (rank == 0) {
  		@{operation1}@ /* MBIERROR1 */
@@ -77,26 +78,6 @@ int main(int argc, char **argv) {
 }
 """
 
-epoch = ['MPI_Win_fence', 'MPI_Win_lock', 'MPI_Win_lockall']
-get = ['MPI_Get']
-put = ['MPI_Put'] 
-
-epoch = {}
-finEpoch = {}
-operation = {}
-
-epoch['MPI_Win_fence'] =lambda n: 'MPI_Win_fence(0, win);'
-finEpoch['MPI_Win_fence'] =lambda n: 'MPI_Win_fence(0, win);'
-epoch['MPI_Win_lock'] =lambda n: 'MPI_Win_lock(MPI_LOCK_SHARED, target, 0, win);'
-finEpoch['MPI_Win_lock'] =lambda n: 'MPI_Win_unlock(target, win);'
-epoch['MPI_Win_lockall'] =lambda n: 'MPI_Win_lock_all(0,win);'
-finEpoch['MPI_Win_lockall'] =lambda n: 'MPI_Win_unlock_all(win);'
-
-operation['MPI_Put'] = lambda n: 'MPI_Put(&localbuf1, NUM_ELEMT, MPI_INT, target, 0, NUM_ELEMT, MPI_INT, win);'
-operation['MPI_Get'] = lambda n: 'MPI_Get(&localbuf2, NUM_ELEMT, MPI_INT, target, 0, NUM_ELEMT, MPI_INT, win);' 
-
-
-### To change for global concurrency
 
 for e in epoch:
     for p1 in put: 
@@ -110,6 +91,8 @@ for e in epoch:
             patterns['e'] = e 
             patterns['epoch'] = epoch[e]("1") 
             patterns['finEpoch'] = finEpoch[e]("1") 
+            patterns['init1'] = init[p1]("1") #put
+            patterns['init2'] = init[p2]("2") #get or put
             patterns['operation1'] = operation[p1]("1") #put
             patterns['operation2'] = operation[p2]("2") #get or put
             patterns['add_store'] = "" 
@@ -125,9 +108,9 @@ for e in epoch:
     		    # Generate a data race (Get/Put + store)
             replace = patterns 
             replace['shortdesc'] = 'Global Concurrency error.' 
-            replace['longdesc'] = 'Global Concurrency error. @{p2}@ conflicts with @{p1}@ on the target side' 
+            replace['longdesc'] = 'Global Concurrency error. @{p2}@ conflicts with a store on the target side' 
             replace['outcome'] = 'ERROR: GlobalConcurrency' 
-            replace['errormsg'] = 'Global Concurrency error. @{p2}@ at @{filename}@:@{line:MBIERROR2}@ conflicts with the store on W line @{line:MBIERROR3}@ on the target side'
+            replace['errormsg'] = 'Global Concurrency error. @{p2}@ at @{filename}@:@{line:MBIERROR2}@ conflicts with the store line @{line:MBIERROR3}@ on the target side'
             replace['add_store'] = 'if(rank == target){ W++;}' 
             replace['operation1'] = ""
             make_file(template, f'GlobalConcurrency_{e}_{p2}_store_nok.c', replace)

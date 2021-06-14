@@ -71,7 +71,11 @@ int main(int argc, char **argv) {
 		@{fini3}@
 	}
 
-  MPI_Finalize();
+	@{free1}@
+	@{free2}@
+	@{free3}@
+  
+	MPI_Finalize();
   printf("Rank %d finished normally\\n", rank);
   return 0;
 }
@@ -96,6 +100,9 @@ for s in send + isend:
             patterns['fini1'] = fini[s]("1")
             patterns['fini2'] = fini[r]("2")
             patterns['fini3'] = fini[c]("3")
+            patterns['free1'] = free[s]("1")
+            patterns['free2'] = free[r]("2")
+            patterns['free3'] = free[c]("3")
             patterns['operation1'] = operation[s]("1")
             patterns['operation2'] = operation[r]("2")
             patterns['operation3'] = operation[c]("3")

@@ -79,13 +79,13 @@ for c in coll4root + icoll4root:
     patterns['change_root'] = '' 
 
     # Generate the correct code ==> to remove?
-    replace = patterns
-    replace['shortdesc'] = 'Collective @{c}@ with correct arguments'
-    replace['longdesc'] = f'All ranks in MPI_COMM_WORLD call {c} with correct arguments'
-    replace['outcome'] = 'OK'
-    replace['errormsg'] = ''
-    replace['change_root'] = '/* No error injected here */'
-    make_file(template, f'CollCorrect_{c}.c', replace)
+    #replace = patterns
+    #replace['shortdesc'] = 'Collective @{c}@ with correct arguments'
+    #replace['longdesc'] = f'All ranks in MPI_COMM_WORLD call {c} with correct arguments'
+    #replace['outcome'] = 'OK'
+    #replace['errormsg'] = ''
+    #replace['change_root'] = '/* No error injected here */'
+    #make_file(template, f'CollCorrect_{c}.c', replace)
 
     # Generate an incorrect root matching
     replace = patterns

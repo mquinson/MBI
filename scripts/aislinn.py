@@ -43,6 +43,8 @@ class Tool(AbstractTool):
 
         if os.path.exists("./report.html"):
             os.rename("./report.html", f"{binary}_{id}.html")
+            
+        subprocess.run("rm -f vgcore.*", shell=True, check=True) # Save disk space ASAP
 
     def teardown(self): # Remove generated cruft (binary files)
         subprocess.run("find -type f -a -executable | xargs rm -f", shell=True, check=True)
