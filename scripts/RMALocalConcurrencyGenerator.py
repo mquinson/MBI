@@ -88,7 +88,6 @@ for e in epoch:
             patterns['epoch'] = epoch[e]("1") 
             patterns['finEpoch'] = finEpoch[e]("1") 
             patterns['init1'] = init[p1]("1") 
-            patterns['init2'] = init[p2]("1") 
             patterns['operation1'] = operation[p1]("1") 
             patterns['operation2'] = operation[p2]("1") 
 
@@ -123,7 +122,7 @@ for e in epoch:
             patterns['finEpoch'] = finEpoch[e]("1") 
             patterns['init1'] = init[p1]("1") 
             patterns['operation1'] = operation[p1]("1") 
-            patterns['operation2'] = operation[p2]("2") 
+            patterns['operation2'] = operation[p2]("1") 
 
     		    # Generate a data race (Put + store)
             replace = patterns 

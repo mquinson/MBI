@@ -57,14 +57,16 @@ int main(int argc, char **argv) {
 
   if (@{change_cond}@) {
     @{operation1a}@ /* MBIERROR1 */
+  	@{fini1}@
     @{operation2a}@
+  	@{fini2}@
   } else {
     @{operation1b}@ /* MBIERROR2 */
+  	@{fini1}@
     @{operation2b}@
+  	@{fini2}@
   }
 
-  @{fini1}@
-  @{fini2}@
   @{free1}@
   @{free2}@
   
