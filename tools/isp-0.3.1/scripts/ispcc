@@ -11,4 +11,4 @@
 # See LICENSE for licensing information
 #
 
-exec "/usr/local/bin/mpicc" "-L/usr/local/lib" "-I/usr/local/include/isp" -Wl,-rpath=/usr/local/lib -include isp.h $* -lisp_prof
+exec "/usr/bin/mpicc" "-L/MBI/builds/ISP/lib" "-I/MBI/builds/ISP/include/isp" -Wl,-rpath=/MBI/builds/ISP/lib -include isp.h $* -lisp_prof

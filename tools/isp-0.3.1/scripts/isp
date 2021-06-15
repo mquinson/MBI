@@ -11,8 +11,8 @@
 # See LICENSE for licensing information
 #
 
-export PATH="/usr/local/bin":$PATH
-if [ ! -x "/usr/local/bin/mpiexec" ]; then
+export PATH="/usr/bin":$PATH
+if [ ! -x "/usr/bin/mpiexec" ]; then
     export USE_MPIRUN="true"
 fi
-exec "/usr/local/bin/isp.exe" $*
+exec "/MBI/builds/ISP/bin/isp.exe" $*

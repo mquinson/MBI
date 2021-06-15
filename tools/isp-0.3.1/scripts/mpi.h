@@ -19,5 +19,5 @@
  * Date:    January 9th 2009
  */
 
-#include "/usr/local/include/mpi.h"
-#include "/usr/local/include/isp/isp.h"
+#include "/usr/lib/x86_64-linux-gnu/mpich/include/mpi.h"
+#include "/MBI/builds/ISP/include/isp/isp.h"

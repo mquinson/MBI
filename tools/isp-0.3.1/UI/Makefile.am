@@ -1,5 +1,5 @@
 JAVAC = @JAVAC@
-AM_JAVACFLAGS = -source 1.5 -target 1.5 -classpath ".:lib/*"
+AM_JAVACFLAGS = -source 1.7 -target 1.7 -classpath ".:lib/*"
 JAVAROOT = .
 bin_SCRIPTS = ispui.jar
 

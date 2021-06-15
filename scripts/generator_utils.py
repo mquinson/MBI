@@ -145,28 +145,28 @@ write['MPI_Allgatherv'] = lambda n: ""
 
 ### COLL:nonblocking
 
-init['MPI_Ibarrier'] = lambda n: f"MPI_Request req{n};MPI_Status stat{n};"
+init['MPI_Ibarrier'] = lambda n: f"MPI_Request req{n}=MPI_REQUEST_NULL; MPI_Status stat{n};"
 start['MPI_Ibarrier'] = lambda n: ""
 operation['MPI_Ibarrier'] = lambda n: f'MPI_Ibarrier(newcom, &req{n});'
 fini['MPI_Ibarrier'] = lambda n: f"MPI_Wait(&req{n}, &stat{n});"
 free['MPI_Ibarrier'] = lambda n: f'if(req{n} != MPI_REQUEST_NULL) MPI_Request_free(&req{n});'
 write['MPI_Ibarrier'] = lambda n: ""
 
-init['MPI_Ireduce'] = lambda n: f"MPI_Request req{n}; MPI_Status stat{n}; int sum{n}, val{n} = 1;"
+init['MPI_Ireduce'] = lambda n: f"MPI_Request req{n}=MPI_REQUEST_NULL; MPI_Status stat{n}; int sum{n}, val{n} = 1;"
 start['MPI_Ireduce'] = lambda n: ""
 operation['MPI_Ireduce'] = lambda n: f"MPI_Ireduce(&val{n}, &sum{n}, 1, type, op, root, newcom, &req{n});"
 fini['MPI_Ireduce'] = lambda n: f"MPI_Wait(&req{n}, &stat{n});" 
 free['MPI_Ireduce'] = lambda n: f'if(req{n} != MPI_REQUEST_NULL) MPI_Request_free(&req{n});'
 write['MPI_Ireduce'] = lambda n: f"sum{n}++;;"
 
-init['MPI_Ibcast'] = lambda n: f'MPI_Request req{n}; MPI_Status sta{n};int buf{n}[buff_size];'
+init['MPI_Ibcast'] = lambda n: f'MPI_Request req{n}=MPI_REQUEST_NULL; MPI_Status sta{n};int buf{n}[buff_size];'
 start['MPI_Ibcast'] = lambda n: ""
 operation['MPI_Ibcast'] = lambda n: f'MPI_Ibcast(buf{n}, buff_size, type, 0, newcom, &req{n});'
 fini['MPI_Ibcast'] = lambda n: f"MPI_Wait(&req{n},&sta{n});"
 free['MPI_Ibcast'] = lambda n: f'if(req{n} != MPI_REQUEST_NULL) MPI_Request_free(&req{n});'
 write['MPI_Ibcast'] = lambda n: f'buf{n}[0]++;'
 
-init['MPI_Igather'] = lambda n: f"int val{n}=1, buf{n}[buff_size];MPI_Request req{n};MPI_Status sta{n};"
+init['MPI_Igather'] = lambda n: f"int val{n}=1, buf{n}[buff_size];MPI_Request req{n}=MPI_REQUEST_NULL;MPI_Status sta{n};"
 start['MPI_Igather'] = lambda n: "" 
 operation['MPI_Igather'] = lambda n: f'MPI_Igather(&val{n}, 1, type, &buf{n},1, type, root, newcom, &req{n});'
 write['MPI_Igather'] = lambda n: f'val{n}=3;'
@@ -259,14 +259,14 @@ write['MPI_Probe'] = lambda n: ""
 
 ### P2P:nonblocking
 
-init['MPI_Isend'] = lambda n: f'int buf{n}=rank; MPI_Request req{n};'
+init['MPI_Isend'] = lambda n: f'int buf{n}=rank; MPI_Request req{n}=MPI_REQUEST_NULL;'
 start['MPI_Isend'] = lambda n: "" 
 operation['MPI_Isend'] = lambda n: f'MPI_Isend(&buf{n}, buff_size, type, dest, stag, newcom, &req{n});'
 fini['MPI_Isend'] = lambda n: f'MPI_Wait(&req{n}, MPI_STATUS_IGNORE);'
 free['MPI_Isend'] = lambda n: f'if(req{n} != MPI_REQUEST_NULL) MPI_Request_free(&req{n});'
 write['MPI_Isend'] = lambda n: f'buf{n}=4;'
 
-init['MPI_Irecv'] = lambda n: f'int buf{n}=-1; MPI_Request req{n};'
+init['MPI_Irecv'] = lambda n: f'int buf{n}=-1; MPI_Request req{n}=MPI_REQUEST_NULL;'
 start['MPI_Irecv'] = lambda n: "" 
 operation['MPI_Irecv'] = lambda n: f'MPI_Irecv(&buf{n}, buff_size, type, src, rtag, newcom, &req{n});'
 fini['MPI_Irecv'] = lambda n: f' MPI_Wait(&req{n}, MPI_STATUS_IGNORE);'
@@ -275,14 +275,14 @@ write['MPI_Irecv'] = lambda n: f'buf{n}++;'
 
 ### P2P:persistent
 
-init['MPI_Send_init'] = lambda n: f'int buf{n}=rank; MPI_Request req{n};'
+init['MPI_Send_init'] = lambda n: f'int buf{n}=rank; MPI_Request req{n}=MPI_REQUEST_NULL;'
 operation['MPI_Send_init'] = lambda n: f'MPI_Send_init(&buf{n}, buff_size, type, dest, stag, newcom, &req{n});' 
 start['MPI_Send_init'] = lambda n: f'MPI_Start(&req{n});'
 fini['MPI_Send_init'] = lambda n: f'MPI_Wait(&req{n}, MPI_STATUS_IGNORE);'
 free['MPI_Send_init'] = lambda n: f'if(req{n} != MPI_REQUEST_NULL) MPI_Request_free(&req{n});'
 write['MPI_Send_init'] = lambda n: f'buf{n}=4;' 
 
-init['MPI_Recv_init'] = lambda n: f'int buf{n}=-1; MPI_Request req{n};'
+init['MPI_Recv_init'] = lambda n: f'int buf{n}=-1; MPI_Request req{n}=MPI_REQUEST_NULL;'
 start['MPI_Recv_init'] = lambda n: f'MPI_Start(&req{n});'
 operation['MPI_Recv_init'] = lambda n: f'MPI_Recv_init(&buf{n}, buff_size, type, src, rtag, newcom, &req{n});'
 fini['MPI_Recv_init'] = lambda n: f'MPI_Wait(&req{n}, MPI_STATUS_IGNORE);'
