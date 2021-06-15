@@ -21,17 +21,18 @@ class Tool(AbstractTool):
         execcmd = re.sub('\$zero_buffer', "-b", execcmd)
         execcmd = re.sub('\$infty_buffer', "-g", execcmd)
 
-        print("\nClearing port before executing ISP\n")
-        subprocess.run("kill -9 $(lsof -t -i:9999) 2>/dev/null", shell=True)
 
-        run_cmd(
-            buildcmd=f"ispcc -o {binary} {filename}",
-            execcmd=execcmd,
-            cachefile=cachefile,
-            filename=filename,
-            binary=binary,
-            timeout=timeout,
-            batchinfo=batchinfo)
+        if run_cmd(buildcmd=f"ispcc -o {binary} {filename}",
+                   execcmd=execcmd,
+                   cachefile=cachefile,
+                   filename=filename,
+                   binary=binary,
+                   timeout=timeout,
+                   batchinfo=batchinfo):
+                   
+            # The test was actually run
+            print("\nClearing port after executing ISP\n")
+            subprocess.run("kill -9 $(lsof -t -i:9999) 2>/dev/null", shell=True)
 
     def teardown(self): # Remove generated cruft (binary files)
         subprocess.run("find -type f -a -executable | xargs rm -f", shell=True, check=True)

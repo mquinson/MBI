@@ -18,16 +18,17 @@ class Tool(AbstractTool):
         execcmd = re.sub('\$zero_buffer', "", execcmd)
         execcmd = re.sub('\$infty_buffer', "", execcmd)
 
-        subprocess.run("killall -9 java 2>/dev/null", shell=True)
 
-        run_cmd(
-            buildcmd=None,
-            execcmd=execcmd,
-            cachefile=cachefile,
-            filename=filename,
-            binary=binary,
-            timeout=timeout,
-            batchinfo=batchinfo)
+        if run_cmd(buildcmd=None,
+                   execcmd=execcmd,
+                   cachefile=cachefile,
+                   filename=filename,
+                   binary=binary,
+                   timeout=timeout,
+                   batchinfo=batchinfo):
+            # the test was actually run
+            subprocess.run("killall -9 java 2>/dev/null", shell=True)
+
 
     def parse(self, cachefile):
         if os.path.exists(f'{cachefile}.timeout') or os.path.exists(f'logs/civl/{cachefile}.timeout'):
