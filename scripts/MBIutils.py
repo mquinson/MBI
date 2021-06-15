@@ -41,6 +41,19 @@ class AbstractTool:
         return 'failure'
 
 def run_cmd(buildcmd, execcmd, cachefile, filename, binary, timeout, batchinfo, read_line_lambda=None):
+    """
+    Runs the test on need. Returns True if the test was ran, and False if it was cached.
+    
+    The result is cached if possible, and the test is rerun only if the `test.txt` (containing the tool output) or the `test.elapsed` (containing the timing info) do not exist, or if `test.md5sum` (containing the md5sum of the code to compile) does not match.
+
+    Parameters:
+     - buildcmd and execcmd are shell commands to run. 
+     - cachefile is the name of the test
+     - filename is the source file containing the code
+     - binary the file name in which to compile the code
+     - batchinfo: something like "1/1" to say that this run is the only batch (see -b parameter of MBI.py)
+     - read_line_lambda: a lambda to which each line of the tool output is feed ASAP. It allows MUST to interrupt the execution when a deadlock is reported.
+    """
     if os.path.exists(f'{cachefile}.txt') and os.path.exists(f'{cachefile}.elapsed') and os.path.exists(f'{cachefile}.md5sum'):
         with open(filename, 'r') as sourcefile :
             content = sourcefile.read().join('').encode(errors= "ignore")
@@ -52,7 +65,7 @@ def run_cmd(buildcmd, execcmd, cachefile, filename, binary, timeout, batchinfo, 
         #print(f'Old digest: {olddigest}; New digest: {newdigest}')
         if olddigest == newdigest:
             print(f" (cached result found for {cachefile})")
-            return
+            return False
         else:
             os.path.remove(f'{cachefile}.txt')
 
@@ -76,7 +89,7 @@ def run_cmd(buildcmd, execcmd, cachefile, filename, binary, timeout, batchinfo, 
                 outfile.write(str(time.time() - start_time))
             with open(f'{cachefile}.txt', 'w') as outfile:
                 outfile.write(output)
-            return 'UNIMPLEMENTED', compil.returncode, output
+            return True
 
     output += f"\n\nExecuting the command\n $ {execcmd}\n"
     for line in (output.split('\n')):
@@ -150,3 +163,5 @@ def run_cmd(buildcmd, execcmd, cachefile, filename, binary, timeout, batchinfo, 
         newdigest = md5_hash.hexdigest()
 
         outfile.write(newdigest)
+    
+    return True
