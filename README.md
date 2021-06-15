@@ -13,8 +13,45 @@ docker build -f Dockerfile -t mbi:latest .
 docker run -it mbi bash 
 ```
 
-Once inside the docker, you will the scripts you need under /MBI/scripts. Two scripts are provided for each tool. /MBI/scripts/{tool}-build can be used to build and install the selected tool, while /MBI/scripts/{tool}-run will run that tool on all MBI code sample. The result can then be explored under /MBI/log/{tool}-{date} (a new such directory is created each time you launch a {tool}-run script)
+Once inside the docker, you will the scripts you need under /MBI/scripts. One script is provided for each tool. /MBI/scripts/{tool}-build builds and installs the selected tool.
+The result can then be explored under /MBI/logs/{tool} (a new such directory is created each time you launch a tool)). 
+Three files are created per test: 
+- {test_name}.txt that contains the output of the test 
+- {test_name}.elapsed that gives the time of the test
+- {test_name}.md5sum which is the cache
 
+A test is launched if {test_name}.txt or {test_name}.elapsed do not exist or if {test_name} has been modified ({test_name}.md5sum has changed).
+
+Command to generate all c codes:
+```bash
+python3 MBI.py -c generate
+```
+
+You can launch all tests outside the docker image by using
+```bash
+./test-all
+```
+
+To test a specific tool:
+1. Build the docker container: 
+```bash 
+docker build -f Dockerfile -t mbi:latest .
+ ```
+2. Run the container: 
+```bash
+docker run -it mbi bash
+ ```
+3. Build the tool: 
+```bash
+./MBI/scripts/{tool}-build
+```
+4. Run the tool: 
+```bash
+python3 ./MBI/MBI.py -x (tool) -c run 
+```
+5. Get statistics on the tool:
+```bash
+```
 
 ## Feature and Errors Labels
 
@@ -55,14 +92,14 @@ Nondeterminism in the semantic of MPI primitives makes some errors difficult to 
 
 ## List of Programs
 
-Our benchmark contains 708 programs.
-471 programs have errors and 237 are known to be error-free.
+Our benchmark contains 941 programs.
+?? programs have errors and ?? are known to be error-free.
 
 
 
 ## Tools Information
 
-We use the MBI to compare Aislinn, CIVL, ISP, MUST, PARCOACH and McSimGrid.
+We use the MBI to compare Aislinn, CIVL, ISP, ITAC, McSimGrid, MPI-SV, MUST and PARCOACH.
 
 
 Tool | Version | Compiler 
@@ -73,6 +110,8 @@ ISP | 0.3.1 | GCC 10.2.0
 MUST | v1.7 | GCC 10.2.0
 PARCOACH | v1 | LLVM 9
 McSimGrid | v3.27 |  GCC 10.2.0
+ITAC | v? | ?
+MPI-SV | v? | ?
 
 
 ## Latest Tools Evaluation Results

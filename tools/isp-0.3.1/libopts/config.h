@@ -186,7 +186,7 @@
 #define HAVE_SYS_STAT_H 1
 
 /* Define to 1 if you have the <sys/stropts.h> header file. */
-#define HAVE_SYS_STROPTS_H 1
+/* #undef HAVE_SYS_STROPTS_H */
 
 /* Define to 1 if you have the <sys/time.h> header file. */
 #define HAVE_SYS_TIME_H 1
@@ -295,13 +295,13 @@
 #define SELECT_TYPE_ARG5 (struct timeval *)
 
 /* The size of `char*', as computed by sizeof. */
-#define SIZEOF_CHARP 4
+#define SIZEOF_CHARP 8
 
 /* The size of `int', as computed by sizeof. */
 #define SIZEOF_INT 4
 
 /* The size of `long', as computed by sizeof. */
-#define SIZEOF_LONG 4
+#define SIZEOF_LONG 8
 
 /* The size of `short', as computed by sizeof. */
 #define SIZEOF_SHORT 2

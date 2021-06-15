@@ -3,7 +3,7 @@ JAR = jar
 .SUFFIXES: .java .class
 
 .java.class:
-	$(JC) -source 1.5 -target 1.5 -classpath ".:lib/*"  $*.java
+	$(JC) -source 1.7 -target 1.7 -classpath ".:lib/*"  $*.java
 
 CLASSES = \
 	Data/GlobalStructure.java \
