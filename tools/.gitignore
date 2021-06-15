@@ -1,0 +1,7 @@
+*.class
+*.o
+*.lo
+*.la
+isp.exe
+ispCC
+		
