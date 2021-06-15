@@ -59,16 +59,19 @@ int main(int argc, char **argv) {
 	if (rank == 0) {
 		src=1,dest=1;
   	@{operation1a}@ /* MBIERROR1 */
-		@{fini1}@
+		@{fini1a}@
   	@{operation2a}@ 
-		@{fini2}@
+		@{fini2a}@
 	}else if (rank == 1) {
 		src=0,dest=0;
   	@{operation1b}@ /* MBIERROR2 */
-		@{fini1}@
+		@{fini1b}@
   	@{operation2b}@ 
-		@{fini2}@
+		@{fini2b}@
 	}
+
+	@{free1}@
+	@{free2}@
 
   MPI_Finalize();
   printf("Rank %d finished normally\\n", rank);
@@ -87,8 +90,12 @@ for s in send + isend:
         patterns['r'] = r 
         patterns['init1'] = init[s]("1") 
         patterns['init2'] = init[r]("2")
-        patterns['fini1'] = fini[s]("1") 
-        patterns['fini2'] = fini[r]("2") 
+        patterns['fini1a'] = fini[s]("1") 
+        patterns['fini1b'] = fini[s]("1") 
+        patterns['fini2a'] = fini[r]("2") 
+        patterns['fini2b'] = fini[r]("2") 
+        patterns['free1'] = free[s]("1") 
+        patterns['free2'] = free[r]("2") 
         patterns['operation1a'] = operation[s]("1") 
         patterns['operation2a'] = operation[r]("2") 
         patterns['operation1b'] = operation[s]("1") 
@@ -102,7 +109,7 @@ for s in send + isend:
         replace['errormsg1'] = 'ERROR: BufferingHazard' 
         replace['outcome2'] = 'OK'
         replace['errormsg2'] = 'OK'
-        make_file(template, f'P2PBuffering_{s}_{r}_nok.c', replace)
+        make_file(template, f'P2PBuffering_{s}_{r}_{s}_{r}_nok.c', replace)
     		# Generate the incorrect matching depending on the buffering mode (recv + send)
         replace = patterns 
         replace['shortdesc'] = 'Point to point @{s}@ and @{r}@ are not matched' 
@@ -110,11 +117,13 @@ for s in send + isend:
         replace['outcome1'] = 'ERROR: CallMatching' 
         replace['errormsg1'] = 'ERROR: CallMatching' 
         replace['operation1a'] =  operation[r]("2")
-        replace['fini1'] =  fini[r]("2")
-        replace['fini2'] =  fini[s]("1")
+        replace['fini1a'] =  fini[r]("2")
         replace['operation2a'] = operation[s]("1")
+        replace['fini2a'] =  fini[s]("1")
         replace['operation1b'] =  operation[r]("2")
+        replace['fini1b'] =  fini[r]("2")
         replace['operation2b'] = operation[s]("1")
+        replace['fini2b'] =  fini[s]("1")
         make_file(template, f'P2PCallMatching_{r}_{s}_{r}_{s}_nok.c', replace)
     		# Generate the correct matching
         replace = patterns 
@@ -122,7 +131,9 @@ for s in send + isend:
         replace['longdesc'] = 'Process 0 calls @{s}@ and process 1 calls @{r}@.' 
         replace['outcome1'] = 'OK' 
         replace['errormsg1'] = 'OK' 
+        replace['fini1a'] =  fini[s]("1")
+        replace['fini2a'] =  fini[r]("2")
         replace['operation1a'] =  operation[s]("1")
         replace['operation2a'] = operation[r]("2")
-        make_file(template, f'P2PCallMatching_{s}_{r}_ok.c', replace)
+        make_file(template, f'P2PCallMatching_{s}_{r}_{r}_{s}_ok.c', replace)
 
