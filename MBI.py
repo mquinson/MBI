@@ -217,7 +217,7 @@ def cmd_gencodes():
 ########################
 # cmd_build(): what to do when '-c build' is used (building the tool, discarding the cache)
 ########################
-def cmd_build(rootdir, toolname):
+def cmd_build(toolname):
     # Basic verification
     tools[toolname].ensure_image()
 
