@@ -11,15 +11,6 @@ cmd_docker() {
     docker pull ubuntu:18.04
 }
 
-cmd_build() {
-    docker run -it --rm --name MIB --volume $(pwd):/MBI ubuntu:18.04 /MBI/scripts/Aislinn-build
-    docker run -it --rm --name MIB --volume $(pwd):/MBI mpi-bugs-initiative /MBI/scripts/CIVL-build
-    docker run -it --rm --name MIB --volume $(pwd):/MBI mpi-bugs-initiative /MBI/scripts/ISP-build
-    docker run -it --rm --name MIB --volume $(pwd):/MBI mpi-bugs-initiative /MBI/scripts/MUST-build
-    docker run -it --rm --name MIB --volume $(pwd):/MBI mpi-bugs-initiative /MBI/scripts/SimGrid-build
-    docker run -it --rm --name MIB --volume $(pwd):/MBI mpi-bugs-initiative /MBI/scripts/Parcoach-build
-}
-
 cmd_run() {
     docker run -it --rm --name MIB --volume $(pwd):/MBI mpi-bugs-initiative /MBI/MBI.py -c generate
 
@@ -41,6 +32,5 @@ cmd_stats() {
 }
 
 #cmd_docker
-#cmd_build
 cmd_run $@
 cmd_stats
