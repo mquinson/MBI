@@ -15,9 +15,11 @@ tcoll4color = ['MPI_Comm_split']
 tcoll4topo = ['MPI_Cart_get']
 
 # P2P
-p2p = ['MPI_Send', 'MPI_Recv'] 
-ip2p = ['MPI_Isend', 'MPI_Irecv'] 
+allsend = ['MPI_Send', 'MPI_Isend', 'MPI_Ssend', 'MPI_Bsend','MPI_Send_init']
+allrecv = ['MPI_Recv', 'MPI_Irecv', 'MPI_Recv_init'] 
 send = ['MPI_Send']
+ssend = ['MPI_Ssend']
+bsend = ['MPI_Bsend']
 isend = ['MPI_Isend']
 psend = ['MPI_Send_init']
 recv = ['MPI_Recv'] 
@@ -107,8 +109,8 @@ write['MPI_Exscan'] = lambda n: ""
 init['MPI_Allgather'] = lambda n: f"int val{n}=1, *rbuf{n} = malloc(dbs);"
 start['MPI_Allgather'] = lambda n: "" 
 operation['MPI_Allgather'] = lambda n: f"MPI_Allgather(&val{n}, 1, type, rbuf{n}, 1, type, newcom);"
-fini['MPI_Allgather'] = lambda n: f"free(rbuf{n});"
-free['MPI_Allgather'] = lambda n: "" 
+fini['MPI_Allgather'] = lambda n: ""
+free['MPI_Allgather'] = lambda n: f"free(rbuf{n});" 
 write['MPI_Allgather'] = lambda n: "" 
 
 init['MPI_Alltoallv'] = lambda n: (f"int *sbuf{n}=malloc(dbs*2), *rbuf{n}=malloc(dbs*2), *scounts{n}=malloc(dbs), *rcounts{n}=malloc(dbs), *sdispls{n}=malloc(dbs), *rdispls{n}=malloc(dbs);\n"
@@ -308,6 +310,20 @@ operation['MPI_Send'] = lambda n: f'MPI_Send(&buf{n}, buff_size, type, dest, sta
 fini['MPI_Send'] = lambda n: ""
 free['MPI_Send'] = lambda n: ""
 write['MPI_Send'] = lambda n: ""
+
+init['MPI_Ssend'] = lambda n: f'int buf{n}=rank;'
+start['MPI_Ssend'] = lambda n: ""
+operation['MPI_Ssend'] = lambda n: f'MPI_Ssend(&buf{n}, buff_size, type, dest, stag, newcom);'
+fini['MPI_Ssend'] = lambda n: ""
+free['MPI_Ssend'] = lambda n: ""
+write['MPI_Ssend'] = lambda n: ""
+
+init['MPI_Bsend'] = lambda n: f'int buf{n}=rank;'
+start['MPI_Bsend'] = lambda n: ""
+operation['MPI_Bsend'] = lambda n: f'MPI_Bsend(&buf{n}, buff_size, type, dest, stag, newcom);'
+fini['MPI_Bsend'] = lambda n: ""
+free['MPI_Bsend'] = lambda n: ""
+write['MPI_Bsend'] = lambda n: ""
 
 init['MPI_Recv'] = lambda n: f'int buf{n}=-1; MPI_Status sta{n};'
 start['MPI_Recv'] = lambda n: ""

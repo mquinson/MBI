@@ -57,14 +57,14 @@ int main(int argc, char **argv) {
 
   if (@{change_cond}@) {
     @{operation1a}@ /* MBIERROR1 */
-  	@{fini1}@
+  	@{fini1a}@
     @{operation2a}@
-  	@{fini2}@
+  	@{fini2a}@
   } else {
     @{operation1b}@ /* MBIERROR2 */
-  	@{fini1}@
+  	@{fini1b}@
     @{operation2b}@
-  	@{fini2}@
+  	@{fini2b}@
   }
 
   @{free1}@
@@ -87,8 +87,10 @@ for c1 in coll + icoll + ibarrier:
         patterns['c2'] = c2
         patterns['init1'] = init[c1]("1")
         patterns['init2'] = init[c2]("2")
-        patterns['fini1'] = fini[c1]("1")
-        patterns['fini2'] = fini[c2]("2")
+        patterns['fini1a'] = fini[c1]("1")
+        patterns['fini2a'] = fini[c2]("2")
+        patterns['fini1b'] = fini[c1]("1")
+        patterns['fini2b'] = fini[c2]("2")
         patterns['free1'] = free[c1]("1")
         patterns['free2'] = free[c2]("2")
         patterns['operation1a'] = operation[c1]("1")
@@ -114,7 +116,8 @@ for c1 in coll + icoll + ibarrier:
             replace['init2'] = ''
             replace['operation2a'] = ''
             replace['operation2b'] = ''
-            replace['fini2'] = ''
+            replace['fini2a'] = ''
+            replace['fini2b'] = ''
             replace['free2'] = ''
             make_file(template, f'CollCorrect_{c1}.c', replace)
         else:
@@ -133,8 +136,10 @@ for c1 in coll + icoll + ibarrier:
             replace['errormsg'] = 'Collective mistmatch. @{c1}@ at @{filename}@:@{line:MBIERROR1}@ is matched with @{c2}@ line @{filename}@:@{line:MBIERROR2}@.'
             replace['operation1b'] = operation[c2]("2")  # Inversion
             replace['operation2b'] = operation[c1]("1")
-            replace['fini1'] = fini[c2]("2") # Inversion
-            replace['fini2'] = fini[c1]("1")
+            replace['fini1b'] = fini[c2]("2") # Inversion
+            replace['fini2b'] = fini[c1]("1")
+            replace['free1'] = free[c2]("2") 
+            replace['free2'] = free[c1]("1")
 
             make_file(template, f'CollCallOrder_{c1}_{c2}_nok.c', replace)
 
@@ -147,7 +152,9 @@ for c1 in coll + icoll + ibarrier:
     replace['operation1b'] = ''  # Remove functions
     replace['operation2b'] = ''
     replace['operation2a'] = ''
-    replace['fini2'] = ''
+    replace['fini1b'] = ''
+    replace['fini2a'] = ''
+    replace['fini2b'] = ''
     make_file(template, f'CollCallOrder_{c1}_none_nok.c', replace)
     # Generate a correct ordering with a conditional not depending on ranks
     replace = patterns
@@ -158,6 +165,6 @@ for c1 in coll + icoll + ibarrier:
     replace['change_cond'] = 'nprocs<256'
     replace['operation2b'] = '' # Remove functions
     replace['operation2a'] = ''
-    replace['fini2'] = ''
-    replace['free2'] = ''
+    replace['fini2b'] = ''
+    replace['free2a'] = ''
     make_file(template, f'CollCallOrder_{c1}_none_ok.c', replace)

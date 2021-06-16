@@ -52,6 +52,8 @@ int main(int argc, char **argv) {
 	int stag = 0, rtag = 0;
   int buff_size = 1;
 
+	int dbs = sizeof(int)*nprocs; /* Size of the dynamic buffers for alltoall and friends */
+
   int dest = (rank == nprocs - 1) ? (0) : (rank + 1);
   int src = (rank == 0) ? (nprocs - 1) : (rank - 1); 
 
