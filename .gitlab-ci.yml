@@ -19,7 +19,7 @@ build-must:
     stage: build
     needs: []
     script:
-        - scripts/MUST-build
+        - scripts/ensure_python3 ./MBI.py -x must -c build
     artifacts:
         untracked: false
         paths:
@@ -537,7 +537,7 @@ build-isp:
     stage: build
     needs: []
     script:
-        - sh -x ./scripts/ISP-build
+        - scripts/ensure_python3 ./MBI.py -x isp -c build
     artifacts:
         untracked: false
         when: always
