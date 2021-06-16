@@ -1,4 +1,4 @@
-#! /MBI/scripts/ensure_python3
+#! /usr/bin/python3
 
 # autopep8 -i --max-line-length 130 MBI.py
 
