@@ -222,7 +222,7 @@ def cmd_build(toolname):
     tools[toolname].ensure_image()
 
     # Build the tool on need
-    tools[toolname].build(cache=False)
+    tools[toolname].build(cached=False)
 
 ########################
 # cmd_run(): what to do when '-c run' is used (running the tests)
