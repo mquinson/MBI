@@ -133,6 +133,9 @@ for c1 in coll + icoll + ibarrier:
             replace['errormsg'] = 'Collective mistmatch. @{c1}@ at @{filename}@:@{line:MBIERROR1}@ is matched with @{c2}@ line @{filename}@:@{line:MBIERROR2}@.'
             replace['operation1b'] = operation[c2]("2")  # Inversion
             replace['operation2b'] = operation[c1]("1")
+            replace['fini1'] = fini[c2]("2") # Inversion
+            replace['fini2'] = fini[c1]("1")
+
             make_file(template, f'CollCallOrder_{c1}_{c2}_nok.c', replace)
 
     # Generate the incorrect ordering with one collective
