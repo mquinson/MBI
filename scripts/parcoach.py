@@ -9,6 +9,30 @@ class Tool(AbstractTool):
     def ensure_image(self):
         AbstractTool.ensure_image(self, "-x parcoach")
 
+    def build(self, cached=True):
+        if cached and os.path.exists("/MBI/builds/parcoach/src/aSSA/aSSA.so"):
+            print("No need to rebuild ParCoach.")
+            return
+
+        here = os.getcwd() # Save where we were
+        os.chdir("/MBI")
+        # Get a GIT checkout. Either create it, or refresh it
+        if os.path.exists("tools/parcoach/.git"):
+            subprocess.run("cd tools/parcoach && git pull &&  cd ../..", shell=True, check=True)
+        else:
+            subprocess.run("rm -rf tools/parcoach && git clone --depth=1 https://github.com/parcoach/parcoach.git tools/parcoach", shell=True, check=True)
+
+        subprocess.run("ln -s $(which clang) /usr/lib/llvm-9/bin/clang", shell=True, check=True)
+
+        # Go to where we want to install it, and build it out-of-tree (we're in the docker)
+        subprocess.run(f"rm -rf /MBI/builds/parcoach && mkdir -p /MBI/builds/parcoach", shell=True, check=True)
+        os.chdir('/MBI/builds/parcoach')
+        subprocess.run(f"cmake /MBI/tools/parcoach -DCMAKE_C_COMPILER=clang -DLLVM_DIR=/MBI/tools/Parcoach/llvm-project/build", shell=True, check=True)
+        subprocess.run("make -j$(nproc) VERBOSE=1", shell=True, check=True)
+
+        # Back to our previous directory
+        os.chdir(here)
+
     def run(self, execcmd, filename, binary, id, timeout, batchinfo):
         cachefile = f'{binary}_{id}'
 
@@ -21,7 +45,6 @@ class Tool(AbstractTool):
             timeout=timeout,
             batchinfo=batchinfo)
 
-    def teardown(self): 
         subprocess.run("rm -f *.bc core", shell=True, check=True)
 
     def parse(self, cachefile):

@@ -221,11 +221,8 @@ build-aislinn:
     stage: build
     needs: []
     image: ubuntu:18.04
-    before_script:
-        - apt-get update
-        - apt-get install -y gcc python2.7 python3.8 python-jinja2 autotools-dev automake build-essential git
     script:
-        - ./scripts/Aislinn-build
+        - scripts/ensure_python3 ./MBI.py -x aislinn -c build
     artifacts:
         untracked: false
         when: always
@@ -246,19 +243,6 @@ test-aislinn:
         when: always
         paths:
             - logs
-
-# MPI-SV is already built on its image file
-# build-mpisv:
-#    stage: build
-#    needs: []
-#    image: mpisv/mpi-sv
-#    script:
-#        - ./scripts/mpisv-build
-#    artifacts:
-#        untracked: false
-#        when: always
-#        paths:
-#            - tools/mpisv
 
 # MPI-SV refuses to build on nested virtualization as we have when using docker on gitlab-CI
 test-mpisv:
@@ -281,7 +265,6 @@ test-civl-1:
     stage: test
     needs: []
     script:
-        - ./scripts/CIVL-build
         - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x civl -c run -b 1/4
     artifacts:
@@ -293,7 +276,6 @@ test-civl-2:
     stage: test
     needs: []
     script:
-        - ./scripts/CIVL-build
         - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x civl -c run -b 2/4
     artifacts:
@@ -305,7 +287,6 @@ test-civl-3:
     stage: test
     needs: []
     script:
-        - ./scripts/CIVL-build
         - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x civl -c run -b 3/4
     artifacts:
@@ -317,7 +298,6 @@ test-civl-4:
     stage: test
     needs: []
     script:
-        - ./scripts/CIVL-build
         - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x civl -c run -b 4/4
     artifacts:
@@ -350,7 +330,7 @@ build-parcoach:
     stage: build
     needs: []
     script:
-        - ./scripts/Parcoach-build
+        - scripts/ensure_python3 ./MBI.py -x parcoach -c build
     artifacts:
         untracked: false
         when: always
@@ -375,7 +355,7 @@ build-simgrid:
     stage: build
     needs: []
     script:
-        - ./scripts/SimGrid-build
+        - scripts/ensure_python3 ./MBI.py -x simgrid -c build
     cache:
         paths:
             - SimGrid/*

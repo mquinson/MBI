@@ -19,6 +19,26 @@ class Tool(AbstractTool):
             print("  docker run -it --rm --name MIB --volume $(pwd):/MBI ubuntu:18.04 /MBI/MBI.py -x aislinn")
             sys.exit(1)
 
+    def build(self, cached=True):
+        if cached and os.path.exists("/MBI/tools/aislinn-git/bin/aislinn-cc"):
+            return
+        subprocess.run("apt-get update && apt-get install -y gcc python2.7 python3.8 python-jinja2 autotools-dev automake build-essential git", shell=True, check=True)
+
+        # Get a GIT checkout. Either create it, or refresh it
+        if os.path.exists("/MBI/tools/aislinn/.git"):
+            subprocess.run("cd /MBI/tools/aislinn && git pull &&  cd ../..", shell=True, check=True)
+        else:
+            subprocess.run("rm -rf /MBI/tools/aislinn && git clone --depth=1 https://github.com/spirali/aislinn.git /MBI/tools/aislinn", shell=True, check=True)
+        subprocess.run("cp -r /MBI/tools/aislinn-valgrind-312 /MBI/tools/aislinn-git/valgrind", shell=True, check=True)
+
+        # Build it
+        here = os.getcwd() # Save where we were
+        os.chdir("/MBI/tools/aislinn-git/valgrind")
+        subprocess.run("sh autogen.sh && ./configure && make -j$(nproc)", shell=True, check=True)
+
+        os.chdir("/MBI/tools/aislinn-git")
+        subprocess.run("./waf configure && ./waf")
+
     def setup(self, rootdir):
         subprocess.run("apt-get install -y gcc python2.7 python-jinja2", shell=True, check=True)
         os.environ['PATH'] = os.environ['PATH'] + ":" + rootdir + "/tools/aislinn-git/bin/"

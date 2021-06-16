@@ -215,6 +215,16 @@ def cmd_gencodes():
 
 
 ########################
+# cmd_build(): what to do when '-c build' is used (building the tool, discarding the cache)
+########################
+def cmd_build(rootdir, toolname):
+    # Basic verification
+    tools[toolname].ensure_image()
+
+    # Build the tool on need
+    tools[toolname].build(cache=False)
+
+########################
 # cmd_run(): what to do when '-c run' is used (running the tests)
 ########################
 def cmd_run(rootdir, toolname, batchinfo):
@@ -225,6 +235,9 @@ def cmd_run(rootdir, toolname, batchinfo):
 
     # Basic verification
     tools[toolname].ensure_image()
+
+    # Build the tool on need
+    tools[toolname].build()
 
     # Do the tool-specific setups
     tools[toolname].setup(rootdir)
@@ -906,6 +919,8 @@ if args.c == 'all':
     cmd_stats(rootdir, toolnames=[args.x])
 elif args.c == 'generate':
     cmd_gencodes()
+elif args.c == 'build':
+    cmd_build(toolname=args.x)
 elif args.c == 'run':
     extract_all_todo(args.b)
     cmd_run(rootdir=rootdir, toolname=args.x, batchinfo=args.b)
@@ -920,5 +935,5 @@ elif args.c == 'stats':
         toolnames=[args.x]
     cmd_stats(rootdir, toolnames=toolnames)
 else:
-    print(f"Invalid command '{args.c}'. Please choose one of 'all', 'run', 'stats'")
+    print(f"Invalid command '{args.c}'. Please choose one of 'all', 'build', 'run', 'stats' or 'latex'")
     sys.exit(1)

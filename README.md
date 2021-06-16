@@ -13,7 +13,7 @@ docker build -f Dockerfile -t mbi:latest .
 docker run -it mbi bash 
 ```
 
-Once inside the docker, you will the scripts you need under /MBI/scripts. One script is provided for each tool. /MBI/scripts/{tool}-build builds and installs the selected tool.
+Once inside the docker, the scripts you need are in /MBI/scripts. One script is provided for each tool. /MBI/scripts/{tool}-build builds and installs the selected tool.
 The result can then be explored under /MBI/logs/{tool} (a new such directory is created each time you launch a tool)). 
 Three files are created per test: 
 - {test_name}.txt that contains the output of the test 

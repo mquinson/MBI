@@ -9,6 +9,11 @@ class Tool(AbstractTool):
     def ensure_image(self):
         AbstractTool.ensure_image(self, "-x civl")
 
+    def build(self, cached=True):
+        if cached and os.path.exists("/root/.sarl"):
+            return
+        subprocess.run("cd /MBI/tools/CIVL-1.20_5259/lib && java -jar civl-1.20_5259.jar config", shell=True, check=True)
+ 
     def run(self, execcmd, filename, binary, id, timeout, batchinfo):
         cachefile = f'{binary}_{id}'
 

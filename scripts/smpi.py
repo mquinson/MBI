@@ -1,18 +1,14 @@
 import re
 import os
+import simgrid
 from MBIutils import *
 
-class Tool(AbstractTool):
+class Tool(simgrid.Tool):
     def identify(self):
         return "SimGrid MPI"
 
-
     def ensure_image(self):
         AbstractTool.ensure_image(self, "-x smpi")
-
-    def setup(self, rootdir):
-        os.environ['PATH'] = os.environ['PATH'] + ":" + rootdir + "/builds/SimGrid/bin"
-        os.environ['VERBOSE'] = '1'
 
     def run(self, execcmd, filename, binary, id, timeout, batchinfo, extraargs=""):
         cachefile = f'{binary}_{id}'
@@ -39,7 +35,6 @@ class Tool(AbstractTool):
             timeout=timeout,
             batchinfo=batchinfo)
 
-    def teardown(self): 
         subprocess.run("find -type f -a -executable | xargs rm -f", shell=True, check=True) # Remove generated cruft (binary files)
         subprocess.run("rm -f smpitmp-* core", shell=True, check=True) 
 
