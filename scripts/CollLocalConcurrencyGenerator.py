@@ -47,6 +47,7 @@ int main(int argc, char **argv) {
   if (nprocs < 2)
     printf("MBI ERROR: This test needs at least 2 processes to produce a bug!\\n");
 
+  int dbs = sizeof(int)*nprocs; /* Size of the dynamic buffers for alltoall and friends */
   MPI_Op op = MPI_SUM;
 	MPI_Comm newcom = MPI_COMM_WORLD;
 	MPI_Datatype type = MPI_INT;

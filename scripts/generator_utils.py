@@ -2,13 +2,13 @@ import os
 import re
 
 # Collectives
-coll = ['MPI_Bcast', 'MPI_Barrier', 'MPI_Reduce', 'MPI_Gather', 'MPI_Scatter', 'MPI_Scan', 'MPI_Exscan', 'MPI_Allgather', 'MPI_Allreduce', 'MPI_Allgatherv', 'MPI_Alltoall', 'MPI_Alltoallv']
-icoll = ['MPI_Ireduce', 'MPI_Ibcast', 'MPI_Igather', 'MPI_Iallreduce']
+coll = ['MPI_Barrier','MPI_Bcast', 'MPI_Reduce', 'MPI_Gather', 'MPI_Scatter', 'MPI_Scan', 'MPI_Exscan', 'MPI_Allgather', 'MPI_Allreduce', 'MPI_Allgatherv', 'MPI_Alltoall', 'MPI_Alltoallv']
+icoll = ['MPI_Ibcast', 'MPI_Ireduce', 'MPI_Igather', 'MPI_Iscatter', 'MPI_Iscan', 'MPI_Iexscan', 'MPI_Iallgather', 'MPI_Iallreduce', 'MPI_Iallgatherv', 'MPI_Ialltoall', 'MPI_Ialltoallv']
 ibarrier = ['MPI_Ibarrier']
 coll4op = ['MPI_Reduce', 'MPI_Allreduce']
 icoll4op = ['MPI_Ireduce', 'MPI_Iallreduce']
-coll4root =  ['MPI_Bcast', 'MPI_Reduce', 'MPI_Gather', 'MPI_Scatter']
-icoll4root = ['MPI_Ireduce', 'MPI_Ibcast', 'MPI_Igather']
+coll4root =  ['MPI_Reduce', 'MPI_Bcast', 'MPI_Gather', 'MPI_Scatter']
+icoll4root = ['MPI_Ireduce', 'MPI_Ibcast', 'MPI_Igather', 'MPI_Iscatter']
 pcoll = []
 tcoll = ['MPI_Comm_split', 'MPI_Op_create', 'MPI_Comm_group', 'MPI_Comm_dup', 'MPI_Type_contiguous', 'MPI_Comm_create', 'MPI_Group_excl']
 tcoll4color = ['MPI_Comm_split'] 
@@ -180,8 +180,68 @@ write['MPI_Igather'] = lambda n: f'val{n}=3;'
 fini['MPI_Igather'] = lambda n: f'MPI_Wait(&req{n},&sta{n});'
 free['MPI_Igather'] = lambda n: f'if(req{n} != MPI_REQUEST_NULL) MPI_Request_free(&req{n});' 
 
+init['MPI_Iscatter'] = lambda n: f"MPI_Request req{n}=MPI_REQUEST_NULL;MPI_Status sta{n};int val{n}, buf{n}[buff_size];"
+start['MPI_Iscatter'] = lambda n: ""
+operation['MPI_Iscatter'] = lambda n: f"MPI_Iscatter(&buf{n}, 1, type, &val{n}, 1, type, 0, newcom,&req{n});"
+fini['MPI_Iscatter'] = lambda n: f"MPI_Wait(&req{n},&sta{n});"
+free['MPI_Iscatter'] = lambda n: f'if(req{n} != MPI_REQUEST_NULL) MPI_Request_free(&req{n});'
+write['MPI_Iscatter'] = lambda n: f'buf{n}[0]++;'
+
+init['MPI_Iscan'] = lambda n: f"MPI_Request req{n}=MPI_REQUEST_NULL;MPI_Status sta{n}; int outbuf{n}[buff_size], inbuf{n}[buff_size];"
+start['MPI_Iscan'] = lambda n: ""
+operation['MPI_Iscan'] = lambda n: f"MPI_Iscan(&outbuf{n}, inbuf{n}, buff_size, type, op, newcom,&req{n});"
+fini['MPI_Iscan'] = lambda n: f"MPI_Wait(&req{n},&sta{n});"
+free['MPI_Iscan'] = lambda n: f'if(req{n} != MPI_REQUEST_NULL) MPI_Request_free(&req{n});'
+write['MPI_Iscan'] = lambda n: f'outbuf{n}[0]++;'
+
+init['MPI_Iexscan'] = lambda n: f"MPI_Request req{n}=MPI_REQUEST_NULL;MPI_Status sta{n};int outbuf{n}[buff_size], inbuf{n}[buff_size];"
+start['MPI_Iexscan'] = lambda n: ""
+operation['MPI_Iexscan'] = lambda n: f"MPI_Iexscan(&outbuf{n}, inbuf{n}, buff_size, type, op, newcom,&req{n});"
+fini['MPI_Iexscan'] = lambda n: f"MPI_Wait(&req{n},&sta{n});"
+free['MPI_Iexscan'] = lambda n: f'if(req{n} != MPI_REQUEST_NULL) MPI_Request_free(&req{n});'
+write['MPI_Iexscan'] = lambda n: f'outbuf{n}[0]++;'
+
+init['MPI_Iallgather'] = lambda n: f"MPI_Request req{n}=MPI_REQUEST_NULL;MPI_Status sta{n};int val{n}=1, *rbuf{n} = malloc(dbs);"
+start['MPI_Iallgather'] = lambda n: "" 
+operation['MPI_Iallgather'] = lambda n: f"MPI_Iallgather(&val{n}, 1, type, rbuf{n}, 1, type, newcom,&req{n});"
+fini['MPI_Iallgather'] = lambda n: f"MPI_Wait(&req{n},&sta{n});"
+free['MPI_Iallgather'] = lambda n: f"free(rbuf{n});" 
+write['MPI_Iallgather'] = lambda n: f'val{n}++;'
+
+init['MPI_Iallgatherv'] = lambda n: (f"MPI_Request req{n}=MPI_REQUEST_NULL;MPI_Status sta{n};int *rbuf{n} = malloc(dbs*2), *rcounts{n}=malloc(dbs),  *displs{n}=malloc(dbs);\n" 
+  +  "  for (int i = 0; i < nprocs; i++) {\n"
+  + f"    rcounts{n}[i] = 1;\n"
+  + f"    displs{n}[i] = 2 * (nprocs - (i + 1));\n"
+  +  "  }")
+start['MPI_Iallgatherv'] = lambda n: "" 
+operation['MPI_Iallgatherv'] = lambda n: f"MPI_Iallgatherv(&rank, 1, type, rbuf{n}, rcounts{n}, displs{n}, type, newcom,&req{n});"
+fini['MPI_Iallgatherv'] = lambda n: f"MPI_Wait(&req{n},&sta{n});" 
+free['MPI_Iallgatherv'] = lambda n: f"free(rbuf{n});free(rcounts{n});free(displs{n});"
+write['MPI_Iallgatherv'] = lambda n: f"rbuf{n}[0]++;" 
+
+init['MPI_Ialltoall'] = lambda n: f"MPI_Request req{n}=MPI_REQUEST_NULL;MPI_Status sta{n};int *sbuf{n} = malloc(dbs), *rbuf{n} = malloc(dbs);"
+start['MPI_Ialltoall'] = lambda n: "" 
+operation['MPI_Ialltoall'] = lambda n: f"MPI_Ialltoall(sbuf{n}, 1, type, rbuf{n}, 1, type, MPI_COMM_WORLD,&req{n});"
+fini['MPI_Ialltoall'] = lambda n: f"MPI_Wait(&req{n},&sta{n});"
+free['MPI_Ialltoall'] = lambda n: f"free(sbuf{n});free(rbuf{n});"
+write['MPI_Ialltoall'] = lambda n: f"rbuf{n}[0]++;"
+
+init['MPI_Ialltoallv'] = lambda n: (f"MPI_Request req{n}=MPI_REQUEST_NULL;MPI_Status sta{n};int *sbuf{n}=malloc(dbs*2), *rbuf{n}=malloc(dbs*2), *scounts{n}=malloc(dbs), *rcounts{n}=malloc(dbs), *sdispls{n}=malloc(dbs), *rdispls{n}=malloc(dbs);\n"
+  +  "  for (int i = 0; i < nprocs; i++) {\n"
+  + f"    scounts{n}[i] = 2;\n"
+  + f"    rcounts{n}[i] = 2;\n"
+  + f"    sdispls{n}[i] = (nprocs - (i + 1)) * 2;\n"
+  + f"    rdispls{n}[i] = i * 2;\n"
+  +  "  }")
+start['MPI_Ialltoallv'] = lambda n: "" 
+operation['MPI_Ialltoallv'] = lambda n: f"MPI_Ialltoallv(sbuf{n}, scounts{n}, sdispls{n}, type, rbuf{n}, rcounts{n}, rdispls{n}, type, newcom,&req{n});"
+fini['MPI_Ialltoallv'] = lambda n: f"MPI_Wait(&req{n},&sta{n});"
+free['MPI_Ialltoallv'] = lambda n: f"free(sbuf{n});free(rbuf{n});free(scounts{n});free(rcounts{n});free(sdispls{n});free(rdispls{n});"
+write['MPI_Ialltoallv'] = lambda n: f"rbuf{n}[0]++;"
 
 ### COLL:persistent
+
+
 
 ### COLL:tools
 
