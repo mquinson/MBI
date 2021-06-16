@@ -219,7 +219,7 @@ def cmd_gencodes():
 ########################
 def cmd_build(rootdir, toolname):
     # Basic verification
-    tools[toolname].ensure_image(rootdir=rootdir)
+    tools[toolname].ensure_image()
 
     # Build the tool on need
     tools[toolname].build(rootdir=rootdir, cached=False)
@@ -237,7 +237,7 @@ def cmd_run(rootdir, toolname, batchinfo):
     tools[toolname].ensure_image()
 
     # Build the tool on need
-    tools[toolname].build()
+    tools[toolname].build(rootdir=rootdir)
 
     # Do the tool-specific setups
     tools[toolname].setup(rootdir)
