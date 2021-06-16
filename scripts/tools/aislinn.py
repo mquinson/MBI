@@ -25,10 +25,10 @@ class Tool(AbstractTool):
         subprocess.run("apt-get update && apt-get install -y gcc python2.7 python3.8 python-jinja2 autotools-dev automake build-essential git", shell=True, check=True)
 
         # Get a GIT checkout. Either create it, or refresh it
-        if os.path.exists(f"{rootdir}/tools/aislinn/.git"):
-            subprocess.run(f"cd {rootdir}/tools/aislinn && git pull &&  cd ../..", shell=True, check=True)
+        if os.path.exists(f"{rootdir}/tools/aislinn-git/.git"):
+            subprocess.run(f"cd {rootdir}/tools/aislinn-git && git pull &&  cd ../..", shell=True, check=True)
         else:
-            subprocess.run(f"rm -rf {rootdir}/tools/aislinn && git clone --depth=1 https://github.com/spirali/aislinn.git {rootdir}/tools/aislinn", shell=True, check=True)
+            subprocess.run(f"rm -rf {rootdir}/tools/aislinn-git && git clone --depth=1 https://github.com/spirali/aislinn.git {rootdir}/tools/aislinn-git", shell=True, check=True)
         subprocess.run(f"cp -r {rootdir}/tools/aislinn-valgrind-312 {rootdir}/tools/aislinn-git/valgrind", shell=True, check=True)
 
         # Build it
