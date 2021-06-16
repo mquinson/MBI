@@ -19,7 +19,7 @@ class Tool(AbstractTool):
             print("  docker run -it --rm --name MIB --volume $(pwd):/MBI ubuntu:18.04 /MBI/MBI.py -x aislinn")
             sys.exit(1)
 
-    def build(self, rootdit, cached=True):
+    def build(self, rootdir, cached=True):
         if cached and os.path.exists(f"{rootdir}/tools/aislinn-git/bin/aislinn-cc"):
             return
         subprocess.run("apt-get update && apt-get install -y gcc python2.7 python3.8 python-jinja2 autotools-dev automake build-essential git", shell=True, check=True)
@@ -38,7 +38,7 @@ class Tool(AbstractTool):
 
         os.chdir(f"{rootdir}/tools/aislinn-git")
         subprocess.run("./waf configure && ./waf")
-        
+
         # Back to our previous directory
         os.chdir(here)
 

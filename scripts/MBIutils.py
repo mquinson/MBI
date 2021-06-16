@@ -18,7 +18,7 @@ class AbstractTool:
             print(f"  docker run -it --rm --name MIB --volume $(pwd):/MBI mpi-bugs-initiative /MBI/MBI.py {params}")
             sys.exit(1)
 
-    def build(self, cached=True):
+    def build(self, rootdir, cached=True):
         """Rebuilds the tool binaries. By default, we try to reuse the existing build."""
         print ("Nothing to do to rebuild the tool binaries.")
 
