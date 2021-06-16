@@ -164,7 +164,7 @@ start['MPI_Iallreduce'] = lambda n: ""
 operation['MPI_Iallreduce'] = lambda n: f'MPI_Iallreduce(&val{n}, &sum{n}, 1, type, op, newcom, &req{n});'
 fini['MPI_Iallreduce'] = lambda n: f'MPI_Wait(&req{n}, &stat{n});'
 free['MPI_Iallreduce'] = lambda n: f"if(req{n} != MPI_REQUEST_NULL) MPI_Request_free(&req{n});"
-write['MPI_Iallreduce'] = lambda n: "sum{n}++;"
+write['MPI_Iallreduce'] = lambda n: f"sum{n}++;"
 
 init['MPI_Ibcast'] = lambda n: f'MPI_Request req{n}=MPI_REQUEST_NULL; MPI_Status sta{n};int buf{n}[buff_size];'
 start['MPI_Ibcast'] = lambda n: ""
