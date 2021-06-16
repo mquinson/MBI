@@ -26,7 +26,7 @@ class Tool(AbstractTool):
 
         # Build it
         here = os.getcwd() # Save where we were
-        subprocess.run(f"rm -rf /tmp/build-must ; mkdir /tmp/build-must cd /tmp/build-must", shell=True, check=True)
+        subprocess.run(f"rm -rf /tmp/build-must ; mkdir /tmp/build-must ; cd /tmp/build-must", shell=True, check=True)
         subprocess.run(f"rm -rf {rootdir}/builds/MUST", shell=True, check=True) # MUST v1.7 sometimes fails when reinstalling over the same dir
 
         subprocess.run(f"CC=$(which gcc) CXX=$(which gcc++) FC=$(which gfortran) cmake {rootdir}/tools/MUST-v1.7 -DCMAKE_INSTALL_PREFIX={rootdir}/builds/MUST -DCMAKE_BUILD_TYPE=Release", shell=True, check=True)
