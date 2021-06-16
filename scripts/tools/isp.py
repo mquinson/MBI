@@ -15,7 +15,7 @@ class Tool(AbstractTool):
 
         # Build it
         here = os.getcwd() # Save where we were
-        os.chdir(f"cd {rootdir}/tools/isp-0.3.1")
+        os.chdir(f"{rootdir}/tools/isp-0.3.1")
         subprocess.run(f"./configure --prefix={rootdir}/builds/ISP --with-mpi-inc-dir=/usr/lib/x86_64-linux-gnu/mpich/include --enable-optional-ample-set-fix", shell=True, check=True)
         subprocess.run(f'sed -i "s/-source 1.5 -target 1.5 -classpath/-source 1.7 -target 1.7 -classpath/" UI/Makefile*', shell=True, check=True)
         subprocess.run("make -j$(nproc) install", shell=True, check=True)
