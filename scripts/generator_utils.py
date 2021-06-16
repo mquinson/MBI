@@ -3,10 +3,10 @@ import re
 
 # Collectives
 coll = ['MPI_Bcast', 'MPI_Barrier', 'MPI_Reduce', 'MPI_Gather', 'MPI_Scatter', 'MPI_Scan', 'MPI_Exscan', 'MPI_Allgather', 'MPI_Allreduce', 'MPI_Allgatherv', 'MPI_Alltoall', 'MPI_Alltoallv']
-icoll = ['MPI_Ireduce', 'MPI_Ibcast', 'MPI_Igather']
+icoll = ['MPI_Ireduce', 'MPI_Ibcast', 'MPI_Igather', 'MPI_Iallreduce']
 ibarrier = ['MPI_Ibarrier']
 coll4op = ['MPI_Reduce', 'MPI_Allreduce']
-icoll4op = ['MPI_Ireduce']
+icoll4op = ['MPI_Ireduce', 'MPI_Iallreduce']
 coll4root =  ['MPI_Bcast', 'MPI_Reduce', 'MPI_Gather', 'MPI_Scatter']
 icoll4root = ['MPI_Ireduce', 'MPI_Ibcast', 'MPI_Igather']
 pcoll = []
@@ -157,7 +157,14 @@ start['MPI_Ireduce'] = lambda n: ""
 operation['MPI_Ireduce'] = lambda n: f"MPI_Ireduce(&val{n}, &sum{n}, 1, type, op, root, newcom, &req{n});"
 fini['MPI_Ireduce'] = lambda n: f"MPI_Wait(&req{n}, &stat{n});" 
 free['MPI_Ireduce'] = lambda n: f'if(req{n} != MPI_REQUEST_NULL) MPI_Request_free(&req{n});'
-write['MPI_Ireduce'] = lambda n: f"sum{n}++;;"
+write['MPI_Ireduce'] = lambda n: f"sum{n}++;"
+
+init['MPI_Iallreduce'] = lambda n: f'MPI_Request req{n}=MPI_REQUEST_NULL;MPI_Status stat{n}; int sum{n}, val{n} = 1;'
+start['MPI_Iallreduce'] = lambda n: ""
+operation['MPI_Iallreduce'] = lambda n: f'MPI_Iallreduce(&val{n}, &sum{n}, 1, type, op, newcom, &req{n});'
+fini['MPI_Iallreduce'] = lambda n: f'MPI_Wait(&req{n}, &stat{n});'
+free['MPI_Iallreduce'] = lambda n: "if(req{n} != MPI_REQUEST_NULL) MPI_Request_free(&req{n});"
+write['MPI_Iallreduce'] = lambda n: "sum{n}++;"
 
 init['MPI_Ibcast'] = lambda n: f'MPI_Request req{n}=MPI_REQUEST_NULL; MPI_Status sta{n};int buf{n}[buff_size];'
 start['MPI_Ibcast'] = lambda n: ""
@@ -179,10 +186,11 @@ free['MPI_Igather'] = lambda n: f'if(req{n} != MPI_REQUEST_NULL) MPI_Request_fre
 ### COLL:tools
 
 init['MPI_Comm_split'] = lambda n: f'MPI_Comm com[size]; int color = rank % 2; int key = 1;'
+start['MPI_Comm_split'] = lambda n: ""
 operation['MPI_Comm_split'] = lambda n: 'MPI_Comm_split(MPI_COMM_WORLD,color,key, &com[j]);'
 error['MPI_Comm_split'] = 'CommunicatorLeak'
-fini['MPI_Comm_split'] = lambda n: "MPI_Comm_free(&com[j]);"
-free['MPI_Comm_split'] = lambda n: "" 
+fini['MPI_Comm_split'] = lambda n: "if(com[j] != MPI_COMM_NULL) MPI_Comm_free(&com[j]);"
+free['MPI_Comm_split'] = lambda n: ""
 
 
 init['MPI_Cart_get'] = lambda n: ""

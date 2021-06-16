@@ -57,7 +57,7 @@ int main(int argc, char **argv) {
 	int dbs = sizeof(int)*nprocs; /* Size of the dynamic buffers for alltoall and friends */
   @{init}@
   @{start}@
-  @{operation}@ 
+  @{operation}@ /* MBIERROR */ 
 	@{fini}@
 	@{free}@
 
