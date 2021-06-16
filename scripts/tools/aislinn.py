@@ -37,7 +37,7 @@ class Tool(AbstractTool):
         subprocess.run("sh autogen.sh && ./configure && make -j$(nproc)", shell=True, check=True)
 
         os.chdir(f"{rootdir}/tools/aislinn-git")
-        subprocess.run("./waf configure && ./waf")
+        subprocess.run("./waf configure && ./waf", shell=True, check=True)
 
         # Back to our previous directory
         os.chdir(here)
