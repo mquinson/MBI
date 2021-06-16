@@ -217,12 +217,12 @@ def cmd_gencodes():
 ########################
 # cmd_build(): what to do when '-c build' is used (building the tool, discarding the cache)
 ########################
-def cmd_build(toolname):
+def cmd_build(rootdir, toolname):
     # Basic verification
-    tools[toolname].ensure_image()
+    tools[toolname].ensure_image(rootdir=rootdir)
 
     # Build the tool on need
-    tools[toolname].build(cached=False)
+    tools[toolname].build(rootdir=rootdir, cached=False)
 
 ########################
 # cmd_run(): what to do when '-c run' is used (running the tests)
@@ -920,7 +920,7 @@ if args.c == 'all':
 elif args.c == 'generate':
     cmd_gencodes()
 elif args.c == 'build':
-    cmd_build(toolname=args.x)
+    cmd_build(rootdir=rootdir, toolname=args.x)
 elif args.c == 'run':
     extract_all_todo(args.b)
     cmd_run(rootdir=rootdir, toolname=args.x, batchinfo=args.b)
