@@ -1,9 +1,9 @@
 import re
 import os
-import smpi 
+import tools.smpi 
 import subprocess
 
-class Tool(smpi.Tool):
+class Tool(tools.smpi.Tool):
     def identify(self):
         return "SimGrid MPI with Valgrind wrapper"
 

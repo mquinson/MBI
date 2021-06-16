@@ -1,9 +1,9 @@
 import re
 import os
-import simgrid
+import tools.simgrid
 from MBIutils import *
 
-class Tool(simgrid.Tool):
+class Tool(tools.simgrid.Tool):
     def identify(self):
         return "SimGrid MPI"
 

@@ -18,19 +18,19 @@ import multiprocessing as mp
 # Add our lib directory to the PYTHONPATH, and load our utilitary libraries
 sys.path.append(f'{os.path.dirname(os.path.abspath(__file__))}/scripts')
 
-import parcoach
-import simgrid
-import smpi # SimGrid without MC
-import smpivg # SimGrid with valgrind instead of MC
-import must
-import mpisv
-import isp
-import itac
-import civl
-import aislinn
+import tools.parcoach
+import tools.simgrid
+import tools.smpi # SimGrid without MC
+import tools.smpivg # SimGrid with valgrind instead of MC
+import tools.must
+import tools.mpisv
+import tools.isp
+import tools.itac
+import tools.civl
+import tools.aislinn
 
-tools = {'aislinn': aislinn.Tool(), 'civl': civl.Tool(), 'isp': isp.Tool(), 'itac': itac.Tool(), 'mpisv': mpisv.Tool(),
-         'must': must.Tool(), 'simgrid': simgrid.Tool(), 'smpi':smpi.Tool(),'smpivg':smpivg.Tool(), 'parcoach': parcoach.Tool()}
+tools = {'aislinn': tools.aislinn.Tool(), 'civl': tools.civl.Tool(), 'isp': tools.isp.Tool(), 'itac': tools.itac.Tool(), 'mpisv': tools.mpisv.Tool(),
+         'must': tools.must.Tool(), 'simgrid': tools.simgrid.Tool(), 'smpi':tools.smpi.Tool(),'smpivg':tools.smpivg.Tool(), 'parcoach': tools.parcoach.Tool()}
 
 # Some scripts may fail if error messages get translated
 os.environ["LC_ALL"] = "C"
