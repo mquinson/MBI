@@ -59,19 +59,19 @@ def run_cmd(buildcmd, execcmd, cachefile, filename, binary, timeout, batchinfo, 
      - read_line_lambda: a lambda to which each line of the tool output is feed ASAP. It allows MUST to interrupt the execution when a deadlock is reported.
     """
     if os.path.exists(f'{cachefile}.txt') and os.path.exists(f'{cachefile}.elapsed') and os.path.exists(f'{cachefile}.md5sum'):
-        with open(filename, 'r') as sourcefile :
-            content = sourcefile.read().join('').encode(errors= "ignore")
-        md5_hash = hashlib.md5()
-        md5_hash.update( content )
-        newdigest = md5_hash.hexdigest()
+        hash_md5 = hashlib.md5()
+        with open(filename, 'rb') as sourcefile :
+            for chunk in iter(lambda: sourcefile.read(4096), b""):
+                hash_md5.update(chunk)
+        newdigest = hash_md5.hexdigest()
         with open(f'{cachefile}.md5sum', 'r') as md5file:
             olddigest = md5file.read()
         #print(f'Old digest: {olddigest}; New digest: {newdigest}')
         if olddigest == newdigest:
-            print(f" (cached result found for {cachefile})")
+            print(f" (cached result found for {cachefile} -- digest of {filename}: {olddigest})")
             return False
         else:
-            os.path.remove(f'{cachefile}.txt')
+            os.remove(f'{cachefile}.txt')
 
     print(f"Wait up to {timeout} seconds")
 
@@ -160,10 +160,10 @@ def run_cmd(buildcmd, execcmd, cachefile, filename, binary, timeout, batchinfo, 
     with open(f'{cachefile}.txt', 'w') as outfile:
         outfile.write(output)
     with open(f'{cachefile}.md5sum', 'w') as outfile:
-        with open(filename, 'r') as sourcefile :
-            content = sourcefile.read().join('').encode(errors= "ignore")
         md5_hash = hashlib.md5()
-        md5_hash.update( content )
+        with open(filename, 'rb') as sourcefile :
+            for chunk in iter(lambda: sourcefile.read(4096), b""):
+                hash_md5.update(chunk)
         newdigest = md5_hash.hexdigest()
 
         outfile.write(newdigest)
