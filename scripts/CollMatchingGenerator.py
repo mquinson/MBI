@@ -136,6 +136,8 @@ for c1 in coll + icoll + ibarrier:
             replace['errormsg'] = 'Collective mistmatch. @{c1}@ at @{filename}@:@{line:MBIERROR1}@ is matched with @{c2}@ line @{filename}@:@{line:MBIERROR2}@.'
             replace['operation1b'] = operation[c2]("2")  # Inversion
             replace['operation2b'] = operation[c1]("1")
+            replace['fini1a'] = fini[c2]("2") # Inversion
+            replace['fini2a'] = fini[c1]("1")
             replace['fini1b'] = fini[c2]("2") # Inversion
             replace['fini2b'] = fini[c1]("1")
             replace['free1'] = free[c2]("2") 

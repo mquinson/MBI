@@ -2,10 +2,14 @@ import re
 import os
 import tools.smpi 
 import subprocess
+from MBIutils import *
 
 class Tool(tools.smpi.Tool):
     def identify(self):
         return "SimGrid MPI with Valgrind wrapper"
+
+    def ensure_image(self):
+        AbstractTool.ensure_image(self, "-x smpivg")
 
     def run(self, execcmd, filename, binary, id, timeout, batchinfo):
         if not os.path.exists('simgrid.supp'):
@@ -13,7 +17,7 @@ class Tool(tools.smpi.Tool):
             subprocess.run("apt-get install -y wget", shell=True, check=True)
             subprocess.run("wget 'https://framagit.org/simgrid/simgrid/-/raw/master/tools/simgrid.supp?inline=false' -O simgrid.supp", shell=True, check=True)
 
-        smpi.Tool.run(self, execcmd, filename, binary, id, timeout, batchinfo, extraargs="-wrapper 'valgrind --suppressions=simgrid.supp'")
+        tools.smpi.Tool.run(self, execcmd, filename, binary, id, timeout, batchinfo, extraargs="-wrapper 'valgrind --suppressions=simgrid.supp'")
         subprocess.run("rm -f vgcore.*", shell=True, check=True) # Save disk space ASAP
 
     def parse(self, cachefile):
