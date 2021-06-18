@@ -41,16 +41,13 @@ docker build -f Dockerfile -t mbi:latest .
 ```bash
 docker run -it mbi bash
  ```
-3. Build the tool: 
-```bash
-./MBI/scripts/{tool}-build
-```
-4. Run the tool: 
+3. Build and run a tool: 
 ```bash
 python3 ./MBI/MBI.py -x (tool) -c run 
 ```
-5. Get statistics on the tool:
+4. Get statistics on a tool:
 ```bash
+python3 ./MBI/MBI.py -x (tool) -c stats 
 ```
 
 ## Feature and Errors Labels
@@ -92,8 +89,8 @@ Nondeterminism in the semantic of MPI primitives makes some errors difficult to 
 
 ## List of Programs
 
-Our benchmark contains 941 programs.
-?? programs have errors and ?? are known to be error-free.
+Our benchmark contains 1,730 programs.
+1,473 programs have errors and 257 are known to be error-free.
 
 
 
