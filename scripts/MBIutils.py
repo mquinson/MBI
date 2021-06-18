@@ -160,6 +160,10 @@ def run_cmd(buildcmd, execcmd, cachefile, filename, binary, timeout, batchinfo, 
     with open(f'{cachefile}.txt', 'w') as outfile:
         outfile.write(output)
     with open(f'{cachefile}.md5sum', 'w') as outfile:
-        outfile.write(newdigest)
+        hash = hashlib.md5()
+        with open(filename, 'rb') as sourcefile :
+            for chunk in iter(lambda: sourcefile.read(4096), b""):
+                hash.update(chunk)
+        outfile.write(hash.hexdigest())
     
     return True
