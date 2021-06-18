@@ -37,7 +37,7 @@ int main(int argc, char **argv) {
   int nprocs = -1;
   int rank = -1;
 	int root = 0;
-	int size = 1, j=0;
+	int size = 1, j=0, color=0;
 
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &nprocs);

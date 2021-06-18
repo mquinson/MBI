@@ -104,8 +104,26 @@ for p1 in allsend:
         replace['longdesc'] = 'Process 0 uses MPI_FLOAT as the datatype while process 1 uses MPI_INT.' 
         replace['outcome'] = 'ERROR: DatatypeMatching' 
         replace['errormsg'] = 'P2P Datatype mismatch. @{p1}@ at @{filename}@:@{line:MBIERROR1}@ and @{p2}@ at @{filename}@:@{line:MBIERROR2}@ have MPI_INT and MPI_FLOAT as a datatype' 
-        replace['change_arg'] = 'if (rank == 0)\n    type = MPI_FLOAT;'
+        replace['change_arg'] = 'if (rank == 0)\n    type = MPI_FLOAT; /* MBIERROR3 */'
         make_file(template, f'P2PDataMatching_{p1}_{p2}_nok.c', replace)
+
+    		# Generate code with a null type 
+        replace = patterns 
+        replace['shortdesc'] = 'Use of invalid datatype in point-to-point communication' 
+        replace['longdesc'] = 'Point to point @{p1}@ and @{p2}@ have MPI_DATATYPE_NULL as a type'
+        replace['outcome'] = 'ERROR: InvalidDatatype' 
+        replace['errormsg'] = 'Invalid datatype in P2P. @{p1}@ at @{filename}@:@{line:MBIERROR1}@ and @{p2}@ at @{filename}@:@{line:MBIERROR2}@ have MPI_DATATYPE_NULL as a type' 
+        replace['change_arg'] = 'type = MPI_DATATYPE_NULL; /* MBIERROR3 */'
+        make_file(template, f'P2PDatatypeNull_{p1}_{p2}_nok.c', replace)
+
+    		# Generate code with an invalid datatype 
+        replace = patterns 
+        replace['shortdesc'] = 'Use of invalid datatype in point-to-point communication' 
+        replace['longdesc'] = 'Point to point @{p1}@ and @{p2}@ have an invalid datatype'
+        replace['outcome'] = 'ERROR: InvalidDatatype' 
+        replace['errormsg'] = 'Invalid datatype in P2P. @{p1}@ at @{filename}@:@{line:MBIERROR1}@ and @{p2}@ at @{filename}@:@{line:MBIERROR2}@ have an invalid datatype' 
+        replace['change_arg'] = 'MPI_Type_contiguous (2, MPI_INT, &type); MPI_Type_commit(&type);MPI_Type_free(&type); /* MBIERROR3 */'
+        make_file(template, f'P2PInvalidDatatype_{p1}_{p2}_nok.c', replace)
 
 #################################
 # Generate code with tag mismatch
