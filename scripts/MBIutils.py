@@ -68,7 +68,7 @@ def run_cmd(buildcmd, execcmd, cachefile, filename, binary, timeout, batchinfo, 
             olddigest = md5file.read()
         #print(f'Old digest: {olddigest}; New digest: {newdigest}')
         if olddigest == newdigest:
-            print(f" (cached result found for {cachefile})")
+            print(f" (cached result found for {cachefile} -- digest of {filename}: {olddigest})")
             return False
         else:
             os.path.remove(f'{cachefile}.txt')
