@@ -129,4 +129,7 @@ class Tool(AbstractTool):
         if re.search("Traceback \(most recent call last\):", output):
             return 'failure'
 
+        print (f">>>>[ INCONCLUSIVE ]>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ({cachefile})")
+        print(output)
+        print ("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
         return 'other'

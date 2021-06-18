@@ -93,4 +93,7 @@ class Tool(AbstractTool):
         if re.search('No property violation found', output):
             return 'OK'
 
+        print (f">>>>[ INCONCLUSIVE ]>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ({cachefile})")
+        print(output)
+        print ("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
         return 'other'

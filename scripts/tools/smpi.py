@@ -68,4 +68,7 @@ class Tool(tools.simgrid.Tool):
         if re.search('Command return code: 0,', output):
             return 'OK'
 
+        print (f">>>>[ INCONCLUSIVE ]>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ({cachefile})")
+        print(output)
+        print ("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
         return 'other'

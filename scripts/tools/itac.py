@@ -76,10 +76,16 @@ class Tool(AbstractTool):
         if match:
 #            print ('<Match: %r, groups=%r>' % (match.group(), match.groups()))
             return match.group(1)
+        match = re.search('WARNING: (.*?): (fatal )?warning', output)
+        if match:
+            return match.group(1)
         if re.search('Command return code: 0,', output):
             return 'OK'
 
-        print (">>>>[ INCONCLUSIVE ]>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+        if re.search('Command killed by signal 15, elapsed time: 300', output):
+            return 'timeout'
+
+        print (f">>>>[ INCONCLUSIVE ]>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ({cachefile})")
         print(output)
         print ("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
         return 'other'

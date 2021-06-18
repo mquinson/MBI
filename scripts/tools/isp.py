@@ -86,4 +86,7 @@ class Tool(AbstractTool):
         if re.search('Fatal error in MPI', output):
             return 'mpierr'
 
+        print (f">>>>[ INCONCLUSIVE ]>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ({cachefile})")
+        print(output)
+        print ("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
         return 'other'
