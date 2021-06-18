@@ -107,4 +107,7 @@ class Tool(AbstractTool):
         if os.path.exists(f'{cachefile}.timeout') or os.path.exists(f'logs/must/{cachefile}.timeout'):
             return 'timeout'
 
+        print (f">>>>[ INCONCLUSIVE ]>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ({cachefile})")
+        print(output)
+        print ("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
         return 'other'
