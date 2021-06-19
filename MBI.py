@@ -246,7 +246,7 @@ def cmd_run(rootdir, toolname, batchinfo):
     for test in todo:
         binary = re.sub('\.c', '', os.path.basename(test['filename']))
 
-        print(f"\nTest '{binary}_{test['id']} (test #{count} out of {len(todo)})'", end=": ")
+        print(f"\nTest #{count} out of {len(todo)}: '{binary}_{test['id']} '", end="... ")
         count += 1
         sys.stdout.flush()
 
