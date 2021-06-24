@@ -103,6 +103,9 @@ class Tool(AbstractTool):
         if re.search('MUST detected no MPI usage errors nor any suspicious behavior during this application run', html):
             return 'OK'
 
+        if re.search('internal ABORT - process ', output):
+            return 'failure'
+
         # No interesting output found, so return the timeout as is if it exists
         if os.path.exists(f'{cachefile}.timeout') or os.path.exists(f'logs/must/{cachefile}.timeout'):
             return 'timeout'
