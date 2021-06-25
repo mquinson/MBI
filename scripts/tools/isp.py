@@ -24,7 +24,7 @@ class Tool(AbstractTool):
         os.chdir(here)
 
     def setup(self, rootdir):
-        os.environ['PATH'] = os.environ['PATH'] + ":" + rootdir + "/builds/ISP/bin/"
+        os.environ['PATH'] = f"{os.environ['PATH']}:{rootdir}/tools/ISP/bin/"
 
     def run(self, execcmd, filename, binary, id, timeout, batchinfo):
         cachefile = f'{binary}_{id}'
