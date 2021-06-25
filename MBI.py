@@ -24,12 +24,13 @@ import tools.smpi # SimGrid without MC
 import tools.smpivg # SimGrid with valgrind instead of MC
 import tools.must
 import tools.mpisv
+import tools.hermes
 import tools.isp
 import tools.itac
 import tools.civl
 import tools.aislinn
 
-tools = {'aislinn': tools.aislinn.Tool(), 'civl': tools.civl.Tool(), 'isp': tools.isp.Tool(), 'itac': tools.itac.Tool(), 'mpisv': tools.mpisv.Tool(),
+tools = {'aislinn': tools.aislinn.Tool(), 'civl': tools.civl.Tool(), 'hermes': tools.hermes.Tool(), 'isp': tools.isp.Tool(), 'itac': tools.itac.Tool(), 'mpisv': tools.mpisv.Tool(),
          'must': tools.must.Tool(), 'simgrid': tools.simgrid.Tool(), 'smpi':tools.smpi.Tool(),'smpivg':tools.smpivg.Tool(), 'parcoach': tools.parcoach.Tool()}
 
 # Some scripts may fail if error messages get translated
@@ -908,7 +909,7 @@ rootdir = os.path.dirname(os.path.abspath(__file__))
 if args.c == 'all' or args.c == 'run':
     if args.x == 'mpirun':
         raise Exception("No tool was provided, please retry with -x parameter. (see -h for further information on usage)")
-    elif args.x in ['aislinn', 'civl', 'isp', 'itac', 'must', 'mpisv', 'simgrid', 'smpi','smpivg', 'parcoach']:
+    elif args.x in tools:
         pass
     else:
         raise Exception(f"The tool parameter you provided ({args.x}) is either incorect or not yet implemented.")
