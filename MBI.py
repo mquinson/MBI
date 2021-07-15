@@ -697,8 +697,9 @@ def cmd_latex(rootdir, toolnames):
     # Produce the results per tool and per category
     with open(f'{rootdir}/latex/results-per-category-portrait.tex', 'w') as outfile:
         outfile.write('\\setlength\\tabcolsep{3.5pt} % default value: 6pt\n')
-        for errors in [['FOK','AInvalidParam','BResLeak','BReqLifecycle','BLocalConcurrency'], ['CMatch','DRace','DMatch','DGlobalConcurrency','EBufferingHazard']]:
-            outfile.write("\\begin{tabular}{|l|*{"+str(len(errors))+"}{c|c|c|c||}}\n")
+        # To split the table in two lines, do this: for errors in [['FOK','AInvalidParam','BResLeak','BReqLifecycle','BLocalConcurrency'], ['CMatch','DRace','DMatch','DGlobalConcurrency','EBufferingHazard']]:
+        for errors in [['FOK','AInvalidParam','BResLeak','BReqLifecycle','BLocalConcurrency', 'CMatch','DRace','DMatch','DGlobalConcurrency']]:
+            outfile.write("\\begin{tabular}{|l@{}|*{"+str(len(errors))+"}{c|c|c|c||}}\n")
             outfile.write(f"\\cline{{2-{len(errors)*4+1}}}\n")
             # First title line: error categories
             outfile.write("  \\multicolumn{1}{c|}{}")
@@ -927,7 +928,8 @@ elif args.c == 'run':
     cmd_run(rootdir=rootdir, toolname=args.x, batchinfo=args.b)
 elif args.c == 'latex':
     extract_all_todo(args.b)
-    cmd_latex(rootdir, toolnames=['aislinn', 'civl', 'isp','itac', 'simgrid','smpi','smpivg', 'mpisv', 'must', 'parcoach'])
+    # 'smpi','smpivg' are not shown in the paper
+    cmd_latex(rootdir, toolnames=['aislinn', 'civl', 'isp','itac', 'simgrid','mpisv', 'must', 'parcoach'])
 elif args.c == 'stats':
     extract_all_todo(args.b)
     if args.x == 'mpirun':
