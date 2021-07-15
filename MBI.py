@@ -696,18 +696,20 @@ def cmd_latex(rootdir, toolnames):
 
     # Produce the results per tool and per category
     with open(f'{rootdir}/latex/results-per-category-portrait.tex', 'w') as outfile:
-        outfile.write('\\setlength\\tabcolsep{3.5pt} % default value: 6pt\n')
+        outfile.write('\\setlength\\tabcolsep{1.5pt} % default value: 6pt\n')
         # To split the table in two lines, do this: for errors in [['FOK','AInvalidParam','BResLeak','BReqLifecycle','BLocalConcurrency'], ['CMatch','DRace','DMatch','DGlobalConcurrency','EBufferingHazard']]:
         for errors in [['FOK','AInvalidParam','BResLeak','BReqLifecycle','BLocalConcurrency', 'CMatch','DRace','DMatch','DGlobalConcurrency']]:
-            outfile.write("\\begin{tabular}{|l@{}|*{"+str(len(errors))+"}{c|c|c|c||}}\n")
+            outfile.write("\\begin{tabular}{|l@{}|*{"+str(len(errors)-1)+"}{c|c|c|c||} c|c|c|c|}\n") # last column not in multiplier (len-1 used) to not have || at the end
             outfile.write(f"\\cline{{2-{len(errors)*4+1}}}\n")
             # First title line: error categories
             outfile.write("  \\multicolumn{1}{c|}{}")
             for error in errors:
-                outfile.write(f"&\\multicolumn{{4}}{{c||}}{{{displayed_name[error].split(' ')[0]}}}")
+                sep = '|' if error == errors[-1] else '||' # Use || as a separator, unless that's the last column
+                outfile.write(f"&\\multicolumn{{4}}{{c{sep}}}{{{displayed_name[error].split(' ')[0]}}}")
             outfile.write("\\\\\n  \\multicolumn{1}{c|}{}")
             for error in errors:
-                outfile.write(f"&\\multicolumn{{4}}{{c||}}{{{displayed_name[error].split(' ')[1]}}}")
+                sep = '|' if error == errors[-1] else '||' # Use || as a separator, unless that's the last column
+                outfile.write(f"&\\multicolumn{{4}}{{c{sep}}}{{{displayed_name[error].split(' ')[1]}}}")
             outfile.write(f"\\\\\\cline{{2-{len(errors)*4+1}}}\n")
             outfile.write("\\multicolumn{1}{c|}{}")
             for error in errors:
@@ -718,6 +720,17 @@ def cmd_latex(rootdir, toolnames):
                     outfile.write(" \\rotatebox{90}{False Negative} & \\rotatebox{90}{True Positive~} \n")
             outfile.write("\\\\\\hline\n")
 
+            # Find the best tool
+            best = {}
+            for error in errors:
+                best[error] = 0
+                for toolname in used_toolnames:
+                    val = len(results[error][toolname]['TRUE_POS']) + len(results[error][toolname]['TRUE_NEG'])
+                    if val > best[error]:
+                        best[error] = val
+                # print(f"Best for {error} has {best[error]}")
+
+            # display all tools
             for toolname in used_toolnames:
                 outfile.write(f'{displayed_name[toolname]}')
                 for error in errors:
@@ -727,7 +740,10 @@ def cmd_latex(rootdir, toolnames):
                     tout = len(results[error][toolname]['timeout'])
                     good = len(results[error][toolname]['TRUE_POS']) + len(results[error][toolname]['TRUE_NEG'])
                     bad  = len(results[error][toolname]['FALSE_POS']) + len(results[error][toolname]['FALSE_NEG'])
-                    outfile.write(f"&{port}&{tout+othr+fail}&{bad}&{good}")
+                    if good == best[error]: # Best tool is diplayed in bold
+                        outfile.write(f"&{{\\bf {port}}}&{{\\bf {tout+othr+fail}}}&{{\\bf {bad}}}&{{\\bf {good}}}")
+                    else:
+                        outfile.write(f"&{port}&{tout+othr+fail}&{bad}&{good}")
                 outfile.write("\\\\\\hline\n")
 
             outfile.write("\\hline\\textit{Ideal tool}")
@@ -748,7 +764,7 @@ def cmd_latex(rootdir, toolnames):
     with open(f'{rootdir}/latex/results-summary.tex', 'w') as outfile:
         outfile.write('\\begin{tabular}{|l|*{7}{c|}}\\hline\n')
         outfile.write('  \\multirow{2}{*}{ \\textbf{Tool}} &  \\multicolumn{3}{c|}{Errors} &\\multicolumn{4}{c|}{Results}\\\\\\cline{2-8}\n')
-        outfile.write('& \\textbf{Build}&\\textbf{Timeout}&\\textbf{Failure}  & \\textbf{TP} & \\textbf{TN} & \\textbf{FP} & \\textbf{FN} \\\\\\hline \n')
+        outfile.write('& \\textbf{CE}&\\textbf{TO}&\\textbf{RE}  & \\textbf{TP} & \\textbf{TN} & \\textbf{FP} & \\textbf{FN} \\\\\\hline \n')
 
         for toolname in used_toolnames:
             outfile.write(f'{displayed_name[toolname]}&\n')

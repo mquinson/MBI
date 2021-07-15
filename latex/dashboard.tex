@@ -1,6 +1,7 @@
 \documentclass{article}
 \usepackage{multirow}
 \usepackage{fullpage}
+\usepackage[margin=15mm]{geometry}
 \usepackage{graphicx}
 \usepackage{tikz}
 \usepackage{rotating}
@@ -42,8 +43,10 @@
 %  \end{sidewaystable}
   
   \begin{table*}
-    \centering
+  \hspace{-2em}
+    \resizebox{1.05\textwidth}{!}{
     \input{results-per-category-portrait.tex}    
+    }
     \caption{Results of each tool per error category.}
   \end{table*}
 
