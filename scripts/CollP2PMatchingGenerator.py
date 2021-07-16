@@ -116,16 +116,16 @@ for s in send + isend:
             make_file(template, f'CollP2PCallMatching_{r}_{s}_{c}_nok.c', replace)
 
             # Generate the incorrect code depending on buffering
-            replace = patterns 
-            replace['shortdesc'] = 'Point to point & collective mismatch'
-            replace['longdesc'] = 'Point to point @{s}@ is matched with @{c}@ which causes a deadlock depending on the buffering mode.' 
-            replace['outcome'] = 'ERROR: BufferingHazard' 
-            replace['errormsg'] = 'P2P & Collective mistmatch. @{s}@ at @{filename}@:@{line:MBIERROR2}@ is matched with @{c}@ at @{filename}@:@{line:MBIERROR1}@ wich causes a deadlock.'
-            replace['init1'] = init[s]("1") 
-            replace['init2'] = init[r]("2") 
-            replace['operation1'] = operation[r]("2")
-            replace['operation2'] = operation[s]("1")
-            replace['fini1'] = fini[r]("2") 
-            replace['fini2'] = fini[s]("1") 
-            make_file(template, f'CollP2PBuffering_{r}_{s}_{c}_nok.c', replace)
+            #  replace = patterns 
+            #  replace['shortdesc'] = 'Point to point & collective mismatch'
+            #  replace['longdesc'] = 'Point to point @{s}@ is matched with @{c}@ which causes a deadlock depending on the buffering mode.' 
+            #  replace['outcome'] = 'ERROR: BufferingHazard' 
+            #  replace['errormsg'] = 'P2P & Collective mistmatch. @{s}@ at @{filename}@:@{line:MBIERROR2}@ is matched with @{c}@ at @{filename}@:@{line:MBIERROR1}@ wich causes a deadlock.'
+            #  replace['init1'] = init[s]("1") 
+            #  replace['init2'] = init[r]("2") 
+            #  replace['operation1'] = operation[r]("2")
+            #  replace['operation2'] = operation[s]("1")
+            #  replace['fini1'] = fini[r]("2") 
+            #  replace['fini2'] = fini[s]("1") 
+            #  make_file(template, f'CollP2PBuffering_{r}_{s}_{c}_nok.c', replace)
 
