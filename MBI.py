@@ -53,7 +53,7 @@ possible_details = {
     
     'GlobalConcurrency':'DGlobalConcurrency',
     # larger scope
-    'BufferingHazard':'EBufferingHazard',
+#    'BufferingHazard':'EBufferingHazard',
     'OK':'FOK'}
 
 error_scope = {
@@ -66,7 +66,7 @@ error_scope = {
     'DRace':'multi-processes',
     'DMatch':'multi-processes',
     'DGlobalConcurrency':'multi-processes',
-    'EBufferingHazard':'system',
+#    'EBufferingHazard':'system',
     'FOK':'correct executions'
 }
 
@@ -760,11 +760,17 @@ def cmd_latex(rootdir, toolnames):
             outfile.write("\\end{tabular}\n\n\medskip\n")
         outfile.write('\\setlength\\tabcolsep{6pt} % Back to default value\n')
 
+    def bold_if(val, target):
+        if val == target:
+            return f'{{\\bf {val}}}'
+        return str(val)
+
     # Produce the landscape results+metric per tool for all category
     with open(f'{rootdir}/latex/results-summary.tex', 'w') as outfile:
-        outfile.write('\\begin{tabular}{|l|*{7}{c|}}\\hline\n')
-        outfile.write('  \\multirow{2}{*}{ \\textbf{Tool}} &  \\multicolumn{3}{c|}{Errors} &\\multicolumn{4}{c|}{Results}\\\\\\cline{2-8}\n')
-        outfile.write('& \\textbf{CE}&\\textbf{TO}&\\textbf{RE}  & \\textbf{TP} & \\textbf{TN} & \\textbf{FP} & \\textbf{FN} \\\\\\hline \n')
+        outfile.write('\\setlength\\tabcolsep{2pt} % default value: 6pt\n')
+        outfile.write('\\begin{tabular}{|l|*{3}{c|}|*{4}{c|}|*{2}{c|}|*{4}{c|}|c|}\\hline\n')
+        outfile.write('  \\multirow{2}{*}{ \\textbf{Tool}} &  \\multicolumn{3}{c||}{Errors} &\\multicolumn{4}{c||}{Results}&\\multicolumn{2}{c||}{Robustness} &\\multicolumn{4}{c||}{Usefulness}&\\textbf{Overall}\\\\\\cline{2-15}\n')
+        outfile.write('& \\textbf{CE}&\\textbf{TO}&\\textbf{RE}  & \\textbf{TP} & \\textbf{TN} & \\textbf{FP} & \\textbf{FN} &\\textbf{Coverage} & \\textbf{Conclusiveness} & \\textbf{Specificity}&\\textbf{Recall}& \\textbf{Precision}& \\textbf{F1 Score}    & \\textbf{accuracy}\\\\\\hline \n')
 
         for toolname in used_toolnames:
             outfile.write(f'{displayed_name[toolname]}&\n')
@@ -777,16 +783,38 @@ def cmd_latex(rootdir, toolnames):
             TN = len(results['total'][toolname]['TRUE_NEG'])
             FN = len(results['total'][toolname]['FALSE_NEG'])
             FP = len(results['total'][toolname]['FALSE_POS']) 
-            outfile.write(f'{port}&{tout}&{fail+othr}&{TP}&{TN}&{FP}&{FN}')
+
+            total = TP + TN + FP + FN + port + fail + othr + tout
+
+
+            outfile.write(f'{bold_if(port,0)}&{bold_if(tout,0)}&{bold_if(fail+othr,0)}&{TP}&{TN}&{FP}&{FN}&')
+            # Coverage & Completion
+            outfile.write(f'{percent(port,total,compl=True,one=True)} &{percent((port+fail+othr+tout),(total),compl=True,one=True)}&')
+            # Specificity: recognized {TN} correct codes out of {TN+FP}
+            outfile.write(f'{percent(TN,(TN+FP),one=True)}&')
+            # Recall: found {TP} errors out of {TP+FN} ;Precision: {TP} diagnostic of error are correct out of {TP+FP}) ; 
+            outfile.write(f'{percent(TP,(TP+FN),one=True)} & {percent(TP,(TP+FP),one=True)} &')
+            # F1 Score
+            if TP+FP >0 and TP+FN >0:
+                precision = TN/(TP+FP)
+                recall = TP/(TP+FN)
+                outfile.write(f'{percent(2*precision*recall,(precision+recall),one=True)}&')
+            else:
+                outfile.write('(error)&')
+            # Accuracy: {TP+TN} correct diagnostics in total, out of all tests {TP+TN+FP+FN+port+fail+othr+tout} diagnostics
+            outfile.write(f'{percent(TP+TN,(TP+TN+FP+FN+port+fail+othr+tout),one=True)}')
+
             outfile.write(f'\\\\\\hline\n')
         outfile.write(f'\\hline\n')
 
         outfile.write('\\textit{Ideal tool}&\\textit{0}&\\textit{0}&\\textit{0}&')
-        outfile.write(f"\\textit{{{len(results['total'][toolname]['error'])}}}&\\textit{{{len(results['total'][toolname]['OK'])}}}&\\textit{{0}}&\\textit{{0}} \\\\\\hline\n")
+        outfile.write(f"\\textit{{{len(results['total'][toolname]['error'])}}}&\\textit{{{len(results['total'][toolname]['OK'])}}}&\\textit{{0}}&\\textit{{0}}&")
+        outfile.write("\\textit{1}&\\textit{1}&\\textit{1}&\\textit{1}&\\textit{1}&\\textit{1}&\\textit{1} \\\\\\hline\n")
 
         outfile.write('\\end{tabular}\n')
+        outfile.write('\\setlength\\tabcolsep{6pt} % Back to default value\n')
 
-    # Produce the table with the metrics per tool per category
+    # Produce the table with the metrics per tool per category (not used, as we put everything on one line only)
     with open(f'{rootdir}/latex/results-metrics.tex', 'w') as outfile:
         outfile.write('\\begin{tabular}{|l|*{7}{c|}}\\hline\n')
         outfile.write('  \\multirow{2}{*}{ \\textbf{Tool}} &  \\multicolumn{2}{c|}{Robustness} &\\multicolumn{4}{c|}{Usefulness}&\\textbf{Overall}\\\\\\cline{2-7}\n')
@@ -840,14 +868,22 @@ def cmd_latex(rootdir, toolnames):
         def show_line(key, display_name):
             outfile.write(f"\\multirow{{3}}{{*}}{{{display_name}}} & Mean time ")
             for toolname in used_toolnames:
-                mean = statistics.mean(timing[key][toolname])
-                outfile.write(f"&{round(mean,2)}")
+                if len(timing[key][toolname]) >1:
+                    mean = statistics.mean(timing[key][toolname])
+                    outfile.write(f"&{round(mean,2)}")
+                else:
+                    outfile.write("&(error)")
+                    print(f"Error while computing the mean of timing[{key}][{toolname}] (needs at least one value)")
             outfile.write(f"\\\\\\cline{{2-{len(used_toolnames)+2}}}\n")
 
             outfile.write(f"& StdDev ")
             for toolname in used_toolnames:
-                stdev = statistics.stdev(timing[key][toolname])
-                outfile.write(f"&{round(stdev,2)}")
+                if len(timing[key][toolname]) >2:
+                    stdev = statistics.stdev(timing[key][toolname])
+                    outfile.write(f"&{round(stdev,2)}")
+                else:
+                    outfile.write("&(error)")
+                    print(f"Error while computing the variance of timing[{key}][{toolname}] (needs at least two values)")
             outfile.write(f"\\\\\\cline{{2-{len(used_toolnames)+2}}}\n")
 
             outfile.write(f" & \\# timout ")
