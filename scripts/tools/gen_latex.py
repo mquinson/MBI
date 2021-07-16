@@ -20,7 +20,7 @@ possible_details = {
     
     'GlobalConcurrency':'DGlobalConcurrency',
     # larger scope
-    'BufferingHazard':'EBufferingHazard',
+#    'BufferingHazard':'EBufferingHazard',
     'OK':'FOK'}
 
 displayed_name = {
@@ -33,7 +33,7 @@ displayed_name = {
     'DMatch':"Call matching",
     'DRace':'Message race',
     'DGlobalConcurrency':'Global concurrency',
-    'EBufferingHazard':'Buffering hazard',
+#    'EBufferingHazard':'Buffering hazard',
     'FOK':"Correct code",
 
     'P2P!basic':'P2P', 'P2P!nonblocking':'iP2P', 'P2P!persistent':'pP2P',
@@ -232,11 +232,12 @@ def generate_errors(files, outfile):
         output.write( '                                  &Call ordering     & ');  show_counts(['DMatch'])       ; output.write('\\cline{2-10}\n')
         output.write( '                                  &Global concurrency& ');  show_counts(['DGlobalConcurrency']); output.write('\\hline\n')
 
-        output.write( '      System & Buffering Hazard    &') ; show_counts(['EBufferingHazard']);output.write('\\hline\\hline\n')
+#        output.write( '      System & Buffering Hazard    &') ; show_counts(['EBufferingHazard']);output.write('\\hline\\hline\n')
         output.write('\\multicolumn{2}{|c|}{Correct codes}&') ; show_counts(['FOK']);output.write('\\hline\\hline\n')
 
         output.write('\\multicolumn{2}{|c|}{\\textbf{Total}}&')
-        show_counts(['AInvalidParam', 'BResLeak','BReqLifecycle','BLocalConcurrency', 'CMatch', 'DRace','DMatch','DGlobalConcurrency', 'EBufferingHazard', 'FOK'])
+        # 'EBufferingHazard', hidden from the following list
+        show_counts(['AInvalidParam', 'BResLeak','BReqLifecycle','BLocalConcurrency', 'CMatch', 'DRace','DMatch','DGlobalConcurrency', 'FOK'])
         output.write('\\hline\n')
 
         output.write('\\end{tabular}\n')
