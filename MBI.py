@@ -321,6 +321,13 @@ def percent(num, den, compl=False, one=False):
     if int(res) == 100:
         return "1" if one else "100" 
     return round(res/100, 4) if one else res
+
+def bold_if(val, target):
+    """Returns the value as a bold LaTeX string if it equals the target, or unchanged otherwise."""
+    if str(val) == str(target):
+        return f'{{\\bf {val}}}'
+    return str(val)
+
 def seconds2human(secs):
     """Returns the amount of seconds in human-friendly way"""
     days = int(secs//86400)
@@ -760,17 +767,66 @@ def cmd_latex(rootdir, toolnames):
             outfile.write("\\end{tabular}\n\n\medskip\n")
         outfile.write('\\setlength\\tabcolsep{6pt} % Back to default value\n')
 
-    def bold_if(val, target):
-        if val == target:
-            return f'{{\\bf {val}}}'
-        return str(val)
-
     # Produce the landscape results+metric per tool for all category
     with open(f'{rootdir}/latex/results-summary.tex', 'w') as outfile:
         outfile.write('\\setlength\\tabcolsep{2pt} % default value: 6pt\n')
         outfile.write('\\begin{tabular}{|l|*{3}{c|}|*{4}{c|}|*{2}{c|}|*{4}{c|}|c|}\\hline\n')
         outfile.write('  \\multirow{2}{*}{ \\textbf{Tool}} &  \\multicolumn{3}{c||}{Errors} &\\multicolumn{4}{c||}{Results}&\\multicolumn{2}{c||}{Robustness} &\\multicolumn{4}{c||}{Usefulness}&\\textbf{Overall}\\\\\\cline{2-15}\n')
         outfile.write('& \\textbf{CE}&\\textbf{TO}&\\textbf{RE}  & \\textbf{TP} & \\textbf{TN} & \\textbf{FP} & \\textbf{FN} &\\textbf{Coverage} & \\textbf{Conclusiveness} & \\textbf{Specificity}&\\textbf{Recall}& \\textbf{Precision}& \\textbf{F1 Score}    & \\textbf{accuracy}\\\\\\hline \n')
+
+        # Search the best values
+        best = {'TP':0, 'TN':0, 'FP':999999, 'FN':9999999, 'coverage':0, 'completion':0, 'specificity':0, 'recall':0, 'precision':0, 'F1':0, 'accuracy':0}
+        for toolname in used_toolnames:
+            TP = len(results['total'][toolname]['TRUE_POS'])
+            TN = len(results['total'][toolname]['TRUE_NEG'])
+            FN = len(results['total'][toolname]['FALSE_NEG'])
+            FP = len(results['total'][toolname]['FALSE_POS']) 
+            if TP > best['TP']:
+                best['TP'] = TP
+            if TN > best['TN']:
+                best['TN'] = TN
+            if FP < best['FP']:
+                best['FP'] = FP
+            if FN < best['FN']:
+                best['FN'] = FN
+
+            port = len(results['total'][toolname]['unimplemented'])
+            fail = len(results['total'][toolname]['failure'])
+            othr = len(results['total'][toolname]['other'])
+            tout = len(results['total'][toolname]['timeout'])
+            total = TP + TN + FP + FN + port + fail + othr + tout
+            coverage = float(percent(port,total,compl=True,one=True))
+            if coverage > best['coverage']:
+                best['coverage'] = coverage
+            completion = float(percent((port+fail+othr+tout),(total),compl=True,one=True))
+            if completion > best['completion']:
+                best['completion'] = completion
+            specificity = percent(TN,(TN+FP),one=True)
+            if specificity > best['specificity']:
+                best['specificity'] = specificity
+            recall = percent(TP,(TP+FN),one=True)
+            if recall > best['recall']:
+                best['recall'] = recall
+            precision = percent(TP,(TP+FP),one=True)
+            if precision > best['precision']:
+                best['precision'] = precision
+
+            # Recompute precision & recall without rounding, to match the value computed when displaying the result
+            precision = TN/(TP+FP)
+            recall = TP/(TP+FN)
+            F1 = percent(2*precision*recall,(precision+recall),one=True)
+            if F1 > best['F1']:
+                best['F1'] = F1
+            accuracy = percent(TP+TN,(TP+TN+FP+FN+port+fail+othr+tout),one=True)
+            if accuracy > best['accuracy']:
+                best['accuracy'] = accuracy
+
+    
+        for key in best: # Cleanup the data to ensure that the equality test matches in bold_if()
+            if best[key] == 1.0:
+                best[key] = "1"
+        print(f"best coverage: {best['coverage']}")
+        print(f"best: {best}")
 
         for toolname in used_toolnames:
             outfile.write(f'{displayed_name[toolname]}&\n')
@@ -786,23 +842,31 @@ def cmd_latex(rootdir, toolnames):
 
             total = TP + TN + FP + FN + port + fail + othr + tout
 
+            outfile.write(f"{bold_if(port,0)}&{bold_if(tout,0)}&{bold_if(fail+othr,0)}")
+            outfile.write(f"&{bold_if(TP,best['TP'])}&{bold_if(TN,best['TN'])}&{bold_if(FP,best['FP'])}&{bold_if(FN,best['FN'])}&")
 
-            outfile.write(f'{bold_if(port,0)}&{bold_if(tout,0)}&{bold_if(fail+othr,0)}&{TP}&{TN}&{FP}&{FN}&')
-            # Coverage & Completion
-            outfile.write(f'{percent(port,total,compl=True,one=True)} &{percent((port+fail+othr+tout),(total),compl=True,one=True)}&')
+            # Coverage & Completion 
+            coverage = percent(port,total,compl=True,one=True)
+            completion = percent((port+fail+othr+tout),(total),compl=True,one=True)
+            outfile.write(f"{bold_if(coverage,best['coverage'])} &{bold_if(completion, best['completion'])}&")
             # Specificity: recognized {TN} correct codes out of {TN+FP}
-            outfile.write(f'{percent(TN,(TN+FP),one=True)}&')
+            specificity = percent(TN,(TN+FP),one=True)
+            outfile.write(f'{bold_if(specificity, best["specificity"])}&')
             # Recall: found {TP} errors out of {TP+FN} ;Precision: {TP} diagnostic of error are correct out of {TP+FP}) ; 
-            outfile.write(f'{percent(TP,(TP+FN),one=True)} & {percent(TP,(TP+FP),one=True)} &')
+            recall = percent(TP,(TP+FN),one=True)
+            precision = percent(TP,(TP+FP),one=True)
+            outfile.write(f'{bold_if(recall, best["recall"])} & {bold_if(precision, best["precision"])} &')
             # F1 Score
             if TP+FP >0 and TP+FN >0:
                 precision = TN/(TP+FP)
                 recall = TP/(TP+FN)
-                outfile.write(f'{percent(2*precision*recall,(precision+recall),one=True)}&')
+                F1 = percent(2*precision*recall,(precision+recall),one=True)
+                outfile.write(f'{bold_if(F1, best["F1"])}&')
             else:
                 outfile.write('(error)&')
             # Accuracy: {TP+TN} correct diagnostics in total, out of all tests {TP+TN+FP+FN+port+fail+othr+tout} diagnostics
-            outfile.write(f'{percent(TP+TN,(TP+TN+FP+FN+port+fail+othr+tout),one=True)}')
+            accuracy = percent(TP+TN,(TP+TN+FP+FN+port+fail+othr+tout),one=True)
+            outfile.write(f'{bold_if(accuracy, best["accuracy"])}')
 
             outfile.write(f'\\\\\\hline\n')
         outfile.write(f'\\hline\n')
