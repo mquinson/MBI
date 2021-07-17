@@ -801,13 +801,13 @@ def cmd_latex(rootdir, toolnames):
             completion = float(percent((port+fail+othr+tout),(total),compl=True,one=True))
             if completion > best['completion']:
                 best['completion'] = completion
-            specificity = percent(TN,(TN+FP),one=True)
+            specificity = float(percent(TN,(TN+FP),one=True))
             if specificity > best['specificity']:
                 best['specificity'] = specificity
-            recall = percent(TP,(TP+FN),one=True)
+            recall = float(percent(TP,(TP+FN),one=True))
             if recall > best['recall']:
                 best['recall'] = recall
-            precision = percent(TP,(TP+FP),one=True)
+            precision = float(percent(TP,(TP+FP),one=True))
             if precision > best['precision']:
                 best['precision'] = precision
 
