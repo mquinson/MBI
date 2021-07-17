@@ -795,21 +795,24 @@ def cmd_latex(rootdir, toolnames):
             othr = len(results['total'][toolname]['other'])
             tout = len(results['total'][toolname]['timeout'])
             total = TP + TN + FP + FN + port + fail + othr + tout
-            coverage = float(percent(port,total,compl=True,one=True))
-            if coverage > best['coverage']:
-                best['coverage'] = coverage
-            completion = float(percent((port+fail+othr+tout),(total),compl=True,one=True))
-            if completion > best['completion']:
-                best['completion'] = completion
-            specificity = float(percent(TN,(TN+FP),one=True))
-            if specificity > best['specificity']:
-                best['specificity'] = specificity
-            recall = float(percent(TP,(TP+FN),one=True))
-            if recall > best['recall']:
-                best['recall'] = recall
-            precision = float(percent(TP,(TP+FP),one=True))
-            if precision > best['precision']:
-                best['precision'] = precision
+            if (TN+FP) != 0 and TP+FN != 0 and TP+FP != 0:
+                coverage = float(percent(port,total,compl=True,one=True))
+                if coverage > best['coverage']:
+                    best['coverage'] = coverage
+                completion = float(percent((port+fail+othr+tout),(total),compl=True,one=True))
+                if completion > best['completion']:
+                    best['completion'] = completion
+                specificity = float(percent(TN,(TN+FP),one=True))
+                if specificity > best['specificity']:
+                    best['specificity'] = specificity
+                recall = float(percent(TP,(TP+FN),one=True))
+                if recall > best['recall']:
+                    best['recall'] = recall
+                precision = float(percent(TP,(TP+FP),one=True))
+                if precision > best['precision']:
+                    best['precision'] = precision
+            else:
+                print (f"WARNING: {toolname} not considered as a best score: TN+FP={TP+FP} TP+FN={TP+FN} TP+FP={TP+FP}")
 
             # Recompute precision & recall without rounding, to match the value computed when displaying the result
             precision = TN/(TP+FP)
@@ -1045,7 +1048,10 @@ elif args.c == 'run':
 elif args.c == 'latex':
     extract_all_todo(args.b)
     # 'smpi','smpivg' are not shown in the paper
-    cmd_latex(rootdir, toolnames=['aislinn', 'civl', 'isp','itac', 'simgrid','mpisv', 'must', 'parcoach'])
+    toolnames = []
+    for tool in ['aislinn', 'civl', 'isp','itac', 'simgrid','mpisv', 'must', 'parcoach']:
+        if os.path.exists("/MBI/gencodes"):
+    cmd_latex(rootdir, toolnames=toolnames)
 elif args.c == 'stats':
     extract_all_todo(args.b)
     if args.x == 'mpirun':
