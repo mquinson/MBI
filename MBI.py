@@ -262,7 +262,7 @@ def cmd_run(rootdir, toolname, batchinfo):
     tools[toolname].teardown()
 
 ########################
-# cmd_stats(): what to do when '-c stats' is used (extract the statistics of this tool)
+# cmd_html(): what to do when '-c html' is used (extract the statistics of this tool)
 ########################
 def categorize(toolname, test_ID, expected):
     outcome = tools[toolname].parse(test_ID)
@@ -336,7 +336,7 @@ def seconds2human(secs):
     seconds = secs - days*86400 - hours*3600 - minutes*60
     return (f"{days} days, " if days else "") + (f"{hours} hours, " if hours else "") + (f"{minutes} minutes, " if minutes else "") + (f"{int(seconds*100)/100} seconds" if seconds else "")
 
-def cmd_stats(rootdir, toolnames=[]):
+def cmd_html(rootdir, toolnames=[]):
     here = os.getcwd()
     os.chdir(rootdir)
     results = {}
@@ -1011,7 +1011,7 @@ parser.add_argument('-c', metavar='cmd', default='all',
                     "  generate: redo all the test codes.\n"
                     "  latex: Produce the LaTeX tables we need for the article, using the cached values from a previous 'run'.\n"
                     "  run: run the tests on all codes.\n"
-                    "  stats: produce the HTML statistics, using the cached values from a previous 'run'.\n")
+                    "  html: produce the HTML statistics, using the cached values from a previous 'run'.\n")
 
 parser.add_argument('-x', metavar='tool', default='mpirun',
                     help='the tool you want at execution: one among [aislinn, civl, isp, mpisv, must, simgrid, parcoach]')
@@ -1037,7 +1037,7 @@ if args.c == 'all' or args.c == 'run':
 if args.c == 'all':
     extract_all_todo(args.b)
     cmd_run(rootdir=rootdir, toolname=args.x, batchinfo=args.b)
-    cmd_stats(rootdir, toolnames=[args.x])
+    cmd_html(rootdir, toolnames=[args.x])
 elif args.c == 'generate':
     cmd_gencodes()
 elif args.c == 'build':
@@ -1049,13 +1049,13 @@ elif args.c == 'latex':
     extract_all_todo(args.b)
     # 'smpi','smpivg' are not shown in the paper
     cmd_latex(rootdir, toolnames=['aislinn', 'civl', 'isp','itac', 'simgrid','mpisv', 'must', 'parcoach'])
-elif args.c == 'stats':
+elif args.c == 'html':
     extract_all_todo(args.b)
     if args.x == 'mpirun':
         toolnames=['aislinn', 'civl', 'isp','itac', 'simgrid','smpi','smpivg', 'mpisv', 'must', 'parcoach']
     else:
         toolnames=[args.x]
-    cmd_stats(rootdir, toolnames=toolnames)
+    cmd_html(rootdir, toolnames=toolnames)
 else:
-    print(f"Invalid command '{args.c}'. Please choose one of 'all', 'build', 'run', 'stats' or 'latex'")
+    print(f"Invalid command '{args.c}'. Please choose one of 'all', 'build', 'run', 'html' or 'latex'")
     sys.exit(1)
