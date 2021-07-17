@@ -1048,10 +1048,7 @@ elif args.c == 'run':
 elif args.c == 'latex':
     extract_all_todo(args.b)
     # 'smpi','smpivg' are not shown in the paper
-    toolnames = []
-    for tool in ['aislinn', 'civl', 'isp','itac', 'simgrid','mpisv', 'must', 'parcoach']:
-        if os.path.exists("/MBI/gencodes"):
-    cmd_latex(rootdir, toolnames=toolnames)
+    cmd_latex(rootdir, toolnames=['aislinn', 'civl', 'isp','itac', 'simgrid','mpisv', 'must', 'parcoach'])
 elif args.c == 'stats':
     extract_all_todo(args.b)
     if args.x == 'mpirun':
