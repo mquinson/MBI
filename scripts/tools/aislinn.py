@@ -81,6 +81,9 @@ class Tool(AbstractTool):
         with open(f'{cachefile}.txt' if os.path.exists(f'{cachefile}.txt') else f'logs/aislinn/{cachefile}.txt', 'r') as infile:
             output = infile.read()
 
+        if re.search('MBI_MSG_RACE', output):
+            return 'MBI_MSG_RACE'
+
         if re.search('No errors found', output):
             return 'OK'
 

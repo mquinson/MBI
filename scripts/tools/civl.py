@@ -52,6 +52,9 @@ class Tool(AbstractTool):
         if re.search('DEADLOCK', output):
             return 'deadlock'
 
+        if re.search('MBI_MSG_RACE', output):
+            return 'MBI_MSG_RACE'
+
         if re.search('reaches an MPI collective routine .*? while at least one of others are collectively reaching MPI_', output):
             return 'collective mismatch'
         if re.search('which has an inconsistent datatype specification with at least one of others', output):

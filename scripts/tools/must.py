@@ -91,6 +91,9 @@ class Tool(AbstractTool):
         with open(f'{cachefile}.txt' if os.path.exists(f'{cachefile}.txt') else f'logs/must/{cachefile}.txt', 'r') as infile:
             output = infile.read()
 
+        if re.search('MBI_MSG_RACE', output):
+            return 'MBI_MSG_RACE'
+
         if re.search('Compilation of .*? raised an error \(retcode: ', output):
             return 'UNIMPLEMENTED'
 

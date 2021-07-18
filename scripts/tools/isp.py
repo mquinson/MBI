@@ -71,6 +71,9 @@ class Tool(AbstractTool):
         if re.search('resource leaks detected', output):
             return 'resleak'
 
+        if re.search('MBI_MSG_RACE', output):
+            return 'MBI_MSG_RACE'
+
         if re.search("Attempting to use an MPI routine after finalizing MPI", output):
             return 'mpierr'
 

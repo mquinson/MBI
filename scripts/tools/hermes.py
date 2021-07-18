@@ -75,6 +75,8 @@ class Tool(AbstractTool):
         with open(f'{cachefile}.txt' if os.path.exists(f'{cachefile}.txt') else f'logs/hermes/{cachefile}.txt', 'r') as infile:
             output = infile.read()
 
+        if re.search('MBI_MSG_RACE', output):
+            return 'MBI_MSG_RACE'
 
         print (f">>>>[ INCONCLUSIVE ]>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ({cachefile})")
         print(output)

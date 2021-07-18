@@ -77,6 +77,10 @@ class Tool(AbstractTool):
         if match:
 #            print ('<Match: %r, groups=%r>' % (match.group(), match.groups()))
             return match.group(1)
+
+        if re.search('MBI_MSG_RACE', output):
+            return 'MBI_MSG_RACE'
+
         match = re.search('WARNING: (.*?): (fatal )?warning', output)
         if match:
             return match.group(1)

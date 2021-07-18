@@ -38,6 +38,9 @@ class Tool(tools.smpi.Tool):
         if re.search('MC is currently not supported here', output):
             return 'failure'
 
+        if re.search('MBI_MSG_RACE', output):
+            return 'MBI_MSG_RACE'
+
         if re.search('DEADLOCK DETECTED', output):
             return 'deadlock'
         if re.search('returned MPI_ERR', output):

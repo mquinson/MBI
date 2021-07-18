@@ -62,6 +62,9 @@ class Tool(AbstractTool):
         if re.search('found deadlock', output):
             return 'deadlock'
 
+        if re.search('MBI_MSG_RACE', output):
+            return 'MBI_MSG_RACE'
+
         if re.search('klee: .*? Assertion `.*? failed.', output):
             return 'failure'
 

@@ -63,7 +63,7 @@ int main(int argc, char **argv) {
 			@{fini1}@
     }
 	if (@{cond}@ != 3) {
-      printf("The last received message is not 3 but %d!\\n", recv_buffer);
+      printf("MBI_MSG_RACE: The last received message is not 3 but %d!\\n", recv_buffer);
       fflush(stdout);
       abort();
     }

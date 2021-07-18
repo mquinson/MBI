@@ -77,6 +77,9 @@ class Tool(AbstractTool):
         if re.search('Compilation of .*? raised an error \(retcode: ', output):
             return 'UNIMPLEMENTED'
 
+        if re.search('MBI_MSG_RACE', output):
+            return 'MBI_MSG_RACE'
+
         if re.search('MC is currently not supported here', output):
             return 'failure'
 
