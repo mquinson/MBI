@@ -92,6 +92,9 @@ class Tool(AbstractTool):
         if re.search('Fatal error in MPI', output):
             return 'mpierr'
             
+        # https://github.com/DhritiKhanna/Hermes/issues/2
+        if re.search("isp.exe: ServerSocket.cpp:220: int ServerSocket::Receive.*?: Assertion `iter != _cli_socks.end", output):
+            return 'failure'
         if re.search('Command killed by signal 15, elapsed time: 300', output):
             return 'timeout'
 
