@@ -70,6 +70,8 @@ class Tool(tools.simgrid.Tool):
             return 'OK'
         if re.search('Command return code: 0,', output):
             return 'OK'
+        if re.search('Command killed by signal 15, elapsed time: 300', output):
+            return 'timeout'
 
         print (f">>>>[ INCONCLUSIVE ]>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ({cachefile})")
         print(output)
