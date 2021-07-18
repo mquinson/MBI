@@ -78,6 +78,20 @@ class Tool(AbstractTool):
         if re.search('MBI_MSG_RACE', output):
             return 'MBI_MSG_RACE'
 
+        # Hermes-specific
+        if re.search('Detected a DEADLOCK in interleaving', output):
+            return 'deadlock'
+
+        # Inherited from ISP
+        if re.search('Rank [0-9]: WARNING: Waited on non-existant request in', output):
+            return 'mpierr'
+        if re.search('Rank [0-9]: Invalid rank in MPI_.*? at ',output):
+            return 'mpierr'
+        if re.search('Fatal error in PMPI', output):
+            return 'mpierr'
+        if re.search('Fatal error in MPI', output):
+            return 'mpierr'
+
         print (f">>>>[ INCONCLUSIVE ]>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ({cachefile})")
         print(output)
         print ("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")

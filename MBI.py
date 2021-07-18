@@ -1023,25 +1023,42 @@ args = parser.parse_args()
 rootdir = os.path.dirname(os.path.abspath(__file__))
 
 # Parameter checking: Did we get a valid tool to use?
+arg_tools=[]
 if args.c == 'all' or args.c == 'run':
     if args.x == 'mpirun':
         raise Exception("No tool was provided, please retry with -x parameter. (see -h for further information on usage)")
     elif args.x in tools:
-        pass
+        arg_tools = [args.x]
+    elif ',' in args.x:
+        for x in args.x.split(','):
+            if x not in tools:
+                raise Exception(f"The tool parameter you provided ({x}) is either incorect or not yet implemented.")
+            arg_tools.add(x)
     else:
         raise Exception(f"The tool parameter you provided ({args.x}) is either incorect or not yet implemented.")
+elif ',' in args.x:
+    for x in args.x.split(','):
+        if x not in tools:
+            raise Exception(f"The tool parameter you provided ({x}) is either incorect or not yet implemented.")
+    arg_tools = args.x.split(',')
+else:
+    arg_tools = [args.x]
+
+print(f'arg_tools: {arg_tools}')
 
 if args.c == 'all':
     extract_all_todo(args.b)
     cmd_run(rootdir=rootdir, toolname=args.x, batchinfo=args.b)
-    cmd_html(rootdir, toolnames=[args.x])
+    cmd_html(rootdir, toolnames=arg_tools)
 elif args.c == 'generate':
     cmd_gencodes()
 elif args.c == 'build':
-    cmd_build(rootdir=rootdir, toolname=args.x)
+    for t in arg_tools:
+        cmd_build(rootdir=rootdir, toolname=t)
 elif args.c == 'run':
     extract_all_todo(args.b)
-    cmd_run(rootdir=rootdir, toolname=args.x, batchinfo=args.b)
+    for t in arg_tools:
+        cmd_run(rootdir=rootdir, toolname=t, batchinfo=args.b)
 elif args.c == 'latex':
     extract_all_todo(args.b)
     # 'smpi','smpivg' are not shown in the paper
@@ -1051,7 +1068,7 @@ elif args.c == 'html':
     if args.x == 'mpirun':
         toolnames=['aislinn', 'civl', 'isp','itac', 'simgrid','smpi','smpivg', 'mpisv', 'must', 'parcoach']
     else:
-        toolnames=[args.x]
+        toolnames=arg_tools
     cmd_html(rootdir, toolnames=toolnames)
 else:
     print(f"Invalid command '{args.c}'. Please choose one of 'all', 'generate', 'build', 'run', 'html' or 'latex'")
