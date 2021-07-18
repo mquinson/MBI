@@ -812,18 +812,18 @@ def cmd_latex(rootdir, toolnames):
                 precision = float(percent(TP,(TP+FP),one=True))
                 if precision > best['precision']:
                     best['precision'] = precision
+
+                # Recompute precision & recall without rounding, to match the value computed when displaying the result
+                precision = TN/(TP+FP)
+                recall = TP/(TP+FN)
+                F1 = percent(2*precision*recall,(precision+recall),one=True)
+                if F1 > best['F1']:
+                    best['F1'] = F1
+                accuracy = percent(TP+TN,(TP+TN+FP+FN+port+fail+othr+tout),one=True)
+                if accuracy > best['accuracy']:
+                    best['accuracy'] = accuracy
             else:
                 print (f"WARNING: {toolname} not considered as a best score: TN+FP={TP+FP} TP+FN={TP+FN} TP+FP={TP+FP}")
-
-            # Recompute precision & recall without rounding, to match the value computed when displaying the result
-            precision = TN/(TP+FP)
-            recall = TP/(TP+FN)
-            F1 = percent(2*precision*recall,(precision+recall),one=True)
-            if F1 > best['F1']:
-                best['F1'] = F1
-            accuracy = percent(TP+TN,(TP+TN+FP+FN+port+fail+othr+tout),one=True)
-            if accuracy > best['accuracy']:
-                best['accuracy'] = accuracy
 
     
         for key in best: # Cleanup the data to ensure that the equality test matches in bold_if()
