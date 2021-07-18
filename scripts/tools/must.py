@@ -49,7 +49,7 @@ class Tool(AbstractTool):
 
         subprocess.run("killall -9 mpirun 2>/dev/null", shell=True)
 
-        run_cmd(
+        ran = run_cmd(
             buildcmd=f"mpicc {filename} -o {binary}",
             execcmd=execcmd,
             cachefile=cachefile,
@@ -62,8 +62,11 @@ class Tool(AbstractTool):
         if os.path.isfile("./MUST_Output.html"):
             os.rename(f"./MUST_Output.html", f"{cachefile}.html")
 
+        if ran: # cleanup if that test was ran
+            subprocess.run(f"rm -rf must_temp core {binary}", shell=True, check=True)
+
     def teardown(self): 
-        subprocess.run("find -type f -a -executable | xargs rm -f", shell=True, check=True) # Remove generated cruft (binary files)
+        subprocess.run("find -type f -a -executable | xargs rm -f", shell=True, check=True) # Remove generated (binary files)
         subprocess.run("rm -rf must_temp core", shell=True, check=True)
 
     def parse(self, cachefile):
