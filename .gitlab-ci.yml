@@ -539,7 +539,7 @@ pages:
     when: always
     script:
         - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
-        - scripts/ensure_python3 ./MBI.py -c stats
+        - scripts/ensure_python3 ./MBI.py -c html
         - pwd ; ls
         - mkdir public
         - cp -r *.html gencodes img logs public/
