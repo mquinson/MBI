@@ -233,6 +233,7 @@ def cmd_run(rootdir, toolname, batchinfo):
     rootdir = os.path.dirname(os.path.abspath(__file__))
     os.makedirs(f'{rootdir}/logs/{toolname}', exist_ok=True)
     os.chdir(f'{rootdir}/logs/{toolname}')
+    print(f"Run tool {toolname} from {os.getcwd()} (batch {batchinfo}).")
 
     # Basic verification
     tools[toolname].ensure_image()
