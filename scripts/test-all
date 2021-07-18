@@ -12,6 +12,7 @@ cmd_docker() {
 }
 
 cmd_run() {
+    rm -rf gencodes
     docker run -it --rm --name MIB --volume $(pwd):/MBI mpi-bugs-initiative /MBI/MBI.py -c generate
 
     docker run -it --rm --name MIB --volume $(pwd):/MBI mpi-bugs-initiative /MBI/MBI.py -x parcoach -c run $@
