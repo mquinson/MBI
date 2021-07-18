@@ -68,11 +68,11 @@ class Tool(AbstractTool):
         if re.search('Detected a DEADLOCK in interleaving', output):
             return 'deadlock'
 
-        if re.search('resource leaks detected', output):
-            return 'resleak'
-
         if re.search('MBI_MSG_RACE', output):
             return 'MBI_MSG_RACE'
+
+        if re.search('resource leaks detected', output):
+            return 'resleak'
 
         if re.search("Attempting to use an MPI routine after finalizing MPI", output):
             return 'mpierr'
