@@ -88,6 +88,8 @@ for s in send + isend + psend:
         patterns['init2'] = init[r]("2")
         patterns['fini1'] = fini[s]("1")
         patterns['fini2'] = fini[r]("2")
+        patterns['start1'] = start[s]("1")
+        patterns['start2'] = start[r]("2")
         patterns['operation1'] = operation[s]("1")
         patterns['operation2'] = operation[r]("2")
         patterns['write1'] = write[s]("1")
