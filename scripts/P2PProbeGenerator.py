@@ -64,12 +64,24 @@ int main(int argc, char **argv) {
   	@{operation1a}@ /* MBIERROR1 */
   	@{operation1b}@ 
   	@{operation1c}@ 
+    @{fini1a}@
+    @{fini1b}@
+    @{fini1c}@
 	}else if (rank == 1){
 		dest=0, src=0;
   	@{operation2a}@ /* MBIERROR2 */
   	@{operation2b}@ 
   	@{operation2c}@ 
+    @{fini2a}@
+    @{fini2b}@
+    @{fini2c}@
 	}
+  @{free1a}@
+  @{free1b}@
+  @{free1c}@
+  @{free2a}@
+  @{free2b}@
+  @{free2c}@
 
   MPI_Finalize();
   printf("Rank %d finished normally\\n", rank);
@@ -95,6 +107,18 @@ for p in probe:
             patterns['init2a'] = init[p]("1")
             patterns['init2b'] = init[r]("3")
             patterns['init2c'] = init[s]("4")
+            patterns['fini1a'] = fini[p]("1")
+            patterns['fini1b'] = fini[s]("1")
+            patterns['fini1c'] = fini[r]("2")
+            patterns['fini2a'] = fini[p]("1")
+            patterns['fini2b'] = fini[r]("3")
+            patterns['fini2c'] = fini[s]("4")
+            patterns['free1a'] = free[p]("1")
+            patterns['free1b'] = free[s]("1")
+            patterns['free1c'] = free[r]("2")
+            patterns['free2a'] = free[p]("1")
+            patterns['free2b'] = free[r]("3")
+            patterns['free2c'] = free[s]("4")
             patterns['operation1a'] = operation[p]("1")
             patterns['operation1b'] = operation[s]("1")
             patterns['operation1c'] = operation[r]("2")
