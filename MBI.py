@@ -1033,7 +1033,7 @@ if args.c == 'all' or args.c == 'run':
         for x in args.x.split(','):
             if x not in tools:
                 raise Exception(f"The tool parameter you provided ({x}) is either incorect or not yet implemented.")
-            arg_tools.add(x)
+            arg_tools.append(x)
     else:
         raise Exception(f"The tool parameter you provided ({args.x}) is either incorect or not yet implemented.")
 elif ',' in args.x:
