@@ -11,7 +11,7 @@ class Tool(AbstractTool):
         AbstractTool.ensure_image(self, "-x hermes")
 
     def build(self, rootdir, cached=True):
-        if cached and os.path.exists(f"{rootdir}/builds/hermes/bin/ispcc"):
+        if cached and os.path.exists(f"{rootdir}/builds/hermes/bin/ispcc") and os.path.exists(f"{rootdir}/tools/hermes/clangTool/clangTool"):
             return
 #        subprocess.run("apt-get update && apt-get install -y libtinfo5 libtinfo-dev", shell=True, check=True)
 
