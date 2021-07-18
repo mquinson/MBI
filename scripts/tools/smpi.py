@@ -21,7 +21,7 @@ class Tool(tools.simgrid.Tool):
                 outfile.write(' <cluster id="acme" prefix="node-" radical="0-99" suffix="" speed="1Gf" bw="125MBps" lat="50us"/>\n')
                 outfile.write('</platform>\n')
 
-        execcmd = re.sub("mpirun", f"smpirun {extraargs} --cfg:smpi/finalization-barrier:on -platform ./cluster.xml", execcmd)
+        execcmd = re.sub("mpirun", f"smpirun {extraargs} --cfg=smpi/finalization-barrier:on -platform ./cluster.xml", execcmd)
         execcmd = re.sub('\${EXE}', binary, execcmd)
         execcmd = re.sub('\$zero_buffer', "", execcmd)
         execcmd = re.sub('\$infty_buffer', "", execcmd)
