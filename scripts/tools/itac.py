@@ -14,7 +14,7 @@ class Tool(AbstractTool):
         subprocess.run("wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB -O- | apt-key add -", shell=True, check=True)
         subprocess.run("echo 'deb https://apt.repos.intel.com/oneapi all main' > /etc/apt/sources.list.d/oneAPI.list", shell=True, check=True)
         subprocess.run("apt update && apt install -y intel-oneapi-itac intel-oneapi-compiler-dpcpp-cpp-and-cpp-classic intel-oneapi-mpi-devel", shell=True, check=True)
-        subprocess.run("source /opt/intel/oneapi/setvars.sh && printenv", shell=True, check=True)
+        subprocess.run('bash -c "source /opt/intel/oneapi/setvars.sh && printenv"', shell=True, check=True)
         # This is a manual dump of the printenv after installation and 'source /opt/intel/oneapi/setvars.sh'
         os.environ['PATH'] = '/opt/intel/oneapi/mpi/2021.3.0//libfabric/bin:/opt/intel/oneapi/mpi/2021.3.0//bin:/opt/intel/oneapi/itac/2021.3.0/bin:/opt/intel/oneapi/itac/2021.3.0/bin:/opt/intel/oneapi/dev-utilities/2021.3.0/bin:/opt/intel/oneapi/debugger/10.1.1/gdb/intel64/bin:/opt/intel/oneapi/compiler/2021.3.0/linux/lib/oclfpga/llvm/aocl-bin:/opt/intel/oneapi/compiler/2021.3.0/linux/lib/oclfpga/bin:/opt/intel/oneapi/compiler/2021.3.0/linux/bin/intel64:/opt/intel/oneapi/compiler/2021.3.0/linux/bin:/opt/intel/oneapi/compiler/2021.3.0/linux/ioc/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
         os.environ['TBBROOT'] = '/opt/intel/oneapi/tbb/2021.3.0/env/..'
