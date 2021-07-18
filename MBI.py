@@ -768,7 +768,7 @@ def cmd_latex(rootdir, toolnames):
     with open(f'{rootdir}/latex/results-summary.tex', 'w') as outfile:
         outfile.write('\\setlength\\tabcolsep{2pt} % default value: 6pt\n')
         outfile.write('\\begin{tabular}{|l|*{3}{c|}|*{4}{c|}|*{2}{c|}|*{4}{c|}|c|}\\hline\n')
-        outfile.write('  \\multirow{2}{*}{ \\textbf{Tool}} &  \\multicolumn{3}{c||}{Errors} &\\multicolumn{4}{c||}{Results}&\\multicolumn{2}{c||}{Robustness} &\\multicolumn{4}{c||}{Usefulness}&\\textbf{Overall}\\\\\\cline{2-15}\n')
+        outfile.write('  \\multirow{2}{*}{ \\textbf{Tool}} &  \\multicolumn{3}{c||}{Errors} &\\multicolumn{4}{c||}{Results}&\\multicolumn{2}{c||}{Robustness} &\\multicolumn{4}{c||}{Usefulness}&\\textbf{Overall}\\\\\\cline{2-14}\n')
         outfile.write('& \\textbf{CE}&\\textbf{TO}&\\textbf{RE}  & \\textbf{TP} & \\textbf{TN} & \\textbf{FP} & \\textbf{FN} &\\textbf{Coverage} & \\textbf{Conclusiveness} & \\textbf{Specificity}&\\textbf{Recall}& \\textbf{Precision}& \\textbf{F1 Score}    & \\textbf{accuracy}\\\\\\hline \n')
 
         # Search the best values
