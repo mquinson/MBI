@@ -430,7 +430,7 @@ iframe {
             if test['detail'] != 'OK':
                 outHTML.write(f" <li><a href='#{possible_details[test['detail']]}'>{displayed_name[ possible_details[test['detail']]]}</a> (scope: {error_scope[possible_details[test['detail']]]})\n")
             else:
-                outHTML.write(f" <li><a href='OK'>{displayed_name[ possible_details[test['detail']]]}</a>\n")
+                outHTML.write(f" <li><a href='#OK'>{displayed_name[ possible_details[test['detail']]]}</a>\n")
 
       outHTML.write("  </ul>\n <li><a href='#metrics'>Summary metrics</a></li></ul>\n")
 
