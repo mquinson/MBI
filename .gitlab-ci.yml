@@ -188,6 +188,8 @@ test-must-10:
 test-must-all:
     stage: gather
     needs:
+        - job: build-must
+          artifacts: true
         - job: test-must-1
           artifacts: true
         - job: test-must-2
