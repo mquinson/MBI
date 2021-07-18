@@ -528,7 +528,7 @@ latex:
         - apt update ; apt -y install texlive-latex-base texlive-latex-extra texlive-pictures
         - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -c latex
-        - cd Data ; ./gen_latex.py ; cd ..
+        - cd script ; ./tools/gen_latex.py ; cd ..
         - cd latex ; pdflatex -batch dashboard.tex ; cd ..
     artifacts:
         untracked: false
