@@ -319,11 +319,15 @@ fini['MPI_Ssend'] = lambda n: ""
 free['MPI_Ssend'] = lambda n: ""
 write['MPI_Ssend'] = lambda n: ""
 
-init['MPI_Bsend'] = lambda n: f'int buf{n}=rank;'
+init['MPI_Bsend'] = lambda n: (f'int buf{n}=rank;\n'
+            + f'int buffer_attached_size{n} = MPI_BSEND_OVERHEAD + sizeof(int);\n' 
+            + f'char* buffer_attached{n} = (char*)malloc(buffer_attached_size{n});\n'
+            + f'MPI_Buffer_attach(buffer_attached{n}, buffer_attached_size{n});')
 start['MPI_Bsend'] = lambda n: ""
 operation['MPI_Bsend'] = lambda n: f'MPI_Bsend(&buf{n}, buff_size, type, dest, stag, newcom);'
 fini['MPI_Bsend'] = lambda n: ""
-free['MPI_Bsend'] = lambda n: ""
+free['MPI_Bsend'] = (lambda n: f'MPI_Buffer_detach(&buffer_attached{n}, &buffer_attached_size{n});\n'
+            + f'free(buffer_attached{n});')
 write['MPI_Bsend'] = lambda n: ""
 
 init['MPI_Recv'] = lambda n: f'int buf{n}=-1; MPI_Status sta{n};'
