@@ -185,7 +185,7 @@ free['MPI_Igather'] = lambda n: f'if(req{n} != MPI_REQUEST_NULL) MPI_Request_fre
 
 init['MPI_Iscatter'] = lambda n: f"MPI_Request req{n}=MPI_REQUEST_NULL;MPI_Status sta{n};int val{n}, buf{n}[buff_size];"
 start['MPI_Iscatter'] = lambda n: ""
-operation['MPI_Iscatter'] = lambda n: f"MPI_Iscatter(&buf{n}, 1, type, &val{n}, 1, type, 0, newcom,&req{n});"
+operation['MPI_Iscatter'] = lambda n: f"MPI_Iscatter(&buf{n}, 1, type, &val{n}, 1, type, root, newcom,&req{n});"
 fini['MPI_Iscatter'] = lambda n: f"MPI_Wait(&req{n},&sta{n});"
 free['MPI_Iscatter'] = lambda n: f'if(req{n} != MPI_REQUEST_NULL) MPI_Request_free(&req{n});'
 write['MPI_Iscatter'] = lambda n: f'buf{n}[0]++;'
