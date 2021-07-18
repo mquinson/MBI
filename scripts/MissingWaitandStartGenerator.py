@@ -172,6 +172,7 @@ for c in pcoll + icoll + ibarrier:
     replace['outcome'] = 'ERROR: MissingWait'
     replace['errormsg'] = 'ERROR: MissingWait'
     replace['fini1'] = ' /* MBIERROR MISSING: ' + opwait + ' */' 
+    replace['free1'] = ' /* MISSING: ' + replace['free1'] + ' (to not free the buffer before an internal wait */'
     make_file(template, f'MissingWait_{c}_nok.c', replace)
 
     if c in pcoll:		
