@@ -56,11 +56,13 @@ int main(int argc, char **argv) {
 	if (rank == 0) {
 		dest = 1; src = 1;
   	@{operation1}@ 
+		@{start1}@
 		@{write1}@ /* MBIERROR1 */ 
 		@{fini1}@
 	}else if (rank == 1){
 		dest = 0; src = 0;
   	@{operation2}@
+		@{start2}@
 		@{write2}@ /* MBIERROR2 */
 		@{fini2}@
 	}
