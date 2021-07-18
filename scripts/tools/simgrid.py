@@ -53,7 +53,7 @@ class Tool(AbstractTool):
         execcmd = re.sub('\$infty_buffer', "--cfg=smpi/buffering:infty", execcmd)
 
         run_cmd(
-            buildcmd=f"smpicc {filename} -g -Wl,-znorelro -Wl,-znoseparate-code -o {binary}",
+            buildcmd=f"smpicc {filename} -trace-call-location -g -Wl,-znorelro -Wl,-znoseparate-code -o {binary}",
             execcmd=execcmd,
             cachefile=cachefile,
             filename=filename,
