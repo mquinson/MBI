@@ -1057,5 +1057,5 @@ elif args.c == 'html':
         toolnames=[args.x]
     cmd_html(rootdir, toolnames=toolnames)
 else:
-    print(f"Invalid command '{args.c}'. Please choose one of 'all', 'build', 'run', 'html' or 'latex'")
+    print(f"Invalid command '{args.c}'. Please choose one of 'all', 'generate', 'build', 'run', 'html' or 'latex'")
     sys.exit(1)
