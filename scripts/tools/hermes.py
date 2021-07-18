@@ -91,6 +91,9 @@ class Tool(AbstractTool):
             return 'mpierr'
         if re.search('Fatal error in MPI', output):
             return 'mpierr'
+            
+        if re.search('Command killed by signal 15, elapsed time: 300', output):
+            return 'timeout'
 
         print (f">>>>[ INCONCLUSIVE ]>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ({cachefile})")
         print(output)

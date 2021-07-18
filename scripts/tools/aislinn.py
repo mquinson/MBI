@@ -55,7 +55,7 @@ class Tool(AbstractTool):
         execcmd = re.sub('\$infty_buffer', "--send-protocol=eager", execcmd)
         execcmd = re.sub('-np ', '-p=', execcmd)
 
-        run_cmd(
+        ran = run_cmd(
             buildcmd=f"aislinn-cc -g {filename} -o {binary}",
             execcmd=execcmd,
             cachefile=cachefile,
@@ -67,7 +67,8 @@ class Tool(AbstractTool):
         if os.path.exists("./report.html"):
             os.rename("./report.html", f"{binary}_{id}.html")
             
-        subprocess.run("rm -f vgcore.*", shell=True, check=True) # Save disk space ASAP
+        if ran:
+            subprocess.run(f"rm -f {binary} vgcore.*", shell=True, check=True) # Save disk space ASAP
 
     def teardown(self): # Remove generated cruft (binary files)
         subprocess.run("find -type f -a -executable | xargs rm -f", shell=True, check=True)
