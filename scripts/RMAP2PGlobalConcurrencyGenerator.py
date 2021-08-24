@@ -10,6 +10,8 @@ template = """// @{generatedby}@
   Description: @{shortdesc}@
     @{longdesc}@
 
+	Version of MPI: Conforms to MPI 2, does not require MPI 3 implementation
+
 BEGIN_MPI_FEATURES
 	P2P!basic: @{p2pfeature}@
 	P2P!nonblocking: @{ip2pfeature}@
