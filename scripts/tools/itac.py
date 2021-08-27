@@ -18,10 +18,11 @@ class Tool(AbstractTool):
         subprocess.run('bash -c "source /opt/intel/oneapi/setvars.sh && printenv" > environment.txt', shell=True, check=True)
         with open('environment.txt', "r") as input:
             for line in input:
-                m = re.match('([^=]*)=(.*)', line)
-                if m is None:
-                    raise Exception(f"Parse error while trying to integrating the Intel environment: {line}")
-                os.environ[m.group(1)] = m.group(2)
+                if re.search('=', line) is not None:
+                    m = re.match('([^=]*)=(.*)', line)
+                    if m is None:
+                        raise Exception(f"Parse error while trying to integrating the Intel environment: {line}")
+                    os.environ[m.group(1)] = m.group(2)
 
     def run(self, execcmd, filename, binary, id, timeout, batchinfo):
         cachefile = f'{binary}_{id}'
