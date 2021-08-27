@@ -51,7 +51,7 @@ def run_cmd(buildcmd, execcmd, cachefile, filename, binary, timeout, batchinfo, 
     The result is cached if possible, and the test is rerun only if the `test.txt` (containing the tool output) or the `test.elapsed` (containing the timing info) do not exist, or if `test.md5sum` (containing the md5sum of the code to compile) does not match.
 
     Parameters:
-     - buildcmd and execcmd are shell commands to run. 
+     - buildcmd and execcmd are shell commands to run. buildcmd can be any shell line (incuding && groups), but execcmd must be a single binary to run. 
      - cachefile is the name of the test
      - filename is the source file containing the code
      - binary the file name in which to compile the code
