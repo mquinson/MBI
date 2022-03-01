@@ -34,13 +34,13 @@ END_MBI_TESTS
 #include <stdio.h>
 #include <stdlib.h>
 
+#define N 10
 
 int main(int argc, char **argv) {
   int nprocs = -1;
   int rank = -1;
 	MPI_Win win;
-  int W; // Window buffer
-  int NUM_ELEMT=1;
+  int *winbuf= malloc(N * sizeof(int)); // Window buffer
 	int buff_size = 1;
 
   MPI_Init(&argc, &argv);
@@ -54,9 +54,9 @@ int main(int argc, char **argv) {
 	MPI_Comm newcom = MPI_COMM_WORLD;
 	MPI_Datatype type = MPI_INT;
 	int stag=0, rtag=0;
-  W = nprocs;
+  winbuf[0] = nprocs;
 
-  MPI_Win_create(&W, NUM_ELEMT * sizeof(int), sizeof(int), MPI_INFO_NULL, MPI_COMM_WORLD, &win);
+  MPI_Win_create(&winbuf, N*sizeof(int), sizeof(int), MPI_INFO_NULL, MPI_COMM_WORLD, &win);
 
 
 	@{init1}@
@@ -74,11 +74,13 @@ int main(int argc, char **argv) {
 		@{fini2}@
 	}else if (rank == 1){
 		int src=2;
+		buf3 = winbuf[0];
  		@{operation3}@ /* MBIERROR2 */
 		@{fini3}@
 	}
 
   MPI_Win_free(&win);
+	free(winbuf);
 
   MPI_Finalize();
   printf("Rank %d finished normally\\n", rank);
@@ -110,7 +112,7 @@ for p in put + get:
              
              replace = patterns 
              replace['shortdesc'] = 'Global Concurrency error.' 
-             replace['longdesc'] = 'Global Concurrency error. Concurrent access of variable W by @{p}@ and @{r}@'
+             replace['longdesc'] = 'Global Concurrency error. Concurrent access of variable winbuf by @{p}@ and @{r}@'
              replace['outcome'] = 'ERROR: GlobalConcurrency' 
-             replace['errormsg'] = 'Global Concurrency error. @{p}@ at @{filename}@:@{line:MBIERROR1}@ accesses the window of process 1. Process 1 receives data from process 2 and uses variable W. W in process 1 is then nondeterministic.'
+             replace['errormsg'] = 'Global Concurrency error. @{p}@ at @{filename}@:@{line:MBIERROR1}@ accesses the window of process 1. Process 1 receives data from process 2 and uses variable winbuf. winbuf in process 1 is then nondeterministic.'
              make_file(template, f'GlobalConcurrency_{p}_{s}_{r}_nok.c', replace)

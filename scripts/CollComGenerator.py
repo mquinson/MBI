@@ -94,7 +94,7 @@ for c in coll + icoll + ibarrier:
     replace['outcome'] = 'OK'
     replace['errormsg'] = ''
     replace['change_com'] = '/* No error injected here */'
-    make_file(template, f'CollComMatching_{c}_ok.c', replace)
+    make_file(template, f'ParamMatching_Com_{c}_ok.c', replace)
 
     # Generate the incorrect communicator matching
     replace = patterns
@@ -103,7 +103,7 @@ for c in coll + icoll + ibarrier:
     replace['outcome'] = 'ERROR: CommunicatorMatching'
     replace['errormsg'] = 'Communicator mistmatch in collectives. @{c}@ at @{filename}@:@{line:MBIERROR}@ has newcom or MPI_COMM_WORLD as a communicator.'
     replace['change_com'] = 'if (rank % 2)\n    newcom = MPI_COMM_WORLD; /* MBIERROR */'
-    make_file(template, f'CollComMatching_{c}_nok.c', replace)
+    make_file(template, f'ParamMatching_Com_{c}_nok.c', replace)
 
     # Generate the coll with newcom=MPI_COMM_NULL
     replace = patterns
@@ -112,4 +112,4 @@ for c in coll + icoll + ibarrier:
     replace['outcome'] = 'ERROR: InvalidCommunicator'
     replace['errormsg'] = 'Invalid communicator. @{c}@ at @{filename}@:@{line:MBIERROR}@ has MPI_COMM_NULL as a communicator.'
     replace['change_com'] = 'newcom = MPI_COMM_NULL; /* MBIERROR */'
-    make_file(template, f'CollComNull_{c}_nok.c', replace)
+    make_file(template, f'InvalidParam_ComNull_{c}_nok.c', replace)

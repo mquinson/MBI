@@ -20,6 +20,7 @@ RUN apt-get update --fix-missing && apt-get -y -qq install autoconf automake aut
                            libelf-dev libevent-dev libllvm9 libncurses5 libunwind-dev libtinfo-dev \
                            libtool libxml2-dev libz3-dev llvm-9 llvm-9-dev lsof default-jdk-headless psmisc \
                            python-is-python2 python-jinja2 python2.7 python3-pip quilt valgrind wget z3 zlib1g-dev && \
+		apt-get install apt-transport-https ca-certificates -y && update-ca-certificates && \
     apt-get autoremove -yq && \
     apt-get clean -yq
 

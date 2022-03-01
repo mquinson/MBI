@@ -95,7 +95,7 @@ for call in tcoll:
     replace['longdesc'] = f'{call} correctly used' 
     replace['outcome'] = 'OK'
     replace['errormsg'] = ''
-    make_file(template, f'CallParamCorrect_{call}.c', replace)
+    make_file(template, f'ResLeak_{call}_ok.c', replace)
 
     # Generate the resleak
     replace = patterns
@@ -104,7 +104,7 @@ for call in tcoll:
     replace['outcome'] = f'ERROR: {error[call]}'
     replace['errormsg'] = 'Resleak. @{call}@ at @{filename}@:@{line:MBIERROR}@ has no free.'
     replace['fini'] = ' /* MBIERROR MISSING: ' + missing + ' */'
-    make_file(template, f'Resleak_{call}_nok.c', replace)
+    make_file(template, f'ResLeak_{call}_nok.c', replace)
 
     # Generate multiple resleak
     replace = patterns
@@ -117,4 +117,4 @@ for call in tcoll:
     replace['cond'] = '			if (j < PARAM_PER_ITERATION - PARAM_LOST_PER_ITERATION) {'
     replace['fini'] = fini[call]("1") + ' /* MBIERROR */'
     replace['end'] = '			}\n 		}\n 	}'
-    make_file(template, f'Resleak_multiple_{call}_nok.c', replace)
+    make_file(template, f'ResLeak_multiple_{call}_nok.c', replace)

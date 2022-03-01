@@ -105,5 +105,5 @@ for s in send + isend:
         replace['longdesc'] = f'The code assumes a fixed order in the reception of messages while the message ordering is non-deterministic.' 
         replace['outcome'] = 'ERROR: MessageRace' 
         replace['errormsg'] = 'P2P message race which can cause a deadlock. @{r}@ at @{filename}@:@{line:MBIERROR}@ is called with ANY_SRC.'
-        make_file(template, f'P2PMessageRace_{r}_{s}_nok.c', replace)
+        make_file(template, f'MessageRace_{r}_{s}_nok.c', replace)
 

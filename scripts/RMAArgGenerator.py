@@ -5,12 +5,11 @@ from generator_utils import *
 template = """// @{generatedby}@
 /* ///////////////////////// The MPI Bugs Initiative ////////////////////////
 
-  Origin: @{origin}@
+  Origin: @{origin}@ 
 
   Description: @{shortdesc}@
     @{longdesc}@
 
-	Version of MPI: Conforms to MPI 1.1, does not require MPI 2 implementation
 
 BEGIN_MPI_FEATURES
 	P2P!basic: Lacking 
@@ -31,42 +30,45 @@ END_MBI_TESTS
 //////////////////////       End of MBI headers        /////////////////// */
 
 #include <mpi.h>
+#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 #define N 10
 
 int main(int argc, char **argv) {
-  int nprocs = -1 , rank = -1;
-	MPI_Win win;
-  int *winbuf = @{malloc}@ // Window buffer
+  int rank, numProcs;
 
   MPI_Init(&argc, &argv);
-  MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
+  MPI_Comm_size(MPI_COMM_WORLD, &numProcs);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-  if (nprocs < 2)
-    printf("MBI ERROR: This test needs at least 2 processes to produce a bug!\\n");
+	int *winbuf = malloc(N * sizeof(int));
 
-	MPI_Datatype type = MPI_INT;
-	int target = (rank + 1) % nprocs;
-
+	MPI_Win win;
   MPI_Win_create(&winbuf, N * sizeof(int), 1, MPI_INFO_NULL, MPI_COMM_WORLD, &win);
 
+	MPI_Datatype type = MPI_INT;
+	int target = (rank + 1) % numProcs; 
 
-  @{epoch}@
-  
-	@{init}@ 
-	@{change_arg}@
- 	@{operation}@ /* MBIERROR */
+	if(rank == 0){
+  	@{epoch}@
+		@{change_arg}@
+		@{init}@ 
+ 		@{operation}@ /* MBIERROR2 */
 
-  @{finEpoch}@
+  	@{finEpoch}@
+	} else {
+  	@{epoch}@
+
+  	@{finEpoch}@
+	}
 
   MPI_Win_free(&win);
-  free(winbuf);
+
+	free(winbuf);
 
   MPI_Finalize();
-  printf("Rank %d finished normally\\n", rank);
   return 0;
 }
 """
@@ -86,7 +88,6 @@ for e in epoch:
         patterns['init'] = init[p]("1") 
         patterns['operation'] = operation[p]("1") 
         patterns['change_arg'] = ""
-        patterns['malloc'] = "malloc(N * sizeof(int));"
 
         # Generate a code with a null type 
         replace = patterns 
@@ -95,36 +96,14 @@ for e in epoch:
         replace['outcome'] = 'ERROR: InvalidDatatype' 
         replace['change_arg'] = 'type = MPI_DATATYPE_NULL;' 
         replace['errormsg'] = '@{p}@ at @{filename}@:@{line:MBIERROR}@ has MPI_DATATYPE_NULL as a type'
-        make_file(template, f'InvalidParam_DatatypeNull_{e}_{p}_nok.c', replace)
-
-        # Generate a code with a null buffer 
-        replace = patterns
-        replace['origin'] = 'MPI-Corrbench' 
-        replace['shortdesc'] = 'nullptr is invalid in one-sided operation.' 
-        replace['longdesc'] = 'A one-sided operation has an invalid buffer.'
-        replace['outcome'] = 'ERROR: InvalidBuffer' 
-        replace['change_arg'] = '*localbuf1 = NULL;' 
-        replace['errormsg'] = '@{p}@ at @{filename}@:@{line:MBIERROR}@ has an invalid buffer'
-        make_file(template, f'InvalidParam_BufferNull_{e}_{p}_nok.c', replace)
+        make_file(template, f'InvalidParam_BufferNullCond_{e}_{p}_nok.c', replace)
 
         # Generate a code with an invalid type 
         replace = patterns 
-        replace['origin'] = 'MBI' 
         replace['shortdesc'] = 'Invalid argument in one-sided operation.' 
         replace['longdesc'] = 'Use of an invalid datatype in one-sided operation.'
         replace['outcome'] = 'ERROR: InvalidDatatype' 
         replace['change_arg'] = 'MPI_Type_contiguous (2, MPI_INT, &type); MPI_Type_commit(&type);MPI_Type_free(&type); /* MBIERROR2 */' 
         replace['errormsg'] = 'Invalid Datatype in @{p}@ at @{filename}@:@{line:MBIERROR}@'
-        make_file(template, f'InvalidParam_Datatype_{e}_{p}_nok.c', replace)
+        make_file(template, f'InvalidParam_DatatypeCond_{e}_{p}_nok.c', replace)
 
-        # Generate a code with invalid buffer
-        replace = patterns 
-        patterns['origin'] = "MPI-Corrbench"
-        replace['shortdesc'] = 'Invalid invalid buffer (buffer must be allocated)' 
-        replace['longdesc'] = 'Use of an invalid buffer in MPI_Win_create.'
-        replace['outcome'] = 'ERROR: InvalidBuffer' 
-        patterns['malloc'] = "/* MBIERROR2 */"
-        patterns['operation'] = ""
-        replace['change_arg'] = ""
-        replace['errormsg'] = 'Invalid buffer in Win_create at @{filename}@:@{line:MBIERROR2}@'
-        make_file(template, f'InvalidParam_InvalidBufferWinCreate_{e}_{p}_nok.c', replace)

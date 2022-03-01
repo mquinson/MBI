@@ -96,7 +96,7 @@ for c in tcoll4color:
     replace['outcome'] = 'ERROR: InvalidOtherArg'
     replace['errormsg'] = 'Invalid Argument in collective. @{c}@ at line @{line:MBIERROR2}@ has an invalid color'
     replace['change_arg'] = 'color=-10; /* MBIERROR1*/'
-    make_file(template, f'CollInvalidOtherArg_{c}_nok.c', replace)
+    make_file(template, f'InvalidParam_OtherArg_{c}_nok.c', replace)
 
 
 ##################################
@@ -125,7 +125,7 @@ for c in coll4root + icoll4root:
     replace['outcome'] = 'ERROR: RootMatching' 
     replace['errormsg'] = 'Collective root mistmatch. @{c}@ at @{filename}@:@{line:MBIERROR2}@ has 0 or 1 as a root.' 
     replace['change_arg'] = 'if (rank % 2)\n		root = 1; /* MBIERROR1 */'
-    make_file(template, f'CollRootMatching_{c}_nok.c', replace)
+    make_file(template, f'ParamMatching_Root_{c}_nok.c', replace)
 
     # Generate the call with root=-1 (invalid root)
     replace = patterns
@@ -134,7 +134,7 @@ for c in coll4root + icoll4root:
     replace['outcome'] = 'ERROR: InvalidRoot'
     replace['errormsg'] = 'Invalid collective root.  @{c}@ at @{filename}@:@{line:MBIERROR2}@ has -1 as a root while communicator MPI_COMM_WORLD requires ranks in range 0 to 1.'
     replace['change_arg'] = 'root = -1; /* MBIERROR1 */'
-    make_file(template, f'CollRootNeg_{c}_nok.c', replace)
+    make_file(template, f'InvalidParam_RootNeg_{c}_nok.c', replace)
 
     # Generate the call with root=2 (root not in communicator) 
     replace = patterns
@@ -143,7 +143,7 @@ for c in coll4root + icoll4root:
     replace['outcome'] = 'ERROR: InvalidRoot'
     replace['errormsg'] = 'Invalid collective root.  @{c}@ at @{filename}@:@{line:MBIERROR2}@ has 2 as a root while communicator MPI_COMM_WORLD requires ranks in range 0 to 1.' 
     replace['change_arg'] = 'root = nprocs; /* MBIERROR1 */'
-    make_file(template, f'CollRootTooLarge_{c}_nok.c', replace)
+    make_file(template, f'InvalidParam_RootTooLarge_{c}_nok.c', replace)
 
 
 ##################################
@@ -173,7 +173,7 @@ for c in coll + icoll:
     replace['outcome'] = 'ERROR: DatatypeMatching'
     replace['errormsg'] = 'Collective datatype mistmatch. @{c}@ at @{filename}@:@{line:MBIERROR2}@ has MPI_INT or MPI_FLOAT as a datatype.'
     replace['change_arg'] = 'if (rank % 2)\n    type = MPI_FLOAT; /* MBIERROR1 */'
-    make_file(template, f'CollDataMatching_{c}_nok.c', replace)
+    make_file(template, f'ParamMatching_Data_{c}_nok.c', replace)
 
     # Generate the call with null type (invalid datatype)
     replace = patterns
@@ -182,7 +182,7 @@ for c in coll + icoll:
     replace['outcome'] = 'ERROR: InvalidDatatype'
     replace['errormsg'] = 'Invalid Datatype. @{c}@ at @{filename}@:@{line:MBIERROR2}@ has an invalid datatype.'
     replace['change_arg'] = 'type=MPI_DATATYPE_NULL; /* MBIERROR1 */'
-    make_file(template, f'CollDataNull_{c}_nok.c', replace)
+    make_file(template, f'InvalidParam_DataNull_{c}_nok.c', replace)
 
 
 ##################################
@@ -211,7 +211,7 @@ for c in coll4op + icoll4op:
     replace['outcome'] = 'ERROR: OperatorMatching'
     replace['errormsg'] = 'Collective operator mistmatch. @{c}@ at @{filename}@:@{line:MBIERROR2}@ has MPI_MAX or MPI_SUM as an operator.'
     replace['change_arg'] = 'if (rank % 2)\n    op = MPI_MAX; /* MBIERROR1 */'
-    make_file(template, f'CollOpMatching_{c}_nok.c', replace)
+    make_file(template, f'ParamMatching_Op_{c}_nok.c', replace)
 
     # Generate the call with Op=MPI_OP_NULL (invalid op)
     replace = patterns
@@ -220,4 +220,4 @@ for c in coll4op + icoll4op:
     replace['outcome'] = 'ERROR: InvalidOperator'
     replace['errormsg'] = 'Invalid Operator. @{c}@ at @{filename}@:@{line:MBIERROR2}@ has MPI_OP_NULL as an operator.'
     replace['change_arg'] = 'op = MPI_OP_NULL; /* MBIERROR1 */'
-    make_file(template, f'CollOpNull_{c}_nok.c', replace)
+    make_file(template, f'InvalidParam_OpNull_{c}_nok.c', replace)

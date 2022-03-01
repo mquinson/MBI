@@ -31,9 +31,13 @@ probe = ['MPI_Probe']
 epoch = ['MPI_Win_fence', 'MPI_Win_lock', 'MPI_Win_lock_all']
 rma = ['MPI_Get', 'MPI_Put']
 get = ['MPI_Get']
+rget = ['MPI_RGet']
 put = ['MPI_Put'] 
+rput = ['MPI_RPut'] 
 store = ['store']
 load = ['load']
+rstore = ['rstore']
+rload = ['rload']
 loadstore = ['loadstore']
 
 
@@ -387,17 +391,29 @@ finEpoch['MPI_Win_lock'] =lambda n: 'MPI_Win_unlock(target, win);'
 epoch['MPI_Win_lock_all'] =lambda n: 'MPI_Win_lock_all(0,win);'
 finEpoch['MPI_Win_lock_all'] =lambda n: 'MPI_Win_unlock_all(win);'
 
-init['MPI_Put'] = lambda n: f'int localbuf{n} = 0;'
-operation['MPI_Put'] = lambda n: f'MPI_Put(&localbuf{n}, NUM_ELEMT, MPI_INT, target, 0, NUM_ELEMT, type, win);'
+init['MPI_Put'] = lambda n: f'int localbuf{n} = 12345;'
+operation['MPI_Put'] = lambda n: f'MPI_Put(&localbuf{n}, N, MPI_INT, target, 0, N, type, win);'
 
-init['MPI_Get'] = lambda n: f'int localbuf{n} = 10;'
-operation['MPI_Get'] = lambda n: f'MPI_Get(&localbuf{n}, NUM_ELEMT, MPI_INT, target, 0, NUM_ELEMT, type, win);' 
+init['MPI_RPut'] = lambda n: "" 
+operation['MPI_RPut'] = lambda n: f'MPI_Put(&winbuf[20], N, MPI_INT, target, 0, N, type, win);'
+
+init['MPI_Get'] = lambda n: f'int localbuf{n} = 54321;'
+operation['MPI_Get'] = lambda n: f'MPI_Get(&localbuf{n}, N, MPI_INT, target, 0, N, type, win);' 
+
+init['MPI_RGet'] = lambda n: ""
+operation['MPI_RGet'] = lambda n: f'MPI_Get(&winbuf[20], N, MPI_INT, target, 0, N, type, win);' 
 
 init['store'] = lambda n: f'int localbuf{n} = 0;'
 operation['store'] = lambda n: f'localbuf{n} = 8;'
 
+init['rstore'] = lambda n: ""
+operation['rstore'] = lambda n: f'winbuf[20] = 12346;'
+
 init['load'] = lambda n: f'int localbuf{n} = 0;'
-operation['load'] = lambda n: f'int load = localbuf{n} % 2;'
+operation['load'] = lambda n: f'int load = localbuf{n};'
+
+init['rload'] = lambda n: "" 
+operation['rload'] = lambda n: "int load = winbuf[20];"
 
 init['loadstore'] = lambda n: f'int localbuf{n} = 0;'
 operation['loadstore'] = lambda n: f'if (localbuf{n} % 2 == 0)  localbuf{n}++; '

@@ -107,7 +107,7 @@ for p1 in allsend:
         replace['outcome'] = 'ERROR: DatatypeMatching' 
         replace['errormsg'] = 'P2P Datatype mismatch. @{p1}@ at @{filename}@:@{line:MBIERROR1}@ and @{p2}@ at @{filename}@:@{line:MBIERROR2}@ have MPI_INT and MPI_FLOAT as a datatype' 
         replace['change_arg'] = 'if (rank == 0)\n    type = MPI_FLOAT; /* MBIERROR3 */'
-        make_file(template, f'P2PDataMatching_{p1}_{p2}_nok.c', replace)
+        make_file(template, f'ParamMatching_Data_{p1}_{p2}_nok.c', replace)
 
     		# Generate code with a null type 
         replace = patterns 
@@ -116,7 +116,7 @@ for p1 in allsend:
         replace['outcome'] = 'ERROR: InvalidDatatype' 
         replace['errormsg'] = 'Invalid datatype in P2P. @{p1}@ at @{filename}@:@{line:MBIERROR1}@ and @{p2}@ at @{filename}@:@{line:MBIERROR2}@ have MPI_DATATYPE_NULL as a type' 
         replace['change_arg'] = 'type = MPI_DATATYPE_NULL; /* MBIERROR3 */'
-        make_file(template, f'P2PDatatypeNull_{p1}_{p2}_nok.c', replace)
+        make_file(template, f'InvalidParam_DatatypeNull_{p1}_{p2}_nok.c', replace)
 
     		# Generate code with an invalid datatype 
         replace = patterns 
@@ -125,7 +125,7 @@ for p1 in allsend:
         replace['outcome'] = 'ERROR: InvalidDatatype' 
         replace['errormsg'] = 'Invalid datatype in P2P. @{p1}@ at @{filename}@:@{line:MBIERROR1}@ and @{p2}@ at @{filename}@:@{line:MBIERROR2}@ have an invalid datatype' 
         replace['change_arg'] = 'MPI_Type_contiguous (2, MPI_INT, &type); MPI_Type_commit(&type);MPI_Type_free(&type); /* MBIERROR3 */'
-        make_file(template, f'P2PInvalidDatatype_{p1}_{p2}_nok.c', replace)
+        make_file(template, f'InvalidParam_Datatype_{p1}_{p2}_nok.c', replace)
 
 #################################
 # Generate code with tag mismatch
@@ -160,7 +160,7 @@ for p1 in allsend:
         replace['outcome'] = 'ERROR: TagMatching' 
         replace['errormsg'] = 'P2P tag mismatch. @{p1}@ at @{filename}@:@{line:MBIERROR1}@ and @{p2}@ at @{filename}@:@{line:MBIERROR2}@ use different tag.'
         replace['change_arg'] = 'stag=0; rtag=1;/* MBIERROR */'
-        make_file(template, f'P2PTagMatching_{p1}_{p2}_nok.c', replace)
+        make_file(template, f'ParamMatching_Tag_{p1}_{p2}_nok.c', replace)
 
     		# Generate the code with an invalid tag 
         replace = patterns 
@@ -169,7 +169,7 @@ for p1 in allsend:
         replace['outcome'] = 'ERROR: InvalidTag' 
         replace['errormsg'] = 'Invalid Tag. @{p1}@ at @{filename}@:@{line:MBIERROR1}@ and @{p2}@ at @{filename}@:@{line:MBIERROR2}@ use an invalid tag.' 
         replace['change_arg'] = 'stag=-1; rtag=-2;/* MBIERROR */'
-        make_file(template, f'P2PInvalidTag_{p1}_{p2}_nok.c', replace)
+        make_file(template, f'InvalidParam_Tag_{p1}_{p2}_nok.c', replace)
 
     		# Generate a correct code using MPI_ANY_TAG 
         replace = patterns 
@@ -178,4 +178,4 @@ for p1 in allsend:
         replace['outcome'] = 'OK' 
         replace['errormsg'] = 'OK'
         replace['change_arg'] = 'rtag=MPI_ANY_TAG;'
-        make_file(template, f'P2PTagMatching_{p1}_{p2}_ok.c', replace)
+        make_file(template, f'ParamMatching_Tag_{p1}_{p2}_ok.c', replace)

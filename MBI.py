@@ -39,7 +39,7 @@ os.environ["LC_ALL"] = "C"
 # Associate all possible detailed outcome to a given error scope. Scopes must be sorted alphabetically.
 possible_details = {
     # scope limited to one call
-    'InvalidCommunicator':'AInvalidParam', 'InvalidDatatype':'AInvalidParam', 'InvalidRoot':'AInvalidParam', 'InvalidTag':'AInvalidParam', 'InvalidWindow':'AInvalidParam', 'InvalidOperator':'AInvalidParam', 'InvalidOtherArg':'AInvalidParam', 'ActualDatatype':'AInvalidParam',
+    'InvalidBuffer':'AInvalidParam', 'InvalidCommunicator':'AInvalidParam', 'InvalidDatatype':'AInvalidParam', 'InvalidRoot':'AInvalidParam', 'InvalidTag':'AInvalidParam', 'InvalidWindow':'AInvalidParam', 'InvalidOperator':'AInvalidParam', 'InvalidOtherArg':'AInvalidParam', 'ActualDatatype':'AInvalidParam',
     'InvalidSrcDest':'AInvalidParam', 
     # scope: Process-wide
 #    'OutOfInitFini':'BInitFini', 

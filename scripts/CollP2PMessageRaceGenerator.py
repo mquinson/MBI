@@ -134,6 +134,6 @@ for s in send + isend:
             replace = patterns 
             replace['shortdesc'] = 'Message race'
             replace['longdesc'] = 'Message race in @{r}@ with @{c}@.'
-            replace['outcome'] = 'ERROR: CallMatching' 
+            replace['outcome'] = 'ERROR: MessageRace' 
             replace['errormsg'] = 'Message race. The use of wildcard receive calls (@{r}@ at @{filename}@:@{line:MBIERROR1}@ and @{r}@ at @{filename}@:@{line:MBIERROR2}@) leads to nondeterministic matching.'
-            make_file(template, f'CollP2PCallMatching_{c}_{s}_{r}_nok.c', replace)
+            make_file(template, f'MessageRace_{c}_{s}_{r}_nok.c', replace)

@@ -94,7 +94,7 @@ for p in send + ssend + bsend + recv + irecv + isend:
     replace['longdesc'] = 'Process 0 calls @{p}@ and is not matched'
     replace['outcome'] = 'ERROR: CallMatching'
     replace['errormsg'] = 'P2P mistmatch. @{p}@ at @{filename}@:@{line:MBIERROR1}@ is not matched.'
-    make_file(template, f'P2PCallMatching_{p}_nok.c', replace)
+    make_file(template, f'CallOrdering_{p}_nok.c', replace)
 
     # Generate the incorrect matching with two calls
     replace = patterns
@@ -104,7 +104,7 @@ for p in send + ssend + bsend + recv + irecv + isend:
     replace['errormsg'] = 'P2P mismatch. @{p}@ at @{filename}@:@{line:MBIERROR1}@ and @{p}@ at @{filename}@:@{line:MBIERROR2}@ are not matched.'
     replace['operation2'] = operation[p]("1")
     replace['fini2'] = fini[p]("1")
-    make_file(template, f'P2PCallMatching_{p}_{p}_nok.c', replace)
+    make_file(template, f'CallOrdering_{p}_{p}_nok.c', replace)
 
 for s in send + isend + ssend + bsend:
     for r in recv + irecv:
@@ -131,5 +131,5 @@ for s in send + isend + ssend + bsend:
         replace['errormsg'] = 'P2P mistmatch. @{r}@ at @{filename}@:@{line:MBIERROR2}@ is never called because of the conditional (@{change_cond}@).' 
         replace['operation1'] =  operation[s]("1")
         replace['operation2'] = operation[r]("2")
-        make_file(template, f'P2PCallMatching_{r}_{s}_nok.c', replace)
+        make_file(template, f'CallOrdering_{r}_{s}_nok.c', replace)
 

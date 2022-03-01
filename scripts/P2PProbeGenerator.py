@@ -134,7 +134,7 @@ for p in probe:
             replace['longdesc'] = 'MPI_Probe is a blocking call that returns only after a matching message has been found. By calling MPI_Probe before MPI_Recv, a deadlock is created.'
             replace['outcome'] = 'ERROR: CallMatching' 
             replace['errormsg'] = 'P2P mistmatch. @{p}@ at @{filename}@:@{line:MBIERROR1}@ and @{filename}@:@{line:MBIERROR2}@ are called before @{r}@.' 
-            make_file(template, f'P2PCallMatching_{p}_{r}_{s}_nok.c', replace)
+            make_file(template, f'CallOrdering_{p}_{r}_{s}_nok.c', replace)
 
             # Generate a correct matching 
             replace = patterns 
@@ -144,4 +144,4 @@ for p in probe:
             replace['errormsg'] = 'OK'
             replace['operation1a'] = operation[s]("1")
             replace['operation1b'] = operation[p]("1")
-            make_file(template, f'P2PCallMatching_{p}_{r}_{s}_ok.c', replace)
+            make_file(template, f'CallOrdering_{p}_{r}_{s}_ok.c', replace)

@@ -93,7 +93,7 @@ for c in tcoll4topo:
     replace['errormsg'] = ''
     replace['change_com'] = '/* No error injected here */'
     replace['change_dims'] = '/* No error injected here */'
-    make_file(template, f'CollCorrect_{c}_ok.c', replace)
+    make_file(template, f'InvalidParam_{c}_ok.c', replace)
 
     # Generate the incorrect code
     replace = patterns
@@ -102,7 +102,7 @@ for c in tcoll4topo:
     replace['outcome'] = 'ERROR: InvalidCommunicator'
     replace['errormsg'] = 'Invalid Communicator in a collective. @{c}@ at @{filename}@:@{line:MBIERROR2}@ tries to get cartesian information of MPI_COMM_WORLD.'
     replace['change_com'] = 'newcom = MPI_COMM_WORLD; /* MBIERROR1 */'
-    make_file(template, f'CollInvalidCom_{c}_nok.c', replace)
+    make_file(template, f'InvalidParam_Com_{c}_nok.c', replace)
 
     # Generate the code with newcom=MPI_COMM_NULL
     replace = patterns
@@ -111,7 +111,7 @@ for c in tcoll4topo:
     replace['outcome'] = 'ERROR: InvalidCommunicator'
     replace['errormsg'] = 'Invalid communicator. @{c}@ at @{filename}@:@{line:MBIERROR2}@ has MPI_COMM_NULL as a communicator.'
     replace['change_com'] = 'newcom = MPI_COMM_NULL; /* MBIERROR1 */'
-    make_file(template, f'CollComNull_{c}_nok.c', replace)
+    make_file(template, f'InvalidParam_ComNull_{c}_nok.c', replace)
 
     # Generate the code with invalid dimension
     replace = patterns
@@ -121,4 +121,4 @@ for c in tcoll4topo:
     replace['errormsg'] = 'Invalid Argument. MPI_Cart_create has invalid dimensions.'
     replace['change_com'] = "" 
     replace['change_dims'] = 'dims[0] = -2; dims[1] = -1; /* MBIERROR1 */'
-    make_file(template, f'CollInvalidDim_MPI_Cart_create_nok.c', replace)
+    make_file(template, f'InvalidParam_Dim_MPI_Cart_create_nok.c', replace)

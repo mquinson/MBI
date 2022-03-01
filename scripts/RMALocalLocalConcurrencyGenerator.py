@@ -34,13 +34,13 @@ END_MBI_TESTS
 #include <stdio.h>
 #include <stdlib.h>
 
+#define N 1
 
 int main(int argc, char **argv) {
   int nprocs = -1;
   int rank = -1;
 	MPI_Win win;
-  int W; // Window buffer
-	int NUM_ELEMT=1;
+  int winbuf[100] = {0};
 
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
@@ -51,15 +51,14 @@ int main(int argc, char **argv) {
     printf("MBI ERROR: This test needs at least 2 processes to produce a bug!\\n");
 
 	MPI_Datatype type = MPI_INT;
+	int target = 1;
 
-	int target = (rank + 1) % nprocs;
-  W = 4;
+  MPI_Win_create(&winbuf, 100 * sizeof(int), sizeof(int), MPI_INFO_NULL, MPI_COMM_WORLD, &win);
 
-  MPI_Win_create(&W, NUM_ELEMT * sizeof(int), sizeof(int), MPI_INFO_NULL, MPI_COMM_WORLD, &win);
+	winbuf[0] = 12345;
+	@{init1}@ 
 
   @{epoch}@
-  
-	@{init1}@ 
 
 	if (rank == 0) {
   	@{operation1}@ /* MBIERROR1 */
@@ -71,7 +70,6 @@ int main(int argc, char **argv) {
   MPI_Win_free(&win);
 
   MPI_Finalize();
-  printf("Rank %d finished normally\\n", rank);
   return 0;
 }
 """
@@ -99,7 +97,7 @@ for e in epoch:
             replace['longdesc'] = 'Local Concurrency error. @{p2}@ conflicts with @{p1}@' 
             replace['outcome'] = 'ERROR: LocalConcurrency' 
             replace['errormsg'] = 'Local Concurrency error. @{p2}@ at @{filename}@:@{line:MBIERROR2}@ conflicts with @{p1}@ line @{line:MBIERROR1}@'
-            make_file(template, f'MBI_LocalConcurrency_{e}_{p1}_{p2}_nok.c', replace)
+            make_file(template, f'LocalConcurrency_lloutwindow_{e}_{p1}_{p2}_nok.c', replace)
     				# Generate a correct code by switching operation1 and  operation2 
             if p2 in store + load + loadstore:
         				  replace = patterns 
@@ -109,7 +107,7 @@ for e in epoch:
        					  replace['errormsg'] = 'OK'
        					  replace['operation1'] = operation[p2]("1")
        					  replace['operation2'] = operation[p1]("1")
-        				  make_file(template, f'MBI_LocalConcurrency_{e}_{p2}_{p1}_ok.c', replace)
+        				  make_file(template, f'LocalConcurrency_lloutwindow_{e}_{p2}_{p1}_ok.c', replace)
         # Generate a correct code by removing operation2 
         replace = patterns 
         replace['shortdesc'] = 'Correct code using RMA operations' 
@@ -118,7 +116,7 @@ for e in epoch:
         replace['errormsg'] = 'OK'
         replace['operation1'] = operation[p1]("1")
         replace['operation2'] = ''
-        make_file(template, f'MBI_LocalConcurrency_{e}_{p1}_ok.c', replace)
+        make_file(template, f'LocalConcurrency_{e}_{p1}_ok.c', replace)
 
 
 for e in epoch:
@@ -143,7 +141,7 @@ for e in epoch:
             replace['longdesc'] = 'Local Concurrency error. @{p2}@ conflicts with @{p1}@' 
             replace['outcome'] = 'ERROR: LocalConcurrency' 
             replace['errormsg'] = 'Local Concurrency error. @{p2}@ at @{filename}@:@{line:MBIERROR2}@ conflicts with @{p1}@ line @{line:MBIERROR1}@'
-            make_file(template, f'MBI_LocalConcurrency_{e}_{p1}_{p2}_nok.c', replace)
+            make_file(template, f'LocalConcurrency_lloutwindow_{e}_{p1}_{p2}_nok.c', replace)
     				# Generate a correct code by switching operation1 and operation2 
             replace = patterns 
             replace['shortdesc'] = 'Correct code using RMA operations' 
@@ -152,7 +150,7 @@ for e in epoch:
             replace['errormsg'] = 'OK'
             replace['operation1'] = operation[p2]("1")
             replace['operation2'] = operation[p1]("1")
-            make_file(template, f'MBI_LocalConcurrency_{e}_{p2}_{p1}_ok.c', replace)
+            make_file(template, f'LocalConcurrency_lloutwindow_{e}_{p2}_{p1}_ok.c', replace)
 
     				# Generate a correct code by removing operation2 
             replace = patterns 
@@ -162,4 +160,4 @@ for e in epoch:
             replace['errormsg'] = 'OK'
             replace['operation1'] = operation[p1]("1")
             replace['operation2'] = ''
-            make_file(template, f'MBI_LocalConcurrency_{e}_{p1}_ok.c', replace)
+            make_file(template, f'LocalConcurrency_{e}_{p1}_ok.c', replace)

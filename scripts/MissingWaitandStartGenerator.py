@@ -111,7 +111,7 @@ for s in isend + psend:
         replace['longdesc'] = f'No error'
         replace['outcome'] = 'OK' 
         replace['errormsg'] = 'OK' 
-        make_file(template, f'P2PCallMatching_{s}_{r}_ok.c', replace)
+        make_file(template, f'ReqLifecycle_{s}_{r}_ok.c', replace)
 
 				# Generate the code with a missing wait
         replace = patterns 
@@ -120,7 +120,7 @@ for s in isend + psend:
         replace['outcome'] = 'ERROR: MissingWait' 
         replace['errormsg'] = 'ERROR: MissingWait' 
         replace['fini1'] =  ' /* MBIERROR MISSING: ' + wait + ' */' 
-        make_file(template, f'MissingWait_{s}_{r}_nok.c', replace)
+        make_file(template, f'ReqLifecycle_MissingWait_{s}_{r}_nok.c', replace)
 		
         if s in psend:
 			  		# Generate the code with a missing start - persistent only
@@ -131,7 +131,7 @@ for s in isend + psend:
             replace['errormsg'] = 'ERROR: MissingStart'
             replace['fini1'] = fini[s]("1")
             replace['start1'] = ' /* MBIERROR MISSING: ' + startPers + ' */'
-            make_file(template, f'MissingStart_{s}_{r}_nok.c', replace) 
+            make_file(template, f'ReqLifecycle_MissingStart_{s}_{r}_nok.c', replace) 
 			  		# Generate the code with a missing free - persistent only
             replace = patterns
             replace['shortdesc'] = 'Missing free'
@@ -140,7 +140,7 @@ for s in isend + psend:
             replace['errormsg'] = 'ERROR: RequestLeak'
             replace['start1'] = start[s]("1")
             replace['free1'] = ' /* MBIERROR MISSING: ' + Reqfree + ' */'
-            make_file(template, f'RequestLeak_{s}_{r}_nok.c', replace) 
+            make_file(template, f'ResLeak_nofree_{s}_{r}_nok.c', replace) 
 
 
 # Collectives only
@@ -175,7 +175,7 @@ for c in pcoll + icoll + ibarrier:
     replace['errormsg'] = 'ERROR: MissingWait'
     replace['fini1'] = ' /* MBIERROR MISSING: ' + opwait + ' */' 
     replace['free1'] = ' /* MISSING: ' + replace['free1'] + ' (to not free the buffer before an internal wait */'
-    make_file(template, f'MissingWait_{c}_nok.c', replace)
+    make_file(template, f'ReqLifecycle_MissingWait_{c}_nok.c', replace)
 
     if c in pcoll:		
 			  # Generate the code with a missing start - persistent only
@@ -186,7 +186,7 @@ for c in pcoll + icoll + ibarrier:
         replace['errormsg'] = 'ERROR: MissingStart'
         replace['fini1'] = fini[c]("1") 
         replace['start1'] = ' /* MBIERROR MISSING: ' + opstart + ' */' 
-        make_file(template, f'MissingStart_{c}_nok.c', replace)
+        make_file(template, f'ReqLifecycle_MissingStart_{c}_nok.c', replace)
 
 			  # Generate the code with a resleak (no free) - persistent only
         replace = patterns
@@ -196,4 +196,4 @@ for c in pcoll + icoll + ibarrier:
         replace['errormsg'] = 'ERROR: RequestLeak'
         replace['start1'] = start[c]("1")
         replace['free1'] = ' /* MBIERROR MISSING: ' + opfree + ' */' 
-        make_file(template, f'RequestLeak_{c}_nok.c', replace)
+        make_file(template, f'ResLeak_nofree_{c}_nok.c', replace)

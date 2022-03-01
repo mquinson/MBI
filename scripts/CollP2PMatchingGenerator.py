@@ -115,7 +115,7 @@ for s in send + isend:
             replace['longdesc'] = 'Point to point @{r}@ is matched with @{c}@ which causes a deadlock.' 
             replace['outcome'] = 'ERROR: CallMatching' 
             replace['errormsg'] = 'P2P & Collective mistmatch. @{r}@ at @{filename}@:@{line:MBIERROR2}@ is matched with @{c}@ at @{filename}@:@{line:MBIERROR1}@ wich causes a deadlock.'
-            make_file(template, f'CollP2PCallMatching_{r}_{s}_{c}_nok.c', replace)
+            make_file(template, f'CallOrdering_{r}_{s}_{c}_nok.c', replace)
 
             # Generate the incorrect code depending on buffering
             #  replace = patterns 

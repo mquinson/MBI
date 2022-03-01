@@ -108,7 +108,7 @@ for c1 in coll + icoll + ibarrier:
             replace['longdesc'] = f'All ranks call {c1} twice'
             replace['outcome'] = 'OK'
             replace['errormsg'] = ''
-            make_file(template, f'CollCorrect_{c1}_{c2}.c', replace)
+            make_file(template, f'CallOrdering_{c1}_{c2}_ok.c', replace)
             # Generate the correct code using the collective once
             replace = patterns
             replace['shortdesc'] = 'Correct collective ordering'
@@ -121,7 +121,7 @@ for c1 in coll + icoll + ibarrier:
             replace['fini2a'] = ''
             replace['fini2b'] = ''
             replace['free2'] = ''
-            make_file(template, f'CollCorrect_{c1}.c', replace)
+            make_file(template, f'CallOrdering_{c1}_ok.c', replace)
         else:
             # Generate the correct ordering with two different collectives
             replace = patterns
@@ -129,7 +129,7 @@ for c1 in coll + icoll + ibarrier:
             replace['longdesc'] = f'All ranks call {c1} and then {c2}'
             replace['outcome'] = 'OK'
             replace['errormsg'] = ''
-            make_file(template, f'CollCorrect_{c1}_{c2}.c', replace)
+            make_file(template, f'CallOrdering_{c1}_{c2}_ok.c', replace)
             # Generate the incorrect ordering with two different collectives
             replace = patterns
             replace['shortdesc'] = 'Incorrect collective ordering'
@@ -145,7 +145,7 @@ for c1 in coll + icoll + ibarrier:
             replace['free1'] = free[c2]("2") 
             replace['free2'] = free[c1]("1")
 
-            make_file(template, f'CollCallOrder_{c1}_{c2}_nok.c', replace)
+            make_file(template, f'CallOrdering_{c1}_{c2}_nok.c', replace)
 
     # Generate the incorrect ordering with one collective
     replace = patterns
@@ -159,7 +159,7 @@ for c1 in coll + icoll + ibarrier:
     replace['fini1b'] = ''
     replace['fini2a'] = ''
     replace['fini2b'] = ''
-    make_file(template, f'CollCallOrder_{c1}_none_nok.c', replace)
+    make_file(template, f'CallOrdering_{c1}_none_nok.c', replace)
     # Generate a correct ordering with a conditional not depending on ranks
     replace = patterns
     replace['shortdesc'] = 'Correct collective ordering'
@@ -171,4 +171,4 @@ for c1 in coll + icoll + ibarrier:
     replace['operation2a'] = ''
     replace['fini2b'] = ''
     replace['free2a'] = ''
-    make_file(template, f'CollCallOrder_{c1}_none_ok.c', replace)
+    make_file(template, f'CallOrdering_{c1}_none_ok.c', replace)
