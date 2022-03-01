@@ -2,6 +2,7 @@
 
 The MPI Bugs Initiative is a collection of MPI codes that aims at assessing the status of MPI verification tools.
 
+For a gentle introduction, please refer to the [corresponding article](https://hal.archives-ouvertes.fr/hal-03474762).
 
 ## Quick Start
 
