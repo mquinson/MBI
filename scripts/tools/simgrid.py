@@ -93,7 +93,7 @@ class Tool(AbstractTool):
             return 'failure'
         if re.search('Probable memory leaks in your code: SMPI detected', output):
             return 'resleak'
-        if re.search('No property violation found', output):
+        if re.search('DFS exploration ended.', output):
             return 'OK'
 
         print (f">>>>[ INCONCLUSIVE ]>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ({cachefile})")
