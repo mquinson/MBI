@@ -4,16 +4,42 @@
 #   docker push registry.gitlab.inria.fr/quinson/mbi2
 # image: registry.gitlab.com/mwapl/benchmarking-mpi:latest
 # image: registry.gitlab.inria.fr/quinson/mbi2:latest
-image: registry.hub.docker.com/mquinson/mbi
+# image: registry.hub.docker.com/mquinson/mbi
+
 
 variables:
     GIT_SUBMODULE_STRATEGY: none
 
 stages:
-    - build
-    - test
-    - gather # For the tests that are split in several jobs (ISP, MUST, CIVL), rerun them all in one
-    - deploy
+    - newbuild
+
+simgrid:
+    stage: newbuild
+    needs: []
+    script:
+        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -x simgrid
+        - scripts/ensure_python3 ./MBI.py -c html
+        - pwd ; ls
+        - mkdir public
+        - cp -r *.html gencodes img logs public/
+    image:
+        name: simgrid/unstable
+        entrypoint: ['/bin/bash', '-c', 'ln -snf /bin/bash /bin/sh && /bin/bash -c $0' ]
+    artifacts:
+        untracked: false
+        when: always
+        paths:
+            - public
+
+#################################################################################################################
+# THE REST OF THIS FILE IS OBSOLETE. Only used when testing more than simgrid alone, on private gitlab runners. #
+#################################################################################################################
+# stages:
+#     - build
+#     - test
+#     - gather # For the tests that are split in several jobs (ISP, MUST, CIVL), rerun them all in one
+#     - deploy
 
 build-must:
     stage: build
