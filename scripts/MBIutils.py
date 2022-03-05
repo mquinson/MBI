@@ -10,7 +10,7 @@ import hashlib
 class AbstractTool:
     def ensure_image(self, params=""):
         """Verify that this is executed from the right docker image, and complain if not."""
-        if os.path.exists("/MBI"):
+        if os.path.exists("/MBI") or os.path.exists("trust_the_installation"):
             print("This seems to be a MBI docker image. Good.")
         else:
             print("Please run this script in a MBI docker image. Run these commands:")
