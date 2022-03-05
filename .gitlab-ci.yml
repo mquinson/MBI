@@ -10,7 +10,8 @@ simgrid:
     stage: newbuild
     needs: []
     script:
-        - touch trust_the_installation # Silence the checks for the right docker image
+        - mkdir -p logs/simgrid
+        - touch logs/simgrid/trust_the_installation trust_the_installation # Silence the checks for the right docker image
         - python3 ./MBI.py -c generate
         - python3 ./MBI.py -x simgrid
         - python3 ./MBI.py -c html
