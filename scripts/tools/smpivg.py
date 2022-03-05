@@ -13,13 +13,18 @@ class Tool(tools.smpi.Tool):
 
     def run(self, execcmd, filename, binary, id, timeout, batchinfo):
         if not os.path.exists('simgrid.supp'):
-            subprocess.run("apt-get update", shell=True, check=True)
-            subprocess.run("apt-get install -y wget", shell=True, check=True)
-            subprocess.run("wget 'https://framagit.org/simgrid/simgrid/-/raw/master/tools/simgrid.supp?inline=false' -O simgrid.supp", shell=True, check=True)
+            if os.path.exists('../../simgrid.supp'):
+                print(f"\nCopying simgrid.supp from {os.getcwd()}/../.. to {os.getcwd()}.")
+                subprocess.run("cp ../../simgrid.supp .", shell=True, check=True)
+            else:
+                print(f"\nDownloading simgrid.supp in {os.getcwd()}.")
+                subprocess.run("apt-get update", shell=True, check=True)
+                subprocess.run("apt-get install -y wget", shell=True, check=True)
+                subprocess.run("wget 'https://framagit.org/simgrid/simgrid/-/raw/master/tools/simgrid.supp?inline=false' -O simgrid.supp", shell=True, check=True)
         else:
-            print(f"simgrid.supp found in {os.getcwd()}, no need to download it.")
+            print(f"\nsimgrid.supp found in {os.getcwd()}, no need to download it.")
 
-        tools.smpi.Tool.run(self, execcmd, filename, binary, id, timeout, batchinfo, extraargs="-wrapper 'valgrind --suppressions=simgrid.supp'")
+        tools.smpi.Tool.run(self, execcmd, filename, binary, id, timeout, batchinfo, extraargs="-wrapper 'valgrind --leak-check=no --suppressions=simgrid.supp'")
         subprocess.run("rm -f vgcore.*", shell=True, check=True) # Save disk space ASAP
 
     def parse(self, cachefile):
