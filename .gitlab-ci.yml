@@ -10,14 +10,15 @@ simgrid:
     stage: newbuild
     needs: []
     script:
-        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
-        - scripts/ensure_python3 ./MBI.py -x simgrid
-        - scripts/ensure_python3 ./MBI.py -c html
+        - rm -rf /MBI/*
+        - python3 ./MBI.py -c generate
+        - python3 ./MBI.py -x simgrid
+        - python3 ./MBI.py -c html
         - pwd ; ls
         - mkdir public
         - cp -r *.html gencodes img logs public/
     image:
-        name: simgrid/unstable
+        name: simgrid/tuto-mc
         entrypoint: ['/bin/bash', '-c', 'ln -snf /bin/bash /bin/sh && /bin/bash -c $0' ]
     artifacts:
         untracked: false
