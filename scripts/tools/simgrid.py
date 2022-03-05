@@ -7,7 +7,7 @@ class Tool(AbstractTool):
         return "SimGrid wrapper"
 
     def build(self, rootdir, cached=True):
-        if cached and os.path.exists(f"{rootdir}/builds/SimGrid/bin/smpicc"):
+        if cached and (os.path.exists(f"{rootdir}/builds/SimGrid/bin/smpicc") or os.path.exists('/usr/bin/simgrid-mc')):
             return
 
         here = os.getcwd() # Save where we were
