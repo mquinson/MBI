@@ -1,7 +1,11 @@
+# Copyright 2021-2022. The MBI project. All rights reserved. 
+# This program is free software; you can redistribute it and/or modify it under the terms of the license (GNU GPL).
+
 import os
 import time
 import subprocess
 import sys
+import re
 import shlex
 import select
 import signal
@@ -43,6 +47,156 @@ class AbstractTool:
     def parse(self, cachefile):
         """Read the result of a previous run from the cache, and compute the test outcome"""
         return 'failure'
+
+# Associate all possible detailed outcome to a given error scope. Scopes must be sorted alphabetically.
+possible_details = {
+    # scope limited to one call
+    'InvalidBuffer':'AInvalidParam', 'InvalidCommunicator':'AInvalidParam', 'InvalidDatatype':'AInvalidParam', 'InvalidRoot':'AInvalidParam', 'InvalidTag':'AInvalidParam', 'InvalidWindow':'AInvalidParam', 'InvalidOperator':'AInvalidParam', 'InvalidOtherArg':'AInvalidParam', 'ActualDatatype':'AInvalidParam',
+    'InvalidSrcDest':'AInvalidParam', 
+    # scope: Process-wide
+#    'OutOfInitFini':'BInitFini', 
+    'CommunicatorLeak':'BResLeak', 'DatatypeLeak':'BResLeak', 'GroupLeak':'BResLeak', 'OperatorLeak':'BResLeak', 'TypeLeak':'BResLeak', 'RequestLeak':'BResLeak',
+    'MissingStart':'BReqLifecycle', 'MissingWait':'BReqLifecycle',
+    'LocalConcurrency':'BLocalConcurrency',
+    # scope: communicator
+    'CallMatching':'DMatch', 
+    'CommunicatorMatching':'CMatch', 'DatatypeMatching':'CMatch', 'OperatorMatching':'CMatch', 'RootMatching':'CMatch', 'TagMatching':'CMatch',
+    'MessageRace':'DRace', 
+    
+    'GlobalConcurrency':'DGlobalConcurrency',
+    # larger scope
+#    'BufferingHazard':'EBufferingHazard',
+    'OK':'FOK'}
+
+error_scope = {
+    'AInvalidParam':'single call',
+    'BResLeak':'single process',
+#    'BInitFini':'single process',
+    'BReqLifecycle':'single process',
+    'BLocalConcurrency':'single process',
+    'CMatch':'multi-processes',
+    'DRace':'multi-processes',
+    'DMatch':'multi-processes',
+    'DGlobalConcurrency':'multi-processes',
+#    'EBufferingHazard':'system',
+    'FOK':'correct executions'
+}
+
+displayed_name = {
+    'AInvalidParam':'Invalid parameter',
+    'BResLeak':'Resource leak',
+#    'BInitFini':'MPI call before initialization/after finalization',
+    'BReqLifecycle':'Request lifecycle',
+    'BLocalConcurrency':'Local concurrency',
+    'CMatch':'Parameter matching',
+    'DMatch':"Call ordering",
+    'DRace':'Message race',
+    'DGlobalConcurrency':'Global concurrency',
+    'EBufferingHazard':'Buffering hazard',
+    'FOK':"Correct execution",
+
+    'aislinn':'Aislinn','civl':'CIVL','hermes':'Hermes', 'isp':'ISP','itac':'ITAC', 'simgrid':'Mc SimGrid', 'smpi':'SMPI','smpivg':'SMPI+VG', 'mpisv':'MPI-SV', 'must':'MUST', 'parcoach':'PARCOACH'
+}
+
+def parse_one_code(filename):
+    """
+    Reads the header of the provided filename, and extract a list of todo item, each of them being a (cmd, expect, test_num) tupple.
+    The test_num is useful to build a log file containing both the binary and the test_num, when there is more than one test in the same binary.
+    """
+    res = []
+    test_num = 0
+    with open(filename, "r") as input:
+        state = 0  # 0: before header; 1: in header; 2; after header
+        line_num = 1
+        for line in input:
+            if re.match(".*BEGIN_MBI_TESTS.*", line):
+                if state == 0:
+                    state = 1
+                else:
+                    raise Exception(f"MBI_TESTS header appears a second time at line {line_num}: \n{line}")
+            elif re.match(".*END_MBI_TESTS.*", line):
+                if state == 1:
+                    state = 2
+                else:
+                    raise Exception(f"Unexpected end of MBI_TESTS header at line {line_num}: \n{line}")
+            if state == 1 and re.match("\s+\$ ?.*", line):
+                m = re.match('\s+\$ ?(.*)', line)
+                cmd = m.group(1)
+                nextline = next(input)
+                detail = 'OK'
+                if re.match('[ |]*OK *', nextline):
+                    expect = 'OK'
+                else:
+                    m = re.match('[ |]*ERROR: *(.*)', nextline)
+                    if not m:
+                        raise Exception(
+                            f"\n{filename}:{line_num}: MBI parse error: Test not followed by a proper 'ERROR' line:\n{line}{nextline}")
+                    expect = 'ERROR'
+                    detail = m.group(1)
+                    if detail not in possible_details:
+                        raise Exception(
+                            f"\n{filename}:{line_num}: MBI parse error: Detailled outcome {detail} is not one of the allowed ones.")
+                test = {'filename': filename, 'id': test_num, 'cmd': cmd, 'expect': expect, 'detail': detail}
+                res.append(test.copy())
+                test_num += 1
+                line_num += 1
+
+    if state == 0:
+        raise Exception(f"MBI_TESTS header not found in file '{filename}'.")
+    if state == 1:
+        raise Exception(f"MBI_TESTS header not properly ended in file '{filename}'.")
+
+    if len(res) == 0:
+        raise Exception(f"No test found in {filename}. Please fix it.")
+    return res
+
+def categorize(tool, toolname, test_ID, expected):
+    outcome = tool.parse(test_ID)
+
+    if not os.path.exists(f'{test_ID}.elapsed') and not os.path.exists(f'logs/{toolname}/{test_ID}.elapsed'):
+        if outcome == 'failure':
+            elapsed = 0
+        else:
+            raise Exception(f"Invalid test result: {test_ID}.txt exists but not {test_ID}.elapsed")
+    else:
+        with open(f'{test_ID}.elapsed' if os.path.exists(f'{test_ID}.elapsed') else f'logs/{toolname}/{test_ID}.elapsed', 'r') as infile:
+            elapsed = infile.read()
+
+    # Properly categorize this run
+    if outcome == 'timeout':
+        res_category = 'timeout'
+        if elapsed is None:
+            diagnostic = f'hard timeout'
+        else:
+            diagnostic = f'timeout after {elapsed} sec'
+    elif outcome == 'failure':
+        res_category = 'failure'
+        diagnostic = f'tool error, or test not run'
+    elif outcome == 'UNIMPLEMENTED':
+        res_category = 'unimplemented'
+        diagnostic = f'coverage issue'
+    elif outcome == 'other':
+        res_category = 'other'
+        diagnostic = f'inconclusive run'
+    elif expected == 'OK':
+        if outcome == 'OK':
+            res_category = 'TRUE_NEG'
+            diagnostic = f'correctly reported no error'
+        else:
+            res_category = 'FALSE_POS'
+            diagnostic = f'reported an error in a correct code'
+    elif expected == 'ERROR':
+        if outcome == 'OK':
+            res_category = 'FALSE_NEG'
+            diagnostic = f'failed to detect an error'
+        else:
+            res_category = 'TRUE_POS'
+            diagnostic =  f'correctly detected an error'
+    else:
+        raise Exception(f"Unexpected expectation: {expected} (must be OK or ERROR)")
+
+    return (res_category, elapsed, diagnostic, outcome)
+
 
 def run_cmd(buildcmd, execcmd, cachefile, filename, binary, timeout, batchinfo, read_line_lambda=None):
     """
