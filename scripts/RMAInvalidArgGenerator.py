@@ -97,17 +97,17 @@ for e in epoch:
         replace['errormsg'] = '@{p}@ at @{filename}@:@{line:MBIERROR}@ has MPI_DATATYPE_NULL as a type'
         make_file(template, f'InvalidParam_DatatypeNull_{e}_{p}_nok.c', replace)
 
-        # Generate a code with a null buffer
-        replace = patterns
-        replace['origin'] = 'MPI-Corrbench'
-        replace['shortdesc'] = 'nullptr is invalid in one-sided operation.'
-        replace['longdesc'] = 'A one-sided operation has an invalid buffer.'
-        replace['outcome'] = 'ERROR: InvalidBuffer'
-        replace['init'] = 'int * localbuf1 = malloc(sizeof(int));'
-        replace['change_arg'] = 'localbuf1 = NULL;'
-        replace['operation'] = operation[p]("1").replace('&localbuf1', 'localbuf1')
-        replace['errormsg'] = '@{p}@ at @{filename}@:@{line:MBIERROR}@ has an invalid buffer'
-        make_file(template, f'InvalidParam_BufferNull_{e}_{p}_nok.c', replace)
+        # Generate a code with a null buffer (move to RMAWinBufferGenerator)
+        # replace = patterns
+        # replace['origin'] = 'MPI-Corrbench'
+        # replace['shortdesc'] = 'nullptr is invalid in one-sided operation.'
+        # replace['longdesc'] = 'A one-sided operation has an invalid buffer.'
+        # replace['outcome'] = 'ERROR: InvalidBuffer'
+        # replace['init'] = 'int * localbuf1 = malloc(sizeof(int));'
+        # replace['change_arg'] = 'localbuf1 = NULL;'
+        # replace['operation'] = operation[p]("1").replace('&localbuf1', 'localbuf1')
+        # replace['errormsg'] = '@{p}@ at @{filename}@:@{line:MBIERROR}@ has an invalid buffer'
+        # make_file(template, f'InvalidParam_BufferNull_{e}_{p}_nok.c', replace)
 
         # Generate a code with an invalid type
         replace = patterns
