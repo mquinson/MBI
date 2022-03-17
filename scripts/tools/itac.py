@@ -7,7 +7,7 @@ class Tool(AbstractTool):
         return "Intel TAC"
 
     def ensure_image(self):
-        AbstractTool.ensure_image(self, "-x itac")
+        AbstractTool.ensure_image(self, dockerparams="--shm-size=512m ", params="-x itac")
 
     def setup(self, rootdir):
         subprocess.run("apt update && apt install wget", shell=True, check=True)
