@@ -67,7 +67,7 @@ int main(int argc, char **argv) {
     int target=1;
     MPI_Win_lock(MPI_LOCK_EXCLUSIVE, 1, 0, win);
     @{operation1}@
-    localbuf1 = 12345; /* MBIERROR1 */
+    localbuf1[0] = 12345; /* MBIERROR1 */
     MPI_Win_unlock(1, win);
   }else if (rank == 2){
     int dest=1;
