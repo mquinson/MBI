@@ -13,7 +13,7 @@ class Tool(AbstractTool):
         else:
             print("Please run this script in a mpisv/mpi-sv image. Run these commands:")
             print("  docker image pull mpisv/mpi-sv")
-            print("  docker run -it --rm --name MIB --volume $(pwd):/MBI mpisv/mpi-sv /MBI/MBI.py -x mpisv")
+            print("  docker run -it --rm --name MIB --shm-size=512m --volume $(pwd):/MBI mpisv/mpi-sv  /MBI/scripts/ensure_python3 /MBI/MBI.py -x mpisv")
             sys.exit(1)
 
     def run(self, execcmd, filename, binary, id, timeout, batchinfo):

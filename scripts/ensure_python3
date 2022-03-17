@@ -32,10 +32,10 @@ then
     echo "MPI-SV image detected. Good."
     apt-get update
     apt-get install -y software-properties-common # First install add-apt-repository
-    echo|add-apt-repository ppa:deadsnakes/ppa      # Add a source for the python we need
+    echo|add-apt-repository ppa:fkrull/deadsnakes # Add a source for the python we need
     apt-get update
-    apt-get install -y python3.7
-    exec python3.7 $@
+    apt-get install -y python3.6
+    exec python3.6 $@
 fi
 
 echo "Please run this script from the relevant MBI image."
