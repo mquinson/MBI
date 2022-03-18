@@ -16,7 +16,7 @@ pages:
         - touch logs/simgrid/trust_the_installation trust_the_installation # Silence the checks for the right docker image
         - python3 ./MBI.py -c generate
 #        - python3 ./MBI.py -x simgrid | grep Test
-        - python3 ./MBI.py -c html
+        - python3 ./MBI.py -c html -x itac,simgrid,must,smpi,smpivg,parcoach,aislinn,civl,isp,mpisv
         - pwd ; ls
         - mkdir public
         - cp -r *.html gencodes img logs public/
