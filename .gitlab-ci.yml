@@ -17,7 +17,7 @@ pages:
         - python3 ./MBI.py -c generate
 #        - python3 ./MBI.py -x simgrid | grep Test
         - python3 ./MBI.py -c html -x itac,simgrid,must,smpi,smpivg,parcoach,aislinn,civl,isp,mpisv
-        - pwd ; ls
+        - pwd ; ls ; ls logs
         - mkdir public
         - cp -r *.html gencodes img logs public/
     image:
