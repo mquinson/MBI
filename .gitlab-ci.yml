@@ -10,7 +10,7 @@ pages:
     stage: build
     needs: []
     script:
-        - apt update; apt install -y 7zip wget
+        - apt update; apt install -y p7zip wget
         - wget https://gitlab.inria.fr/quinson/mbi2/uploads/464a033a9e9670071f4505b0d64cf1d4/logs-220318.7z
         - 7zr x logs-220318.7z | tar xf -
         - mkdir -p logs/simgrid
