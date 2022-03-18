@@ -10,10 +10,12 @@ pages:
     stage: build
     needs: []
     script:
+        - apt update; apt install -y 7zip wget
+	- wget https://gitlab.inria.fr/quinson/mbi2/uploads/464a033a9e9670071f4505b0d64cf1d4/logs-220318.7z
         - mkdir -p logs/simgrid
         - touch logs/simgrid/trust_the_installation trust_the_installation # Silence the checks for the right docker image
         - python3 ./MBI.py -c generate
-        - python3 ./MBI.py -x simgrid | grep Test
+#        - python3 ./MBI.py -x simgrid | grep Test
         - python3 ./MBI.py -c html
         - pwd ; ls
         - mkdir public
