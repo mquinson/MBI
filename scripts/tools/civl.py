@@ -113,6 +113,9 @@ class Tool(AbstractTool):
         if re.search('Exception in thread "main" java.lang.ArrayIndexOutOfBoundsException', output):
             return 'failure'
 
+        if re.search(('java.lang.ClassCastException'), output):
+            return 'failure'
+
         print (f">>>>[ INCONCLUSIVE ]>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ({cachefile})")
         print(output)
         print ("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
