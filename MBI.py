@@ -920,7 +920,7 @@ elif args.c == 'latex':
 elif args.c == 'html':
     extract_all_todo(args.b)
     if args.x == 'mpirun':
-        toolnames=['aislinn', 'civl', 'isp','itac', 'simgrid','smpi','smpivg', 'mpisv', 'must', 'parcoach']
+        toolnames=['itac', 'simgrid','must', 'smpi','smpivg', 'aislinn', 'civl', 'isp', 'mpisv', 'parcoach']
     else:
         toolnames=arg_tools
     cmd_html(rootdir, toolnames=toolnames)
