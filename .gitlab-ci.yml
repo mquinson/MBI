@@ -12,12 +12,13 @@ pages:
     script:
         - apt update; apt install -y 7zip wget
         - wget https://gitlab.inria.fr/quinson/mbi2/uploads/464a033a9e9670071f4505b0d64cf1d4/logs-220318.7z
+        - 7zip x logs-220318.7z | tar xf -
         - mkdir -p logs/simgrid
         - touch logs/simgrid/trust_the_installation trust_the_installation # Silence the checks for the right docker image
-        - python3 ./MBI.py -c generate
+#        - python3 ./MBI.py -c generate
 #        - python3 ./MBI.py -x simgrid | grep Test
         - python3 ./MBI.py -c html -x itac,simgrid,must,smpi,smpivg,parcoach,aislinn,civl,isp,mpisv
-        - pwd ; ls ; ls logs
+        - pwd ; ls ; echo logs:; ls logs
         - mkdir public
         - cp -r *.html gencodes img logs public/
     image:
