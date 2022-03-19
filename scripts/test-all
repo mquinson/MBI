@@ -28,7 +28,7 @@ cmd_run() {
 }
 
 cmd_stats() {
-    docker run -it --rm --name MIB --volume $(pwd):/MBI mpi-bugs-initiative /MBI/MBI.py -c stats
+    docker run -it --rm --name MIB --volume $(pwd):/MBI mpi-bugs-initiative /MBI/MBI.py -c html
     docker run -it --rm --name MIB --volume $(pwd):/MBI mpi-bugs-initiative /MBI/MBI.py -c latex
 }
 
