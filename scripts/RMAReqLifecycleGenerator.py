@@ -110,17 +110,17 @@ for e1 in epoch:
         replace['longdesc'] = f"Request lifecycle, missing open {e1} epoch"
         replace['outcome'] = 'ERROR: MissingStart'
         replace['errormsg'] = '@{e1}@ at @{filename}@:@{line:MBIERROR}@ has missing'
-        replace['epoch'] = "/* MBIERROR */"
+        replace['epoch'] = f"/* MBIERROR MISSING: {epoch[e1]('1')} */"
         make_file(template, f'ReqLifecycle_RMA_MissingOpen_{e1}_{p}_nok.c', replace)
 
         # Generate a code with missing close epoch
         replace = patterns
-        replace['shortdesc'] = f"Request lifecycle, missing open {e1} epoch"
-        replace['longdesc'] = f"Request lifecycle, missing open {e1} epoch"
+        replace['shortdesc'] = f"Request lifecycle, missing close {e1} epoch"
+        replace['longdesc'] = f"Request lifecycle, missing close {e1} epoch"
         replace['outcome'] = 'ERROR: MissingWait'
         replace['errormsg'] = '@{e1}@ at @{filename}@:@{line:MBIERROR}@ has missing'
         replace['epoch'] = epoch[e1]("1")
-        replace['finEpoch'] = "/* MBIERROR */"
+        replace['finEpoch'] = f"/* MBIERROR MISSING: {finEpoch[e1]('1')} */"
         make_file(template, f'ReqLifecycle_RMA_MissingClose_{e1}_{p}_nok.c', replace)
 
 for e1 in epoch:
