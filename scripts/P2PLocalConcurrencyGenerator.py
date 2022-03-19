@@ -62,12 +62,14 @@ int main(int argc, char **argv) {
 		@{start1}@
 		@{write1}@ /* MBIERROR1 */ 
 		@{fini1}@
+		@{free1}@
 	}else if (rank == 1){
 		dest = 0; src = 0;
   	@{operation2}@
 		@{start2}@
 		@{write2}@ /* MBIERROR2 */
 		@{fini2}@
+		@{free2}@
 	}
 
   MPI_Finalize();
@@ -97,6 +99,8 @@ for s in send + isend + psend:
         patterns['operation2'] = operation[r]("2")
         patterns['write1'] = write[s]("1")
         patterns['write2'] = write[r]("2")
+        patterns['free1'] = free[s]("1")
+        patterns['free2'] = free[r]("2")
 
         # Generate a message race
         if s in send and r in irecv + precv:
