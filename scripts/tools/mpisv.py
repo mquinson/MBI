@@ -46,7 +46,7 @@ class Tool(AbstractTool):
 
     def parse(self, cachefile):
         if os.path.exists(f'{cachefile}.timeout') or os.path.exists(f'logs/mpisv/{cachefile}.timeout'):
-            outcome = 'timeout'
+            return 'timeout'
         if not (os.path.exists(f'{cachefile}.txt') or os.path.exists(f'logs/mpisv/{cachefile}.txt')):
             return 'failure'
         if not (os.path.exists(f'{cachefile}-klee-out/info') or os.path.exists(f'logs/mpisv/{cachefile}-klee-out/info')):

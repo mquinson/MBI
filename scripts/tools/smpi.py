@@ -40,7 +40,7 @@ class Tool(tools.simgrid.Tool):
 
     def parse(self, cachefile):
         if os.path.exists(f'{cachefile}.timeout') or os.path.exists(f'logs/smpi/{cachefile}.timeout'):
-            outcome = 'timeout'
+            return 'timeout'
         if not (os.path.exists(f'{cachefile}.txt') or os.path.exists(f'logs/smpi/{cachefile}.txt')):
             return 'failure'
 
