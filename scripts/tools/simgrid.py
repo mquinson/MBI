@@ -1,3 +1,6 @@
+# Copyright 2021-2022. The MBI project. All rights reserved.
+# This program is free software; you can redistribute it and/or modify it under the terms of the license (GNU GPL).
+
 import re
 import os
 from MBIutils import *
@@ -45,10 +48,10 @@ class Tool(AbstractTool):
                 outfile.write(' <cluster id="acme" prefix="node-" radical="0-99" suffix="" speed="1Gf" bw="125MBps" lat="50us"/>\n')
                 outfile.write('</platform>\n')
 
-        execcmd = re.sub("mpirun", "smpirun -wrapper simgrid-mc -platform ./cluster.xml -analyze --cfg=smpi/finalization-barrier:on --cfg=smpi/list-leaks:10 --cfg=model-check/max-depth:10000  --cfg=smpi/pedantic:true", execcmd)
-        execcmd = re.sub('\${EXE}', binary, execcmd)
-        execcmd = re.sub('\$zero_buffer', "--cfg=smpi/buffering:zero", execcmd)
-        execcmd = re.sub('\$infty_buffer', "--cfg=smpi/buffering:infty", execcmd)
+        execcmd = execcmd.replace("mpirun", "smpirun -wrapper simgrid-mc -platform ./cluster.xml -analyze --cfg=smpi/finalization-barrier:on --cfg=smpi/list-leaks:10 --cfg=model-check/max-depth:10000 --cfg=smpi/pedantic:true")
+        execcmd = execcmd.replace('${EXE}', binary)
+        execcmd = execcmd.replace('$zero_buffer', "--cfg=smpi/buffering:zero")
+        execcmd = execcmd.replace('$infty_buffer', "--cfg=smpi/buffering:infty")
 
         run_cmd(
             buildcmd=f"smpicc {filename} -trace-call-location -g -Wl,-znorelro -Wl,-znoseparate-code -o {binary}",
@@ -59,13 +62,13 @@ class Tool(AbstractTool):
             timeout=timeout,
             batchinfo=batchinfo)
 
-    def teardown(self): 
+    def teardown(self):
         subprocess.run("find -type f -a -executable | xargs rm -f", shell=True, check=True) # Remove generated cruft (binary files)
         subprocess.run("rm -f smpitmp-* core", shell=True, check=True) 
 
     def parse(self, cachefile):
         if os.path.exists(f'{cachefile}.timeout') or os.path.exists(f'logs/simgrid/{cachefile}.timeout'):
-            outcome = 'timeout'
+            return 'timeout'
         if not (os.path.exists(f'{cachefile}.txt') or os.path.exists(f'logs/simgrid/{cachefile}.txt')):
             return 'failure'
 
