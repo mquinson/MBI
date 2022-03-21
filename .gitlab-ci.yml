@@ -11,7 +11,7 @@ pages:
     needs: []
     script:
         - apt update; apt install -y p7zip wget
-        - wget https://gitlab.com/MpiBugsInitiative/MpiBugsInitiative/uploads/61ae09947cd2768063e8510c29c40d45/logs-220320.7z
+        - wget https://gitlab.com/MpiBugsInitiative/MpiBugsInitiative/uploads/c1e41ca006e1d68571a061c071f998ee/logs-220320.7z
         - 7zr x -so logs-*.7z | tar xf -
         - mkdir -p logs/simgrid
         - touch logs/simgrid/trust_the_installation trust_the_installation # Silence the checks for the right docker image
