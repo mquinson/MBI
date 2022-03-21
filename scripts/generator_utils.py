@@ -31,9 +31,9 @@ probe = ['MPI_Probe']
 epoch = ['MPI_Win_fence', 'MPI_Win_lock', 'MPI_Win_lock_all']
 rma = ['MPI_Get', 'MPI_Put']
 get = ['MPI_Get']
-rget = ['MPI_RGet']
+#rget = ['MPI_RGet']
 put = ['MPI_Put']
-rput = ['MPI_RPut']
+#rput = ['MPI_Put']
 store = ['store']
 load = ['load']
 rstore = ['rstore']
@@ -394,14 +394,8 @@ finEpoch['MPI_Win_lock_all'] =lambda n: 'MPI_Win_unlock_all(win);'
 init['MPI_Put'] = lambda n: f'int localbuf{n}[N] = {{12345}};'
 operation['MPI_Put'] = lambda n: f'MPI_Put(&localbuf{n}, N, MPI_INT, target, 0, N, type, win);'
 
-init['MPI_RPut'] = lambda n: ""
-operation['MPI_RPut'] = lambda n: f'MPI_Put(&winbuf[20], N, MPI_INT, target, 0, N, type, win);'
-
 init['MPI_Get'] = lambda n: f'int localbuf{n}[N] = {{54321}};'
 operation['MPI_Get'] = lambda n: f'MPI_Get(&localbuf{n}, N, MPI_INT, target, 0, N, type, win);'
-
-init['MPI_RGet'] = lambda n: ""
-operation['MPI_RGet'] = lambda n: f'MPI_Get(&winbuf[20], N, MPI_INT, target, 0, N, type, win);'
 
 init['store'] = lambda n: f'int localbuf{n}[N] = {{0}};'
 operation['store'] = lambda n: f'localbuf{n}[0] = 8;'
