@@ -13,23 +13,28 @@ def must_filter(line, process):
         except ProcessLookupError:
             pass  # Ok, it's gone now
 
-class Tool(AbstractTool):
+class V17(AbstractTool):
     def identify(self):
-        return "MUST wrapper"
+        return "MUST v1.7.2 wrapper"
 
     def ensure_image(self):
         AbstractTool.ensure_image(self, "-x must")
 
     def build(self, rootdir, cached=True):
-        if cached and os.path.exists(f"{rootdir}/builds/MUST/bin/mustrun"):
+        if cached and os.path.exists(f"{rootdir}/builds/MUST17/bin/mustrun"):
             return
+
+        subprocess.run(f"rm -rf {rootdir}/builds/MUST", shell=True, check=True) # MUST v1.7 sometimes fails when reinstalling over the same dir
 
         # Build it
         here = os.getcwd() # Save where we were
-        subprocess.run(f"rm -rf /tmp/build-must ; mkdir /tmp/build-must ; cd /tmp/build-must", shell=True, check=True)
-        subprocess.run(f"rm -rf {rootdir}/builds/MUST", shell=True, check=True) # MUST v1.7 sometimes fails when reinstalling over the same dir
+        if not os.path.exists((f"{rootdir}/tools/MUST-v1.7.2.tar.gz")):
+            subprocess.run(f"cd {rootdir}/tools; wget https://hpc.rwth-aachen.de/must/files/MUST-v1.7.2.tar.gz", shell=True, check=True)
+        subprocess.run(f"rm -rf /tmp/build-must ; mkdir /tmp/build-must", shell=True, check=True)
+        os.chdir("/tmp/build-must")
+        subprocess.run(f"tar xfz {rootdir}/tools/MUST-v1.7.2.tar.gz", shell=True, check=True)
 
-        subprocess.run(f"CC=$(which gcc) CXX=$(which gcc++) FC=$(which gfortran) cmake {rootdir}/tools/MUST-v1.7 -DCMAKE_INSTALL_PREFIX={rootdir}/builds/MUST -DCMAKE_BUILD_TYPE=Release", shell=True, check=True)
+        subprocess.run(f"CC=$(which gcc) CXX=$(which gcc++) FC=$(which gfortran) cmake MUST-v1.7.2 -DCMAKE_INSTALL_PREFIX={rootdir}/builds/MUST17 -DCMAKE_BUILD_TYPE=Release", shell=True, check=True)
         subprocess.run(f"make -j$(nproc) install VERBOSE=1", shell=True, check=True)
         subprocess.run(f"make -j$(nproc) install-prebuilds VERBOSE=1", shell=True, check=True)
 
@@ -37,7 +42,7 @@ class Tool(AbstractTool):
         os.chdir(here)
 
     def setup(self, rootdir):
-        os.environ['PATH'] = os.environ['PATH'] + ":" + rootdir + "/builds/MUST/bin/"
+        os.environ['PATH'] = os.environ['PATH'] + ":" + rootdir + "/builds/MUST17/bin/"
 
     def run(self, execcmd, filename, binary, id, timeout, batchinfo):
         cachefile = f'{binary}_{id}'
@@ -120,3 +125,34 @@ class Tool(AbstractTool):
         print(output)
         print ("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
         return 'other'
+
+class V18(V17):
+    def identify(self):
+        return "MUST v1.7.2 wrapper"
+
+    def ensure_image(self):
+        AbstractTool.ensure_image(self, "-x must18")
+
+    def build(self, rootdir, cached=True):
+        if cached and os.path.exists(f"{rootdir}/builds/MUST18/bin/mustrun"):
+            return
+
+        subprocess.run(f"rm -rf {rootdir}/builds/MUST", shell=True, check=True) # MUST sometimes fails when reinstalling over the same dir
+
+        # Build it
+        here = os.getcwd() # Save where we were
+        if not os.path.exists((f"{rootdir}/tools/MUST-v1.8-preview.tar.gz")):
+            subprocess.run(f"cd {rootdir}/tools; wget https://hpc.rwth-aachen.de/must/files/MUST-v1.8-preview.tar.gz", shell=True, check=True)
+        subprocess.run(f"rm -rf /tmp/build-must ; mkdir /tmp/build-must", shell=True, check=True)
+        os.chdir("/tmp/build-must")
+        subprocess.run(f"tar xfz {rootdir}/tools/MUST-v1.8-preview.tar.gz", shell=True, check=True)
+
+        subprocess.run(f"CC=$(which clang) CXX=$(which clang++) OMPI_CC=$(which clang) OMPI_CXX=$(which clang++) FC=$(which gfortran) cmake MUST-v1.8-preview -DCMAKE_INSTALL_PREFIX={rootdir}/builds/MUST18 -DCMAKE_BUILD_TYPE=Release", shell=True, check=True)
+        subprocess.run(f"make -j$(nproc) install VERBOSE=1", shell=True, check=True)
+        subprocess.run(f"make -j$(nproc) install-prebuilds VERBOSE=1", shell=True, check=True)
+
+        # Back to our previous directory
+        os.chdir(here)
+
+    def setup(self, rootdir):
+        os.environ['PATH'] = os.environ['PATH'] + ":" + rootdir + "/builds/MUST17/bin/"
