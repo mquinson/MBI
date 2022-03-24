@@ -52,6 +52,8 @@ class Tool(tools.simgrid.Tool):
 
         if re.search('MC is currently not supported here', output):
             return 'failure'
+        if re.search('Execution failed with code 134.', output):
+            return 'failure'
 
         if re.search('MBI_MSG_RACE', output):
             return 'MBI_MSG_RACE'
