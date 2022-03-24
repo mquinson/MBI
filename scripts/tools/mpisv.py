@@ -71,6 +71,8 @@ class Tool(AbstractTool):
 
         if re.search('No Violation detected by MPI-SV', info):
             return 'OK'
+        if re.search('/root/mpi-sv/mpisv.*?Illegal instruction', output):
+            return 'failure'
 
         print (f">>>>[ INCONCLUSIVE ]>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> (mpisv/{cachefile})")
         print(output)

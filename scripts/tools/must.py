@@ -115,10 +115,9 @@ class V17(AbstractTool):
             return 'OK'
 
         if re.search('YOUR APPLICATION TERMINATED WITH THE EXIT STRING: Segmentation fault', output):
-            return 'failure'
-
+            return 'segfault'
         if re.search('caught signal nr 11', output) or re.search('caught signal nr 6', output):
-            return 'failure'
+            return 'segfault'
 
         if re.search('internal ABORT - process ', output):
             return 'failure'
