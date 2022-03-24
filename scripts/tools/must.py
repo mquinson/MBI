@@ -114,6 +114,12 @@ class V17(AbstractTool):
         if re.search('MUST detected no MPI usage errors nor any suspicious behavior during this application run', html):
             return 'OK'
 
+        if re.search('YOUR APPLICATION TERMINATED WITH THE EXIT STRING: Segmentation fault', output):
+            return 'failure'
+
+        if re.search('caught signal nr 11', output):
+            return 'failure'
+
         if re.search('internal ABORT - process ', output):
             return 'failure'
 
