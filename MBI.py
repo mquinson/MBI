@@ -313,7 +313,7 @@ iframe {
 
         binary=re.sub('\.c', '', os.path.basename(test['filename']))
         ID=test['id']
-        test_ID = f"{binary}_{ID}"
+        test_id = f"{binary}_{ID}"
         expected=test['expect']
 
         outHTML.write(f"<td><a href='gencodes/{binary}.c.txt' target='MBI_details'>{binary}</a>&nbsp;<a href='gencodes/{binary}.c'><img title='Download source' src='img/html.svg' height='24' /></a>")
@@ -322,15 +322,15 @@ iframe {
         outHTML.write("</td>")
 
         for toolname in used_toolnames:
-            (res_category, elapsed, diagnostic, outcome) = categorize(tool=tools[toolname], toolname=toolname, test_ID=test_ID, expected=expected)
+            (res_category, elapsed, diagnostic, outcome) = categorize(tool=tools[toolname], toolname=toolname, test_id=test_id, expected=expected)
 
-            results[toolname][res_category].append(f"{test_ID} expected {test['detail']}, outcome: {diagnostic}")
-            outHTML.write(f"<td align='center'><a href='logs/{toolname}/{test_ID}.txt' target='MBI_details'><img title='{displayed_name[toolname]} {diagnostic} (returned {outcome})' src='img/{res_category}.svg' width='24' /></a> ({outcome})")
+            results[toolname][res_category].append(f"{test_id} expected {test['detail']}, outcome: {diagnostic}")
+            outHTML.write(f"<td align='center'><a href='logs/{toolname}/{test_id}.txt' target='MBI_details'><img title='{displayed_name[toolname]} {diagnostic} (returned {outcome})' src='img/{res_category}.svg' width='24' /></a> ({outcome})")
             extra=None
-            if os.path.exists(f'logs/{toolname}/{test_ID}.html'):
-                extra=f'logs/{toolname}/{test_ID}.html'
-            if os.path.exists(f'logs/{toolname}/{test_ID}-klee-out'): # MPI-SV 
-                extra=f'logs/{toolname}/{test_ID}-klee-out'
+            if os.path.exists(f'logs/{toolname}/{test_id}.html'):
+                extra=f'logs/{toolname}/{test_id}.html'
+            if os.path.exists(f'logs/{toolname}/{test_id}-klee-out'): # MPI-SV 
+                extra=f'logs/{toolname}/{test_id}-klee-out'
             if extra is not None:
                 outHTML.write(f"&nbsp;<a href='{extra}' target='MBI_details'><img title='more info' src='img/html.svg' height='24' /></a>")
             outHTML.write("</td>")
@@ -339,7 +339,7 @@ iframe {
                 total_elapsed[toolname] += float(elapsed)
 
             if len(used_toolnames) == 1:
-                print(f"Test '{test_ID}' result: {res_category}: {diagnostic}. Elapsed: {elapsed} sec")
+                print(f"Test '{test_id}' result: {res_category}: {diagnostic}. Elapsed: {elapsed} sec")
 
             np = re.search(r"(?:-np) [0-9]+", test['cmd'])
             np = int(re.sub(r"-np ", "", np.group(0)))
@@ -487,21 +487,21 @@ def cmd_latex(rootdir, toolnames):
     for test in todo:
         binary=re.sub('\.c', '', os.path.basename(test['filename']))
         ID=test['id']
-        test_ID = f"{binary}_{ID}"
+        test_id = f"{binary}_{ID}"
         expected=test['expect']
 
         for toolname in used_toolnames:
-            (res_category, elapsed, diagnostic, outcome) = categorize(tool=tools[toolname], toolname=toolname, test_ID=test_ID, expected=expected)
+            (res_category, elapsed, diagnostic, outcome) = categorize(tool=tools[toolname], toolname=toolname, test_id=test_id, expected=expected)
             error = possible_details[test['detail']]
-            results[error][toolname][res_category].append(test_ID)
-            results['total'][toolname][res_category].append(test_ID)
+            results[error][toolname][res_category].append(test_id)
+            results['total'][toolname][res_category].append(test_id)
             timing[error][toolname].append(float(elapsed))
             timing['total'][toolname].append(float(elapsed))
             if expected == 'OK':
-                results['total'][toolname]['OK'].append(test_ID)
+                results['total'][toolname]['OK'].append(test_id)
             else:
-                results['total'][toolname]['error'].append(test_ID)
-                results['error'][toolname][res_category].append(test_ID)
+                results['total'][toolname]['error'].append(test_id)
+                results['error'][toolname][res_category].append(test_id)
                 timing['error'][toolname].append(float(elapsed))
 
     # Produce the results per tool and per category
