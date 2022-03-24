@@ -52,8 +52,6 @@ class Tool(tools.simgrid.Tool):
 
         if re.search('MC is currently not supported here', output):
             return 'failure'
-        if re.search('Execution failed with code 134.', output):
-            return 'segfault'
         if re.search('Segmentation fault.', output):
             return 'segfault'
 
@@ -76,6 +74,8 @@ class Tool(tools.simgrid.Tool):
             return 'OK'
         if re.search('Command killed by signal 15, elapsed time: 300', output):
             return 'timeout'
+        if re.search('Execution failed with code 134.', output):
+            return 'segfault'
 
         print (f">>>>[ INCONCLUSIVE ]>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> (smpi/{cachefile})")
         print(output)
