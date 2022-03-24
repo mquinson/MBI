@@ -169,7 +169,7 @@ def categorize(tool, toolname, test_ID, expected):
             diagnostic = f'hard timeout'
         else:
             diagnostic = f'timeout after {elapsed} sec'
-    elif outcome == 'failure':
+    elif outcome == 'failure' or outcome == 'segfault':
         res_category = 'failure'
         diagnostic = f'tool error, or test not run'
     elif outcome == 'UNIMPLEMENTED':
