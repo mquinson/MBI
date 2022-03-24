@@ -117,7 +117,7 @@ class V17(AbstractTool):
         if re.search('YOUR APPLICATION TERMINATED WITH THE EXIT STRING: Segmentation fault', output):
             return 'failure'
 
-        if re.search('caught signal nr 11', output):
+        if re.search('caught signal nr 11', output) or re.search('caught signal nr 6', output):
             return 'failure'
 
         if re.search('internal ABORT - process ', output):
@@ -127,7 +127,7 @@ class V17(AbstractTool):
         if os.path.exists(f'{cachefile}.timeout') or os.path.exists(f'logs/must/{cachefile}.timeout'):
             return 'timeout'
 
-        print (f">>>>[ INCONCLUSIVE ]>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ({cachefile})")
+        print (f">>>>[ INCONCLUSIVE ]>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ({self.identify()}/{cachefile})")
         print(output)
         print ("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
         return 'other'

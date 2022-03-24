@@ -89,10 +89,13 @@ class Tool(AbstractTool):
         if re.search('ISP detected no deadlocks', output):
             return 'OK'
 
+        if re.search('BAD TERMINATION OF ONE OF YOUR APPLICATION PROCESSES', output):
+            return 'failure'
+
         if re.search('Command killed by signal 15, elapsed time: 300', output):
             return 'timeout'
 
-        print (f">>>>[ INCONCLUSIVE ]>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ({cachefile})")
+        print (f">>>>[ INCONCLUSIVE ]>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> (isp/{cachefile})")
         print(output)
         print ("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
         return 'other'
