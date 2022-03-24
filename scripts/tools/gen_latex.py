@@ -7,17 +7,17 @@ possible_characterization=["Lacking", "Yes"]
 possible_details = {
     # scope limited to one call
     'InvalidCommunicator':'AInvalidParam', 'InvalidDatatype':'AInvalidParam', 'InvalidRoot':'AInvalidParam', 'InvalidTag':'AInvalidParam', 'InvalidWindow':'AInvalidParam', 'InvalidOperator':'AInvalidParam', 'InvalidOtherArg':'AInvalidParam', 'ActualDatatype':'AInvalidParam',
-    'InvalidSrcDest':'AInvalidParam', 
+    'InvalidSrcDest':'AInvalidParam',
     # scope: Process-wide
-#    'OutOfInitFini':'BInitFini', 
+#    'OutOfInitFini':'BInitFini',
     'CommunicatorLeak':'BResLeak', 'DatatypeLeak':'BResLeak', 'GroupLeak':'BResLeak', 'OperatorLeak':'BResLeak', 'TypeLeak':'BResLeak', 'RequestLeak':'BResLeak',
     'MissingStart':'BReqLifecycle', 'MissingWait':'BReqLifecycle',
     'LocalConcurrency':'BLocalConcurrency',
     # scope: communicator
-    'CallMatching':'DMatch', 
+    'CallMatching':'DMatch',
     'CommunicatorMatching':'CMatch', 'DatatypeMatching':'CMatch', 'OperatorMatching':'CMatch', 'RootMatching':'CMatch', 'TagMatching':'CMatch',
-    'MessageRace':'DRace', 
-    
+    'MessageRace':'DRace',
+
     'GlobalConcurrency':'DGlobalConcurrency',
     # larger scope
 #    'BufferingHazard':'EBufferingHazard',
@@ -39,17 +39,17 @@ displayed_name = {
     'P2P!basic':'P2P', 'P2P!nonblocking':'iP2P', 'P2P!persistent':'pP2P',
     'COLL!basic':'Coll', 'COLL!nonblocking':'iColl', 'COLL!tools':'Coll+',
     'RMA':'RMA',
-    
+
     'aislinn':'Aislinn','civl':'CIVL', 'isp':'ISP', 'simgrid':'Mc SimGrid','smpi':'SMPI', 'mpisv':'MPI-SV', 'must':'MUST', 'parcoach':'PARCOACH'
 }
 
 
 #feat_to_color = {'P2P!basic':'red', 'iP2P':'red!80', 'PERS':'purple', 'COLL':'green', 'iCOLL':'green!80', 'TOPO':'purple!20', 'RMA':'black',
 #    "PROB":'black', "COM":'black', "GRP":'black', "DATA":'black', "OP":'black'}
-feat_to_color = {'P2P!basic':'viridis0', 'P2P!nonblocking':'viridis1', 'P2P!persistent':'viridis3', 
+feat_to_color = {'P2P!basic':'viridis0', 'P2P!nonblocking':'viridis1', 'P2P!persistent':'viridis3',
     'RMA':'viridis10',
     "COLL!basic":'viridis15', "COLL!nonblocking":'viridis16', "COLL!tools":'viridis17'}
-feat_to_bgcolor = {'P2P!basic':'white', 'P2P!nonblocking':'white', 'P2P!persistent':'white', 
+feat_to_bgcolor = {'P2P!basic':'white', 'P2P!nonblocking':'white', 'P2P!persistent':'white',
     'RMA':'black',
     "COLL!basic":'black', "COLL!nonblocking":'black', "COLL!tools":'black'}
 
@@ -59,12 +59,12 @@ def parse_file_features(file):
     lacking = []
     with open(file, 'r') as f:
         line = f.readline()
-        
+
         # Search for the feature block
         while line != 'BEGIN_MPI_FEATURES\n':
             if line == '':
                 raise Exception("Impossible to find the feature block in {}".format(file))
-            line = f.readline() 
+            line = f.readline()
 
         while line != 'END_MPI_FEATURES\n':
             if line == '':
@@ -102,7 +102,7 @@ def parse_file_expected(file):
             raise Exception("Unexpected expectation header in {}: '{}'".format(file, expected))
     res = list(map(lambda line: possible_details[line], res))
     return res
-  
+
 def get_C_files_from_dir(dir):
     files = []
     if dir[-1] != '/': # dir must be ended by a / for later separation between the path and basename

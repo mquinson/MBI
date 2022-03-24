@@ -66,7 +66,7 @@ class Tool(AbstractTool):
 
         if os.path.exists("./report.html"):
             os.rename("./report.html", f"{binary}_{id}.html")
-            
+
         if ran:
             subprocess.run(f"rm -f {binary} vgcore.*", shell=True, check=True) # Save disk space ASAP
 

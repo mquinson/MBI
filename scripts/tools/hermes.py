@@ -62,7 +62,7 @@ class Tool(AbstractTool):
 
         if os.path.exists("./report.html"):
             os.rename("./report.html", f"{binary}_{id}.html")
-            
+
         subprocess.run("rm -f vgcore.*", shell=True, check=True) # Save disk space ASAP
         subprocess.run("find -type f -a -executable | xargs rm -f", shell=True, check=True)
 
@@ -91,7 +91,7 @@ class Tool(AbstractTool):
             return 'mpierr'
         if re.search('Fatal error in MPI', output):
             return 'mpierr'
-            
+
         # https://github.com/DhritiKhanna/Hermes/issues/2
         if re.search("isp.exe: ServerSocket.cpp:220: int ServerSocket::Receive.*?: Assertion `iter != _cli_socks.end", output):
             return 'failure'

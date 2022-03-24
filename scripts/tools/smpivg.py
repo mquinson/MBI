@@ -1,6 +1,6 @@
 import re
 import os
-import tools.smpi 
+import tools.smpi
 import subprocess
 from MBIutils import *
 

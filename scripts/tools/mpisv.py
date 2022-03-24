@@ -33,11 +33,11 @@ class Tool(AbstractTool):
             binary=binary,
             timeout=timeout,
             batchinfo=batchinfo)
-        
+
         if os.path.exists('klee-last') and not os.path.exists(f"{binary}_{id}-klee-out"):
             os.rename(os.readlink('klee-last'), f"{binary}_{id}-klee-out")
             os.remove('klee-last')
-        
+
         # save disk space ASAP if ran
         if ran:
             subprocess.run("find -type f -a -executable | xargs rm -f", shell=True, check=True) # Remove generated cruft (binary files)

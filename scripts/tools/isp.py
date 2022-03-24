@@ -43,7 +43,7 @@ class Tool(AbstractTool):
                    binary=binary,
                    timeout=timeout,
                    batchinfo=batchinfo):
-                   
+
             # The test was actually run
             print("\nClearing port after executing ISP\n")
             subprocess.run("kill -9 $(lsof -t -i:9999) 2>/dev/null", shell=True)

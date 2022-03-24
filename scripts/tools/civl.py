@@ -13,7 +13,7 @@ class Tool(AbstractTool):
         if cached and os.path.exists("/root/.sarl"):
             return
         subprocess.run(f"cd {rootdir}/tools/CIVL-1.20_5259/lib && java -jar civl-1.20_5259.jar config", shell=True, check=True)
- 
+
     def run(self, execcmd, filename, binary, id, timeout, batchinfo):
         cachefile = f'{binary}_{id}'
 
@@ -92,7 +92,7 @@ class Tool(AbstractTool):
         if re.search('Undeclared identifier', output):
             return 'UNIMPLEMENTED'
 
-        # The following is categorized as a CIVL bug, because it reports an inexistant error when a communicator is tested for inequality 
+        # The following is categorized as a CIVL bug, because it reports an inexistant error when a communicator is tested for inequality
         #
         # Error: Incompatible types for operator NEQ:
         # struct MPI_Comm
@@ -102,11 +102,11 @@ class Tool(AbstractTool):
         #     ^^^^^^^^^^^^^^^^^^^^^
         if re.search('Error: Incompatible types for operator NEQ:\nstruct MPI_Comm\nstruct MPI_Comm\nat', output):
             return 'failure'
-        
+
         #  $ java -jar ../../tools/CIVL-1.20_5259/lib/civl-1.20_5259.jar verify -input_mpi_nprocs=2 /MBI/gencodes/CollOpNull_Reduce_nok.c
         # CIVL v1.20 of 2019-09-27 -- http://vsl.cis.udel.edu/civl
-        # Hello from rank 0 
-        # Hello from rank 1 
+        # Hello from rank 0
+        # Hello from rank 1
         # Exception in thread "main" java.lang.ArrayIndexOutOfBoundsException: Index -1 out of bounds for length 16
         #        at edu.udel.cis.vsl.civl.library.common.LibraryComponent.translateOperator(LibraryComponent.java:544)
         # (REPORTED to the CIVL authos on June 18 2021)

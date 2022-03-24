@@ -42,12 +42,12 @@ class Tool(AbstractTool):
             timeout=timeout,
             batchinfo=batchinfo)
 
-        if ran: 
+        if ran:
             subprocess.run(f"rm -f core vgcore.* {binary}", shell=True, check=True) # Save disk space ASAP
 
-    def teardown(self): 
+    def teardown(self):
         subprocess.run("find -type f -a -executable | xargs rm -f", shell=True, check=True) # Remove generated cruft (binary files)
-        subprocess.run("rm -f core", shell=True, check=True) 
+        subprocess.run("rm -f core", shell=True, check=True)
 
     def parse(self, cachefile):
         if os.path.exists(f'{cachefile}.timeout') or os.path.exists(f'logs/itac/{cachefile}.timeout'):

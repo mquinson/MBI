@@ -70,7 +70,7 @@ class V17(AbstractTool):
         if ran: # cleanup if that test was ran
             subprocess.run(f"rm -rf must_temp core {binary}", shell=True, check=True)
 
-    def teardown(self): 
+    def teardown(self):
         subprocess.run("find -type f -a -executable | xargs rm -f", shell=True, check=True) # Remove generated (binary files)
         subprocess.run("rm -rf must_temp core", shell=True, check=True)
 

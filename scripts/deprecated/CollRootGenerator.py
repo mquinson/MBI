@@ -11,14 +11,14 @@ template = """// @{generatedby}@
     @{longdesc}@
 
 BEGIN_MPI_FEATURES
-	P2P!basic: Lacking
-	P2P!nonblocking: Lacking
-	P2P!persistent: Lacking
-	COLL!basic: @{collfeature}@
-	COLL!nonblocking: @{icollfeature}@
-	COLL!persistent: Lacking
-	COLL!tools: Lacking
-	RMA: Lacking
+  P2P!basic: Lacking
+  P2P!nonblocking: Lacking
+  P2P!persistent: Lacking
+  COLL!basic: @{collfeature}@
+  COLL!nonblocking: @{icollfeature}@
+  COLL!persistent: Lacking
+  COLL!tools: Lacking
+  RMA: Lacking
 END_MPI_FEATURES
 
 BEGIN_MBI_TESTS
@@ -45,18 +45,18 @@ int main(int argc, char **argv) {
   if (nprocs < 2)
     printf("MBI ERROR: This test needs at least 2 processes to produce a bug!\\n");
 
-	MPI_Comm newcom = MPI_COMM_WORLD;
-	MPI_Op op = MPI_SUM;
-	MPI_Datatype type = MPI_INT;
+  MPI_Comm newcom = MPI_COMM_WORLD;
+  MPI_Op op = MPI_SUM;
+  MPI_Datatype type = MPI_INT;
 
-	int dbs = sizeof(int)*nprocs; /* Size of the dynamic buffers for alltoall and friends */  
-	int root = 0;
+  int dbs = sizeof(int)*nprocs; /* Size of the dynamic buffers for alltoall and friends */
+  int root = 0;
 
   @{init}@
   @{change_root}@
 
-  @{operation}@ 
-	@{fini}@
+  @{operation}@
+  @{fini}@
 
   MPI_Finalize();
   printf("Rank %d finished normally\\n", rank);
@@ -76,7 +76,7 @@ for c in coll4root + icoll4root:
     patterns['init'] = init[c]("1")
     patterns['fini'] = fini[c]("1")
     patterns['operation'] = operation[c]("1")
-    patterns['change_root'] = '' 
+    patterns['change_root'] = ''
 
     # Generate the correct code ==> to remove?
     #replace = patterns
@@ -89,14 +89,14 @@ for c in coll4root + icoll4root:
 
     # Generate an incorrect root matching
     replace = patterns
-    replace['shortdesc'] = 'Collective @{c}@ with a root mismatch' 
-    replace['longdesc'] = f'Odd ranks use 0 as a root while even ranks use 1 as a root' 
-    replace['outcome'] = 'ERROR: RootMatching' 
-    replace['errormsg'] = 'Collective root mistmatch. @{c}@ at @{filename}@:@{line:MBIERROR}@ has 0 or 1 as a root.' 
-    replace['change_root'] = 'if (rank % 2)\n		root = 1; /* MBIERROR */'
+    replace['shortdesc'] = 'Collective @{c}@ with a root mismatch'
+    replace['longdesc'] = f'Odd ranks use 0 as a root while even ranks use 1 as a root'
+    replace['outcome'] = 'ERROR: RootMatching'
+    replace['errormsg'] = 'Collective root mistmatch. @{c}@ at @{filename}@:@{line:MBIERROR}@ has 0 or 1 as a root.'
+    replace['change_root'] = 'if (rank % 2)\n    root = 1; /* MBIERROR */'
     make_file(template, f'CollRootMatching_{c}_nok.c', replace)
 
-    # Generate the call with root=-1 
+    # Generate the call with root=-1
     replace = patterns
     replace['shortdesc'] = f'Collective {c} with root = -1'
     replace['longdesc'] = f'Collective {c} with root = -1'
@@ -105,11 +105,11 @@ for c in coll4root + icoll4root:
     replace['change_root'] = 'root = -1; /* MBIERROR */'
     make_file(template, f'CollRootNeg_{c}_nok.c', replace)
 
-    # Generate the call with root=2 
+    # Generate the call with root=2
     replace = patterns
     replace['shortdesc'] = f'Collective {c} with root out of the communicator'
     replace['longdesc'] = f'Collective {c} with root = 2 (there is only 2 ranks)'
     replace['outcome'] = 'ERROR: InvalidRoot'
-    replace['errormsg'] = 'Invalid collective root.  @{c}@ at @{filename}@:@{line:MBIERROR}@ has 2 as a root while communicator MPI_COMM_WORLD requires ranks in range 0 to 1.' 
+    replace['errormsg'] = 'Invalid collective root.  @{c}@ at @{filename}@:@{line:MBIERROR}@ has 2 as a root while communicator MPI_COMM_WORLD requires ranks in range 0 to 1.'
     replace['change_root'] = 'root = nprocs; /* MBIERROR */'
     make_file(template, f'CollRootTooLarge_{c}_nok.c', replace)
