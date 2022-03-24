@@ -100,11 +100,13 @@ for e in epoch:
             replace['longdesc'] = 'Global Concurrency error. @{p2}@ conflicts with @{p1}@' 
             replace['outcome'] = 'ERROR: GlobalConcurrency' 
             replace['errormsg'] = 'Global Concurrency error. @{p2}@ at @{filename}@:@{line:MBIERROR2}@ conflicts with @{p1}@ line @{line:MBIERROR1}@'
-						## Replace Put and Get first argument
+
+            # Replace Put and Get first argument
             if p2 in put:
                 replace['operation2'] = 'MPI_Put(&winbuf[20], N, MPI_INT, target, 0, N, type, win);' 
             if p2 in get:
                 replace['operation2'] = 'MPI_Get(&winbuf[20], N, MPI_INT, target, 0, N, type, win);' 
+
             make_file(template, f'GlobalConcurrency_rl_{e}_{p1}_{p2}_nok.c', replace)
 						
 
@@ -130,7 +132,9 @@ for e in epoch:
             replace['longdesc'] = 'Global Concurrency error. @{p2}@ conflicts with @{p1}@' 
             replace['outcome'] = 'ERROR: LocalConcurrency' 
             replace['errormsg'] = 'Global Concurrency error. @{p2}@ at @{filename}@:@{line:MBIERROR2}@ conflicts with @{p1}@ line @{line:MBIERROR1}@'
-						## Replace Put first argument
+
+            # Replace Put first argument
             if p2 in put:
-                replace['operation2'] = 'MPI_Put(&winbuf[20], N, MPI_INT, target, 0, N, type, win);' 
+              replace['operation2'] = 'MPI_Put(&winbuf[20], N, MPI_INT, target, 0, N, type, win);' 
+
             make_file(template, f'GlobalConcurrency_rl_{e}_{p1}_{p2}_nok.c', replace)

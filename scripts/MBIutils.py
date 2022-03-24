@@ -31,18 +31,18 @@ class AbstractTool:
         Ensure that this tool (previously built) is usable in this environment: setup the PATH, etc.
         This is called only once for all tests, from the logs directory.
         """
-        pass
+        # pass
 
-    def run(execcmd, filename, binary, id, timeout):
+    def run(execcmd, filename, binary, num_id, timeout):
         """Compile that test code and anaylse it with the Tool if needed (a cache system should be used)"""
-        pass
+        # pass
 
     def teardown(self):
         """
         Clean the results of all test runs: remove temp files and binaries.
         This is called only once for all tests, from the logs directory.
         """
-        pass
+        # pass
 
     def parse(self, cachefile):
         """Read the result of a previous run from the cache, and compute the test outcome"""
@@ -105,36 +105,36 @@ def parse_one_code(filename):
     """
     res = []
     test_num = 0
-    with open(filename, "r") as input:
+    with open(filename, "r") as input_file:
         state = 0  # 0: before header; 1: in header; 2; after header
         line_num = 1
-        for line in input:
+        for line in input_file:
             if re.match(".*BEGIN_MBI_TESTS.*", line):
                 if state == 0:
                     state = 1
                 else:
-                    raise Exception(f"MBI_TESTS header appears a second time at line {line_num}: \n{line}")
+                    raise ValueError(f"MBI_TESTS header appears a second time at line {line_num}: \n{line}")
             elif re.match(".*END_MBI_TESTS.*", line):
                 if state == 1:
                     state = 2
                 else:
-                    raise Exception(f"Unexpected end of MBI_TESTS header at line {line_num}: \n{line}")
+                    raise ValueError(f"Unexpected end of MBI_TESTS header at line {line_num}: \n{line}")
             if state == 1 and re.match("\s+\$ ?.*", line):
                 m = re.match('\s+\$ ?(.*)', line)
                 cmd = m.group(1)
-                nextline = next(input)
+                nextline = next(input_file)
                 detail = 'OK'
                 if re.match('[ |]*OK *', nextline):
                     expect = 'OK'
                 else:
                     m = re.match('[ |]*ERROR: *(.*)', nextline)
                     if not m:
-                        raise Exception(
+                        raise ValueError(
                             f"\n{filename}:{line_num}: MBI parse error: Test not followed by a proper 'ERROR' line:\n{line}{nextline}")
                     expect = 'ERROR'
                     detail = m.group(1)
                     if detail not in possible_details:
-                        raise Exception(
+                        raise ValueError(
                             f"\n{filename}:{line_num}: MBI parse error: Detailled outcome {detail} is not one of the allowed ones.")
                 test = {'filename': filename, 'id': test_num, 'cmd': cmd, 'expect': expect, 'detail': detail}
                 res.append(test.copy())
@@ -142,24 +142,24 @@ def parse_one_code(filename):
                 line_num += 1
 
     if state == 0:
-        raise Exception(f"MBI_TESTS header not found in file '{filename}'.")
+        raise ValueError(f"MBI_TESTS header not found in file '{filename}'.")
     if state == 1:
-        raise Exception(f"MBI_TESTS header not properly ended in file '{filename}'.")
+        raise ValueError(f"MBI_TESTS header not properly ended in file '{filename}'.")
 
     if len(res) == 0:
-        raise Exception(f"No test found in {filename}. Please fix it.")
+        raise ValueError(f"No test found in {filename}. Please fix it.")
     return res
 
-def categorize(tool, toolname, test_ID, expected):
-    outcome = tool.parse(test_ID)
+def categorize(tool, toolname, test_id, expected):
+    outcome = tool.parse(test_id)
 
-    if not os.path.exists(f'{test_ID}.elapsed') and not os.path.exists(f'logs/{toolname}/{test_ID}.elapsed'):
+    if not os.path.exists(f'{test_id}.elapsed') and not os.path.exists(f'logs/{toolname}/{test_id}.elapsed'):
         if outcome == 'failure':
             elapsed = 0
         else:
-            raise Exception(f"Invalid test result: {test_ID}.txt exists but not {test_ID}.elapsed")
+            raise ValueError(f"Invalid test result: {test_id}.txt exists but not {test_id}.elapsed")
     else:
-        with open(f'{test_ID}.elapsed' if os.path.exists(f'{test_ID}.elapsed') else f'logs/{toolname}/{test_ID}.elapsed', 'r') as infile:
+        with open(f'{test_id}.elapsed' if os.path.exists(f'{test_id}.elapsed') else f'logs/{toolname}/{test_id}.elapsed', 'r') as infile:
             elapsed = infile.read()
 
     # Properly categorize this run
@@ -193,7 +193,7 @@ def categorize(tool, toolname, test_ID, expected):
             res_category = 'TRUE_POS'
             diagnostic =  f'correctly detected an error'
     else:
-        raise Exception(f"Unexpected expectation: {expected} (must be OK or ERROR)")
+        raise ValueError(f"Unexpected expectation: {expected} (must be OK or ERROR)")
 
     return (res_category, elapsed, diagnostic, outcome)
 
@@ -224,13 +224,12 @@ def run_cmd(buildcmd, execcmd, cachefile, filename, binary, timeout, batchinfo, 
         if olddigest == newdigest:
             print(f" (result cached -- digest: {olddigest})")
             return False
-        else:
-            os.remove(f'{cachefile}.txt')
+        os.remove(f'{cachefile}.txt')
 
     print(f"Wait up to {timeout} seconds")
 
     start_time = time.time()
-    if buildcmd == None:
+    if buildcmd is None:
         output = f"No need to compile {binary}.c (batchinfo:{batchinfo})\n\n"
     else:
         output = f"Compiling {binary}.c (batchinfo:{batchinfo})\n\n"
@@ -314,10 +313,10 @@ def run_cmd(buildcmd, execcmd, cachefile, filename, binary, timeout, batchinfo, 
     with open(f'{cachefile}.txt', 'w') as outfile:
         outfile.write(output)
     with open(f'{cachefile}.md5sum', 'w') as outfile:
-        hash = hashlib.md5()
+        hashed = hashlib.md5()
         with open(filename, 'rb') as sourcefile :
             for chunk in iter(lambda: sourcefile.read(4096), b""):
-                hash.update(chunk)
-        outfile.write(hash.hexdigest())
+                hashed.update(chunk)
+        outfile.write(hashed.hexdigest())
     
     return True

@@ -1,3 +1,8 @@
+# Copyright 2021-2022. The MBI project. All rights reserved. 
+# This program is free software; you can redistribute it and/or modify it under the terms of the license (GNU GPL).
+
+# This is a simple templating system, dedicated to the systematic generation of MPI source code
+
 import os
 import re
 
@@ -10,8 +15,7 @@ icoll4op = ['MPI_Ireduce', 'MPI_Iallreduce']
 coll4root =  ['MPI_Reduce', 'MPI_Bcast', 'MPI_Gather', 'MPI_Scatter']
 icoll4root = ['MPI_Ireduce', 'MPI_Ibcast', 'MPI_Igather', 'MPI_Iscatter']
 pcoll = []
-tcoll = ['MPI_Comm_split', 'MPI_Op_create', 'MPI_Comm_dup', 'MPI_Type_contiguous', 'MPI_Comm_create', 'MPI_Group_excl']
-#tcoll = ['MPI_Comm_split', 'MPI_Op_create', 'MPI_Comm_group', 'MPI_Comm_dup', 'MPI_Type_contiguous', 'MPI_Comm_create', 'MPI_Group_excl']
+tcoll = ['MPI_Comm_split', 'MPI_Op_create', 'MPI_Comm_dup', 'MPI_Type_contiguous', 'MPI_Comm_create', 'MPI_Group_excl'] # MPI_Comm_dup removed
 tcoll4color = ['MPI_Comm_split']
 tcoll4topo = ['MPI_Cart_get']
 
@@ -32,9 +36,7 @@ probe = ['MPI_Probe']
 epoch = ['MPI_Win_fence', 'MPI_Win_lock', 'MPI_Win_lock_all']
 rma = ['MPI_Get', 'MPI_Put']
 get = ['MPI_Get']
-#rget = ['MPI_RGet']
 put = ['MPI_Put']
-#rput = ['MPI_Put']
 store = ['store']
 load = ['load']
 rstore = ['rstore']
@@ -423,12 +425,12 @@ def find_line(content, target, filename):
             #print(f'Found {target} at {line}')
             return res
         res += 1
-    raise Exception(f"Line target {target} not found in {filename}.")
+    raise ValueError(f"Line target {target} not found in {filename}.")
 
 
 def make_file(template, filename, replace):
     output = template
-    filename = re.sub("_MPI_", "_", filename)
+    filename = filename.replace("_MPI_", "_")
     replace['filename'] = filename
     # Replace all variables that don't have a ':' in their name
     while re.search("@\{[^@:]*\}@", output):
@@ -439,7 +441,7 @@ def make_file(template, filename, replace):
             output = re.sub(f'@\{{{target}\}}@', replace[target], output)
             #print(f"Replace {target} -> {replace[target]}")
         else:
-            raise Exception(f"Variable {target} used in template, but not defined.")
+            raise ValueError(f"Variable {target} used in template, but not defined.")
     # Now replace all variables with a ':' in their name: line targets are like that, and we don't want to resolve them before the others change the lines
     while re.search("@\{([^:@]*):([^@]*)\}@", output):
         m = re.search("@\{([^:@]*):([^@]*)\}@", output)
@@ -449,7 +451,7 @@ def make_file(template, filename, replace):
             #print(f"Replace @{{line:{target}}}@ with '{replace}'")
             output = re.sub(f'@\{{line:{target}\}}@', replace, output)
         else:
-            raise Exception(f"Unknown variable kind: {kind}:{target}")
+            raise ValueError(f"Unknown variable kind: {kind}:{target}")
 
     if os.path.exists(filename):
         with open(filename, 'r') as file:
