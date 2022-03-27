@@ -78,7 +78,7 @@ error_scope = {
     'DRace':'multi-processes',
     'DMatch':'multi-processes',
     'DGlobalConcurrency':'multi-processes',
-#    'EBufferingHazard':'system',
+    'EBufferingHazard':'system',
     'FOK':'correct executions'
 }
 
