@@ -9,6 +9,7 @@ import re
 # Collectives
 coll = ['MPI_Barrier','MPI_Bcast', 'MPI_Reduce', 'MPI_Gather', 'MPI_Scatter', 'MPI_Scan', 'MPI_Exscan', 'MPI_Allgather', 'MPI_Allreduce', 'MPI_Allgatherv', 'MPI_Alltoall', 'MPI_Alltoallv']
 icoll = ['MPI_Ibcast', 'MPI_Ireduce', 'MPI_Igather', 'MPI_Iscatter', 'MPI_Iscan', 'MPI_Iexscan', 'MPI_Iallgather', 'MPI_Iallreduce', 'MPI_Iallgatherv', 'MPI_Ialltoall', 'MPI_Ialltoallv']
+barrier = ['MPI_Barrier']
 ibarrier = ['MPI_Ibarrier']
 coll4op = ['MPI_Reduce', 'MPI_Allreduce']
 icoll4op = ['MPI_Ireduce', 'MPI_Iallreduce']
