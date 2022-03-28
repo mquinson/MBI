@@ -81,7 +81,7 @@ int main(int argc, char **argv) {
     @{operation3}@ /* MBIERROR1 */
     @{operation1}@
     @{fini1}@
-    src = 0;
+    @{changesrc}@
     @{operation4}@ /* MBIERROR2 */
     @{fini3}@
     @{fini4}@
@@ -130,6 +130,16 @@ for s in send + isend:
             patterns['operation2'] = operation[s]("2")
             patterns['operation3'] = operation[r]("3")
             patterns['operation4'] = operation[r]("4")
+            patterns['changesrc'] = ''
+
+            # Generate the correct matching because of the conditional
+            replace = patterns
+            replace['shortdesc'] = 'Message race'
+            replace['longdesc'] = 'Message race without problem in @{r}@ with @{c}@.'
+            replace['outcome'] = 'OK'
+            replace['errormsg'] = 'OK'
+            replace['changesrc'] = ''
+            make_file(template, f'MessageRace_{c}_{s}_{r}_ok.c', replace)
 
             # Generate the incorrect matching because of the conditional
             replace = patterns
@@ -137,4 +147,5 @@ for s in send + isend:
             replace['longdesc'] = 'Message race in @{r}@ with @{c}@.'
             replace['outcome'] = 'ERROR: MessageRace'
             replace['errormsg'] = 'Message race. The use of wildcard receive calls (@{r}@ at @{filename}@:@{line:MBIERROR1}@ and @{r}@ at @{filename}@:@{line:MBIERROR2}@) leads to nondeterministic matching.'
+            replace['changesrc'] = 'src = 0;'
             make_file(template, f'MessageRace_{c}_{s}_{r}_nok.c', replace)
