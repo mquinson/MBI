@@ -42,6 +42,8 @@ int main(int argc, char **argv) {
   int rank = -1;
   MPI_Status sta;
   int src,dest;
+  int i=0;
+  int root = 0;
   int stag=0, rtag=0;
   int buff_size = N;
 
@@ -56,8 +58,10 @@ int main(int argc, char **argv) {
   if (argc < 1)
     printf("MBI ERROR: This test needs at least 1 argument to produce a bug!\\n");
 
+  int dbs = sizeof(int)*nprocs; /* Size of the dynamic buffers for alltoall and friends */
   MPI_Comm newcom = MPI_COMM_WORLD;
   MPI_Datatype type = MPI_INT;
+  MPI_Op op = MPI_SUM;
 
   int n = atoi(argv[1]);
   int buffer[N] = {42};
