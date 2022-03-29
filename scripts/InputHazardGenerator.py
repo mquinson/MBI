@@ -35,7 +35,7 @@ END_MBI_TESTS
 #include <stdio.h>
 #include <stdlib.h>
 
-#define N 10000
+#define N 10
 
 int main(int argc, char **argv) {
   int nprocs = -1;
@@ -71,7 +71,7 @@ int main(int argc, char **argv) {
 
   if (rank == 0) {
     dest=1, src=1;
-    if ((n % 2) == 0) {
+    if ((n % 2) == 0) { @{errorcond}@
       @{operation1b}@
       @{fini1b}@
     } else {
@@ -107,17 +107,19 @@ for s in send + isend:
         patterns['s'] = s
         patterns['r'] = r
 
-        patterns['init1'] = init[r]("1")
-        patterns['operation1a'] = operation[r]("1").replace("buf1", "buffer")
-        patterns['operation1b'] = operation[r]("1").replace("buf1", "buffer")
-        patterns['fini1a'] = fini[r]("1")
-        patterns['fini1b'] = fini[r]("1")
-        patterns['free1'] = free[r]("1")
+        patterns['init1'] = init[s]("1")
+        patterns['operation1a'] = operation[s]("1").replace("buf1", "buffer")
+        patterns['operation1b'] = operation[s]("1").replace("buf1", "buffer")
+        patterns['fini1a'] = fini[s]("1")
+        patterns['fini1b'] = fini[s]("1")
+        patterns['free1'] = free[s]("1")
 
-        patterns['init2'] = init[s]("2")
-        patterns['operation2'] = operation[s]("2").replace("buf2", "buffer")
-        patterns['fini2'] = fini[s]("2")
-        patterns['free2'] = free[s]("2")
+        patterns['init2'] = init[r]("2")
+        patterns['operation2'] = operation[r]("2").replace("buf2", "buffer")
+        patterns['fini2'] = fini[r]("2")
+        patterns['free2'] = free[r]("2")
+
+        patterns['errorcond'] = ''
 
         # Generate a correct matching
         replace = patterns
@@ -129,11 +131,12 @@ for s in send + isend:
 
         # Generate the incorrect matching
         replace = patterns
-        replace['shortdesc'] = 'Missing Recv function.'
-        replace['longdesc'] = 'Missing Recv function for a path depending to input, a deadlock is created.'
+        replace['shortdesc'] = 'Missing Send function.'
+        replace['longdesc'] = 'Missing Send function call for a path depending to input, a deadlock is created.'
         replace['outcome'] = 'ERROR: CallMatching'
         replace['errormsg'] = 'P2P mistmatch. Missing @{r}@ at @{filename}@:@{line:MBIERROR}@.'
-        replace['operation1b'] = '/* MBIERROR */'
+        replace['errorcond'] = '/* MBIERROR */'
+        replace['operation1b'] = ''
         replace['fini1b'] = ''
         make_file(template, f'InputHazardCallOrdering_{r}_{s}_nok.c', replace)
 
@@ -160,6 +163,8 @@ for c in coll + icoll:
     patterns['fini2'] = fini[c]("2")
     patterns['free2'] = free[c]("2")
 
+    patterns['errorcond'] = ''
+
     # Generate a correct matching
     replace = patterns
     replace['shortdesc'] = 'Correct call ordering.'
@@ -174,6 +179,7 @@ for c in coll + icoll:
     replace['longdesc'] = 'Missing collective function call for a path depending to input, a deadlock is created.'
     replace['outcome'] = 'ERROR: CallMatching'
     replace['errormsg'] = 'P2P mistmatch. Missing @{c}@ at @{filename}@:@{line:MBIERROR}@.'
-    replace['operation1b'] = '/* MBIERROR */'
+    replace['errorcond'] = '/* MBIERROR */'
+    replace['operation1b'] = ''
     replace['fini1b'] = ''
     make_file(template, f'InputHazardCallOrdering_{c}_nok.c', replace)
