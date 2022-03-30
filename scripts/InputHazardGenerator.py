@@ -79,7 +79,7 @@ int main(int argc, char **argv) {
       @{operation1a}@
       @{fini1a}@
     }
-  }else if (rank == 1){
+  } else @{addcond}@ {
     dest=0, src=0;
     @{operation2}@
     @{fini2}@
@@ -121,6 +121,7 @@ for s in send + isend:
         patterns['free2'] = free[r]("2")
 
         patterns['errorcond'] = ''
+        patterns['addcond'] = 'if (rank == 1)'
 
         # Generate a correct matching
         replace = patterns
@@ -165,6 +166,7 @@ for c in coll + icoll:
     patterns['free2'] = free[c]("2")
 
     patterns['errorcond'] = ''
+    patterns['addcond'] = ''
 
     # Generate a correct matching
     replace = patterns
