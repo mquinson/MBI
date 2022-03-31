@@ -21,11 +21,10 @@ old-logs:
     needs: []
     script:
         - wget https://gitlab.com/MpiBugsInitiative/MpiBugsInitiative/uploads/2e4844fe38cac48cd7051d86c0521930/logs-220331.7z
-        - 7zr x -so logs-*.7z | tar xf -
     artifacts:
         untracked: false
         paths:
-            - logs
+            - logs*.7z
 
 test-must:
     stage: test
@@ -33,6 +32,7 @@ test-must:
         - job: old-logs
           artifacts: true
     script:
+        - 7zr x -so logs*.7z | tar xf -
         - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x must -c run
@@ -48,6 +48,7 @@ test-aislinn:
         - job: old-logs
           artifacts: true
     script:
+        - 7zr x -so logs*.7z | tar xf -
         - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x aislinn
@@ -62,6 +63,7 @@ test-hermes:
         - job: old-logs
           artifacts: true
     script:
+        - 7zr x -so logs*.7z | tar xf -
         - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x hermes
@@ -92,6 +94,7 @@ test-civl:
         - job: old-logs
           artifacts: true
     script:
+        - 7zr x -so logs*.7z | tar xf -
         - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x civl -c run
@@ -106,6 +109,7 @@ test-parcoach:
         - job: old-logs
           artifacts: true
     script:
+        - 7zr x -so logs*.7z | tar xf -
         - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x parcoach
@@ -120,6 +124,7 @@ test-simgrid:
         - job: old-logs
           artifacts: true
     script:
+        - 7zr x -so logs*.7z | tar xf -
         - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x simgrid
@@ -134,6 +139,7 @@ test-smpi:
         - job: old-logs
           artifacts: true
     script:
+        - 7zr x -so logs*.7z | tar xf -
         - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x smpi
@@ -148,6 +154,7 @@ test-smpivg:
         - job: old-logs
           artifacts: true
     script:
+        - 7zr x -so logs*.7z | tar xf -
         - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x smpivg
@@ -163,6 +170,7 @@ test-itac:
         - job: old-logs
           artifacts: true
     script:
+        - 7zr x -so logs*.7z | tar xf -
         - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x itac -c run
@@ -178,6 +186,7 @@ test-isp:
         - job: old-logs
           artifacts: true
     script:
+        - 7zr x -so logs*.7z | tar xf -
         - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x isp -c run
