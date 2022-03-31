@@ -48,6 +48,7 @@ test-aislinn:
         - job: old-logs
           artifacts: true
     script:
+        - apt-get update; apt-get install -y p7zip p7zip-full
         - 7zr x -so logs*.7z | tar xf -
         - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
@@ -73,20 +74,23 @@ test-hermes:
         paths:
             - logs/hermes
 
-# MPI-SV refuses to build on nested virtualization as we have when using docker on gitlab-CI
-#test-mpisv:
-#    stage: test
-#    image: mpisv/mpi-sv
-#    needs: []
-#    script:
-#        - rm -rf builds; ln -s /MBI/builds .
-#        - scripts/ensure_python3 ./MBI.py -c generate
-#        - scripts/ensure_python3 ./MBI.py -x mpisv
-#    artifacts:
-#        untracked: false
-#        when: always
-#        paths:
-#            - logs/mpisv
+test-mpisv:
+    stage: test
+    image: mpisv/mpi-sv
+    needs:
+        - job: old-logs
+          artifacts: true
+    script:
+        - apt-get update; apt-get install -y p7zip p7zip-full
+        - 7zr x -so logs*.7z | tar xf -
+        - rm -rf builds; ln -s /MBI/builds .
+        - scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -x mpisv
+    artifacts:
+        untracked: false
+        when: always
+        paths:
+            - logs/mpisv
 
 test-civl:
     stage: test
@@ -210,6 +214,8 @@ latex:
           artifacts: true
         - job: test-parcoach
           artifacts: true
+        - job: test-mpisv
+          artifacts: true
         - job: test-simgrid
           artifacts: true
         - job: test-smpi
@@ -246,6 +252,8 @@ pages:
         - job: test-civl
           artifacts: true
         - job: test-parcoach
+          artifacts: true
+        - job: test-mpisv
           artifacts: true
         - job: test-simgrid
           artifacts: true
