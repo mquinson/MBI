@@ -198,6 +198,8 @@ latex:
           artifacts: true
         - job: test-aislinn
           artifacts: true
+        - job: test-civl
+          artifacts: true
         - job: test-hermes
           artifacts: true
         - job: test-parcoach
@@ -234,6 +236,8 @@ pages:
         - job: test-aislinn
           artifacts: true
         - job: test-hermes
+          artifacts: true
+        - job: test-civl
           artifacts: true
         - job: test-parcoach
           artifacts: true
