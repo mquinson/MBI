@@ -1,6 +1,6 @@
-builds
 logs
 gencodes
+tools
 *.log
 *.html
 *.tex

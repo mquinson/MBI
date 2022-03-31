@@ -1,31 +1,261 @@
-# This file is intended for the shared infrastructures, so reduce the computational burden by testing simgrid only
+# Use our own docker image, that was generated and pushed with the following commands:
+#   docker login registry.gitlab.inria.fr
+#   docker build -t registry.gitlab.inria.fr/quinson/mbi2 .
+#   docker push registry.gitlab.inria.fr/quinson/mbi2
+# image: registry.gitlab.com/mwapl/benchmarking-mpi:latest
+# image: registry.gitlab.inria.fr/quinson/mbi2:latest
+image: registry.hub.docker.com/mquinson/mbi
+
 
 variables:
     GIT_SUBMODULE_STRATEGY: none
 
 stages:
     - build
-
-pages:
+    - test
+    - gather # For the tests that are split in several jobs (ISP, MUST, CIVL), rerun them all in one
+    - deploy
+    
+old-logs:
     stage: build
     needs: []
     script:
-        - apt update; apt install -y p7zip wget
-        - wget https://gitlab.com/MpiBugsInitiative/MpiBugsInitiative/uploads/7072bf58ed7213d9d909c82023e4f66e/logs-220324.7z
+        - apt update ; apt install -y p7zip wget
+        - wget https://gitlab.com/MpiBugsInitiative/MpiBugsInitiative/uploads/2e4844fe38cac48cd7051d86c0521930/logs-220331.7z
         - 7zr x -so logs-*.7z | tar xf -
-        - mkdir -p logs/simgrid
-        - touch logs/simgrid/trust_the_installation trust_the_installation # Silence the checks for the right docker image
-        - python3 ./MBI.py -c generate
-#        - python3 ./MBI.py -x simgrid | grep Test
-        - python3 ./MBI.py -c html -x itac,simgrid,must,parcoach,isp,aislinn,mpisv,civl,smpi,smpivg
-        - pwd ; ls ; echo logs:; ls logs
+    artifacts:
+        untracked: false
+        paths:
+            - logs
+
+test-must:
+    stage: test
+    needs:
+        - job: old-logs
+          artifacts: true
+    before_script:
+        - apt-get install -y psmisc
+    script:
+        - rm -rf builds; ln -s /MBI/builds .
+        - scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -x must -c run
+    artifacts:
+        untracked: false
+        when: always
+        paths:
+            - logs/must
+test-aislinn:
+    stage: test
+    image: ubuntu:18.04
+    needs:
+        - job: old-logs
+          artifacts: true
+    script:
+        - rm -rf builds; ln -s /MBI/builds .
+        - scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -x aislinn
+    artifacts:
+        untracked: false
+        when: always
+        paths:
+            - logs/aislinn
+test-hermes:
+    stage: test
+    needs:
+        - job: old-logs
+          artifacts: true
+    script:
+        - rm -rf builds; ln -s /MBI/builds .
+        - scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -x hermes
+    artifacts:
+        untracked: false
+        when: always
+        paths:
+            - logs/hermes
+
+# MPI-SV refuses to build on nested virtualization as we have when using docker on gitlab-CI
+#test-mpisv:
+#    stage: test
+#    image: mpisv/mpi-sv
+#    needs: []
+#    script:
+#        - rm -rf builds; ln -s /MBI/builds .
+#        - scripts/ensure_python3 ./MBI.py -c generate
+#        - scripts/ensure_python3 ./MBI.py -x mpisv
+#    artifacts:
+#        untracked: false
+#        when: always
+#        paths:
+#            - logs/mpisv
+
+test-civl:
+    stage: test
+    needs:
+        - job: old-logs
+          artifacts: true
+    script:
+        - rm -rf builds; ln -s /MBI/builds .
+        - scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -x civl -c run
+    artifacts:
+        untracked: false
+        when: always
+        paths:
+            - logs/civl
+test-parcoach:
+    stage: test
+    needs:
+        - job: old-logs
+          artifacts: true
+    script:
+        - rm -rf builds; ln -s /MBI/builds .
+        - scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -x parcoach
+    artifacts:
+        untracked: false
+        when: always
+        paths:
+            - logs/parcoach
+test-simgrid:
+    stage: test
+    needs:
+        - job: old-logs
+          artifacts: true
+    script:
+        - rm -rf builds; ln -s /MBI/builds .
+        - scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -x simgrid
+    artifacts:
+        untracked: false
+        when: always
+        paths:
+            - logs/simgrid
+test-smpi:
+    stage: test
+    needs:
+        - job: old-logs
+          artifacts: true
+    script:
+        - rm -rf builds; ln -s /MBI/builds .
+        - scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -x smpi
+    artifacts:
+        untracked: false
+        when: always
+        paths:
+            - logs/smpi
+test-smpivg:
+    stage: test
+    needs:
+        - job: old-logs
+          artifacts: true
+    script:
+        - rm -rf builds; ln -s /MBI/builds .
+        - scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -x smpivg
+    artifacts:
+        untracked: false
+        when: always
+        paths:
+            - logs/smpivg
+
+test-itac:
+    stage: test
+    needs:
+        - job: old-logs
+          artifacts: true
+    script:
+        - rm -rf builds; ln -s /MBI/builds .
+        - scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -x itac -c run
+    artifacts:
+        untracked: false
+        when: always
+        paths:
+            - logs/itac
+
+test-isp:
+    stage: test
+    needs:
+        - job: old-logs
+          artifacts: true
+    script:
+        - rm -rf builds; ln -s /MBI/builds .
+        - scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -x isp -c run
+    artifacts:
+        untracked: false
+        when: always
+        paths:
+            - logs/isp
+
+latex:
+    stage: deploy
+    when: always
+    needs:
+        - job: test-must
+          artifacts: true
+        - job: test-aislinn
+          artifacts: true
+        - job: test-parcoach
+          artifacts: true
+        - job: test-simgrid
+          artifacts: true
+        - job: test-smpi
+          artifacts: true
+        - job: test-smpivg
+          artifacts: true
+        - job: test-itac
+          artifacts: true
+        - job: test-isp
+          artifacts: true
+    script:
+        - apt update ; apt -y install texlive-latex-base texlive-latex-extra texlive-pictures
+        - rm -rf builds; ln -s /MBI/builds .
+        - scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -c latex
+        - cd scripts ; ./tools/gen_latex.py ; cd ..
+        - cd latex ; pdflatex -batch dashboard.tex ; cd ..
+    artifacts:
+        untracked: false
+        when: always
+        paths:
+            - latex
+
+pages:
+    stage: deploy
+    when: always
+    needs:
+        - job: test-must
+          artifacts: true
+        - job: test-aislinn
+          artifacts: true
+        - job: test-parcoach
+          artifacts: true
+        - job: test-simgrid
+          artifacts: true
+        - job: test-smpi
+          artifacts: true
+        - job: test-smpivg
+          artifacts: true
+        - job: test-itac
+          artifacts: true
+        - job: test-isp
+          artifacts: true
+    before_script:
+        - apt update; apt install -y p7zip-full
+    script:
+        - rm -rf builds; ln -s /MBI/builds .
+        - scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -c html
+        - pwd ; ls
         - mkdir public
+        - tar cf - --exclude '*.bc' --exclude '*.stf*' --exclude '*.ktest' logs | 7z a -si -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on public/logs.tar.7z
         - cp -r *.html gencodes img logs public/
-    image:
-        name: simgrid/tuto-mc
-        entrypoint: ['/bin/bash', '-c', 'ln -snf /bin/bash /bin/sh && /bin/bash -c $0' ]
     artifacts:
         untracked: false
         when: always
         paths:
             - public
+            - logs

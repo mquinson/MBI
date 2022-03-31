@@ -1,0 +1,31 @@
+# This file is intended for the shared infrastructures, so reduce the computational burden by testing simgrid only
+
+variables:
+    GIT_SUBMODULE_STRATEGY: none
+
+stages:
+    - build
+
+pages:
+    stage: build
+    needs: []
+    script:
+        - apt update; apt install -y p7zip wget
+        - wget https://gitlab.com/MpiBugsInitiative/MpiBugsInitiative/uploads/7072bf58ed7213d9d909c82023e4f66e/logs-220324.7z
+        - 7zr x -so logs-*.7z | tar xf -
+        - mkdir -p logs/simgrid
+        - touch logs/simgrid/trust_the_installation trust_the_installation # Silence the checks for the right docker image
+        - python3 ./MBI.py -c generate
+#        - python3 ./MBI.py -x simgrid | grep Test
+        - python3 ./MBI.py -c html -x itac,simgrid,must,parcoach,isp,aislinn,mpisv,civl,smpi,smpivg
+        - pwd ; ls ; echo logs:; ls logs
+        - mkdir public
+        - cp -r *.html gencodes img logs public/
+    image:
+        name: simgrid/tuto-mc
+        entrypoint: ['/bin/bash', '-c', 'ln -snf /bin/bash /bin/sh && /bin/bash -c $0' ]
+    artifacts:
+        untracked: false
+        when: always
+        paths:
+            - public
