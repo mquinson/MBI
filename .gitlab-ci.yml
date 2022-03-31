@@ -28,7 +28,7 @@ old-logs:
         paths:
             - logs
 
-test-must:
+test-civl-hermes-must:
     stage: test
     needs:
         - job: old-logs
@@ -38,11 +38,15 @@ test-must:
     script:
         - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
-        - scripts/ensure_python3 ./MBI.py -x must -c run
+        - scripts/ensure_python3 ./MBI.py -x civl
+        - scripts/ensure_python3 ./MBI.py -x hermes
+        - scripts/ensure_python3 ./MBI.py -x must
     artifacts:
         untracked: false
         when: always
         paths:
+            - logs/civl
+            - logs/hermes
             - logs/must
 test-aislinn:
     stage: test
@@ -51,6 +55,7 @@ test-aislinn:
         - job: old-logs
           artifacts: true
     script:
+        - mkdir -p builds/aislinn
         - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x aislinn
@@ -59,20 +64,6 @@ test-aislinn:
         when: always
         paths:
             - logs/aislinn
-test-hermes:
-    stage: test
-    needs:
-        - job: old-logs
-          artifacts: true
-    script:
-        - rm -rf builds; ln -s /MBI/builds .
-        - scripts/ensure_python3 ./MBI.py -c generate
-        - scripts/ensure_python3 ./MBI.py -x hermes
-    artifacts:
-        untracked: false
-        when: always
-        paths:
-            - logs/hermes
 
 # MPI-SV refuses to build on nested virtualization as we have when using docker on gitlab-CI
 #test-mpisv:
@@ -89,21 +80,7 @@ test-hermes:
 #        paths:
 #            - logs/mpisv
 
-test-civl:
-    stage: test
-    needs:
-        - job: old-logs
-          artifacts: true
-    script:
-        - rm -rf builds; ln -s /MBI/builds .
-        - scripts/ensure_python3 ./MBI.py -c generate
-        - scripts/ensure_python3 ./MBI.py -x civl -c run
-    artifacts:
-        untracked: false
-        when: always
-        paths:
-            - logs/civl
-test-parcoach:
+test-simgrid-parcoach-isp:
     stage: test
     needs:
         - job: old-logs
@@ -112,53 +89,19 @@ test-parcoach:
         - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x parcoach
-    artifacts:
-        untracked: false
-        when: always
-        paths:
-            - logs/parcoach
-test-simgrid:
-    stage: test
-    needs:
-        - job: old-logs
-          artifacts: true
-    script:
-        - rm -rf builds; ln -s /MBI/builds .
-        - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x simgrid
+        - scripts/ensure_python3 ./MBI.py -x smpi
+        - scripts/ensure_python3 ./MBI.py -x smpivg
+        - scripts/ensure_python3 ./MBI.py -x isp -c run
     artifacts:
         untracked: false
         when: always
         paths:
             - logs/simgrid
-test-smpi:
-    stage: test
-    needs:
-        - job: old-logs
-          artifacts: true
-    script:
-        - rm -rf builds; ln -s /MBI/builds .
-        - scripts/ensure_python3 ./MBI.py -c generate
-        - scripts/ensure_python3 ./MBI.py -x smpi
-    artifacts:
-        untracked: false
-        when: always
-        paths:
+            - logs/parcoach
             - logs/smpi
-test-smpivg:
-    stage: test
-    needs:
-        - job: old-logs
-          artifacts: true
-    script:
-        - rm -rf builds; ln -s /MBI/builds .
-        - scripts/ensure_python3 ./MBI.py -c generate
-        - scripts/ensure_python3 ./MBI.py -x smpivg
-    artifacts:
-        untracked: false
-        when: always
-        paths:
             - logs/smpivg
+            - logs/isp
 
 test-itac:
     stage: test
@@ -175,88 +118,27 @@ test-itac:
         paths:
             - logs/itac
 
-test-isp:
-    stage: test
-    needs:
-        - job: old-logs
-          artifacts: true
-    script:
-        - rm -rf builds; ln -s /MBI/builds .
-        - scripts/ensure_python3 ./MBI.py -c generate
-        - scripts/ensure_python3 ./MBI.py -x isp -c run
-    artifacts:
-        untracked: false
-        when: always
-        paths:
-            - logs/isp
-
-latex:
-    stage: deploy
-    when: always
-    needs:
-        - job: test-must
-          artifacts: true
-        - job: test-aislinn
-          artifacts: true
-        - job: test-civl
-          artifacts: true
-        - job: test-hermes
-          artifacts: true
-        - job: test-parcoach
-          artifacts: true
-        - job: test-simgrid
-          artifacts: true
-        - job: test-smpi
-          artifacts: true
-        - job: test-smpivg
-          artifacts: true
-        - job: test-itac
-          artifacts: true
-        - job: test-isp
-          artifacts: true
-    script:
-        - apt update ; apt -y install texlive-latex-base texlive-latex-extra texlive-pictures
-        - rm -rf builds gencodes /MBI/gencodes; ln -s /MBI/builds . ; ls -s /MBI/gencodes .
-        - scripts/ensure_python3 ./MBI.py -c generate
-        - scripts/ensure_python3 ./MBI.py -c latex
-        - cd scripts ; ./tools/gen_latex.py ; cd ..
-        - cd latex ; pdflatex -batch dashboard.tex ; cd ..
-    artifacts:
-        untracked: false
-        when: always
-        paths:
-            - latex
-
 pages:
     stage: deploy
     when: always
     needs:
-        - job: test-must
+        - job: test-civl-hermes-must
+          artifacts: true
+        - job: test-simgrid-parcoach-isp
           artifacts: true
         - job: test-aislinn
           artifacts: true
-        - job: test-hermes
-          artifacts: true
-        - job: test-civl
-          artifacts: true
-        - job: test-parcoach
-          artifacts: true
-        - job: test-simgrid
-          artifacts: true
-        - job: test-smpi
-          artifacts: true
-        - job: test-smpivg
-          artifacts: true
         - job: test-itac
           artifacts: true
-        - job: test-isp
-          artifacts: true
     before_script:
-        - apt update; apt install -y p7zip-full
+        - apt update; apt install -y p7zip-full texlive-latex-base texlive-latex-extra texlive-pictures
     script:
         - rm -rf builds gencodes /MBI/gencodes; ln -s /MBI/builds . ; ls -s /MBI/gencodes .
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -c html
+        - scripts/ensure_python3 ./MBI.py -c latex
+        - cd scripts ; ./tools/gen_latex.py ; cd ..
+        - cd latex ; pdflatex -batch dashboard.tex ; cd ..
         - pwd ; ls
         - mkdir public
         - tar cf - --exclude '*.bc' --exclude '*.stf*' --exclude '*.ktest' logs | 7z a -si -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on public/logs.tar.7z
@@ -267,3 +149,4 @@ pages:
         paths:
             - public
             - logs
+            - latex
