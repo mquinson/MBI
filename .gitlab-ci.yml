@@ -36,6 +36,7 @@ test-must-1:
     before_script:
         - apt-get install -y psmisc
     script:
+        - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x must -c run -b 1/10
     artifacts:
@@ -52,6 +53,7 @@ test-must-2:
     before_script:
         - apt-get install -y psmisc
     script:
+        - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x must -c run -b 2/10
     artifacts:
@@ -68,6 +70,7 @@ test-must-3:
     before_script:
         - apt-get install -y psmisc
     script:
+        - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x must -c run -b 3/10
     artifacts:
@@ -84,6 +87,7 @@ test-must-4:
     before_script:
         - apt-get install -y psmisc
     script:
+        - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x must -c run -b 4/10
     artifacts:
@@ -100,6 +104,7 @@ test-must-5:
     before_script:
         - apt-get install -y psmisc
     script:
+        - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x must -c run -b 5/10
     artifacts:
@@ -116,6 +121,7 @@ test-must-6:
     before_script:
         - apt-get install -y psmisc
     script:
+        - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x must -c run -b 6/10
     artifacts:
@@ -132,6 +138,7 @@ test-must-7:
     before_script:
         - apt-get install -y psmisc
     script:
+        - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x must -c run -b 7/10
     artifacts:
@@ -148,6 +155,7 @@ test-must-8:
     before_script:
         - apt-get install -y psmisc
     script:
+        - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x must -c run -b 8/10
     artifacts:
@@ -164,6 +172,7 @@ test-must-9:
     before_script:
         - apt-get install -y psmisc
     script:
+        - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x must -c run -b 9/10
     artifacts:
@@ -180,6 +189,7 @@ test-must-10:
     before_script:
         - apt-get install -y psmisc
     script:
+        - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x must -c run -b 10/10
     artifacts:
@@ -212,6 +222,7 @@ test-must-all:
         - job: test-must-10
           artifacts: true
     script:
+        - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x must
     artifacts:
@@ -227,6 +238,7 @@ test-aislinn:
         - job: old-logs
           artifacts: true
     script:
+        - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x aislinn
     artifacts:
@@ -241,6 +253,7 @@ test-aislinn:
 #    image: mpisv/mpi-sv
 #    needs: []
 #    script:
+#        - rm -rf builds; ln -s /MBI/builds .
 #        - scripts/ensure_python3 ./MBI.py -c generate
 #        - scripts/ensure_python3 ./MBI.py -x mpisv
 #    artifacts:
@@ -255,6 +268,7 @@ test-civl-1:
         - job: old-logs
           artifacts: true
     script:
+        - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x civl -c run -b 1/4
     artifacts:
@@ -268,6 +282,7 @@ test-civl-2:
         - job: old-logs
           artifacts: true
     script:
+        - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x civl -c run -b 2/4
     artifacts:
@@ -281,6 +296,7 @@ test-civl-3:
         - job: old-logs
           artifacts: true
     script:
+        - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x civl -c run -b 3/4
     artifacts:
@@ -294,6 +310,7 @@ test-civl-4:
         - job: old-logs
           artifacts: true
     script:
+        - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x civl -c run -b 4/4
     artifacts:
@@ -314,6 +331,7 @@ test-civl-all:
         - job: test-civl-4
           artifacts: true
     script:
+        - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x civl
     artifacts:
@@ -328,6 +346,7 @@ test-parcoach:
         - job: old-logs
           artifacts: true
     script:
+        - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x parcoach
     artifacts:
@@ -342,6 +361,7 @@ test-simgrid:
         - job: old-logs
           artifacts: true
     script:
+        - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x simgrid
     artifacts:
@@ -355,6 +375,7 @@ test-smpi:
         - job: old-logs
           artifacts: true
     script:
+        - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x smpi
     artifacts:
@@ -368,6 +389,7 @@ test-smpivg-1:
         - job: old-logs
           artifacts: true
     script:
+        - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x smpivg -b 1/3
     artifacts:
@@ -381,6 +403,7 @@ test-smpivg-2:
         - job: old-logs
           artifacts: true
     script:
+        - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x smpivg -b 2/3
     artifacts:
@@ -394,6 +417,7 @@ test-smpivg-3:
         - job: old-logs
           artifacts: true
     script:
+        - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x smpivg -b 3/3
     artifacts:
@@ -413,6 +437,7 @@ test-smpivg-all:
         - job: test-smpivg-3
           artifacts: true
     script:
+        - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x smpivg
     artifacts:
@@ -427,6 +452,7 @@ test-itac:
         - job: old-logs
           artifacts: true
     script:
+        - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x itac -c run
     artifacts:
@@ -441,6 +467,7 @@ test-isp-1:
         - job: old-logs
           artifacts: true
     script:
+        - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x isp -c run -b 1/2
     artifacts:
@@ -455,6 +482,7 @@ test-isp-2:
         - job: old-logs
           artifacts: true
     script:
+        - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x isp -c run -b 2/2
     artifacts:
@@ -471,6 +499,7 @@ test-isp-all:
         - job: test-isp-2
           artifacts: true
     script:
+        - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x isp
     artifacts:
@@ -485,6 +514,7 @@ latex:
     when: always
     script:
         - apt update ; apt -y install texlive-latex-base texlive-latex-extra texlive-pictures
+        - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -c latex
         - cd script ; ./tools/gen_latex.py ; cd ..
@@ -499,6 +529,7 @@ pages:
     stage: deploy
     when: always
     script:
+        - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -c html
         - pwd ; ls
