@@ -19,7 +19,7 @@ class Tool(AbstractTool):
         if os.path.exists("tools/simgrid/.git"):
             subprocess.run("cd tools/simgrid && git pull &&  cd ../..", shell=True, check=True)
         else:
-            subprocess.run("rm -rf tools/simgrid && git clone --depth=1 https://framagit.org/simgrid/simgrid.git tools/simgrid", shell=True, check=True)
+            subprocess.run("rm -rf tools/simgrid && git clone --depth=1 https://github.com/simgrid/simgrid.git tools/simgrid", shell=True, check=True)
 
         # Build and install it
         os.chdir("tools/simgrid")
