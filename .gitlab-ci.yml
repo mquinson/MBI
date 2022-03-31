@@ -59,6 +59,20 @@ test-aislinn:
         when: always
         paths:
             - logs/aislinn
+test-hermes:
+    stage: test
+    needs:
+        - job: old-logs
+          artifacts: true
+    script:
+        - rm -rf builds; ln -s /MBI/builds .
+        - scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -x hermes
+    artifacts:
+        untracked: false
+        when: always
+        paths:
+            - logs/hermes
 
 # MPI-SV refuses to build on nested virtualization as we have when using docker on gitlab-CI
 #test-mpisv:
