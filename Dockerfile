@@ -10,6 +10,10 @@
 #      docker login registry.gitlab.com -u mquinson -p <token from journal.org>
 #      docker image tag mpi-bugs-initiative:latest registry.gitlab.com/mquinson/mbi:latest
 #      docker push registry.gitlab.com/mquinson/mbi
+# Personal notes: Push to the Inria gitlab 
+#      docker image tag mquinson/mbi registry.gitlab.inria.fr/quinson/mbi2
+#      docker login registry.gitlab.inria.fr
+#      docker push registry.gitlab.inria.fr/quinson/mbi2
 FROM ubuntu:20.04
 USER root
 RUN apt-get update
