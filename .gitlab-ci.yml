@@ -216,7 +216,7 @@ latex:
           artifacts: true
     script:
         - apt update ; apt -y install texlive-latex-base texlive-latex-extra texlive-pictures
-        - rm -rf builds; ln -s /MBI/builds .
+        - rm -rf builds gencodes /MBI/gencodes; ln -s /MBI/builds . ; ls -s /MBI/gencodes .
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -c latex
         - cd scripts ; ./tools/gen_latex.py ; cd ..
@@ -254,7 +254,7 @@ pages:
     before_script:
         - apt update; apt install -y p7zip-full
     script:
-        - rm -rf builds; ln -s /MBI/builds .
+        - rm -rf builds gencodes /MBI/gencodes; ln -s /MBI/builds . ; ls -s /MBI/gencodes .
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -c html
         - pwd ; ls
