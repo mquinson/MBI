@@ -51,6 +51,8 @@ test-aislinn:
         - apt-get update; apt-get install -y p7zip p7zip-full
         - 7zr x -so logs*.7z | tar xf -
         - rm -rf builds; ln -s /MBI/builds .
+        - ls -la builds
+        - ls -lRa builds/aislinn
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x aislinn
     artifacts:
@@ -266,7 +268,7 @@ pages:
         - job: test-isp
           artifacts: true
     script:
-        - rm -rf builds gencodes /MBI/gencodes; ln -s /MBI/builds . ; ls -s /MBI/gencodes .
+        - rm -rf builds gencodes /MBI/gencodes; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -c html
         - pwd ; ls
