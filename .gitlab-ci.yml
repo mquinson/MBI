@@ -127,6 +127,7 @@ test-simgrid:
         - job: old-logs
           artifacts: true
     script:
+        - apt update; apt install -y libboost-context-dev
         - 7zr x -so logs*.7z | tar xf -
         - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
@@ -266,8 +267,8 @@ pages:
           artifacts: true
     script:
         - rm -rf builds gencodes /MBI/gencodes; ln -s /MBI/builds .
-        - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -c html
+        - scripts/ensure_python3 ./MBI.py -c generate
         - pwd ; ls
         - mkdir public
         - tar cf - --exclude '*.bc' --exclude '*.stf*' --exclude '*.ktest' logs | 7z a -si -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on public/logs.tar.7z
