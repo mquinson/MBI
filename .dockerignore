@@ -1,6 +1,7 @@
 logs
 gencodes
 tools
+NOSAVE
 *.log
 *.html
 *.tex
@@ -8,3 +9,7 @@ tools
 *~
 .git
 .vscode
+*.7z
+compile_*
+gitlab-*
+trust_the_installation
