@@ -28,27 +28,15 @@ old-logs:
         paths:
             - logs
 
-build-must:
-    stage: build
-    needs: []
-    script:
-        - scripts/ensure_python3 ./MBI.py -x must -c build
-    artifacts:
-        untracked: false
-        paths:
-            - builds/MUST
-
 test-must-1:
     stage: test
     needs:
-        - job: build-must
-          artifacts: true
         - job: old-logs
           artifacts: true
     before_script:
         - apt-get install -y psmisc
     script:
-        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x must -c run -b 1/10
     artifacts:
         untracked: false
@@ -59,14 +47,12 @@ test-must-1:
 test-must-2:
     stage: test
     needs:
-        - job: build-must
-          artifacts: true
         - job: old-logs
           artifacts: true
     before_script:
         - apt-get install -y psmisc
     script:
-        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x must -c run -b 2/10
     artifacts:
         untracked: false
@@ -77,14 +63,12 @@ test-must-2:
 test-must-3:
     stage: test
     needs:
-        - job: build-must
-          artifacts: true
         - job: old-logs
           artifacts: true
     before_script:
         - apt-get install -y psmisc
     script:
-        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x must -c run -b 3/10
     artifacts:
         untracked: false
@@ -95,14 +79,12 @@ test-must-3:
 test-must-4:
     stage: test
     needs:
-        - job: build-must
-          artifacts: true
         - job: old-logs
           artifacts: true          
     before_script:
         - apt-get install -y psmisc
     script:
-        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x must -c run -b 4/10
     artifacts:
         untracked: false
@@ -113,14 +95,12 @@ test-must-4:
 test-must-5:
     stage: test
     needs:
-        - job: build-must
-          artifacts: true
         - job: old-logs
           artifacts: true          
     before_script:
         - apt-get install -y psmisc
     script:
-        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x must -c run -b 5/10
     artifacts:
         untracked: false
@@ -131,14 +111,12 @@ test-must-5:
 test-must-6:
     stage: test
     needs:
-        - job: build-must
-          artifacts: true
         - job: old-logs
           artifacts: true
     before_script:
         - apt-get install -y psmisc
     script:
-        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x must -c run -b 6/10
     artifacts:
         untracked: false
@@ -149,14 +127,12 @@ test-must-6:
 test-must-7:
     stage: test
     needs:
-        - job: build-must
-          artifacts: true
         - job: old-logs
           artifacts: true          
     before_script:
         - apt-get install -y psmisc
     script:
-        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x must -c run -b 7/10
     artifacts:
         untracked: false
@@ -167,14 +143,12 @@ test-must-7:
 test-must-8:
     stage: test
     needs:
-        - job: build-must
-          artifacts: true
         - job: old-logs
           artifacts: true          
     before_script:
         - apt-get install -y psmisc
     script:
-        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x must -c run -b 8/10
     artifacts:
         untracked: false
@@ -185,14 +159,12 @@ test-must-8:
 test-must-9:
     stage: test
     needs:
-        - job: build-must
-          artifacts: true
         - job: old-logs
           artifacts: true          
     before_script:
         - apt-get install -y psmisc
     script:
-        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x must -c run -b 9/10
     artifacts:
         untracked: false
@@ -203,14 +175,12 @@ test-must-9:
 test-must-10:
     stage: test
     needs:
-        - job: build-must
-          artifacts: true
         - job: old-logs
           artifacts: true
     before_script:
         - apt-get install -y psmisc
     script:
-        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x must -c run -b 10/10
     artifacts:
         untracked: false
@@ -221,8 +191,6 @@ test-must-10:
 test-must-all:
     stage: gather
     needs:
-        - job: build-must
-          artifacts: true
         - job: test-must-1
           artifacts: true
         - job: test-must-2
@@ -244,7 +212,7 @@ test-must-all:
         - job: test-must-10
           artifacts: true
     script:
-        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x must
     artifacts:
         untracked: false
@@ -252,28 +220,14 @@ test-must-all:
         paths:
             - logs/*
 
-build-aislinn:
-    stage: build
-    needs: []
-    image: ubuntu:18.04
-    script:
-        - scripts/ensure_python3 ./MBI.py -x aislinn -c build
-    artifacts:
-        untracked: false
-        when: always
-        paths:
-            - tools/aislinn-git/*
-
 test-aislinn:
     stage: test
     image: ubuntu:18.04
     needs:
-        - job: build-aislinn
-          artifacts: true
         - job: old-logs
           artifacts: true
     script:
-        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x aislinn
     artifacts:
         untracked: false
@@ -287,7 +241,7 @@ test-aislinn:
 #    image: mpisv/mpi-sv
 #    needs: []
 #    script:
-#        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
+#        - scripts/ensure_python3 ./MBI.py -c generate
 #        - scripts/ensure_python3 ./MBI.py -x mpisv
 #    artifacts:
 #        untracked: false
@@ -301,7 +255,7 @@ test-civl-1:
         - job: old-logs
           artifacts: true
     script:
-        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x civl -c run -b 1/4
     artifacts:
         untracked: false
@@ -314,7 +268,7 @@ test-civl-2:
         - job: old-logs
           artifacts: true
     script:
-        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x civl -c run -b 2/4
     artifacts:
         untracked: false
@@ -327,7 +281,7 @@ test-civl-3:
         - job: old-logs
           artifacts: true
     script:
-        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x civl -c run -b 3/4
     artifacts:
         untracked: false
@@ -340,7 +294,7 @@ test-civl-4:
         - job: old-logs
           artifacts: true
     script:
-        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x civl -c run -b 4/4
     artifacts:
         untracked: false
@@ -360,7 +314,7 @@ test-civl-all:
         - job: test-civl-4
           artifacts: true
     script:
-        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x civl
     artifacts:
         untracked: false
@@ -368,26 +322,13 @@ test-civl-all:
         paths:
             - logs/*
 
-build-parcoach:
-    stage: build
-    needs: []
-    script:
-        - scripts/ensure_python3 ./MBI.py -x parcoach -c build
-    artifacts:
-        untracked: false
-        when: always
-        paths:
-            - builds/parcoach/*
-
 test-parcoach:
     stage: test
     needs:
         - job: old-logs
           artifacts: true
-        - job: build-parcoach
-          artifacts: true
     script:
-        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x parcoach
     artifacts:
         untracked: false
@@ -395,29 +336,13 @@ test-parcoach:
         paths:
             - logs
 
-build-simgrid:
-    stage: build
-    needs: []
-    script:
-        - scripts/ensure_python3 ./MBI.py -x simgrid -c build
-    cache:
-        paths:
-            - SimGrid/*
-    artifacts:
-        untracked: false
-        when: always
-        paths:
-            - builds/SimGrid
-
 test-simgrid:
     stage: test
     needs:
         - job: old-logs
           artifacts: true
-        - job: build-simgrid
-          artifacts: true
     script:
-        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x simgrid
     artifacts:
         untracked: false
@@ -429,10 +354,8 @@ test-smpi:
     needs:
         - job: old-logs
           artifacts: true
-        - job: build-simgrid
-          artifacts: true
     script:
-        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x smpi
     artifacts:
         untracked: false
@@ -444,10 +367,8 @@ test-smpivg-1:
     needs:
         - job: old-logs
           artifacts: true
-        - job: build-simgrid
-          artifacts: true
     script:
-        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x smpivg -b 1/3
     artifacts:
         untracked: false
@@ -459,10 +380,8 @@ test-smpivg-2:
     needs:
         - job: old-logs
           artifacts: true
-        - job: build-simgrid
-          artifacts: true
     script:
-        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x smpivg -b 2/3
     artifacts:
         untracked: false
@@ -474,10 +393,8 @@ test-smpivg-3:
     needs:
         - job: old-logs
           artifacts: true
-        - job: build-simgrid
-          artifacts: true
     script:
-        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x smpivg -b 3/3
     artifacts:
         untracked: false
@@ -496,7 +413,7 @@ test-smpivg-all:
         - job: test-smpivg-3
           artifacts: true
     script:
-        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x smpivg
     artifacts:
         untracked: false
@@ -510,7 +427,7 @@ test-itac:
         - job: old-logs
           artifacts: true
     script:
-        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x itac -c run
     artifacts:
         untracked: false
@@ -518,26 +435,13 @@ test-itac:
         paths:
             - logs
 
-build-isp:
-    stage: build
-    needs: []
-    script:
-        - scripts/ensure_python3 ./MBI.py -x isp -c build
-    artifacts:
-        untracked: false
-        when: always
-        paths:
-            - ./builds/ISP
-
 test-isp-1:
     stage: test
     needs:
         - job: old-logs
           artifacts: true
-        - job: build-isp
-          artifacts: true
     script:
-        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x isp -c run -b 1/2
     artifacts:
         untracked: false
@@ -550,10 +454,8 @@ test-isp-2:
     needs:
         - job: old-logs
           artifacts: true
-        - job: build-isp
-          artifacts: true
     script:
-        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x isp -c run -b 2/2
     artifacts:
         untracked: false
@@ -569,7 +471,7 @@ test-isp-all:
         - job: test-isp-2
           artifacts: true
     script:
-        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x isp
     artifacts:
         untracked: false
@@ -583,7 +485,7 @@ latex:
     when: always
     script:
         - apt update ; apt -y install texlive-latex-base texlive-latex-extra texlive-pictures
-        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -c latex
         - cd script ; ./tools/gen_latex.py ; cd ..
         - cd latex ; pdflatex -batch dashboard.tex ; cd ..
@@ -597,7 +499,7 @@ pages:
     stage: deploy
     when: always
     script:
-        - rm -rf /MBI/*; scripts/ensure_python3 ./MBI.py -c generate
+        - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -c html
         - pwd ; ls
         - mkdir public
