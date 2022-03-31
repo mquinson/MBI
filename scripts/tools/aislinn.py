@@ -28,7 +28,8 @@ class Tool(AbstractTool):
         if os.path.exists(f"{rootdir}/builds/aislinn/.git"):
             subprocess.run(f"cd {rootdir}/builds/aislinn && git pull &&  cd ../..", shell=True, check=True)
         else:
-            subprocess.run(f"rm -rf {rootdir}/builds/aislinn && git clone --depth=1 https://github.com/spirali/aislinn.git {rootdir}/builds/aislinn", shell=True, check=True)
+            subprocess.run(f"rm -rf {rootdir}/builds/aislinn; mkdir -p {rootdir}/builds", shell=True, check=True)
+            subprocess.run(f"git clone --depth=1 https://github.com/spirali/aislinn.git {rootdir}/builds/aislinn", shell=True, check=True)
         subprocess.run(f"cp -r {rootdir}/tools/aislinn-valgrind-312 {rootdir}/builds/aislinn/valgrind", shell=True, check=True)
 
         # Build it
