@@ -53,6 +53,7 @@ test-aislinn:
     script:
         - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
+        - mkdir -p builds/aislinn
         - scripts/ensure_python3 ./MBI.py -x aislinn
     artifacts:
         untracked: false
