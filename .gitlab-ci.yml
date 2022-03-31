@@ -528,13 +528,16 @@ latex:
 pages:
     stage: deploy
     when: always
+    before_script:
+        - apt update; apt install -y p7zip
     script:
         - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -c html
         - pwd ; ls
         - mkdir public
-        - cp -r *.html gencodes img logs public/
+        - tar cf - --exclude '*.bc' --exclude '*.stf*' --exclude '*.ktest' logs | 7z a -si -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on public/logs.tar.7z
+	- cp -r *.html gencodes img logs public/
     artifacts:
         untracked: false
         when: always
