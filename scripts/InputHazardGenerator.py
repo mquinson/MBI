@@ -28,6 +28,9 @@ BEGIN_MBI_TESTS
   $ mpirun -np 2 ${EXE} 1
   | @{outcome}@
   | @{errormsg}@
+  $ mpirun -np 2 ${EXE} 2
+  | @{outcome}@
+  | @{errormsg}@
 END_MBI_TESTS
 //////////////////////       End of MBI headers        /////////////////// */
 
