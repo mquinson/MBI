@@ -230,6 +230,7 @@ latex:
         - apt update ; apt -y install texlive-latex-base texlive-latex-extra texlive-pictures
         - rm -rf builds gencodes /MBI/gencodes; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
+        - ln -s /MBI/gencodes .
         - scripts/ensure_python3 ./MBI.py -c latex
         - cd scripts ; ./ensure_python3 ./tools/gen_latex.py ; cd ..
         - cd latex ; pdflatex -batch dashboard.tex ; cd ..
