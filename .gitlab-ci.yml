@@ -113,6 +113,7 @@ test-parcoach:
           artifacts: true
     script:
         - 7zr x -so logs*.7z | tar xf -
+        - [ x$MBI_CLEANUP = xparcoach ] && rm -rf logs/parcoach
         - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x parcoach
@@ -129,6 +130,7 @@ test-simgrid:
     script:
         - apt update; apt install -y libboost-context-dev
         - 7zr x -so logs*.7z | tar xf -
+        - [ x$MBI_CLEANUP = xsimgrid ] && rm -rf logs/simgrid
         - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x simgrid
@@ -144,6 +146,7 @@ test-smpi:
           artifacts: true
     script:
         - 7zr x -so logs*.7z | tar xf -
+        - [ x$MBI_CLEANUP = xsmpi ] && rm -rf logs/smpi
         - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x smpi
@@ -159,6 +162,7 @@ test-smpivg:
           artifacts: true
     script:
         - 7zr x -so logs*.7z | tar xf -
+        - [ x$MBI_CLEANUP = xsmpivg ] && rm -rf logs/smpivg
         - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x smpivg
