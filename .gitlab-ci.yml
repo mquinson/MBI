@@ -208,6 +208,7 @@ test-isp:
 latex:
     stage: deploy
     when: always
+    allow_failure: true
     needs:
         - job: test-must
           artifacts: true
