@@ -229,6 +229,7 @@ def run_cmd(buildcmd, execcmd, cachefile, filename, binary, timeout, batchinfo, 
         os.remove(f'{cachefile}.txt')
 
     if not already_setup:
+        print("XX The tool setup was post-ponned until now, do it now")
         already_setup = True
         setup(self, rootdir)
 
