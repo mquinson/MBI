@@ -114,7 +114,7 @@ test-parcoach:
           artifacts: true
     script:
         - 7zr x -so logs*.7z | tar xf -
-        - [ x$MBI_CLEANUP = xparcoach ] && rm -rf logs/parcoach
+        - if [ x$MBI_CLEANUP = xparcoach ] ; then rm -rf logs/parcoach; fi
         - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x parcoach
@@ -131,7 +131,7 @@ test-simgrid:
     script:
         - apt update; apt install -y libboost-context-dev
         - 7zr x -so logs*.7z | tar xf -
-        - [ x$MBI_CLEANUP = xsimgrid ] && rm -rf logs/simgrid
+        - if [ x$MBI_CLEANUP = xsimgrid ] ; then rm -rf logs/simgrid; fi
         - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x simgrid
@@ -147,7 +147,7 @@ test-smpi:
           artifacts: true
     script:
         - 7zr x -so logs*.7z | tar xf -
-        - [ x$MBI_CLEANUP = xsmpi ] && rm -rf logs/smpi
+        - if [ x$MBI_CLEANUP = xsmpi ] ; then rm -rf logs/smpi; fi
         - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x smpi
@@ -163,7 +163,7 @@ test-smpivg:
           artifacts: true
     script:
         - 7zr x -so logs*.7z | tar xf -
-        - [ x$MBI_CLEANUP = xsmpivg ] && rm -rf logs/smpivg
+        - if [ x$MBI_CLEANUP = xsmpivg ] ; then rm -rf logs/smpivg; fi
         - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x smpivg
