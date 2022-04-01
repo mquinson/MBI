@@ -9,6 +9,7 @@ image: registry.gitlab.inria.fr/quinson/mbi2:latest
 
 variables:
     GIT_SUBMODULE_STRATEGY: none
+    MBI_CLEANUP: "Name of the tool for which the logs must be wiped out (at most one in parcoach, simgrid, smpi, smpivg)"
 
 stages:
     - build
