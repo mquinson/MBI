@@ -197,7 +197,7 @@ def categorize(tool, toolname, test_id, expected):
 
     return (res_category, elapsed, diagnostic, outcome)
 
-
+already_setup=False
 def run_cmd(buildcmd, execcmd, cachefile, filename, binary, timeout, batchinfo, read_line_lambda=None):
     """
     Runs the test on need. Returns True if the test was ran, and False if it was cached.
@@ -225,6 +225,11 @@ def run_cmd(buildcmd, execcmd, cachefile, filename, binary, timeout, batchinfo, 
             print(f" (result cached -- digest: {olddigest})")
             return False
         os.remove(f'{cachefile}.txt')
+
+    if not already_setup:
+        global already_setup
+        already_setup = True
+        setup(self, rootdir)
 
     print(f"Wait up to {timeout} seconds")
 

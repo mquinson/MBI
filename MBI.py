@@ -141,9 +141,6 @@ def cmd_run(rootdir, toolname, batchinfo):
     # Build the tool on need
     tools[toolname].build(rootdir=rootdir)
 
-    # Do the tool-specific setups
-    tools[toolname].setup(rootdir)
-
     count = 1
     for test in todo:
         binary = re.sub('\.c', '', os.path.basename(test['filename']))
