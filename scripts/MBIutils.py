@@ -212,6 +212,8 @@ def run_cmd(buildcmd, execcmd, cachefile, filename, binary, timeout, batchinfo, 
      - batchinfo: something like "1/1" to say that this run is the only batch (see -b parameter of MBI.py)
      - read_line_lambda: a lambda to which each line of the tool output is feed ASAP. It allows MUST to interrupt the execution when a deadlock is reported.
     """
+    global already_setup
+
     if os.path.exists(f'{cachefile}.txt') and os.path.exists(f'{cachefile}.elapsed') and os.path.exists(f'{cachefile}.md5sum'):
         hash_md5 = hashlib.md5()
         with open(filename, 'rb') as sourcefile :
@@ -227,7 +229,6 @@ def run_cmd(buildcmd, execcmd, cachefile, filename, binary, timeout, batchinfo, 
         os.remove(f'{cachefile}.txt')
 
     if not already_setup:
-        global already_setup
         already_setup = True
         setup(self, rootdir)
 
