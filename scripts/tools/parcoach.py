@@ -10,7 +10,7 @@ class Tool(AbstractTool):
         AbstractTool.ensure_image(self, "-x parcoach")
 
     def build(self, rootdir, cached=True):
-        if cached and os.path.exists(f"{rootdir}/builds/parcoach/src/aSSA/aSSA.so"):
+        if cached and os.path.exists(f"/MBI/parcoach/src/aSSA/aSSA.so"):
             print("No need to rebuild ParCoach.")
             return
 

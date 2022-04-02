@@ -10,7 +10,7 @@ class Tool(AbstractTool):
         return "SimGrid wrapper"
 
     def build(self, rootdir, cached=True):
-        if cached and (os.path.exists(f"{rootdir}/builds/SimGrid/bin/smpicc") or os.path.exists('/usr/bin/simgrid-mc')):
+        if cached and os.path.exists('/usr/bin/simgrid-mc'):
             return
 
         here = os.getcwd() # Save where we were
@@ -23,7 +23,7 @@ class Tool(AbstractTool):
 
         # Build and install it
         os.chdir("tools/simgrid")
-        subprocess.run(f"cmake -DCMAKE_INSTALL_PREFIX={rootdir}/builds/SimGrid -Denable_model-checking=ON .", shell=True, check=True)
+        subprocess.run(f"cmake -DCMAKE_INSTALL_PREFIX=/usr -Denable_model-checking=ON .", shell=True, check=True)
         subprocess.run("make -j$(nproc) install VERBOSE=1", shell=True, check=True)
 
         # Back to our previous directory
