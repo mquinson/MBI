@@ -10,7 +10,7 @@ class Tool(AbstractTool):
         AbstractTool.ensure_image(self, "-x civl")
 
     def build(self, rootdir, cached=True):
-        if cached and os.path.exists(f"{rootdir}/build/civl/civl-1.21_5476.jar"):
+        if cached and os.path.exists(f"{rootdir}/builds/civl/civl.jar"):
             return
         
         subprocess.run(f"rm -rf {rootdir}/tools/CIVL && mkdir -p {rootdir}/tools/CIVL", shell=True, check=True)        
