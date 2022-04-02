@@ -13,7 +13,8 @@ class Tool(AbstractTool):
         if cached and os.path.exists(f"/builds/parcoach/src/aSSA/aSSA.so"):
             print("No need to rebuild ParCoach.")
             return
-        subprocess.run("ln -s $(which clang) /usr/lib/llvm-9/bin/clang", shell=True, check=True)
+        if not os.path.exists("/usr/lib/llvm-9/bin/clang"):
+            subprocess.run("ln -s $(which clang) /usr/lib/llvm-9/bin/clang", shell=True, check=True)
 
         here = os.getcwd() # Save where we were
         # Get a GIT checkout. 
