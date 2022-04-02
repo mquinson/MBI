@@ -17,19 +17,15 @@ class Tool(AbstractTool):
 #        subprocess.run("apt-get update && apt-get install -y libtinfo5 libtinfo-dev", shell=True, check=True)
 
         # Get a GIT checkout. Either create it, or refresh it
-        if os.path.exists(f"{rootdir}/tools/hermes/.git"):
-            subprocess.run(f"cd {rootdir}/tools/hermes && git pull &&  cd ../..", shell=True, check=True)
-        else:
-            subprocess.run(f"rm -rf {rootdir}/tools/hermes && git clone --depth=1 https://github.com/DhritiKhanna/Hermes.git {rootdir}/tools/hermes", shell=True, check=True)
+        subprocess.run(f"rm -rf /builds/hermes && mkdir /builds && git clone --depth=1 https://github.com/DhritiKhanna/Hermes.git /builds/hermes", shell=True, check=True)
 
         # Build it
         here = os.getcwd() # Save where we were
-        os.chdir(f"{rootdir}/tools/hermes")
+        os.chdir(f"/builds/hermes")
         subprocess.run("cd clangTool/ && make -j$(nproc) clangTool", shell=True, check=True)
-        subprocess.run(f"mkdir -p /builds/hermes && cp -r clangTool /builds/hermes", shell=True, check=True)
         subprocess.run("autoreconf --install", shell=True, check=True)
-        subprocess.run(f"./configure --disable-gui --prefix=/builds/hermes --enable-optional-ample-set-fix --with-mpi-inc-dir=/usr/lib/x86_64-linux-gnu/mpich/include CXXFLAGS='-fPIC' LDFLAGS='-lz3'", shell=True, check=True)
-        subprocess.run("make -j$(nproc) install", shell=True, check=True)
+        subprocess.run(f"./configure --disable-gui --enable-optional-ample-set-fix --with-mpi-inc-dir=/usr/lib/x86_64-linux-gnu/mpich/include CXXFLAGS='-fPIC' LDFLAGS='-lz3'", shell=True, check=True)
+        subprocess.run("make -j$(nproc)", shell=True, check=True)
         # Back to our previous directory
         os.chdir(here)
 

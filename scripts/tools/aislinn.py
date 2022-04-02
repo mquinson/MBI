@@ -48,7 +48,7 @@ class Tool(AbstractTool):
             os.chdir(here)
             print("XX Done building aislinn")
         
-        os.environ['PATH'] = os.environ['PATH'] + ":" + self.rootdir + "/builds/aislinn/bin/"
+        os.environ['PATH'] = os.environ['PATH'] + ":/builds/aislinn/bin/"
 
     def run(self, execcmd, filename, binary, id, timeout, batchinfo):
         cachefile = f'{binary}_{id}'

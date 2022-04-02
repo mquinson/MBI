@@ -38,7 +38,7 @@ test-aislinn:
         - wget https://gitlab.inria.fr/quinson/mbi2/-/jobs/artifacts/master/raw/public/logs.tar.7z?job=pages -O logs.tar.7z
         - 7zr x -so logs*.7z | tar xf -
         - scripts/ensure_python3 ./MBI.py -c generate
-        - scripts/ensure_python3 ./MBI.py -x aislinn
+        - scripts/ensure_python3 ./MBI.py -x aislinn -c run
     artifacts:
         untracked: false
         when: always
@@ -52,7 +52,7 @@ test-hermes:
         - 7zr x -so logs*.7z | tar xf -
         - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
-        - scripts/ensure_python3 ./MBI.py -x hermes
+        - scripts/ensure_python3 ./MBI.py -x hermes -c run
     artifacts:
         untracked: false
         when: always
@@ -69,7 +69,7 @@ test-mpisv:
         - 7zr x -so logs*.7z | tar xf -
         - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
-        - scripts/ensure_python3 ./MBI.py -x mpisv
+        - scripts/ensure_python3 ./MBI.py -x mpisv -c run
     artifacts:
         untracked: false
         when: always
@@ -99,7 +99,7 @@ test-parcoach:
         - if [ x$MBI_CLEANUP = xparcoach ] ; then rm -rf logs/parcoach; fi
         - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
-        - scripts/ensure_python3 ./MBI.py -x parcoach
+        - scripts/ensure_python3 ./MBI.py -x parcoach -c run
     artifacts:
         untracked: false
         when: always
@@ -114,7 +114,7 @@ test-simgrid:
         - if [ x$MBI_CLEANUP = xsimgrid ] ; then rm -rf logs/simgrid; fi
         - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
-        - scripts/ensure_python3 ./MBI.py -x simgrid
+        - scripts/ensure_python3 ./MBI.py -x simgrid -c run
     artifacts:
         untracked: false
         when: always
@@ -129,7 +129,7 @@ test-smpi:
         - if [ x$MBI_CLEANUP = xsmpi ] ; then rm -rf logs/smpi; fi
         - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
-        - scripts/ensure_python3 ./MBI.py -x smpi
+        - scripts/ensure_python3 ./MBI.py -x smpi -c run
     artifacts:
         untracked: false
         when: always
@@ -144,7 +144,7 @@ test-smpivg:
         - if [ x$MBI_CLEANUP = xsmpivg ] ; then rm -rf logs/smpivg; fi
         - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
-        - scripts/ensure_python3 ./MBI.py -x smpivg
+        - scripts/ensure_python3 ./MBI.py -x smpivg -c run
     artifacts:
         untracked: false
         when: always

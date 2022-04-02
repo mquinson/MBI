@@ -39,7 +39,7 @@ class AbstractTool:
         """
         # pass
 
-    def run(execcmd, filename, binary, num_id, timeout):
+    def run(self, execcmd, filename, binary, num_id, timeout):
         """Compile that test code and anaylse it with the Tool if needed (a cache system should be used)"""
         # pass
 
@@ -72,7 +72,7 @@ class AbstractTool:
                 return False
             os.remove(f'{cachefile}.txt')
 
-        if not self.already_setup:
+        if self.already_setup == False:
             print("XX The tool setup was post-ponned until now, do it now")
             print("XX----------------------------------------------------")
             self.already_setup = True
