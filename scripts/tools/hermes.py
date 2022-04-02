@@ -11,7 +11,7 @@ class Tool(AbstractTool):
         AbstractTool.ensure_image(self, "-x hermes")
 
     def build(self, rootdir, cached=True):
-        if cached and os.path.exists(f"{rootdir}/builds/hermes/bin/ispcc") and os.path.exists(f"{rootdir}/tools/hermes/clangTool/clangTool"):
+        if cached and os.path.exists(f"{rootdir}/builds/hermes/bin/ispcc") and os.path.exists(f"{rootdir}/builds/hermes/clangTool/clangTool"):
             return
 #        subprocess.run("apt-get update && apt-get install -y libtinfo5 libtinfo-dev", shell=True, check=True)
 
@@ -25,6 +25,7 @@ class Tool(AbstractTool):
         here = os.getcwd() # Save where we were
         os.chdir(f"{rootdir}/tools/hermes")
         subprocess.run("cd clangTool/ && make -j$(nproc) clangTool", shell=True, check=True)
+        subprocess.run(f"mkdir -p {rootdir}/builds && cp -r clangTool {rootdir}/builds/hermes", shell=True, check=True)
         subprocess.run("autoreconf --install", shell=True, check=True)
         subprocess.run(f"./configure --disable-gui --prefix={rootdir}/builds/hermes --enable-optional-ample-set-fix --with-mpi-inc-dir=/usr/lib/x86_64-linux-gnu/mpich/include CXXFLAGS='-fPIC' LDFLAGS='-lz3'", shell=True, check=True)
         subprocess.run("make -j$(nproc) install", shell=True, check=True)
@@ -35,7 +36,7 @@ class Tool(AbstractTool):
         os.environ['PATH'] = f"{os.environ['PATH']}:{rootdir}/builds/hermes/bin/"
         with open('compile_commands.json', 'w') as outfile:
             outfile.write("[{")
-            outfile.write(f'  "command": "/usr/bin/cxx -c -I/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi -I{rootdir}/tools/hermes/clangTool/ -I/usr/lib/x86_64-linux-gnu/openmpi/include -I/usr/lib/x86_64-linux-gnu/mpich/include -I{rootdir}/tools/hermes/clangTool/clang+llvm-3.8.0-x86_64-linux-gnu-debian8/lib/clang/3.8.0/include/ -pthread source.c",\n')
+            outfile.write(f'  "command": "/usr/bin/cxx -c -I/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi -I{rootdir}/builds/hermes/clangTool/ -I/usr/lib/x86_64-linux-gnu/openmpi/include -I/usr/lib/x86_64-linux-gnu/mpich/include -I{rootdir}/builds/hermes/clangTool/clang+llvm-3.8.0-x86_64-linux-gnu-debian8/lib/clang/3.8.0/include/ -pthread source.c",\n')
             outfile.write(f'          "directory": "{rootdir}/logs/hermes",\n')
             outfile.write(f'          "file": "{rootdir}/logs/hermes/source.c"\n')
             outfile.write('}]')
@@ -51,8 +52,8 @@ class Tool(AbstractTool):
 
         run_cmd(
             buildcmd=f"cp {filename} source.c &&"
-                     +"/MBI/tools/hermes/clangTool/clangTool source.c &&"
-                     +f"ispcxx -I/MBI/tools/hermes/clangTool/ -o {binary} i_source.c /MBI/tools/hermes/clangTool/GenerateAssumes.cpp /MBI/tools/hermes//clangTool/IfInfo.cpp /MBI/tools/hermes/profiler/Client.c",
+                     +"/MBI/builds/hermes/clangTool/clangTool source.c &&"
+                     +f"ispcxx -I/MBI/builds/hermes/clangTool/ -o {binary} i_source.c /MBI/builds/hermes/clangTool/GenerateAssumes.cpp /MBI/builds/hermes/clangTool/IfInfo.cpp /MBI/tools/hermes/profiler/Client.c",
             execcmd=execcmd,
             cachefile=cachefile,
             filename=filename,
