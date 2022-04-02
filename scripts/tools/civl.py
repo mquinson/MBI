@@ -10,7 +10,7 @@ class Tool(AbstractTool):
         AbstractTool.ensure_image(self, "-x civl")
 
     def build(self, rootdir, cached=True):
-        if cached and os.path.exists(f"{rootdir}/builds/civl/civl.jar"):
+        if cached and os.path.exists(f"/builds/civl.jar"):
             return
         
         subprocess.run(f"rm -rf {rootdir}/tools/CIVL && mkdir -p {rootdir}/tools/CIVL", shell=True, check=True)        
@@ -18,9 +18,10 @@ class Tool(AbstractTool):
         os.chdir(f"{rootdir}/tools/CIVL")
         subprocess.run(f"wget http://vsl.cis.udel.edu:8080/lib/sw/civl/1.21/r5476/release/CIVL-1.21_5476.tgz", shell=True, check=True)
         subprocess.run(f"tar xf CIVL-*.tgz", shell=True, check=True)        
-        subprocess.run(f"mkdir -p {rootdir}/builds", shell=True, check=True)
-        subprocess.run(f"mv CIVL-*/lib/civl-*.jar {rootdir}/builds/civl.jar", shell=True, check=True)
-        subprocess.run(f"cd {rootdir}/builds && java -jar civl.jar config", shell=True, check=True)
+        subprocess.run(f"mkdir -p /builds", shell=True, check=True)
+        subprocess.run(f"mv CIVL-*/lib/civl-*.jar /builds/civl.jar", shell=True, check=True)
+        subprocess.run(f"cd /builds && java -jar civl.jar config", shell=True, check=True)
+        subprocess.run(f"rm -rf {rootdir}/tools/CIVL", shell=True, check=True)        
         
         # Back to our previous directory
         os.chdir(here)
@@ -28,7 +29,7 @@ class Tool(AbstractTool):
     def run(self, execcmd, filename, binary, id, timeout, batchinfo):
         cachefile = f'{binary}_{id}'
 
-        execcmd = re.sub("mpirun", "java -jar ../../tools/CIVL-1.20_5259/lib/civl-1.20_5259.jar verify", execcmd)
+        execcmd = re.sub("mpirun", "java -jar /builds/civl.jar verify", execcmd)
         execcmd = re.sub('-np ', "-input_mpi_nprocs=", execcmd)
         execcmd = re.sub('\${EXE}', filename, execcmd)
         execcmd = re.sub('\$zero_buffer', "", execcmd)

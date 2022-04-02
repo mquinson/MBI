@@ -10,7 +10,7 @@ class Tool(AbstractTool):
         AbstractTool.ensure_image(self, "-x isp")
 
     def build(self, rootdir, cached=True):
-        if cached and os.path.exists(f"{rootdir}/builds/ISP/bin/ispcc"):
+        if cached and os.path.exists("/builds/ISP/bin/ispcc"):
             return
 
         # Build it
@@ -20,7 +20,7 @@ class Tool(AbstractTool):
         subprocess.run(f"wget http://www.cs.utah.edu/formal_verification/ISP-release/tarball/isp-0.3.1.tar.gz", shell=True, check=True)
         subprocess.run(f"tar xf isp-*tar.gz", shell=True, check=True)
         os.chdir(f"{rootdir}/tmp-isp/isp-0.3.1")
-        subprocess.run(f"./configure --prefix={rootdir}/builds/ISP --with-mpi-inc-dir=/usr/lib/x86_64-linux-gnu/mpich/include --enable-optional-ample-set-fix", shell=True, check=True)
+        subprocess.run(f"./configure --prefix=/builds/ISP --with-mpi-inc-dir=/usr/lib/x86_64-linux-gnu/mpich/include --enable-optional-ample-set-fix", shell=True, check=True)
         subprocess.run(f'sed -i "s/-source 1.5 -target 1.5 -classpath/-source 1.7 -target 1.7 -classpath/" UI/Makefile*', shell=True, check=True)
         subprocess.run("make -j$(nproc) install", shell=True, check=True)
 
@@ -29,7 +29,7 @@ class Tool(AbstractTool):
         subprocess.run(f"rm -rf {rootdir}/tmp-isp", shell=True, check=True)
 
     def setup(self):
-        os.environ['PATH'] = f"{os.environ['PATH']}:{self.rootdir}/builds/ISP/bin/"
+        os.environ['PATH'] = f"{os.environ['PATH']}:/builds/ISP/bin/"
 
     def run(self, execcmd, filename, binary, id, timeout, batchinfo):
         cachefile = f'{binary}_{id}'
