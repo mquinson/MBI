@@ -29,19 +29,19 @@ class Tool(AbstractTool):
             subprocess.run("apt-get update && apt-get install -y gcc python3.8 autotools-dev automake build-essential git", shell=True, check=True)
 
             # Get a GIT checkout. Either create it, or refresh it
-            if os.path.exists(f"{rootdir}/builds/aislinn/.git"):
-                subprocess.run(f"cd {rootdir}/builds/aislinn && git pull &&  cd ../..", shell=True, check=True)
+            if os.path.exists("/builds/aislinn/.git"):
+                subprocess.run("cd /builds/aislinn && git pull &&  cd ../..", shell=True, check=True)
             else:
-                subprocess.run(f"rm -rf {rootdir}/builds/aislinn; mkdir -p {rootdir}/builds", shell=True, check=True)
-                subprocess.run(f"git clone --depth=1 https://github.com/spirali/aislinn.git {rootdir}/builds/aislinn", shell=True, check=True)
-            subprocess.run(f"cp -r {rootdir}/tools/aislinn-valgrind-312 {rootdir}/builds/aislinn/valgrind", shell=True, check=True)
+                subprocess.run(f"rm -rf /builds/aislinn; mkdir -p /builds", shell=True, check=True)
+                subprocess.run(f"git clone --depth=1 https://github.com/spirali/aislinn.git /builds/aislinn", shell=True, check=True)
+            subprocess.run(f"cp -r {self.rootdir}/tools/aislinn-valgrind-312 /builds/aislinn/valgrind", shell=True, check=True)
 
             # Build it
             here = os.getcwd() # Save where we were
-            os.chdir(f"{rootdir}/builds/aislinn/valgrind")
+            os.chdir(f"/builds/aislinn/valgrind")
             subprocess.run("sh autogen.sh && ./configure && make -j$(nproc)", shell=True, check=True)
 
-            os.chdir(f"{rootdir}/builds/aislinn")
+            os.chdir(f"/builds/aislinn")
             subprocess.run("./waf configure && ./waf", shell=True, check=True)
 
             # Back to our previous directory
