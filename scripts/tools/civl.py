@@ -35,7 +35,7 @@ class Tool(AbstractTool):
         execcmd = re.sub('\$infty_buffer', "", execcmd)
 
 
-        if run_cmd(buildcmd=None,
+        if self.run_cmd(buildcmd=None,
                    execcmd=execcmd,
                    cachefile=cachefile,
                    filename=filename,

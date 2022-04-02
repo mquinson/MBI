@@ -25,7 +25,7 @@ class Tool(AbstractTool):
         execcmd = re.sub('\$zero_buffer', "", execcmd)
         execcmd = re.sub('\$infty_buffer', "", execcmd)
 
-        ran = run_cmd(
+        ran = self.run_cmd(
             buildcmd=f"mpisvcc {filename} -o {binary}.bc",
             execcmd=execcmd,
             cachefile=cachefile,

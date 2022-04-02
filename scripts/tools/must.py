@@ -42,8 +42,8 @@ class V17(AbstractTool):
         # Back to our previous directory
         os.chdir(here)
 
-    def setup(self, rootdir):
-        os.environ['PATH'] = os.environ['PATH'] + ":" + rootdir + "/builds/MUST17/bin/"
+    def setup(self):
+        os.environ['PATH'] = os.environ['PATH'] + ":" + self.rootdir + "/builds/MUST17/bin/"
 
     def run(self, execcmd, filename, binary, id, timeout, batchinfo):
         cachefile = f'{binary}_{id}'
@@ -55,7 +55,7 @@ class V17(AbstractTool):
 
         subprocess.run("killall -9 mpirun 2>/dev/null", shell=True)
 
-        ran = run_cmd(
+        ran = self.run_cmd(
             buildcmd=f"mpicc {filename} -o {binary}",
             execcmd=execcmd,
             cachefile=cachefile,

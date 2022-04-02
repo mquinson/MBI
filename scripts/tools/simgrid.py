@@ -33,8 +33,7 @@ class Tool(AbstractTool):
     def ensure_image(self):
         AbstractTool.ensure_image(self, "-x simgrid")
 
-    def setup(self, rootdir):
-        os.environ['PATH'] = os.environ['PATH'] + ":" + rootdir + "/builds/SimGrid/bin"
+    def setup(self):
         os.environ['VERBOSE'] = '1'
 
     def run(self, execcmd, filename, binary, id, timeout, batchinfo):
@@ -53,7 +52,7 @@ class Tool(AbstractTool):
         execcmd = execcmd.replace('$zero_buffer', "--cfg=smpi/buffering:zero")
         execcmd = execcmd.replace('$infty_buffer', "--cfg=smpi/buffering:infty")
 
-        run_cmd(
+        self.run_cmd(
             buildcmd=f"smpicc {filename} -trace-call-location -g -Wl,-znorelro -Wl,-znoseparate-code -o {binary}",
             execcmd=execcmd,
             cachefile=cachefile,

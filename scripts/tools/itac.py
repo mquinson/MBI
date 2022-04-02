@@ -9,7 +9,7 @@ class Tool(AbstractTool):
     def ensure_image(self):
         AbstractTool.ensure_image(self, dockerparams="--shm-size=512m ", params="-x itac")
 
-    def setup(self, rootdir):
+    def setup(self):
         subprocess.run("apt update && apt install wget", shell=True, check=True)
         subprocess.run("wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB -O- | apt-key add -", shell=True, check=True)
         subprocess.run("echo 'deb https://apt.repos.intel.com/oneapi all main' > /etc/apt/sources.list.d/oneAPI.list", shell=True, check=True)
@@ -33,7 +33,7 @@ class Tool(AbstractTool):
         execcmd = re.sub('\$zero_buffer', "", execcmd)
         execcmd = re.sub('\$infty_buffer', "", execcmd)
 
-        ran = run_cmd(
+        ran = self.run_cmd(
             buildcmd=f"mpiicc {filename} -O0 -g -o {binary}",
             execcmd=execcmd,
             cachefile=cachefile,

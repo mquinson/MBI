@@ -32,13 +32,13 @@ class Tool(AbstractTool):
         # Back to our previous directory
         os.chdir(here)
 
-    def setup(self, rootdir):
-        os.environ['PATH'] = f"{os.environ['PATH']}:{rootdir}/builds/hermes/bin/"
+    def setup(self):
+        os.environ['PATH'] = f"{os.environ['PATH']}:{self.rootdir}/builds/hermes/bin/"
         with open('compile_commands.json', 'w') as outfile:
             outfile.write("[{")
-            outfile.write(f'  "command": "/usr/bin/cxx -c -I/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi -I{rootdir}/builds/hermes/clangTool/ -I/usr/lib/x86_64-linux-gnu/openmpi/include -I/usr/lib/x86_64-linux-gnu/mpich/include -I{rootdir}/builds/hermes/clangTool/clang+llvm-3.8.0-x86_64-linux-gnu-debian8/lib/clang/3.8.0/include/ -pthread source.c",\n')
-            outfile.write(f'          "directory": "{rootdir}/logs/hermes",\n')
-            outfile.write(f'          "file": "{rootdir}/logs/hermes/source.c"\n')
+            outfile.write(f'  "command": "/usr/bin/cxx -c -I/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi -I{self.rootdir}/builds/hermes/clangTool/ -I/usr/lib/x86_64-linux-gnu/openmpi/include -I/usr/lib/x86_64-linux-gnu/mpich/include -I{self.rootdir}/builds/hermes/clangTool/clang+llvm-3.8.0-x86_64-linux-gnu-debian8/lib/clang/3.8.0/include/ -pthread source.c",\n')
+            outfile.write(f'          "directory": "{self.rootdir}/logs/hermes",\n')
+            outfile.write(f'          "file": "{self.rootdir}/logs/hermes/source.c"\n')
             outfile.write('}]')
 
     def run(self, execcmd, filename, binary, id, timeout, batchinfo):
@@ -50,7 +50,7 @@ class Tool(AbstractTool):
         execcmd = re.sub('\$zero_buffer', "-b", execcmd)
         execcmd = re.sub('\$infty_buffer', "-g", execcmd)
 
-        run_cmd(
+        self.run_cmd(
             buildcmd=f"cp {filename} source.c &&"
                      +"/MBI/builds/hermes/clangTool/clangTool source.c &&"
                      +f"ispcxx -I/MBI/builds/hermes/clangTool/ -o {binary} i_source.c /MBI/builds/hermes/clangTool/GenerateAssumes.cpp /MBI/builds/hermes/clangTool/IfInfo.cpp /MBI/tools/hermes/profiler/Client.c",

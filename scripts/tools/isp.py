@@ -28,8 +28,8 @@ class Tool(AbstractTool):
         os.chdir(here)
         subprocess.run(f"rm -rf {rootdir}/tmp-isp", shell=True, check=True)
 
-    def setup(self, rootdir):
-        os.environ['PATH'] = f"{os.environ['PATH']}:{rootdir}/builds/ISP/bin/"
+    def setup(self):
+        os.environ['PATH'] = f"{os.environ['PATH']}:{self.rootdir}/builds/ISP/bin/"
 
     def run(self, execcmd, filename, binary, id, timeout, batchinfo):
         cachefile = f'{binary}_{id}'
@@ -41,7 +41,7 @@ class Tool(AbstractTool):
         execcmd = re.sub('\$infty_buffer', "-g", execcmd)
 
 
-        if run_cmd(buildcmd=f"ispcc -o {binary} {filename}",
+        if self.run_cmd(buildcmd=f"ispcc -o {binary} {filename}",
                    execcmd=execcmd,
                    cachefile=cachefile,
                    filename=filename,

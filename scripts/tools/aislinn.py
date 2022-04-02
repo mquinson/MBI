@@ -43,9 +43,9 @@ class Tool(AbstractTool):
         # Back to our previous directory
         os.chdir(here)
 
-    def setup(self, rootdir):
+    def setup(self):
         subprocess.run("apt-get install -y gcc python2.7 python-jinja2", shell=True, check=True)
-        os.environ['PATH'] = os.environ['PATH'] + ":" + rootdir + "/builds/aislinn/bin/"
+        os.environ['PATH'] = os.environ['PATH'] + ":" + self.rootdir + "/builds/aislinn/bin/"
 
     def run(self, execcmd, filename, binary, id, timeout, batchinfo):
         cachefile = f'{binary}_{id}'
@@ -56,7 +56,7 @@ class Tool(AbstractTool):
         execcmd = re.sub('\$infty_buffer', "--send-protocol=eager", execcmd)
         execcmd = re.sub('-np ', '-p=', execcmd)
 
-        ran = run_cmd(
+        ran = self.run_cmd(
             buildcmd=f"aislinn-cc -g {filename} -o {binary}",
             execcmd=execcmd,
             cachefile=cachefile,

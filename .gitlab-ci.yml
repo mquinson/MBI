@@ -14,7 +14,6 @@ variables:
 stages:
     - build
     - test
-    - gather # For the tests that are split in several jobs (ISP, MUST, CIVL), rerun them all in one
     - deploy
     
 old-logs:

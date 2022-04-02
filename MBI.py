@@ -135,6 +135,8 @@ def cmd_run(rootdir, toolname, batchinfo):
     os.chdir(f'{rootdir}/logs/{toolname}')
     print(f"Run tool {toolname} from {os.getcwd()} (batch {batchinfo}).")
 
+    tools[toolname].set_rootdir(rootdir)
+
     # Basic verification
     tools[toolname].ensure_image()
 

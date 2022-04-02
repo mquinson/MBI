@@ -26,7 +26,7 @@ class Tool(tools.simgrid.Tool):
         execcmd = re.sub('\$zero_buffer', "", execcmd)
         execcmd = re.sub('\$infty_buffer', "", execcmd)
 
-        run_cmd(
+        self.run_cmd(
             buildcmd=f"smpicc {filename} -trace-call-location -g -Wl,-znorelro -Wl,-znoseparate-code -o {binary}",
             execcmd=execcmd,
             cachefile=cachefile,
