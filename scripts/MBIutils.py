@@ -230,8 +230,11 @@ def run_cmd(buildcmd, execcmd, cachefile, filename, binary, timeout, batchinfo, 
 
     if not already_setup:
         print("XX The tool setup was post-ponned until now, do it now")
+        print("XX----------------------------------------------------")
         already_setup = True
-        setup(self, rootdir)
+        self.setup(rootdir)
+        print("XX The tool is now correctly setup")
+        print("XX--------------------------------")
 
     print(f"Wait up to {timeout} seconds")
 

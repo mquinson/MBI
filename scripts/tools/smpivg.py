@@ -21,8 +21,6 @@ class Tool(tools.smpi.Tool):
                 subprocess.run("apt-get update", shell=True, check=True)
                 subprocess.run("apt-get install -y wget", shell=True, check=True)
                 subprocess.run("wget 'https://framagit.org/simgrid/simgrid/-/raw/master/tools/simgrid.supp?inline=false' -O simgrid.supp", shell=True, check=True)
-        else:
-            print(f"\nsimgrid.supp found in {os.getcwd()}, no need to download it.")
 
         tools.smpi.Tool.run(self, execcmd, filename, binary, id, timeout, batchinfo, extraargs="-wrapper 'valgrind --leak-check=no --suppressions=simgrid.supp'")
         subprocess.run("rm -f vgcore.*", shell=True, check=True) # Save disk space ASAP
