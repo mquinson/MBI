@@ -12,26 +12,14 @@ variables:
     MBI_CLEANUP: "Name of the tool for which the logs must be wiped out (at most one in parcoach, simgrid, smpi, smpivg)"
 
 stages:
-    - build
     - test
     - deploy
     
-old-logs:
-    stage: build
+test-must:
+    stage: test
     needs: []
     script:
         - wget https://gitlab.inria.fr/quinson/mbi2/-/jobs/artifacts/master/raw/public/logs.tar.7z?job=pages -O logs.tar.7z
-    artifacts:
-        untracked: false
-        paths:
-            - logs*.7z
-
-test-must:
-    stage: test
-    needs:
-        - job: old-logs
-          artifacts: true
-    script:
         - 7zr x -so logs*.7z | tar xf -
         - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
@@ -44,11 +32,10 @@ test-must:
 test-aislinn:
     stage: test
     image: ubuntu:18.04
-    needs:
-        - job: old-logs
-          artifacts: true
+    needs: []
     script:
         - apt-get update; apt-get install -y p7zip p7zip-full
+        - wget https://gitlab.inria.fr/quinson/mbi2/-/jobs/artifacts/master/raw/public/logs.tar.7z?job=pages -O logs.tar.7z
         - 7zr x -so logs*.7z | tar xf -
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x aislinn
@@ -59,10 +46,9 @@ test-aislinn:
             - logs/aislinn
 test-hermes:
     stage: test
-    needs:
-        - job: old-logs
-          artifacts: true
+    needs: []
     script:
+        - wget https://gitlab.inria.fr/quinson/mbi2/-/jobs/artifacts/master/raw/public/logs.tar.7z?job=pages -O logs.tar.7z
         - 7zr x -so logs*.7z | tar xf -
         - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
@@ -76,11 +62,10 @@ test-hermes:
 test-mpisv:
     stage: test
     image: mpisv/mpi-sv
-    needs:
-        - job: old-logs
-          artifacts: true
+    needs: []
     script:
         - apt-get update; apt-get install -y p7zip p7zip-full
+        - wget https://gitlab.inria.fr/quinson/mbi2/-/jobs/artifacts/master/raw/public/logs.tar.7z?job=pages -O logs.tar.7z
         - 7zr x -so logs*.7z | tar xf -
         - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
@@ -93,10 +78,9 @@ test-mpisv:
 
 test-civl:
     stage: test
-    needs:
-        - job: old-logs
-          artifacts: true
+    needs: []
     script:
+        - wget https://gitlab.inria.fr/quinson/mbi2/-/jobs/artifacts/master/raw/public/logs.tar.7z?job=pages -O logs.tar.7z
         - 7zr x -so logs*.7z | tar xf -
         - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
@@ -108,10 +92,9 @@ test-civl:
             - logs/civl
 test-parcoach:
     stage: test
-    needs:
-        - job: old-logs
-          artifacts: true
+    needs: []
     script:
+        - wget https://gitlab.inria.fr/quinson/mbi2/-/jobs/artifacts/master/raw/public/logs.tar.7z?job=pages -O logs.tar.7z
         - 7zr x -so logs*.7z | tar xf -
         - if [ x$MBI_CLEANUP = xparcoach ] ; then rm -rf logs/parcoach; fi
         - rm -rf builds; ln -s /MBI/builds .
@@ -124,11 +107,9 @@ test-parcoach:
             - logs/parcoach
 test-simgrid:
     stage: test
-    needs:
-        - job: old-logs
-          artifacts: true
+    needs: []
     script:
-        - apt update; apt install -y libboost-context-dev
+        - wget https://gitlab.inria.fr/quinson/mbi2/-/jobs/artifacts/master/raw/public/logs.tar.7z?job=pages -O logs.tar.7z
         - 7zr x -so logs*.7z | tar xf -
         - if [ x$MBI_CLEANUP = xsimgrid ] ; then rm -rf logs/simgrid; fi
         - rm -rf builds; ln -s /MBI/builds .
@@ -141,10 +122,9 @@ test-simgrid:
             - logs/simgrid
 test-smpi:
     stage: test
-    needs:
-        - job: old-logs
-          artifacts: true
+    needs: []
     script:
+        - wget https://gitlab.inria.fr/quinson/mbi2/-/jobs/artifacts/master/raw/public/logs.tar.7z?job=pages -O logs.tar.7z
         - 7zr x -so logs*.7z | tar xf -
         - if [ x$MBI_CLEANUP = xsmpi ] ; then rm -rf logs/smpi; fi
         - rm -rf builds; ln -s /MBI/builds .
@@ -157,10 +137,9 @@ test-smpi:
             - logs/smpi
 test-smpivg:
     stage: test
-    needs:
-        - job: old-logs
-          artifacts: true
+    needs: []
     script:
+        - wget https://gitlab.inria.fr/quinson/mbi2/-/jobs/artifacts/master/raw/public/logs.tar.7z?job=pages -O logs.tar.7z
         - 7zr x -so logs*.7z | tar xf -
         - if [ x$MBI_CLEANUP = xsmpivg ] ; then rm -rf logs/smpivg; fi
         - rm -rf builds; ln -s /MBI/builds .
@@ -174,10 +153,9 @@ test-smpivg:
 
 test-itac:
     stage: test
-    needs:
-        - job: old-logs
-          artifacts: true
+    needs: []
     script:
+        - wget https://gitlab.inria.fr/quinson/mbi2/-/jobs/artifacts/master/raw/public/logs.tar.7z?job=pages -O logs.tar.7z
         - 7zr x -so logs*.7z | tar xf -
         - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
@@ -190,10 +168,9 @@ test-itac:
 
 test-isp:
     stage: test
-    needs:
-        - job: old-logs
-          artifacts: true
+    needs: []
     script:
+        - wget https://gitlab.inria.fr/quinson/mbi2/-/jobs/artifacts/master/raw/public/logs.tar.7z?job=pages -O logs.tar.7z
         - 7zr x -so logs*.7z | tar xf -
         - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
