@@ -34,7 +34,7 @@ test-aislinn:
     image: ubuntu:18.04
     needs: []
     script:
-        - apt-get update; apt-get install -y p7zip p7zip-full
+        - apt-get update; apt-get install -y p7zip p7zip-full wget
         - wget https://gitlab.inria.fr/quinson/mbi2/-/jobs/artifacts/master/raw/public/logs.tar.7z?job=pages -O logs.tar.7z
         - 7zr x -so logs*.7z | tar xf -
         - scripts/ensure_python3 ./MBI.py -c generate
@@ -64,7 +64,7 @@ test-mpisv:
     image: mpisv/mpi-sv
     needs: []
     script:
-        - apt-get update; apt-get install -y p7zip p7zip-full
+        - apt-get update; apt-get install -y p7zip p7zip-full wget
         - wget https://gitlab.inria.fr/quinson/mbi2/-/jobs/artifacts/master/raw/public/logs.tar.7z?job=pages -O logs.tar.7z
         - 7zr x -so logs*.7z | tar xf -
         - rm -rf builds; ln -s /MBI/builds .
