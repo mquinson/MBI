@@ -21,7 +21,7 @@ old-logs:
     stage: build
     needs: []
     script:
-        - wget https://gitlab.com/MpiBugsInitiative/MpiBugsInitiative/uploads/c83cc89225c50cc07884e5d723b4394e/logs-220401.7z
+        - wget https://gitlab.inria.fr/quinson/mbi2/-/jobs/artifacts/master/raw/public/logs.tar.7z?job=pages -O logs.tar.7z
     artifacts:
         untracked: false
         paths:
