@@ -28,15 +28,16 @@ class V17(AbstractTool):
 
         # Build it
         here = os.getcwd() # Save where we were
-        if not os.path.exists((f"{rootdir}/tools/MUST-v1.7.2.tar.gz")):
-            subprocess.run(f"cd {rootdir}/tools; wget https://hpc.rwth-aachen.de/must/files/MUST-v1.7.2.tar.gz", shell=True, check=True)
         subprocess.run(f"rm -rf /tmp/build-must ; mkdir /tmp/build-must", shell=True, check=True)
         os.chdir("/tmp/build-must")
-        subprocess.run(f"tar xfz {rootdir}/tools/MUST-v1.7.2.tar.gz", shell=True, check=True)
+        subprocess.run(f"wget https://hpc.rwth-aachen.de/must/files/MUST-v1.7.2.tar.gz", shell=True, check=True)
+        subprocess.run(f"tar xfz MUST-*.tar.gz", shell=True, check=True)
+        os.chdir("/tmp/build-must/MUST-v1.7.2")
 
-        subprocess.run(f"CC=$(which gcc) CXX=$(which gcc++) FC=$(which gfortran) cmake MUST-v1.7.2 -DCMAKE_INSTALL_PREFIX={rootdir}/builds/MUST17 -DCMAKE_BUILD_TYPE=Release", shell=True, check=True)
+        subprocess.run(f"CC=$(which gcc) CXX=$(which gcc++) FC=$(which gfortran) cmake . -DCMAKE_INSTALL_PREFIX={rootdir}/builds/MUST17 -DCMAKE_BUILD_TYPE=Release", shell=True, check=True)
         subprocess.run(f"make -j$(nproc) install VERBOSE=1", shell=True, check=True)
         subprocess.run(f"make -j$(nproc) install-prebuilds VERBOSE=1", shell=True, check=True)
+        subprocess.run(f"rm -rf /tmp/build-must", shell=True, check=True)
 
         # Back to our previous directory
         os.chdir(here)

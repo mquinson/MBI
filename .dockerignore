@@ -1,6 +1,7 @@
 logs
 gencodes
 tools
+builds
 NOSAVE
 *.log
 *.html

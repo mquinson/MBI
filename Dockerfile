@@ -31,3 +31,6 @@ RUN apt-get update --fix-missing && \
 
 # RUN pip3 install drawSvg
 COPY . /MBI
+
+# Rebuild all tools
+RUN cd /MBI ; ./MBI.py -c generate ; rm -rf builds ; ./MBI.py -c build -x civl,hermes,isp,must,parcoach,simgrid; rm -rf /MBI/tools /tmp/*

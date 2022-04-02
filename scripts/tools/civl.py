@@ -10,9 +10,20 @@ class Tool(AbstractTool):
         AbstractTool.ensure_image(self, "-x civl")
 
     def build(self, rootdir, cached=True):
-        if cached and os.path.exists("/root/.sarl"):
+        if cached and os.path.exists(f"{rootdir}/build/civl/civl-1.21_5476.jar"):
             return
-        subprocess.run(f"cd {rootdir}/tools/CIVL-1.20_5259/lib && java -jar civl-1.20_5259.jar config", shell=True, check=True)
+        
+        subprocess.run(f"rm -rf {rootdir}/tools/CIVL && mkdir -p {rootdir}/tools/CIVL", shell=True, check=True)        
+        here = os.getcwd() # Save where we were
+        os.chdir(f"{rootdir}/tools/CIVL")
+        subprocess.run(f"wget http://vsl.cis.udel.edu:8080/lib/sw/civl/1.21/r5476/release/CIVL-1.21_5476.tgz", shell=True, check=True)
+        subprocess.run(f"tar xf CIVL-*.tgz", shell=True, check=True)        
+        subprocess.run(f"mkdir -p {rootdir}/builds", shell=True, check=True)
+        subprocess.run(f"mv CIVL-*/lib/civl-*.jar {rootdir}/builds/civl.jar", shell=True, check=True)
+        subprocess.run(f"cd {rootdir}/builds && java -jar civl.jar config", shell=True, check=True)
+        
+        # Back to our previous directory
+        os.chdir(here)
 
     def run(self, execcmd, filename, binary, id, timeout, batchinfo):
         cachefile = f'{binary}_{id}'
