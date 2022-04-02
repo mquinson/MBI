@@ -13,7 +13,7 @@ class Tool(AbstractTool):
     def build(self, rootdir, cached=True):
         if cached and os.path.exists('/builds/hermes/bin/ispcc') and os.path.exists('/builds/hermes/clangTool/clangTool'):
             return
-        print(f"Building Hermes. Files exist: {os.path.exists('/builds/hermes/bin/ispcc')}, {os.path.exists('/builds/hermes/clangTool/clangTool}")
+        print(f"Building Hermes. Files exist: {os.path.exists('/builds/hermes/bin/ispcc')}, {os.path.exists('/builds/hermes/clangTool/clangTool')}")
 #        subprocess.run("apt-get update && apt-get install -y libtinfo5 libtinfo-dev", shell=True, check=True)
 
         # Get a GIT checkout. Either create it, or refresh it
