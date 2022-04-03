@@ -117,6 +117,7 @@ test-simgrid:
 test-smpi:
     stage: test
     needs: []
+    allow_failure: true
     script:
         - wget https://gitlab.inria.fr/quinson/mbi2/-/jobs/artifacts/master/raw/public/logs.tar.7z?job=pages -O logs.tar.7z
         - 7zr x -so logs*.7z | tar xf -
@@ -131,6 +132,7 @@ test-smpi:
 test-smpivg:
     stage: test
     needs: []
+    allow_failure: true
     script:
         - wget https://gitlab.inria.fr/quinson/mbi2/-/jobs/artifacts/master/raw/public/logs.tar.7z?job=pages -O logs.tar.7z
         - 7zr x -so logs*.7z | tar xf -
