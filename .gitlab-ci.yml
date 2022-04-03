@@ -57,21 +57,21 @@ test-hermes:
         paths:
             - logs/hermes
 
-test-mpisv:
-    stage: test
-    image: mpisv/mpi-sv
-    needs: []
-    script:
-        - apt-get update; apt-get install -y p7zip p7zip-full wget
-        - wget https://gitlab.inria.fr/quinson/mbi2/-/jobs/artifacts/master/raw/public/logs.tar.7z?job=pages -O logs.tar.7z
-        - 7zr x -so logs*.7z | tar xf -
-        - scripts/ensure_python3 ./MBI.py -c generate
-        - scripts/ensure_python3 ./MBI.py -x mpisv -c run
-    artifacts:
-        untracked: false
-        when: always
-        paths:
-            - logs/mpisv
+#test-mpisv:
+#    stage: test
+#    image: mpisv/mpi-sv
+#    needs: []
+#    script:
+#        - apt-get update; apt-get install -y p7zip p7zip-full wget
+#        - wget https://gitlab.inria.fr/quinson/mbi2/-/jobs/artifacts/master/raw/public/logs.tar.7z?job=pages -O logs.tar.7z
+#        - 7zr x -so logs*.7z | tar xf -
+#        - scripts/ensure_python3 ./MBI.py -c generate
+#        - scripts/ensure_python3 ./MBI.py -x mpisv -c run
+#    artifacts:
+#        untracked: false
+#        when: always
+#        paths:
+#            - logs/mpisv
 
 test-civl:
     stage: test
@@ -146,19 +146,19 @@ test-smpivg:
         paths:
             - logs/smpivg
 
-test-itac:
-    stage: test
-    needs: []
-    script:
-        - wget https://gitlab.inria.fr/quinson/mbi2/-/jobs/artifacts/master/raw/public/logs.tar.7z?job=pages -O logs.tar.7z
-        - 7zr x -so logs*.7z | tar xf -
-        - scripts/ensure_python3 ./MBI.py -c generate
-        - scripts/ensure_python3 ./MBI.py -x itac -c run
-    artifacts:
-        untracked: false
-        when: always
-        paths:
-            - logs/itac
+#test-itac:
+#    stage: test
+#    needs: []
+#    script:
+#        - wget https://gitlab.inria.fr/quinson/mbi2/-/jobs/artifacts/master/raw/public/logs.tar.7z?job=pages -O logs.tar.7z
+#        - 7zr x -so logs*.7z | tar xf -
+#        - scripts/ensure_python3 ./MBI.py -c generate
+#        - scripts/ensure_python3 ./MBI.py -x itac -c run
+#    artifacts:
+#        untracked: false
+#        when: always
+#        paths:
+#            - logs/itac
 
 test-isp:
     stage: test
@@ -189,16 +189,16 @@ latex:
           artifacts: true
         - job: test-parcoach
           artifacts: true
-        - job: test-mpisv
-          artifacts: true
+#        - job: test-mpisv
+#          artifacts: true
         - job: test-simgrid
           artifacts: true
         - job: test-smpi
           artifacts: true
         - job: test-smpivg
           artifacts: true
-        - job: test-itac
-          artifacts: true
+#        - job: test-itac
+#          artifacts: true
         - job: test-isp
           artifacts: true
     script:
@@ -229,16 +229,16 @@ pages:
           artifacts: true
         - job: test-parcoach
           artifacts: true
-        - job: test-mpisv
-          artifacts: true
+#        - job: test-mpisv
+#          artifacts: true
         - job: test-simgrid
           artifacts: true
         - job: test-smpi
           artifacts: true
         - job: test-smpivg
           artifacts: true
-        - job: test-itac
-          artifacts: true
+#        - job: test-itac
+#          artifacts: true
         - job: test-isp
           artifacts: true
     script:
