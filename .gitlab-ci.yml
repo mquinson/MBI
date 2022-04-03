@@ -122,7 +122,7 @@ test-smpi:
     script:
         - wget https://gitlab.inria.fr/quinson/mbi2/-/jobs/artifacts/master/raw/public/logs.tar.7z?job=pages -O logs.tar.7z
         - 7zr x -so logs*.7z | tar xf -
-        - if [ "x$MBI_CLEANUP" = "xsmpi" ] ; echo "XXX Remove all logs"; then rm -rf logs/smpi; fi
+        - if [ "x$MBI_CLEANUP" = "xsmpi" ] ; then echo "XXX Remove all logs"; rm -rf logs/smpi; fi
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x smpi -c run
     artifacts:
@@ -137,7 +137,7 @@ test-smpivg:
     script:
         - wget https://gitlab.inria.fr/quinson/mbi2/-/jobs/artifacts/master/raw/public/logs.tar.7z?job=pages -O logs.tar.7z
         - 7zr x -so logs*.7z | tar xf -
-        - if [ "x$MBI_CLEANUP" = "xsmpivg" ] ; echo "XXX Remove all logs"; then rm -rf logs/smpivg; fi
+        - if [ "x$MBI_CLEANUP" = "xsmpivg" ] ; then echo "XXX Remove all logs"; rm -rf logs/smpivg; fi
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x smpivg -c run
     artifacts:
