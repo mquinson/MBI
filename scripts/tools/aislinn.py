@@ -23,31 +23,31 @@ class Tool(AbstractTool):
         print("Aislinn is only built during setup, if really needed (it's not using the same docker image).")
 
     def setup(self):
-        os.environ['PATH'] = os.environ['PATH'] + ":/builds/aislinn/bin/"
+        os.environ['PATH'] = os.environ['PATH'] + ":/MBI-builds/aislinn/bin/"
 
         if os.path.exists("/tmp/aislinn.configured"):
             return
         subprocess.run("touch /tmp/aislinn.configured", shell=True, check=True)
 
         subprocess.run("apt-get install -y gcc python2.7 python-jinja2", shell=True, check=True)
-        if not os.path.exists(f"/builds/aislinn/bin/aislinn-cc"):
+        if not os.path.exists(f"/MBI-builds/aislinn/bin/aislinn-cc"):
             print("XX Building aislinn")
             subprocess.run("apt-get update && apt-get install -y gcc python3.8 autotools-dev automake build-essential git", shell=True, check=True)
 
             # Get a GIT checkout. Either create it, or refresh it
-            if os.path.exists("/builds/aislinn/.git"):
-                subprocess.run("cd /builds/aislinn && git pull &&  cd ../..", shell=True, check=True)
+            if os.path.exists("/MBI-builds/aislinn/.git"):
+                subprocess.run("cd /MBI-builds/aislinn && git pull &&  cd ../..", shell=True, check=True)
             else:
-                subprocess.run(f"rm -rf /builds/aislinn; mkdir -p /builds", shell=True, check=True)
-                subprocess.run(f"git clone --depth=1 https://github.com/spirali/aislinn.git /builds/aislinn", shell=True, check=True)
-            subprocess.run(f"cp -r {self.rootdir}/tools/aislinn-valgrind-312 /builds/aislinn/valgrind", shell=True, check=True)
+                subprocess.run(f"rm -rf /MBI-builds/aislinn; mkdir -p /MBI-builds", shell=True, check=True)
+                subprocess.run(f"git clone --depth=1 https://github.com/spirali/aislinn.git /MBI-builds/aislinn", shell=True, check=True)
+            subprocess.run(f"cp -r {self.rootdir}/tools/aislinn-valgrind-312 /MBI-builds/aislinn/valgrind", shell=True, check=True)
 
             # Build it
             here = os.getcwd() # Save where we were
-            os.chdir(f"/builds/aislinn/valgrind")
+            os.chdir(f"/MBI-builds/aislinn/valgrind")
             subprocess.run("sh autogen.sh && ./configure && make -j$(nproc)", shell=True, check=True)
 
-            os.chdir(f"/builds/aislinn")
+            os.chdir(f"/MBI-builds/aislinn")
             subprocess.run("./waf configure && ./waf", shell=True, check=True)
 
             # Back to our previous directory

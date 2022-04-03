@@ -21,10 +21,10 @@ class V17(AbstractTool):
         AbstractTool.ensure_image(self, "-x must")
 
     def build(self, rootdir, cached=True):
-        if cached and os.path.exists("/builds/MUST17/bin/mustrun"):
+        if cached and os.path.exists("/MBI-builds/MUST17/bin/mustrun"):
             return
 
-        subprocess.run(f"rm -rf /builds/MUST17", shell=True, check=True) # MUST v1.7 sometimes fails when reinstalling over the same dir
+        subprocess.run(f"rm -rf /MBI-builds/MUST17", shell=True, check=True) # MUST v1.7 sometimes fails when reinstalling over the same dir
 
         # Build it
         here = os.getcwd() # Save where we were
@@ -34,7 +34,7 @@ class V17(AbstractTool):
         subprocess.run(f"tar xfz MUST-*.tar.gz", shell=True, check=True)
         os.chdir("/tmp/build-must/MUST-v1.7.2")
 
-        subprocess.run(f"CC=$(which gcc) CXX=$(which gcc++) FC=$(which gfortran) cmake . -DCMAKE_INSTALL_PREFIX=/builds/MUST17 -DCMAKE_BUILD_TYPE=Release", shell=True, check=True)
+        subprocess.run(f"CC=$(which gcc) CXX=$(which gcc++) FC=$(which gfortran) cmake . -DCMAKE_INSTALL_PREFIX=/MBI-builds/MUST17 -DCMAKE_BUILD_TYPE=Release", shell=True, check=True)
         subprocess.run(f"make -j$(nproc) install VERBOSE=1", shell=True, check=True)
         subprocess.run(f"make -j$(nproc) install-prebuilds VERBOSE=1", shell=True, check=True)
         subprocess.run(f"rm -rf /tmp/build-must", shell=True, check=True)
@@ -43,7 +43,7 @@ class V17(AbstractTool):
         os.chdir(here)
 
     def setup(self):
-        os.environ['PATH'] = os.environ['PATH'] + ":/builds/MUST17/bin/"
+        os.environ['PATH'] = os.environ['PATH'] + ":/MBI-builds/MUST17/bin/"
 
     def run(self, execcmd, filename, binary, id, timeout, batchinfo):
         cachefile = f'{binary}_{id}'
@@ -140,10 +140,10 @@ class V18(V17):
         AbstractTool.ensure_image(self, "-x must18")
 
     def build(self, rootdir, cached=True):
-        if cached and os.path.exists("/builds/MUST18/bin/mustrun"):
+        if cached and os.path.exists("/MBI-builds/MUST18/bin/mustrun"):
             return
 
-        subprocess.run(f"rm -rf /builds/MUST18", shell=True, check=True) # MUST sometimes fails when reinstalling over the same dir
+        subprocess.run(f"rm -rf /MBI-builds/MUST18", shell=True, check=True) # MUST sometimes fails when reinstalling over the same dir
 
         # Build it
         here = os.getcwd() # Save where we were
@@ -153,7 +153,7 @@ class V18(V17):
         os.chdir("/tmp/build-must")
         subprocess.run(f"tar xfz {rootdir}/tools/MUST-v1.8-preview.tar.gz", shell=True, check=True)
 
-        subprocess.run(f"CC=$(which clang) CXX=$(which clang++) OMPI_CC=$(which clang) OMPI_CXX=$(which clang++) FC=$(which gfortran) cmake MUST-v1.8-preview -DCMAKE_INSTALL_PREFIX=/builds/MUST18 -DCMAKE_BUILD_TYPE=Release", shell=True, check=True)
+        subprocess.run(f"CC=$(which clang) CXX=$(which clang++) OMPI_CC=$(which clang) OMPI_CXX=$(which clang++) FC=$(which gfortran) cmake MUST-v1.8-preview -DCMAKE_INSTALL_PREFIX=/MBI-builds/MUST18 -DCMAKE_BUILD_TYPE=Release", shell=True, check=True)
         subprocess.run(f"make -j$(nproc) install VERBOSE=1", shell=True, check=True)
         subprocess.run(f"make -j$(nproc) install-prebuilds VERBOSE=1", shell=True, check=True)
 
@@ -161,4 +161,4 @@ class V18(V17):
         os.chdir(here)
 
     def setup(self, rootdir):
-        os.environ['PATH'] = os.environ['PATH'] + ":/builds/MUST18/bin/"
+        os.environ['PATH'] = os.environ['PATH'] + ":/MBI-builds/MUST18/bin/"

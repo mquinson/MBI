@@ -10,7 +10,7 @@ class Tool(AbstractTool):
         AbstractTool.ensure_image(self, "-x parcoach")
 
     def build(self, rootdir, cached=True):
-        if cached and os.path.exists(f"/builds/parcoach/src/aSSA/aSSA.so"):
+        if cached and os.path.exists(f"/MBI-builds/parcoach/src/aSSA/aSSA.so"):
             print("No need to rebuild ParCoach.")
             return
         if not os.path.exists("/usr/lib/llvm-9/bin/clang"):
@@ -20,8 +20,8 @@ class Tool(AbstractTool):
         # Get a GIT checkout. 
         subprocess.run("rm -rf /tmp/parcoach && git clone --depth=1 https://github.com/parcoach/parcoach.git /tmp/parcoach", shell=True, check=True)
         # Go to where we want to install it, and build it out-of-tree (we're in the docker)
-        subprocess.run("mkdir -p /builds/parcoach", shell=True, check=True)
-        os.chdir('/builds/parcoach')
+        subprocess.run("mkdir -p /MBI-builds/parcoach", shell=True, check=True)
+        os.chdir('/MBI-builds/parcoach')
         subprocess.run(f"cmake /tmp/parcoach -DCMAKE_C_COMPILER=clang -DLLVM_DIR={rootdir}/tools/Parcoach/llvm-project/build", shell=True, check=True)
         subprocess.run("make -j$(nproc) VERBOSE=1", shell=True, check=True)
         subprocess.run("rm -rf /tmp/parcoach", shell=True, check=True)
@@ -34,7 +34,7 @@ class Tool(AbstractTool):
 
         self.run_cmd(
             buildcmd=f"clang -c -g -emit-llvm {filename} -I/usr/lib/x86_64-linux-gnu/mpich/include/ -o {binary}.bc",
-            execcmd=f"opt-9 -load /builds/parcoach/src/aSSA/aSSA.so -parcoach -check-mpi {binary}.bc -o /dev/null",
+            execcmd=f"opt-9 -load /MBI-builds/parcoach/src/aSSA/aSSA.so -parcoach -check-mpi {binary}.bc -o /dev/null",
             cachefile=cachefile,
             filename=filename,
             binary=binary,
