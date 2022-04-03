@@ -14,7 +14,7 @@ class Tool(AbstractTool):
         if cached and os.path.exists('/MBI-builds/hermes/bin/ispcc') and os.path.exists('/MBI-builds/hermes/clangTool/clangTool'):
             return
         print(f"Building Hermes. Files exist: {os.path.exists('/MBI-builds/hermes/bin/ispcc')}, {os.path.exists('/MBI-builds/hermes/clangTool/clangTool')}")
-        
+
         # Get a GIT checkout. Either create it, or refresh it
         subprocess.run(f"rm -rf /MBI-builds/hermes && mkdir -p /MBI-builds && git clone --depth=1 https://github.com/DhritiKhanna/Hermes.git /MBI-builds/hermes", shell=True, check=True)
 
@@ -62,7 +62,7 @@ class Tool(AbstractTool):
         if os.path.exists("./report.html"):
             os.rename("./report.html", f"{binary}_{id}.html")
 
-        subprocess.run("rm -f vgcore.*", shell=True, check=True) # Save disk space ASAP
+        subprocess.run("rm -f core vgcore.*", shell=True, check=True) # Save disk space ASAP
         subprocess.run("find -type f -a -executable | xargs rm -f", shell=True, check=True)
 
     def parse(self, cachefile):
