@@ -12,19 +12,19 @@ class Tool(AbstractTool):
     def build(self, rootdir, cached=True):
         if cached and os.path.exists(f"/MBI-builds/civl.jar"):
             return
-            
+
         print("XX Building CIVL")
-        subprocess.run(f"rm -rf {rootdir}/tools/CIVL && mkdir -p {rootdir}/tools/CIVL", shell=True, check=True)        
+        subprocess.run(f"rm -rf {rootdir}/tools/CIVL && mkdir -p {rootdir}/tools/CIVL", shell=True, check=True)
         here = os.getcwd() # Save where we were
         os.chdir(f"{rootdir}/tools/CIVL")
         subprocess.run(f"wget http://vsl.cis.udel.edu:8080/lib/sw/civl/1.21/r5476/release/CIVL-1.21_5476.tgz", shell=True, check=True)
-        subprocess.run(f"tar xf CIVL-*.tgz", shell=True, check=True)   
+        subprocess.run(f"tar xf CIVL-*.tgz", shell=True, check=True)
         if not os.path.exists('/MBI-builds'):
             subprocess.run(f"mkdir /MBI-builds", shell=True, check=True)
         subprocess.run(f"mv CIVL-*/lib/civl-*.jar /MBI-builds/civl.jar", shell=True, check=True)
         subprocess.run(f"cd /MBI-builds && java -jar civl.jar config", shell=True, check=True)
-        subprocess.run(f"rm -rf {rootdir}/tools/CIVL", shell=True, check=True)        
-        
+        subprocess.run(f"rm -rf {rootdir}/tools/CIVL", shell=True, check=True)
+
         # Back to our previous directory
         os.chdir(here)
 
