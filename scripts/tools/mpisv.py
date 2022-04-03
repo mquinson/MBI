@@ -69,7 +69,7 @@ class Tool(AbstractTool):
         if re.search('klee: .*? Assertion `.*? failed.', output):
             return 'failure'
 
-        if re.search('No Violation detected by MPI-SV', info):
+        if re.search('No Violation detected by MPI-SV', info) or re.search('No Violation detected by MPI-SV', output):
             return 'OK'
         if re.search('/root/mpi-sv/mpisv.*?Illegal instruction', output):
             return 'failure'
