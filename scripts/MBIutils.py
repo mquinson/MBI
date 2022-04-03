@@ -288,7 +288,7 @@ def parse_one_code(filename):
         raise ValueError(f"No test found in {filename}. Please fix it.")
     return res
 
-def categorize(tool, toolname, test_id, expected):
+def categorize(tool, toolname, test_id, expected, autoclean=False):
     outcome = tool.parse(test_id)
 
     if not os.path.exists(f'{test_id}.elapsed') and not os.path.exists(f'logs/{toolname}/{test_id}.elapsed'):
@@ -310,12 +310,22 @@ def categorize(tool, toolname, test_id, expected):
     elif outcome == 'failure' or outcome == 'segfault':
         res_category = 'failure'
         diagnostic = f'tool error, or test not run'
+        if autoclean:
+            if os.path.exists(f'{test_id}.md5sum'):
+                os.unlink(f'{test_id}.md5sum')
+            elif os.path.exists(f'logs/{toolname}/{test_id}.md5sum'):
+                os.unlink(f'logs/{toolname}/{test_id}.md5sum')
     elif outcome == 'UNIMPLEMENTED':
         res_category = 'unimplemented'
         diagnostic = f'coverage issue'
     elif outcome == 'other':
         res_category = 'other'
         diagnostic = f'inconclusive run'
+        if autoclean:
+            if os.path.exists(f'{test_id}.md5sum'):
+                os.unlink(f'{test_id}.md5sum')
+            elif os.path.exists(f'logs/{toolname}/{test_id}.md5sum'):
+                os.unlink(f'logs/{toolname}/{test_id}.md5sum')
     elif expected == 'OK':
         if outcome == 'OK':
             res_category = 'TRUE_NEG'

@@ -321,7 +321,7 @@ iframe {
         outHTML.write("</td>")
 
         for toolname in used_toolnames:
-            (res_category, elapsed, diagnostic, outcome) = categorize(tool=tools[toolname], toolname=toolname, test_id=test_id, expected=expected)
+            (res_category, elapsed, diagnostic, outcome) = categorize(tool=tools[toolname], toolname=toolname, test_id=test_id, expected=expected, autoclean=True)
 
             results[toolname][res_category].append(f"{test_id} expected {test['detail']}, outcome: {diagnostic}")
             outHTML.write(f"<td align='center'><a href='logs/{toolname}/{test_id}.txt' target='MBI_details'><img title='{displayed_name[toolname]} {diagnostic} (returned {outcome})' src='img/{res_category}.svg' width='24' /></a> ({outcome})")
