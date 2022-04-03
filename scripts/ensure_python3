@@ -1,7 +1,7 @@
 #! /bin/bash
 
 # Try to use one of the python binaries existing on this machine
-for candidate in `which python3.8` `which python3.7` `which python3` `which python` 
+for candidate in `which python3.8` `which python3.7` `which python3.6` `which python3` `which python`
 do
     if $candidate <<EOF
 import sys
