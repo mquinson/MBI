@@ -79,6 +79,7 @@ test-civl:
     script:
         - wget https://gitlab.inria.fr/quinson/mbi2/-/jobs/artifacts/master/raw/public/logs.tar.7z?job=pages -O logs.tar.7z
         - 7zr x -so logs*.7z | tar xf -
+        - if [ "x$MBI_CLEANUP" = "xcivl" ] ; then echo "XXX Remove all logs"; rm -rf logs/civl; fi
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x civl -c run
     artifacts:
@@ -92,7 +93,7 @@ test-parcoach:
     script:
         - wget https://gitlab.inria.fr/quinson/mbi2/-/jobs/artifacts/master/raw/public/logs.tar.7z?job=pages -O logs.tar.7z
         - 7zr x -so logs*.7z | tar xf -
-        - if [ x$MBI_CLEANUP = xparcoach ] ; then echo "XXX Remove all logs"; rm -rf logs/parcoach; fi
+        - if [ "x$MBI_CLEANUP" = "xparcoach" ] ; then echo "XXX Remove all logs"; rm -rf logs/parcoach; fi
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x parcoach -c run
     artifacts:
@@ -106,7 +107,7 @@ test-simgrid:
     script:
         - wget https://gitlab.inria.fr/quinson/mbi2/-/jobs/artifacts/master/raw/public/logs.tar.7z?job=pages -O logs.tar.7z
         - 7zr x -so logs*.7z | tar xf -
-        - if [ x$MBI_CLEANUP = xsimgrid ] ; then echo "XXX Remove all logs"; rm -rf logs/simgrid; fi
+        - if [ "x$MBI_CLEANUP" = "xsimgrid" ] ; then echo "XXX Remove all logs"; rm -rf logs/simgrid; fi
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x simgrid -c run
     artifacts:
@@ -121,7 +122,7 @@ test-smpi:
     script:
         - wget https://gitlab.inria.fr/quinson/mbi2/-/jobs/artifacts/master/raw/public/logs.tar.7z?job=pages -O logs.tar.7z
         - 7zr x -so logs*.7z | tar xf -
-        - if [ x$MBI_CLEANUP = xsmpi ] ; echo "XXX Remove all logs"; then rm -rf logs/smpi; fi
+        - if [ "x$MBI_CLEANUP" = "xsmpi" ] ; echo "XXX Remove all logs"; then rm -rf logs/smpi; fi
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x smpi -c run
     artifacts:
@@ -136,7 +137,7 @@ test-smpivg:
     script:
         - wget https://gitlab.inria.fr/quinson/mbi2/-/jobs/artifacts/master/raw/public/logs.tar.7z?job=pages -O logs.tar.7z
         - 7zr x -so logs*.7z | tar xf -
-        - if [ x$MBI_CLEANUP = xsmpivg ] ; echo "XXX Remove all logs"; then rm -rf logs/smpivg; fi
+        - if [ "x$MBI_CLEANUP" = "xsmpivg" ] ; echo "XXX Remove all logs"; then rm -rf logs/smpivg; fi
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x smpivg -c run
     artifacts:
