@@ -14,12 +14,12 @@ variables:
 stages:
     - test
     - deploy
-    
+
 test-must:
     stage: test
     needs: []
     script:
-        - wget https://gitlab.inria.fr/quinson/mbi2/-/jobs/artifacts/master/raw/public/logs.tar.7z?job=pages -O logs.tar.7z
+        - wget https://gitlab.com/MpiBugsInitiative/MpiBugsInitiative/uploads/1929075f392e2e8a8a23495dddb30772/logs-220403.7z || wget https://gitlab.inria.fr/quinson/mbi2/-/jobs/artifacts/master/raw/public/logs.tar.7z?job=pages -O logs.tar.7z
         - 7zr x -so logs*.7z | tar xf -
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x must -c run
@@ -34,7 +34,7 @@ test-aislinn:
     needs: []
     script:
         - apt-get update; apt-get install -y p7zip p7zip-full wget
-        - wget https://gitlab.inria.fr/quinson/mbi2/-/jobs/artifacts/master/raw/public/logs.tar.7z?job=pages -O logs.tar.7z
+        - wget https://gitlab.com/MpiBugsInitiative/MpiBugsInitiative/uploads/1929075f392e2e8a8a23495dddb30772/logs-220403.7z || wget https://gitlab.inria.fr/quinson/mbi2/-/jobs/artifacts/master/raw/public/logs.tar.7z?job=pages -O logs.tar.7z
         - 7zr x -so logs*.7z | tar xf -
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x aislinn -c run
@@ -47,7 +47,7 @@ test-hermes:
     stage: test
     needs: []
     script:
-        - wget https://gitlab.inria.fr/quinson/mbi2/-/jobs/artifacts/master/raw/public/logs.tar.7z?job=pages -O logs.tar.7z
+        - wget https://gitlab.com/MpiBugsInitiative/MpiBugsInitiative/uploads/1929075f392e2e8a8a23495dddb30772/logs-220403.7z || wget https://gitlab.inria.fr/quinson/mbi2/-/jobs/artifacts/master/raw/public/logs.tar.7z?job=pages -O logs.tar.7z
         - 7zr x -so logs*.7z | tar xf -
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x hermes -c run
@@ -56,13 +56,15 @@ test-hermes:
         when: always
         paths:
             - logs/hermes
+            - logs/mpisv
+            - logs/itac
 
 #test-mpisv:
 #    stage: test
 #    image: mpisv/mpi-sv
 #    needs: []
 #    script:
-#        - apt-get update; apt-get install -y p7zip p7zip-full wget
+##        - apt-get update; apt-get install -y p7zip p7zip-full wget
 #        - wget https://gitlab.inria.fr/quinson/mbi2/-/jobs/artifacts/master/raw/public/logs.tar.7z?job=pages -O logs.tar.7z
 #        - 7zr x -so logs*.7z | tar xf -
 #        - scripts/ensure_python3 ./MBI.py -c generate
@@ -77,7 +79,7 @@ test-civl:
     stage: test
     needs: []
     script:
-        - wget https://gitlab.inria.fr/quinson/mbi2/-/jobs/artifacts/master/raw/public/logs.tar.7z?job=pages -O logs.tar.7z
+        - wget https://gitlab.com/MpiBugsInitiative/MpiBugsInitiative/uploads/1929075f392e2e8a8a23495dddb30772/logs-220403.7z || wget https://gitlab.inria.fr/quinson/mbi2/-/jobs/artifacts/master/raw/public/logs.tar.7z?job=pages -O logs.tar.7z
         - 7zr x -so logs*.7z | tar xf -
         - if [ "x$MBI_CLEANUP" = "xcivl" ] ; then echo "XXX Remove all logs"; rm -rf logs/civl; fi
         - scripts/ensure_python3 ./MBI.py -c generate
@@ -91,7 +93,7 @@ test-parcoach:
     stage: test
     needs: []
     script:
-        - wget https://gitlab.inria.fr/quinson/mbi2/-/jobs/artifacts/master/raw/public/logs.tar.7z?job=pages -O logs.tar.7z
+        - wget https://gitlab.com/MpiBugsInitiative/MpiBugsInitiative/uploads/1929075f392e2e8a8a23495dddb30772/logs-220403.7z || wget https://gitlab.inria.fr/quinson/mbi2/-/jobs/artifacts/master/raw/public/logs.tar.7z?job=pages -O logs.tar.7z
         - 7zr x -so logs*.7z | tar xf -
         - if [ "x$MBI_CLEANUP" = "xparcoach" ] ; then echo "XXX Remove all logs"; rm -rf logs/parcoach; fi
         - scripts/ensure_python3 ./MBI.py -c generate
@@ -105,7 +107,7 @@ test-simgrid:
     stage: test
     needs: []
     script:
-        - wget https://gitlab.inria.fr/quinson/mbi2/-/jobs/artifacts/master/raw/public/logs.tar.7z?job=pages -O logs.tar.7z
+        - wget https://gitlab.com/MpiBugsInitiative/MpiBugsInitiative/uploads/1929075f392e2e8a8a23495dddb30772/logs-220403.7z || wget https://gitlab.inria.fr/quinson/mbi2/-/jobs/artifacts/master/raw/public/logs.tar.7z?job=pages -O logs.tar.7z
         - 7zr x -so logs*.7z | tar xf -
         - if [ "x$MBI_CLEANUP" = "xsimgrid" ] ; then echo "XXX Remove all logs"; rm -rf logs/simgrid; fi
         - scripts/ensure_python3 ./MBI.py -c generate
@@ -120,7 +122,7 @@ test-smpi:
     needs: []
     allow_failure: true
     script:
-        - wget https://gitlab.inria.fr/quinson/mbi2/-/jobs/artifacts/master/raw/public/logs.tar.7z?job=pages -O logs.tar.7z
+        - wget https://gitlab.com/MpiBugsInitiative/MpiBugsInitiative/uploads/1929075f392e2e8a8a23495dddb30772/logs-220403.7z || wget https://gitlab.inria.fr/quinson/mbi2/-/jobs/artifacts/master/raw/public/logs.tar.7z?job=pages -O logs.tar.7z
         - 7zr x -so logs*.7z | tar xf -
         - if [ "x$MBI_CLEANUP" = "xsmpi" ] ; then echo "XXX Remove all logs"; rm -rf logs/smpi; fi
         - scripts/ensure_python3 ./MBI.py -c generate
@@ -135,7 +137,7 @@ test-smpivg:
     needs: []
     allow_failure: true
     script:
-        - wget https://gitlab.inria.fr/quinson/mbi2/-/jobs/artifacts/master/raw/public/logs.tar.7z?job=pages -O logs.tar.7z
+        - wget https://gitlab.com/MpiBugsInitiative/MpiBugsInitiative/uploads/1929075f392e2e8a8a23495dddb30772/logs-220403.7z || wget https://gitlab.inria.fr/quinson/mbi2/-/jobs/artifacts/master/raw/public/logs.tar.7z?job=pages -O logs.tar.7z
         - 7zr x -so logs*.7z | tar xf -
         - if [ "x$MBI_CLEANUP" = "xsmpivg" ] ; then echo "XXX Remove all logs"; rm -rf logs/smpivg; fi
         - scripts/ensure_python3 ./MBI.py -c generate
@@ -164,7 +166,7 @@ test-isp:
     stage: test
     needs: []
     script:
-        - wget https://gitlab.inria.fr/quinson/mbi2/-/jobs/artifacts/master/raw/public/logs.tar.7z?job=pages -O logs.tar.7z
+        - wget https://gitlab.com/MpiBugsInitiative/MpiBugsInitiative/uploads/1929075f392e2e8a8a23495dddb30772/logs-220403.7z || wget https://gitlab.inria.fr/quinson/mbi2/-/jobs/artifacts/master/raw/public/logs.tar.7z?job=pages -O logs.tar.7z
         - 7zr x -so logs*.7z | tar xf -
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x isp -c run
