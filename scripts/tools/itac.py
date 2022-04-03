@@ -10,12 +10,13 @@ class Tool(AbstractTool):
         AbstractTool.ensure_image(self, dockerparams="--shm-size=512m ", params="-x itac")
 
     def setup(self):
-        subprocess.run("apt update && apt install wget", shell=True, check=True)
-        subprocess.run("wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB -O- | apt-key add -", shell=True, check=True)
-        subprocess.run("echo 'deb https://apt.repos.intel.com/oneapi all main' > /etc/apt/sources.list.d/oneAPI.list", shell=True, check=True)
-        subprocess.run("apt update && apt install -y intel-oneapi-itac intel-oneapi-compiler-dpcpp-cpp-and-cpp-classic intel-oneapi-mpi-devel", shell=True, check=True)
-        # Take the environment set by the /opt/intel/oneapi/setvars.sh shell script for us in this python script. Gosh, Intel...
-        subprocess.run('bash -c "source /opt/intel/oneapi/setvars.sh && printenv" > environment.txt', shell=True, check=True)
+        if not os.path.exists("environment.txt"):
+            subprocess.run("apt update && apt install wget", shell=True, check=True)
+            subprocess.run("wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB -O- | apt-key add -", shell=True, check=True)
+            subprocess.run("echo 'deb https://apt.repos.intel.com/oneapi all main' > /etc/apt/sources.list.d/oneAPI.list", shell=True, check=True)
+            subprocess.run("apt update && apt install -y intel-oneapi-itac intel-oneapi-compiler-dpcpp-cpp-and-cpp-classic intel-oneapi-mpi-devel", shell=True, check=True)
+            # Take the environment set by the /opt/intel/oneapi/setvars.sh shell script for us in this python script. Gosh, Intel...
+            subprocess.run('bash -c "source /opt/intel/oneapi/setvars.sh && printenv" > environment.txt', shell=True, check=True)
         with open('environment.txt', "r") as input:
             for line in input:
                 if re.search('=', line) is not None:

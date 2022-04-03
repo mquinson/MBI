@@ -23,6 +23,12 @@ class Tool(AbstractTool):
         print("Aislinn is only built during setup, if really needed (it's not using the same docker image).")
 
     def setup(self):
+        os.environ['PATH'] = os.environ['PATH'] + ":/builds/aislinn/bin/"
+
+        if os.path.exists("/tmp/aislinn.configured"):
+            return
+        subprocess.run("touch /tmp/aislinn.configured", shell=True, check=True)
+
         subprocess.run("apt-get install -y gcc python2.7 python-jinja2", shell=True, check=True)
         if not os.path.exists(f"/builds/aislinn/bin/aislinn-cc"):
             print("XX Building aislinn")
@@ -48,8 +54,6 @@ class Tool(AbstractTool):
             os.chdir(here)
             print("XX Done building aislinn")
         
-        os.environ['PATH'] = os.environ['PATH'] + ":/builds/aislinn/bin/"
-
     def run(self, execcmd, filename, binary, id, timeout, batchinfo):
         cachefile = f'{binary}_{id}'
 

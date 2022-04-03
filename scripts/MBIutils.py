@@ -12,9 +12,6 @@ import signal
 import hashlib
 
 class AbstractTool:
-    def __init__(self):
-        self.already_setup=False
-
     def ensure_image(self, params="", dockerparams=""):
         """Verify that this is executed from the right docker image, and complain if not."""
         if os.path.exists("/MBI") or os.path.exists("trust_the_installation"):
@@ -35,7 +32,10 @@ class AbstractTool:
     def setup(self):
         """
         Ensure that this tool (previously built) is usable in this environment: setup the PATH, etc.
-        This is called only once for all tests, from the logs directory.
+        This is called only once for all tests, from the logs directory. 
+        
+        It is called for each test so that it setups the environment variables (tests are ran in separate processes),
+        and should setup the filesystem (installing software etc) only once if possible.
         """
         # pass
 
@@ -72,13 +72,7 @@ class AbstractTool:
                 return False
             os.remove(f'{cachefile}.txt')
 
-        if self.already_setup == False:
-            print("XX The tool setup was post-ponned until now, do it now")
-            print("XX----------------------------------------------------")
-            self.already_setup = True
-            self.setup()
-            print("XX The tool is now correctly setup")
-            print("XX--------------------------------")
+        self.setup()
 
         print(f"Wait up to {timeout} seconds")
 

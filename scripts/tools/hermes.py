@@ -31,6 +31,8 @@ class Tool(AbstractTool):
 
     def setup(self):
         os.environ['PATH'] = f"{os.environ['PATH']}:/builds/hermes/bin/"
+        if os.path.exists("compile_commands.json"):
+            return
         with open('compile_commands.json', 'w') as outfile:
             outfile.write("[{")
             outfile.write(f'  "command": "/usr/bin/cxx -c -I/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi -I/builds/hermes/clangTool/ -I/usr/lib/x86_64-linux-gnu/openmpi/include -I/usr/lib/x86_64-linux-gnu/mpich/include -I/builds/hermes/clangTool/clang+llvm-3.8.0-x86_64-linux-gnu-debian8/lib/clang/3.8.0/include/ -pthread source.c",\n')
