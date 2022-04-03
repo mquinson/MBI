@@ -1,5 +1,6 @@
 # Rebuild the docker image:
 #      docker build -f Dockerfile -t mpi-bugs-initiative:latest .
+#      docker build -f Dockerfile -t registry.gitlab.inria.fr/quinson/mbi2:latest .
 # Start it locally (the local repo is copied under /MBI/):
 #      docker run -it mpi-bugs-initiative bash
 #

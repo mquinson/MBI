@@ -14,10 +14,10 @@ class Tool(AbstractTool):
         if cached and os.path.exists('/builds/hermes/bin/ispcc') and os.path.exists('/builds/hermes/clangTool/clangTool'):
             return
         print(f"Building Hermes. Files exist: {os.path.exists('/builds/hermes/bin/ispcc')}, {os.path.exists('/builds/hermes/clangTool/clangTool')}")
-#        subprocess.run("apt-get update && apt-get install -y libtinfo5 libtinfo-dev", shell=True, check=True)
-
+        subprocess.run("ls -lR /builds", shell=True, check=True)
+        
         # Get a GIT checkout. Either create it, or refresh it
-        subprocess.run(f"rm -rf /builds/hermes && mkdir /builds && git clone --depth=1 https://github.com/DhritiKhanna/Hermes.git /builds/hermes", shell=True, check=True)
+        subprocess.run(f"rm -rf /builds/hermes && mkdir -p /builds && git clone --depth=1 https://github.com/DhritiKhanna/Hermes.git /builds/hermes", shell=True, check=True)
 
         # Build it
         here = os.getcwd() # Save where we were

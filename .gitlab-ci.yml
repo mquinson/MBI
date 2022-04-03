@@ -96,7 +96,7 @@ test-parcoach:
     script:
         - wget https://gitlab.inria.fr/quinson/mbi2/-/jobs/artifacts/master/raw/public/logs.tar.7z?job=pages -O logs.tar.7z
         - 7zr x -so logs*.7z | tar xf -
-        - if [ x$MBI_CLEANUP = xparcoach ] ; then rm -rf logs/parcoach; fi
+        - if [ x$MBI_CLEANUP = xparcoach ] ; then echo "XXX Remove all logs"; rm -rf logs/parcoach; fi
         - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x parcoach -c run
@@ -111,7 +111,7 @@ test-simgrid:
     script:
         - wget https://gitlab.inria.fr/quinson/mbi2/-/jobs/artifacts/master/raw/public/logs.tar.7z?job=pages -O logs.tar.7z
         - 7zr x -so logs*.7z | tar xf -
-        - if [ x$MBI_CLEANUP = xsimgrid ] ; then rm -rf logs/simgrid; fi
+        - if [ x$MBI_CLEANUP = xsimgrid ] ; then echo "XXX Remove all logs"; rm -rf logs/simgrid; fi
         - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x simgrid -c run
@@ -126,7 +126,7 @@ test-smpi:
     script:
         - wget https://gitlab.inria.fr/quinson/mbi2/-/jobs/artifacts/master/raw/public/logs.tar.7z?job=pages -O logs.tar.7z
         - 7zr x -so logs*.7z | tar xf -
-        - if [ x$MBI_CLEANUP = xsmpi ] ; then rm -rf logs/smpi; fi
+        - if [ x$MBI_CLEANUP = xsmpi ] ; echo "XXX Remove all logs"; then rm -rf logs/smpi; fi
         - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x smpi -c run
@@ -141,7 +141,7 @@ test-smpivg:
     script:
         - wget https://gitlab.inria.fr/quinson/mbi2/-/jobs/artifacts/master/raw/public/logs.tar.7z?job=pages -O logs.tar.7z
         - 7zr x -so logs*.7z | tar xf -
-        - if [ x$MBI_CLEANUP = xsmpivg ] ; then rm -rf logs/smpivg; fi
+        - if [ x$MBI_CLEANUP = xsmpivg ] ; echo "XXX Remove all logs"; then rm -rf logs/smpivg; fi
         - rm -rf builds; ln -s /MBI/builds .
         - scripts/ensure_python3 ./MBI.py -c generate
         - scripts/ensure_python3 ./MBI.py -x smpivg -c run
