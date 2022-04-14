@@ -32,6 +32,7 @@ recv = ['MPI_Recv']
 irecv = ['MPI_Irecv']
 precv = ['MPI_Recv_init']
 probe = ['MPI_Probe']
+sendrecv = ['MPI_Sendrecv']
 
 # RMA
 epoch = ['MPI_Win_fence', 'MPI_Win_lock', 'MPI_Win_lock_all']
@@ -352,6 +353,12 @@ fini['MPI_Probe'] = lambda n: ""
 free['MPI_Probe'] = lambda n: ""
 write['MPI_Probe'] = lambda n: ""
 
+init['MPI_Sendrecv'] = lambda n: f'int sbuf{n}[N+2]={{rank}}; int rbuf{n}[N]={{rank}}; int * psbuf{n} = &sbuf{n}[0]; int * prbuf{n} = &rbuf{n}[0]; MPI_Status sta{n};'
+start['MPI_Sendrecv'] = lambda n: ""
+operation['MPI_Sendrecv'] = lambda n: f'MPI_Sendrecv(psbuf{n}, buff_size, type, dest, stag, prbuf{n}, buff_size, type, src, rtag, newcom, &sta{n});'
+fini['MPI_Sendrecv'] = lambda n: ""
+free['MPI_Sendrecv'] = lambda n: ""
+write['MPI_Sendrecv'] = lambda n: f"prbuf{n} = &sbuf{n}[2];"
 
 
 ### P2P:nonblocking
