@@ -19,6 +19,7 @@ import multiprocessing as mp
 sys.path.append(f'{os.path.dirname(os.path.abspath(__file__))}/scripts')
 
 from MBIutils import *
+from tools.gen_plots_radar import *
 
 import tools.parcoach
 import tools.simgrid
@@ -173,7 +174,7 @@ def percent(num, den, compl=False, one=False):
     else:
         res = round (num/den*100, 2)
     if int(res) == 100:
-        return "1" if one else "100" 
+        return "1" if one else "100"
     return round(res/100, 4) if one else res
 
 def bold_if(val, target):
@@ -299,7 +300,7 @@ iframe {
                 previous_detail = possible_details[test['detail']]
                 if test['detail'] != 'OK':
                     outHTML.write(f"  <a name='{possible_details[test['detail']]}'/><h3>{displayed_name[possible_details[test['detail']]]} errors (scope: {error_scope[possible_details[test['detail']]]})</h3>\n")
-                else: 
+                else:
                     outHTML.write(f"  <a name='OK'/><h3>Correct codes</h3>\n")
 
                 outHTML.write( '  <table border=1>\n')
@@ -328,7 +329,7 @@ iframe {
             extra=None
             if os.path.exists(f'logs/{toolname}/{test_id}.html'):
                 extra=f'logs/{toolname}/{test_id}.html'
-            if os.path.exists(f'logs/{toolname}/{test_id}-klee-out'): # MPI-SV 
+            if os.path.exists(f'logs/{toolname}/{test_id}-klee-out'): # MPI-SV
                 extra=f'logs/{toolname}/{test_id}-klee-out'
             if extra is not None:
                 outHTML.write(f"&nbsp;<a href='{extra}' target='MBI_details'><img title='more info' src='img/html.svg' height='24' /></a>")
@@ -510,13 +511,13 @@ def cmd_latex(rootdir, toolnames):
         outfile.write("\\cline{2-"+str(len(used_toolnames)*4+1)+"}\n")
         # First title line: Tool names
         outfile.write("  \\multicolumn{1}{c|}{}")
-        for t in used_toolnames: 
+        for t in used_toolnames:
             outfile.write("& \\multicolumn{4}{c||}{"+displayed_name[t]+"}")
         outfile.write("\\\\\n")
         outfile.write("\\cline{2-"+str(len(used_toolnames)*4+1)+"}\n")
         # Second title line: TP&TN&FP&FN per tool
         outfile.write("  \\multicolumn{1}{c|}{}")
-        for t in used_toolnames: 
+        for t in used_toolnames:
             outfile.write("& \\rotatebox{90}{Build error~~} &\\rotatebox{90}{Failure} & \\rotatebox{90}{Incorrect} & \\rotatebox{90}{Correct~~} ")
         outfile.write("\\\\\\hline\n")
 
@@ -630,7 +631,7 @@ def cmd_latex(rootdir, toolnames):
             TP = len(results['total'][toolname]['TRUE_POS'])
             TN = len(results['total'][toolname]['TRUE_NEG'])
             FN = len(results['total'][toolname]['FALSE_NEG'])
-            FP = len(results['total'][toolname]['FALSE_POS']) 
+            FP = len(results['total'][toolname]['FALSE_POS'])
             if TP > best['TP']:
                 best['TP'] = TP
             if TN > best['TN']:
@@ -674,7 +675,7 @@ def cmd_latex(rootdir, toolnames):
             else:
                 print (f"WARNING: {toolname} not considered as a best score: TN+FP={TP+FP} TP+FN={TP+FN} TP+FP={TP+FP}")
 
-    
+
         for key in best: # Cleanup the data to ensure that the equality test matches in bold_if()
             if best[key] == 1.0:
                 best[key] = "1"
@@ -691,21 +692,21 @@ def cmd_latex(rootdir, toolnames):
             TP = len(results['total'][toolname]['TRUE_POS'])
             TN = len(results['total'][toolname]['TRUE_NEG'])
             FN = len(results['total'][toolname]['FALSE_NEG'])
-            FP = len(results['total'][toolname]['FALSE_POS']) 
+            FP = len(results['total'][toolname]['FALSE_POS'])
 
             total = TP + TN + FP + FN + port + fail + othr + tout
 
             outfile.write(f"{bold_if(port,0)}&{bold_if(tout,0)}&{bold_if(fail+othr,0)}")
             outfile.write(f"&{bold_if(TP,best['TP'])}&{bold_if(TN,best['TN'])}&{bold_if(FP,best['FP'])}&{bold_if(FN,best['FN'])}&")
 
-            # Coverage & Completion 
+            # Coverage & Completion
             coverage = percent(port,total,compl=True,one=True)
             completion = percent((port+fail+othr+tout),(total),compl=True,one=True)
             outfile.write(f"{bold_if(coverage,best['coverage'])} &{bold_if(completion, best['completion'])}&")
             # Specificity: recognized {TN} correct codes out of {TN+FP}
             specificity = percent(TN,(TN+FP),one=True)
             outfile.write(f'{bold_if(specificity, best["specificity"])}&')
-            # Recall: found {TP} errors out of {TP+FN} ;Precision: {TP} diagnostic of error are correct out of {TP+FP}) ; 
+            # Recall: found {TP} errors out of {TP+FN} ;Precision: {TP} diagnostic of error are correct out of {TP+FP}) ;
             recall = percent(TP,(TP+FN),one=True)
             precision = percent(TP,(TP+FP),one=True)
             outfile.write(f'{bold_if(recall, best["recall"])} & {bold_if(precision, best["precision"])} &')
@@ -747,7 +748,7 @@ def cmd_latex(rootdir, toolnames):
             TP = len(results['total'][toolname]['TRUE_POS'])
             TN = len(results['total'][toolname]['TRUE_NEG'])
             FN = len(results['total'][toolname]['FALSE_NEG'])
-            FP = len(results['total'][toolname]['FALSE_POS']) 
+            FP = len(results['total'][toolname]['FALSE_POS'])
 
             total = TP + TN + FP + FN + nTout + nPort + nFail
 
@@ -755,7 +756,7 @@ def cmd_latex(rootdir, toolnames):
             outfile.write(f'{percent(nPort,total,compl=True,one=True)} &{percent((nTout+nFail+nPort),(total),compl=True,one=True)}&')
             # Specificity: recognized {TN} correct codes out of {TN+FP}
             outfile.write(f'{percent(TN,(TN+FP),one=True)}&')
-            # Recall: found {TP} errors out of {TP+FN} ;Precision: {TP} diagnostic of error are correct out of {TP+FP}) ; 
+            # Recall: found {TP} errors out of {TP+FN} ;Precision: {TP} diagnostic of error are correct out of {TP+FP}) ;
             outfile.write(f'{percent(TP,(TP+FN),one=True)} & {percent(TP,(TP+FP),one=True)} &')
             # F1 Score
             if TP+FP >0 and TP+FN >0:
@@ -778,7 +779,7 @@ def cmd_latex(rootdir, toolnames):
         outfile.write(f"\\cline{{3-{len(used_toolnames)+2}}}\n")
         # First title line: Tool names
         outfile.write("  \\multicolumn{2}{c|}{}")
-        for t in used_toolnames: 
+        for t in used_toolnames:
             outfile.write(f"& {displayed_name[t]}")
         outfile.write(f"\\\\\\hline\n")
 
@@ -841,13 +842,151 @@ def cmd_latex(rootdir, toolnames):
 
         # Last line: Tool names again
         outfile.write("  \\multicolumn{2}{c|}{}")
-        for t in used_toolnames: 
+        for t in used_toolnames:
             outfile.write(f"& {displayed_name[t]}")
         outfile.write(f"\\\\\\cline{{3-{len(used_toolnames)+2}}}\n")
 
         outfile.write(f"\\end{{tabular}}\n")
 
     os.chdir(here)
+
+
+########################
+# cmd_plots(): what to do when '-c plots' is used (extract the statistics of this tool)
+########################
+def cmd_plots(rootdir, toolnames):
+    here = os.getcwd()
+    os.chdir(rootdir)
+    os.makedirs('plots', exist_ok=True)
+    results = {}
+    total_elapsed = {}
+    used_toolnames = []
+
+    # select the tools for which we have some results
+    print("Produce the stats for:", end='')
+    for toolname in toolnames:
+        if not toolname in tools:
+            raise Exception(f"Tool {toolname} does not seem to be a valid name.")
+
+        if os.path.exists(f'logs/{toolname}'):
+            used_toolnames.append(toolname)
+            print(f' {toolname}', end="")
+
+            # To compute timing statistics
+            total_elapsed[toolname] = 0
+    print(".")
+
+    # Initialize the data structure to gather all results
+    results = {'total':{}, 'error':{}}
+    timing = {'total':{}, 'error':{}}
+    for error in error_scope:
+        results[error] = {}
+        timing[error] = {}
+        for toolname in used_toolnames:
+            results[error][toolname] = {'failure':[], 'timeout':[], 'unimplemented':[], 'other':[], 'TRUE_NEG':[], 'TRUE_POS':[], 'FALSE_NEG':[], 'FALSE_POS':[]}
+            results['total'][toolname] = {'failure':[], 'timeout':[], 'unimplemented':[], 'other':[], 'TRUE_NEG':[], 'TRUE_POS':[], 'FALSE_NEG':[], 'FALSE_POS':[],'error':[],'OK':[]}
+            results['error'][toolname] = {'failure':[], 'timeout':[], 'unimplemented':[], 'other':[], 'TRUE_NEG':[], 'TRUE_POS':[], 'FALSE_NEG':[], 'FALSE_POS':[],'error':[],'OK':[]}
+            timing[error][toolname] = []
+            timing['total'][toolname] = []
+            timing['error'][toolname] = []
+
+    # Get all data from the caches
+    for test in todo:
+        binary=re.sub('\.c', '', os.path.basename(test['filename']))
+        ID=test['id']
+        test_id = f"{binary}_{ID}"
+        expected=test['expect']
+
+        for toolname in used_toolnames:
+            (res_category, elapsed, diagnostic, outcome) = categorize(tool=tools[toolname], toolname=toolname, test_id=test_id, expected=expected)
+            error = possible_details[test['detail']]
+            results[error][toolname][res_category].append(test_id)
+            results['total'][toolname][res_category].append(test_id)
+            timing[error][toolname].append(float(elapsed))
+            timing['total'][toolname].append(float(elapsed))
+            if expected == 'OK':
+                results['total'][toolname]['OK'].append(test_id)
+            else:
+                results['total'][toolname]['error'].append(test_id)
+                results['error'][toolname][res_category].append(test_id)
+                timing['error'][toolname].append(float(elapsed))
+
+    TP = 'TRUE_POS'
+    TN = 'TRUE_NEG'
+    deter = ['AInvalidParam', 'BResLeak', 'CMatch', 'CMatch', 'BReqLifecycle']
+    ndeter = ['DRace', 'EBufferingHazard', 'DGlobalConcurrency', 'BLocalConcurrency']
+
+    for tool in used_toolnames:
+        print (f' --- Plots {displayed_name[tool]}')
+        colors = ['m', 'r', 'b', 'g']
+
+        # Make deterministic error
+        N = len(deter)
+        data = []
+        spoke_labels = []
+
+        # Compute score by error type
+        for error in deter:
+            score = 0.0
+            if len(results['total'][tool][TP]) != 0:
+                total = 0.0
+                for r in ['failure', 'timeout', 'unimplemented', 'other',
+                          'TRUE_NEG', 'TRUE_POS', 'FALSE_NEG', 'FALSE_POS']:
+                    total += len(results[error][tool][r])
+                score = ((len(results[error][tool][TP])) / total)
+            print (f'      +++ Result {error}: {len(results[error][tool][TP])} ({score})')
+            data.append(score)
+            spoke_labels.append(displayed_name[error])
+
+        # Radar plot
+        theta = radar_factory(N, frame='polygon')
+        fig, ax = plt.subplots(subplot_kw=dict(projection='radar'))
+        fig.subplots_adjust(wspace=0.1, hspace=0.6, top=0.85, bottom=0.05)
+        ax.set_rgrids([0.2, 0.4, 0.6, 0.8])
+        ax.set_title(displayed_name[tool], weight='bold', size='medium', position=(0.5, 1.1),
+                     horizontalalignment='center', verticalalignment='center')
+
+        ax.plot(theta, data, color=colors[0])
+        ax.fill(theta, data, facecolor=colors[0], alpha=0.25, label='_nolegend_')
+        ax.set_varlabels(spoke_labels)
+        ax.set_ylim(0,1)
+
+        plt.savefig(f"plots/deter_{tool}.png")
+
+        # Make none deterministic error
+        N = len(ndeter)
+        data = []
+        spoke_labels = []
+
+        # Compute score by error type
+        for error in ndeter:
+            score = 0.0
+            if len(results['total'][tool][TP]) != 0:
+                total = 0.0
+                for r in ['failure', 'timeout', 'unimplemented', 'other',
+                          'TRUE_NEG', 'TRUE_POS', 'FALSE_NEG', 'FALSE_POS']:
+                    total += len(results[error][tool][r])
+                score = ((len(results[error][tool][TP])) / total)
+            print (f'      +++ Result {error}: {len(results[error][tool][TP])} ({score})')
+            data.append(score)
+            spoke_labels.append(displayed_name[error])
+
+        # Radar plot
+        theta = radar_factory(N, frame='polygon')
+        fig, ax = plt.subplots(subplot_kw=dict(projection='radar'))
+        fig.subplots_adjust(wspace=0.1, hspace=0.6, top=0.85, bottom=0.05)
+        ax.set_rgrids([0.2, 0.4, 0.6, 0.8])
+        ax.set_title(displayed_name[tool], weight='bold', size='medium', position=(0.5, 1.1),
+                     horizontalalignment='center', verticalalignment='center')
+
+        ax.plot(theta, data, color=colors[0])
+        ax.fill(theta, data, facecolor=colors[0], alpha=0.25, label='_nolegend_')
+        ax.set_varlabels(spoke_labels)
+        ax.set_ylim(0,1)
+
+        plt.savefig(f"plots/ndeter_{tool}.png")
+
+
 ########################
 # Main script argument parsing
 ########################
@@ -923,6 +1062,9 @@ elif args.c == 'html':
     else:
         toolnames=arg_tools
     cmd_html(rootdir, toolnames=toolnames)
+elif args.c == 'plots':
+    extract_all_todo(args.b)
+    cmd_plots(rootdir, toolnames=['itac', 'simgrid','must', 'smpi','smpivg', 'aislinn', 'civl', 'isp', 'mpisv', 'parcoach'])
 else:
     print(f"Invalid command '{args.c}'. Please choose one of 'all', 'generate', 'build', 'run', 'html' or 'latex'")
     sys.exit(1)
