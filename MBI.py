@@ -556,7 +556,7 @@ def cmd_latex(rootdir, toolnames):
     with open(f'{rootdir}/latex/results-per-category-portrait.tex', 'w') as outfile:
         outfile.write('\\setlength\\tabcolsep{1.5pt} % default value: 6pt\n')
         # To split the table in two lines, do this: for errors in [['FOK','AInvalidParam','BResLeak','BReqLifecycle','BLocalConcurrency'], ['CMatch','DRace','DMatch','DGlobalConcurrency','EBufferingHazard']]:
-        for errors in [['FOK','AInvalidParam','BResLeak','BReqLifecycle','BLocalConcurrency', 'CMatch','DRace','DMatch','DGlobalConcurrency']]:
+        for errors in [['FOK','AInvalidParam','BResLeak','BReqLifecycle','BLocalConcurrency', 'CMatch','DRace','DMatch','DGlobalConcurrency','InputHazard']]:
             outfile.write("\\begin{tabular}{|l@{}|*{"+str(len(errors)-1)+"}{c|c|c|c||} c|c|c|c|}\n") # last column not in multiplier (len-1 used) to not have || at the end
             outfile.write(f"\\cline{{2-{len(errors)*4+1}}}\n")
             # First title line: error categories
@@ -914,7 +914,7 @@ def cmd_plots(rootdir, toolnames):
     TP = 'TRUE_POS'
     TN = 'TRUE_NEG'
     deter = ['AInvalidParam', 'BResLeak', 'CMatch', 'CMatch', 'BReqLifecycle']
-    ndeter = ['DRace', 'EBufferingHazard', 'DGlobalConcurrency', 'BLocalConcurrency']
+    ndeter = ['DRace', 'EBufferingHazard', 'DGlobalConcurrency', 'BLocalConcurrency', 'InputHazard']
 
     for tool in used_toolnames:
         print (f' --- Plots {displayed_name[tool]}')
@@ -933,7 +933,7 @@ def cmd_plots(rootdir, toolnames):
                 for r in ['failure', 'timeout', 'unimplemented', 'other',
                           'TRUE_NEG', 'TRUE_POS', 'FALSE_NEG', 'FALSE_POS']:
                     total += len(results[error][tool][r])
-                score = ((len(results[error][tool][TP])) / total)
+                score = ((len(results[error][tool][TP]) + len(results[error][tool][TN])) / total)
             print (f'      +++ Result {error}: {len(results[error][tool][TP])} ({score})')
             data.append(score)
             spoke_labels.append(displayed_name[error])

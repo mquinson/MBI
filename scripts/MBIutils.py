@@ -32,8 +32,8 @@ class AbstractTool:
     def setup(self):
         """
         Ensure that this tool (previously built) is usable in this environment: setup the PATH, etc.
-        This is called only once for all tests, from the logs directory. 
-        
+        This is called only once for all tests, from the logs directory.
+
         It is called for each test so that it setups the environment variables (tests are ran in separate processes),
         and should setup the filesystem (installing software etc) only once if possible.
         """
@@ -198,6 +198,8 @@ possible_details = {
     'GlobalConcurrency':'DGlobalConcurrency',
     # larger scope
     'BufferingHazard':'EBufferingHazard',
+    # Input Hazard
+    'IHCallMatching':'InputHazard',
     'OK':'FOK'}
 
 error_scope = {
@@ -211,6 +213,7 @@ error_scope = {
     'DMatch':'multi-processes',
     'DGlobalConcurrency':'multi-processes',
     'EBufferingHazard':'system',
+    'InputHazard':'user input',
     'FOK':'correct executions'
 }
 
@@ -225,6 +228,7 @@ displayed_name = {
     'DRace':'Message race',
     'DGlobalConcurrency':'Global concurrency',
     'EBufferingHazard':'Buffering hazard',
+    'InputHazard':'Input Hazard',
     'FOK':"Correct execution",
 
     'aislinn':'Aislinn','civl':'CIVL','hermes':'Hermes', 'isp':'ISP','itac':'ITAC', 'simgrid':'Mc SimGrid', 'smpi':'SMPI','smpivg':'SMPI+VG', 'mpisv':'MPI-SV', 'must':'MUST', 'parcoach':'PARCOACH'
@@ -338,4 +342,3 @@ def categorize(tool, toolname, test_id, expected, autoclean=False):
         raise ValueError(f"Unexpected expectation: {expected} (must be OK or ERROR)")
 
     return (res_category, elapsed, diagnostic, outcome)
-

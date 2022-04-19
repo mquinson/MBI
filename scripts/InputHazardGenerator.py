@@ -137,7 +137,7 @@ for s in send + isend:
         replace = patterns
         replace['shortdesc'] = 'Missing Send function.'
         replace['longdesc'] = 'Missing Send function call for a path depending to input, a deadlock is created.'
-        replace['outcome'] = 'ERROR: CallMatching'
+        replace['outcome'] = 'ERROR: IHCallMatching'
         replace['errormsg'] = 'P2P mistmatch. Missing @{r}@ at @{filename}@:@{line:MBIERROR}@.'
         replace['errorcond'] = '/* MBIERROR */'
         replace['operation1b'] = ''
@@ -182,7 +182,7 @@ for c in coll:
     replace = patterns
     replace['shortdesc'] = 'Missing collective function call.'
     replace['longdesc'] = 'Missing collective function call for a path depending to input, a deadlock is created.'
-    replace['outcome'] = 'ERROR: CallMatching'
+    replace['outcome'] = 'ERROR: IHCallMatching'
     replace['errormsg'] = 'P2P mistmatch. Missing @{c}@ at @{filename}@:@{line:MBIERROR}@.'
     replace['errorcond'] = '/* MBIERROR */'
     replace['operation1b'] = ''
