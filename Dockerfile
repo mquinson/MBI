@@ -11,7 +11,7 @@
 #      docker login registry.gitlab.com -u mquinson -p <token from journal.org>
 #      docker image tag mpi-bugs-initiative:latest registry.gitlab.com/mquinson/mbi:latest
 #      docker push registry.gitlab.com/mquinson/mbi
-# Personal notes: Push to the Inria gitlab 
+# Personal notes: Push to the Inria gitlab
 #      docker image tag mquinson/mbi registry.gitlab.inria.fr/quinson/mbi2
 #      docker login registry.gitlab.inria.fr
 #      docker push registry.gitlab.inria.fr/quinson/mbi2
@@ -30,6 +30,7 @@ RUN apt-get update --fix-missing && \
     apt-get autoremove -yq && \
     apt-get clean -yq
 
+RUN pip3 install numpy matplotlib
 # RUN pip3 install drawSvg
 COPY . /MBI
 
