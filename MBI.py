@@ -854,6 +854,44 @@ def cmd_latex(rootdir, toolnames):
 ########################
 # cmd_plots(): what to do when '-c plots' is used (extract the statistics of this tool)
 ########################
+
+def make_radar_plot(name, errors, tool, results):
+    TP = 'TRUE_POS'
+    TN = 'TRUE_NEG'
+    colors = ['m', 'r', 'b', 'g']
+
+    N = len(errors)
+    data = []
+    spoke_labels = []
+
+    # Compute score by error type
+    for error in errors:
+        score = 0.0
+        if len(results['total'][tool][TP]) != 0:
+            total = 0.0
+            for r in ['failure', 'timeout', 'unimplemented', 'other',
+                          'TRUE_NEG', 'TRUE_POS', 'FALSE_NEG', 'FALSE_POS']:
+                total += len(results[error][tool][r])
+            score = ((len(results[error][tool][TP]) + len(results[error][tool][TN])) / total)
+        print (f'      +++ Result {error}: {len(results[error][tool][TP])} ({score})')
+        data.append(score)
+        spoke_labels.append(displayed_name[error])
+
+    # Radar plot
+    theta = radar_factory(N, frame='polygon')
+    fig, ax = plt.subplots(subplot_kw=dict(projection='radar'))
+    fig.subplots_adjust(wspace=0.1, hspace=0.6, top=0.85, bottom=0.05)
+    ax.set_rgrids([0.2, 0.4, 0.6, 0.8])
+    ax.set_title(displayed_name[tool], weight='bold', size='medium', position=(0.5, 1.1),
+                 horizontalalignment='center', verticalalignment='center')
+
+    ax.plot(theta, data, color=colors[0])
+    ax.fill(theta, data, facecolor=colors[0], alpha=0.25, label='_nolegend_')
+    ax.set_varlabels(spoke_labels)
+    ax.set_ylim(0,1)
+
+    plt.savefig(f"plots/{name}.png")
+
 def cmd_plots(rootdir, toolnames):
     here = os.getcwd()
     os.chdir(rootdir)
@@ -911,81 +949,15 @@ def cmd_plots(rootdir, toolnames):
                 results['error'][toolname][res_category].append(test_id)
                 timing['error'][toolname].append(float(elapsed))
 
-    TP = 'TRUE_POS'
-    TN = 'TRUE_NEG'
     deter = ['AInvalidParam', 'BResLeak', 'CMatch', 'CMatch', 'BReqLifecycle']
     ndeter = ['DRace', 'EBufferingHazard', 'DGlobalConcurrency', 'BLocalConcurrency', 'InputHazard']
 
     for tool in used_toolnames:
         print (f' --- Plots {displayed_name[tool]}')
-        colors = ['m', 'r', 'b', 'g']
+        make_radar_plot(f'deter_{tool}', deter, tool, results)
+        make_radar_plot(f'ndeter_{tool}', ndeter, tool, results)
 
-        # Make deterministic error
-        N = len(deter)
-        data = []
-        spoke_labels = []
-
-        # Compute score by error type
-        for error in deter:
-            score = 0.0
-            if len(results['total'][tool][TP]) != 0:
-                total = 0.0
-                for r in ['failure', 'timeout', 'unimplemented', 'other',
-                          'TRUE_NEG', 'TRUE_POS', 'FALSE_NEG', 'FALSE_POS']:
-                    total += len(results[error][tool][r])
-                score = ((len(results[error][tool][TP]) + len(results[error][tool][TN])) / total)
-            print (f'      +++ Result {error}: {len(results[error][tool][TP])} ({score})')
-            data.append(score)
-            spoke_labels.append(displayed_name[error])
-
-        # Radar plot
-        theta = radar_factory(N, frame='polygon')
-        fig, ax = plt.subplots(subplot_kw=dict(projection='radar'))
-        fig.subplots_adjust(wspace=0.1, hspace=0.6, top=0.85, bottom=0.05)
-        ax.set_rgrids([0.2, 0.4, 0.6, 0.8])
-        ax.set_title(displayed_name[tool], weight='bold', size='medium', position=(0.5, 1.1),
-                     horizontalalignment='center', verticalalignment='center')
-
-        ax.plot(theta, data, color=colors[0])
-        ax.fill(theta, data, facecolor=colors[0], alpha=0.25, label='_nolegend_')
-        ax.set_varlabels(spoke_labels)
-        ax.set_ylim(0,1)
-
-        plt.savefig(f"plots/deter_{tool}.png")
-
-        # Make none deterministic error
-        N = len(ndeter)
-        data = []
-        spoke_labels = []
-
-        # Compute score by error type
-        for error in ndeter:
-            score = 0.0
-            if len(results['total'][tool][TP]) != 0:
-                total = 0.0
-                for r in ['failure', 'timeout', 'unimplemented', 'other',
-                          'TRUE_NEG', 'TRUE_POS', 'FALSE_NEG', 'FALSE_POS']:
-                    total += len(results[error][tool][r])
-                score = ((len(results[error][tool][TP])) / total)
-            print (f'      +++ Result {error}: {len(results[error][tool][TP])} ({score})')
-            data.append(score)
-            spoke_labels.append(displayed_name[error])
-
-        # Radar plot
-        theta = radar_factory(N, frame='polygon')
-        fig, ax = plt.subplots(subplot_kw=dict(projection='radar'))
-        fig.subplots_adjust(wspace=0.1, hspace=0.6, top=0.85, bottom=0.05)
-        ax.set_rgrids([0.2, 0.4, 0.6, 0.8])
-        ax.set_title(displayed_name[tool], weight='bold', size='medium', position=(0.5, 1.1),
-                     horizontalalignment='center', verticalalignment='center')
-
-        ax.plot(theta, data, color=colors[0])
-        ax.fill(theta, data, facecolor=colors[0], alpha=0.25, label='_nolegend_')
-        ax.set_varlabels(spoke_labels)
-        ax.set_ylim(0,1)
-
-        plt.savefig(f"plots/ndeter_{tool}.png")
-
+    os.chdir(here)
 
 ########################
 # Main script argument parsing
