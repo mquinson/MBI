@@ -412,13 +412,13 @@ init['store'] = lambda n: f'int localbuf{n}[N] = {{0}};'
 operation['store'] = lambda n: f'localbuf{n}[0] = 8;'
 
 init['rstore'] = lambda n: ""
-operation['rstore'] = lambda n: f'winbuf[20] = 12346;'
+operation['rstore'] = lambda n: f'winbuf[5] = 12346;'
 
 init['load'] = lambda n: f'int localbuf{n}[N] = {{0}};'
 operation['load'] = lambda n: f'int load = localbuf{n}[0];'
 
 init['rload'] = lambda n: ""
-operation['rload'] = lambda n: "int load = winbuf[20];"
+operation['rload'] = lambda n: "int load = winbuf[5];"
 
 init['loadstore'] = lambda n: f'int localbuf{n}[N] = {{0}};'
 operation['loadstore'] = lambda n: f'if (localbuf{n}[0] % 2 == 0)  localbuf{n}[0]++; '
