@@ -19,7 +19,16 @@ import multiprocessing as mp
 sys.path.append(f'{os.path.dirname(os.path.abspath(__file__))}/scripts')
 
 from MBIutils import *
-from tools.gen_plots_radar import *
+
+# Plots need big dependancy like numpy and matplotlib, so just ignore
+# the import if dependencies are not available.
+plots_loaded = False
+try:
+    from tools.gen_plots_radar import *
+    plots_loaded = True
+except ImportError:
+    print("[MBI] Warning: ImportError for the plots module.")
+
 
 import tools.parcoach
 import tools.simgrid
@@ -890,7 +899,9 @@ def make_radar_plot(name, errors, tool, results):
     ax.set_varlabels(spoke_labels)
     ax.set_ylim(0,1)
 
-    plt.savefig(f"plots/{name}.png")
+    plt.savefig(f'plots/{name}.png')
+    plt.close('all')
+
 
 def cmd_plots(rootdir, toolnames):
     here = os.getcwd()
@@ -1035,8 +1046,11 @@ elif args.c == 'html':
         toolnames=arg_tools
     cmd_html(rootdir, toolnames=toolnames)
 elif args.c == 'plots':
+    if not plots_loaded:
+        print("[MBI] Error: Dependancies ('numpy' or 'matplotlib') are not available!")
+        exit(-1)
     extract_all_todo(args.b)
-    cmd_plots(rootdir, toolnames=['itac', 'simgrid','must', 'smpi','smpivg', 'aislinn', 'civl', 'isp', 'mpisv', 'parcoach'])
+    cmd_plots(rootdir, toolnames=['itac', 'simgrid','must', 'smpi','smpivg', 'aislinn', 'civl', 'isp', 'mpisv', 'parcoach', 'hermes'])
 else:
     print(f"Invalid command '{args.c}'. Please choose one of 'all', 'generate', 'build', 'run', 'html' or 'latex'")
     sys.exit(1)
