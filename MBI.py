@@ -879,9 +879,10 @@ def make_radar_plot(name, errors, tool, results):
         if len(results['total'][tool][TP]) != 0:
             total = 0.0
             for r in ['failure', 'timeout', 'unimplemented', 'other',
-                          'TRUE_NEG', 'TRUE_POS', 'FALSE_NEG', 'FALSE_POS']:
+                      'TRUE_NEG', 'TRUE_POS', 'FALSE_NEG', 'FALSE_POS']:
                 total += len(results[error][tool][r])
-            score = ((len(results[error][tool][TP]) + len(results[error][tool][TN])) / total)
+            if total != 0:
+                score = ((len(results[error][tool][TP]) + len(results[error][tool][TN])) / total)
         print (f'      +++ Result {error}: {len(results[error][tool][TP])} ({score})')
         data.append(score)
         spoke_labels.append(displayed_name[error])
@@ -960,13 +961,14 @@ def cmd_plots(rootdir, toolnames):
                 results['error'][toolname][res_category].append(test_id)
                 timing['error'][toolname].append(float(elapsed))
 
-    deter = ['AInvalidParam', 'BResLeak', 'CMatch', 'CMatch', 'BReqLifecycle']
+    deter = ['AInvalidParam', 'BResLeak', 'DMatch', 'CMatch', 'BReqLifecycle']
     ndeter = ['DRace', 'EBufferingHazard', 'DGlobalConcurrency', 'BLocalConcurrency', 'InputHazard']
 
     for tool in used_toolnames:
         print (f' --- Plots {displayed_name[tool]}')
         make_radar_plot(f'deter_{tool}', deter, tool, results)
         make_radar_plot(f'ndeter_{tool}', ndeter, tool, results)
+        make_radar_plot(f'all_{tool}', deter + ndeter, tool, results)
 
     os.chdir(here)
 
@@ -983,13 +985,14 @@ parser.add_argument('-c', metavar='cmd', default='all',
                     "  generate: redo all the test codes.\n"
                     "  latex: Produce the LaTeX tables we need for the article, using the cached values from a previous 'run'.\n"
                     "  run: run the tests on all codes.\n"
-                    "  html: produce the HTML statistics, using the cached values from a previous 'run'.\n")
+                    "  html: produce the HTML statistics, using the cached values from a previous 'run'.\n"
+                    "  plots: produce the plots images, using the cached values from a previous 'run'.\n")
 
 parser.add_argument('-x', metavar='tool', default='mpirun',
                     help='the tool you want at execution: one among [aislinn, civl, isp, mpisv, must, simgrid, parcoach]')
 
 parser.add_argument('-t', '--timeout', metavar='int', default=300, type=int,
-                    help='timeout value at execution time, given in seconds (default: 300)')
+                    help='timeout value at execution time, given in seconds (default: %(default)s)')
 
 parser.add_argument('-b', metavar='batch', default='1/1',
                     help="Limits the test executions to the batch #N out of M batches (Syntax: 'N/M'). To get 3 runners, use 1/3 2/3 3/3")
