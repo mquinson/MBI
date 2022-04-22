@@ -342,3 +342,78 @@ def categorize(tool, toolname, test_id, expected, autoclean=False):
         raise ValueError(f"Unexpected expectation: {expected} (must be OK or ERROR)")
 
     return (res_category, elapsed, diagnostic, outcome)
+
+# Extended categorization
+
+def categorize_extended(results, expected):
+    res = 'NC'
+    FP = 0
+    TN = 0
+    TP = 0
+    FN = 0
+    O = 0
+
+    for res in results:
+        if res == 'FALSE_POS':
+            FP += 1
+        elif res == 'TRUE_NEG':
+            TN += 1
+        elif res == 'TRUE_POS':
+            TP += 1
+        elif res == 'FALSE_NEG':
+            FN += 1
+        else:
+            O += 1
+
+    if expected == 'OK':
+        if TN != 0 and FP+O == 0: # All execution is True neg
+            res = 'TN'
+        elif FP != 0 and TN+O == 0: # All exection is False pos
+            res = 'FP'
+        elif O != 0 and TN+FP == 0: # All exection is other
+            res = 'NC'
+        else:                   # Some exection is False pos
+            res = 'CFP'
+    else:
+        if TP != 0 and FN+O == 0: # All execution is True pos
+            res = 'TP'
+        elif FN != 0 and TP+O == 0: # All exection is False neg
+            res = 'FN'
+        elif O != 0 and TP+FN == 0: # All exection is other
+            res = 'NC'
+        else:                   # Some exection is True pos
+            res = 'CTP'
+
+    return {"results": res, "FP":FP, "TN":TN, "TP":TP, "FN":FN, "O":O}
+
+def categorize_all_files(tool, toolname, tests):
+    res = {}
+    results = {}
+    # elapsed = {}
+    expected = {}
+
+    for test in tests:
+        if test['filename'] not in results:
+            results[test['filename']] = []
+            # elapsed[test['filename']] = []
+            expected[test['filename']] = []
+
+    for test in tests:
+        binary=re.sub('\.c', '', os.path.basename(test['filename']))
+        ID=test['id']
+        test_id = f"{binary}_{ID}"
+
+        (res_category, elapsed, diagnostic, outcome) = categorize(tool=tool, toolname=toolname, test_id=test_id, expected=test['expect'], autoclean=False)
+        results[test['filename']].append(res_category)
+        # elapsed[test['filename']].append(str(elapsed))
+        expected[test['filename']].append(test['expect'])
+
+    # Check data consistence
+    for f in expected:
+        if len(set(expected[f])) != 1:
+            raise Exception(f"Inconsistence expected results for file '{f}': {expected[f]}")
+
+    for f in results:
+        res[f] = categorize_extended(results[f], expected[f][0])
+
+    return res
