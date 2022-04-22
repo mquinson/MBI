@@ -883,14 +883,14 @@ def make_radar_plot(name, errors, tool, results):
                 total += len(results[error][tool][r])
             if total != 0:
                 score = ((len(results[error][tool][TP]) + len(results[error][tool][TN])) / total)
-        print (f'      +++ Result {error}: {len(results[error][tool][TP])} ({score})')
+        print (f'     +++ Result {error}: {len(results[error][tool][TP])} ({score})')
         data.append(score)
         spoke_labels.append(displayed_name[error])
 
     # Radar plot
     theta = radar_factory(N, frame='polygon')
     fig, ax = plt.subplots(subplot_kw=dict(projection='radar'))
-    fig.subplots_adjust(wspace=0.1, hspace=0.6, top=0.85, bottom=0.05)
+    fig.subplots_adjust(wspace=0.15, hspace=0.6, top=0.85, bottom=0.10)
     ax.set_rgrids([0.2, 0.4, 0.6, 0.8])
     ax.set_title(displayed_name[tool], weight='bold', size='medium', position=(0.5, 1.1),
                  horizontalalignment='center', verticalalignment='center')
@@ -900,9 +900,8 @@ def make_radar_plot(name, errors, tool, results):
     ax.set_varlabels(spoke_labels)
     ax.set_ylim(0,1)
 
-    plt.savefig(f'plots/{name}.png')
+    plt.savefig(f'plots/{name}.pdf')
     plt.close('all')
-
 
 def cmd_plots(rootdir, toolnames):
     here = os.getcwd()
@@ -968,7 +967,7 @@ def cmd_plots(rootdir, toolnames):
         print (f' --- Plots {displayed_name[tool]}')
         make_radar_plot(f'deter_{tool}', deter, tool, results)
         make_radar_plot(f'ndeter_{tool}', ndeter, tool, results)
-        make_radar_plot(f'all_{tool}', deter + ndeter, tool, results)
+        make_radar_plot(f'all_{tool}', ndeter + deter, tool, results)
 
     os.chdir(here)
 
