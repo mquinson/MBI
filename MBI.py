@@ -41,9 +41,10 @@ import tools.isp
 import tools.itac
 import tools.civl
 import tools.aislinn
+import tools.mpi_checker
 
 tools = {'aislinn': tools.aislinn.Tool(), 'civl': tools.civl.Tool(), 'hermes': tools.hermes.Tool(), 'isp': tools.isp.Tool(), 'itac': tools.itac.Tool(), 'mpisv': tools.mpisv.Tool(),
-         'must': tools.must.V17(),'must18': tools.must.V18(), 'simgrid': tools.simgrid.Tool(), 'smpi':tools.smpi.Tool(),'smpivg':tools.smpivg.Tool(), 'parcoach': tools.parcoach.Tool()}
+         'must': tools.must.V17(),'must18': tools.must.V18(), 'simgrid': tools.simgrid.Tool(), 'smpi':tools.smpi.Tool(),'smpivg':tools.smpivg.Tool(), 'parcoach': tools.parcoach.Tool(), 'mpi-checker': tools.mpi_checker.Tool()}
 
 # Some scripts may fail if error messages get translated
 os.environ["LC_ALL"] = "C"
