@@ -865,7 +865,7 @@ def cmd_latex(rootdir, toolnames):
 # cmd_plots(): what to do when '-c plots' is used (extract the statistics of this tool)
 ########################
 
-def make_radar_plot(name, errors, tool, results):
+def make_radar_plot(name, errors, toolname, results):
     TP = 'TRUE_POS'
     TN = 'TRUE_NEG'
     colors = ['m', 'r', 'b', 'g']
@@ -877,14 +877,14 @@ def make_radar_plot(name, errors, tool, results):
     # Compute score by error type
     for error in errors:
         score = 0.0
-        if len(results['total'][tool][TP]) != 0:
+        if len(results['total'][toolname][TP]) != 0:
             total = 0.0
             for r in ['failure', 'timeout', 'unimplemented', 'other',
                       'TRUE_NEG', 'TRUE_POS', 'FALSE_NEG', 'FALSE_POS']:
-                total += len(results[error][tool][r])
+                total += len(results[error][toolname][r])
             if total != 0:
-                score = ((len(results[error][tool][TP]) + len(results[error][tool][TN])) / total)
-        print (f'     +++ Result {error}: {len(results[error][tool][TP])} ({score})')
+                score = ((len(results[error][toolname][TP]) + len(results[error][toolname][TN])) / total)
+        print (f'     +++ Result {error}: {len(results[error][toolname][TP])} ({score})')
         data.append(score)
         spoke_labels.append(displayed_name[error])
 
@@ -893,7 +893,7 @@ def make_radar_plot(name, errors, tool, results):
     fig, ax = plt.subplots(subplot_kw=dict(projection='radar'))
     fig.subplots_adjust(wspace=0.15, hspace=0.6, top=0.85, bottom=0.10)
     ax.set_rgrids([0.2, 0.4, 0.6, 0.8])
-    ax.set_title(displayed_name[tool], weight='bold', size='medium', position=(0.5, 1.1),
+    ax.set_title(displayed_name[toolname], weight='bold', size='medium', position=(0.5, 1.1),
                  horizontalalignment='center', verticalalignment='center')
 
     ax.plot(theta, data, color=colors[0])
@@ -903,6 +903,43 @@ def make_radar_plot(name, errors, tool, results):
 
     plt.savefig(f'plots/{name}.pdf')
     plt.close('all')
+
+def make_plot(name, toolnames):
+    res_type = ["TP", "CTP", "FN", "FP", "CFP", "TN", "NC"]
+    res = {}
+
+    for tool in toolnames:
+        res[tool] = {}
+        for r in res_type:
+            res[tool][r] = 0
+
+    for toolname in toolnames:
+        results = categorize_all_files(tools[toolname], toolname, todo)
+        # print(results)
+        for r in results:
+            id = results[r]['results']
+            res[toolname][id] += 1
+
+    fig, ax = plt.subplots()
+    x = np.arange(len(toolnames))     # the label locations
+    width = 1 / (len(res_type) + 1.0) # the width of the bars
+    fig.subplots_adjust(wspace=0.15, hspace=0.6, top=0.90, bottom=0.20)
+
+    offset = 0
+    for t in res_type:
+        data = []
+        for toolname in toolnames:
+            data.append(res[toolname][t])
+        plt.bar(x + (width / 2) + (offset * width),
+                data, width, alpha=0.75, label=displayed_name[t])
+        offset += 1
+
+    plt.xticks(rotation=45)
+    ax.set_xticks(x)
+    ax.set_xticklabels([displayed_name[t] for t in toolnames])
+
+    plt.legend(prop={'size': 8})
+    plt.savefig(f"plots/{name}.pdf")
 
 def cmd_plots(rootdir, toolnames):
     here = os.getcwd()
@@ -964,12 +1001,22 @@ def cmd_plots(rootdir, toolnames):
     deter = ['AInvalidParam', 'BResLeak', 'DMatch', 'CMatch', 'BReqLifecycle']
     ndeter = ['DRace', 'EBufferingHazard', 'DGlobalConcurrency', 'BLocalConcurrency', 'InputHazard']
 
+    # Radar plots
     for tool in used_toolnames:
-        print (f' --- Plots {displayed_name[tool]}')
+        print (f' --- Radar plots {displayed_name[tool]}')
         make_radar_plot(f'deter_{tool}', deter, tool, results)
         make_radar_plot(f'ndeter_{tool}', ndeter, tool, results)
         make_radar_plot(f'all_{tool}', ndeter + deter, tool, results)
 
+    # Bar plots with all tools
+    make_plot("ext_all", used_toolnames)
+
+    # Individual plots for each tools
+    for tool in used_toolnames:
+        print (f' --- Bar plots {displayed_name[tool]}')
+        make_plot(f"ext_{tool}", [tool])
+
+    plt.close('all')
     os.chdir(here)
 
 ########################
@@ -1055,5 +1102,5 @@ elif args.c == 'plots':
     extract_all_todo(args.b)
     cmd_plots(rootdir, toolnames=['itac', 'simgrid','must', 'smpi','smpivg', 'aislinn', 'civl', 'isp', 'mpisv', 'parcoach', 'hermes'])
 else:
-    print(f"Invalid command '{args.c}'. Please choose one of 'all', 'generate', 'build', 'run', 'html' or 'latex'")
+    print(f"Invalid command '{args.c}'. Please choose one of 'all', 'generate', 'build', 'run', 'html' 'latex' or 'plots'")
     sys.exit(1)

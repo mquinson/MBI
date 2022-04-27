@@ -231,7 +231,15 @@ displayed_name = {
     'InputHazard':'Input Hazard',
     'FOK':"Correct execution",
 
-    'aislinn':'Aislinn','civl':'CIVL','hermes':'Hermes', 'isp':'ISP','itac':'ITAC', 'simgrid':'Mc SimGrid', 'smpi':'SMPI','smpivg':'SMPI+VG', 'mpisv':'MPI-SV', 'must':'MUST', 'parcoach':'PARCOACH', 'mpi-checker':'MPI-Checker'
+    'aislinn':'Aislinn','civl':'CIVL','hermes':'Hermes', 'isp':'ISP','itac':'ITAC', 'simgrid':'Mc SimGrid', 'smpi':'SMPI','smpivg':'SMPI+VG', 'mpisv':'MPI-SV', 'must':'MUST', 'parcoach':'PARCOACH', 'mpi-checker':'MPI-Checker',
+
+    "TP":"True Positif",
+    "CTP":"Can be True Positif",
+    "FN":"False Negatif",
+    "FP":"False Positif",
+    "CFP":"Can be False Positif",
+    "TN":"True Negatif",
+    "NC":"None Conclusive",
 }
 
 def parse_one_code(filename):
@@ -286,7 +294,13 @@ def parse_one_code(filename):
         raise ValueError(f"No test found in {filename}. Please fix it.")
     return res
 
+cache_categorize = {}
+
 def categorize(tool, toolname, test_id, expected, autoclean=False):
+    cache_id = f'{toolname}_{test_id}'
+    if cache_id in cache_categorize:
+        return cache_categorize[cache_id]
+
     outcome = tool.parse(test_id)
 
     if not os.path.exists(f'{test_id}.elapsed') and not os.path.exists(f'logs/{toolname}/{test_id}.elapsed'):
@@ -340,6 +354,8 @@ def categorize(tool, toolname, test_id, expected, autoclean=False):
             diagnostic =  f'correctly detected an error'
     else:
         raise ValueError(f"Unexpected expectation: {expected} (must be OK or ERROR)")
+
+    cache_categorize[cache_id] = (res_category, elapsed, diagnostic, outcome)
 
     return (res_category, elapsed, diagnostic, outcome)
 
