@@ -884,7 +884,7 @@ def make_radar_plot(name, errors, toolname, results):
                 total += len(results[error][toolname][r])
             if total != 0:
                 score = ((len(results[error][toolname][TP]) + len(results[error][toolname][TN])) / total)
-        print (f'     +++ Result {error}: {len(results[error][toolname][TP])} ({score})')
+        # print (f'     +++ Result {error}: {len(results[error][toolname][TP])} ({score})')
         data.append(score)
         spoke_labels.append(displayed_name[error])
 
@@ -925,18 +925,33 @@ def make_plot(name, toolnames):
     width = 1 / (len(res_type) + 1.0) # the width of the bars
     fig.subplots_adjust(wspace=0.15, hspace=0.6, top=0.90, bottom=0.20)
 
+    ax.set_ylabel("Number of tests")
+
     offset = 0
     for t in res_type:
         data = []
+
         for toolname in toolnames:
             data.append(res[toolname][t])
-        plt.bar(x + (width / 2) + (offset * width),
-                data, width, alpha=0.75, label=displayed_name[t])
+
+        l = plt.bar(x + (offset * width) + (width / 2) - (len(res_type) * width / 2),
+                    data, width, alpha=0.75, label=displayed_name[t])
+
+        if len(toolnames) == 1:
+            ax.bar_label(l, padding=1.5)
+
         offset += 1
 
-    plt.xticks(rotation=45)
+    rotation = 45 if len(toolnames) > 1 else 0
+    plt.xticks(rotation=rotation)
+
     ax.set_xticks(x)
     ax.set_xticklabels([displayed_name[t] for t in toolnames])
+
+    min_y,max_y=ax.get_ybound()
+    ax.set_ybound([min_y,max_y*1.05])
+
+    fig.tight_layout()
 
     plt.legend(prop={'size': 8})
     plt.savefig(f"plots/{name}.pdf")

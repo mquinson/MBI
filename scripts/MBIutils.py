@@ -233,13 +233,13 @@ displayed_name = {
 
     'aislinn':'Aislinn','civl':'CIVL','hermes':'Hermes', 'isp':'ISP','itac':'ITAC', 'simgrid':'Mc SimGrid', 'smpi':'SMPI','smpivg':'SMPI+VG', 'mpisv':'MPI-SV', 'must':'MUST', 'parcoach':'PARCOACH', 'mpi-checker':'MPI-Checker',
 
-    "TP":"True Positif",
-    "CTP":"Can be True Positif",
-    "FN":"False Negatif",
-    "FP":"False Positif",
-    "CFP":"Can be False Positif",
-    "TN":"True Negatif",
-    "NC":"None Conclusive",
+    "TP":"True Positive",
+    "CTP":"Can be True Positive",
+    "FN":"False Negative",
+    "FP":"False Positive",
+    "CFP":"Can be False Positive",
+    "TN":"True Negative",
+    "NC":"Non Conclusive",
 }
 
 def parse_one_code(filename):
