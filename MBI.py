@@ -396,6 +396,11 @@ iframe {
       outHTML.write("</tr></table>")
       outHTML.write("<p>Hover over the values for details. API coverage issues, timeouts and failures are not considered when computing the other metrics, thus differences in the total amount of tests.</p>")
 
+      # Add generate radar plots
+      if plots_loaded:
+          for toolname in used_toolnames:
+              outHTML.write(f'<img src="plots/radar_all_{toolname}.svg" \>')
+
       outHTML.write(f"</body></html>\n")
 
     ########################
@@ -865,10 +870,10 @@ def cmd_latex(rootdir, toolnames):
 # cmd_plots(): what to do when '-c plots' is used (extract the statistics of this tool)
 ########################
 
-def make_radar_plot(name, errors, toolname, results):
+def make_radar_plot(name, errors, toolname, results, ext):
     TP = 'TRUE_POS'
     TN = 'TRUE_NEG'
-    colors = ['m', 'r', 'b', 'g']
+    colors = ['b', 'r', 'g', 'm']
 
     N = len(errors)
     data = []
@@ -901,10 +906,10 @@ def make_radar_plot(name, errors, toolname, results):
     ax.set_varlabels(spoke_labels)
     ax.set_ylim(0,1)
 
-    plt.savefig(f'plots/{name}.pdf')
+    plt.savefig(f'plots/{name}.{ext}')
     plt.close('all')
 
-def make_plot(name, toolnames):
+def make_plot(name, toolnames, ext):
     res_type = ["TP", "CTP", "FN", "FP", "CFP", "TN", "NC"]
     res = {}
 
@@ -954,9 +959,9 @@ def make_plot(name, toolnames):
     fig.tight_layout()
 
     plt.legend(prop={'size': 8})
-    plt.savefig(f"plots/{name}.pdf")
+    plt.savefig(f"plots/{name}.{ext}")
 
-def cmd_plots(rootdir, toolnames):
+def cmd_plots(rootdir, toolnames, ext="pdf"):
     here = os.getcwd()
     os.chdir(rootdir)
     os.makedirs('plots', exist_ok=True)
@@ -1019,17 +1024,17 @@ def cmd_plots(rootdir, toolnames):
     # Radar plots
     for tool in used_toolnames:
         print (f' --- Radar plots {displayed_name[tool]}')
-        make_radar_plot(f'deter_{tool}', deter, tool, results)
-        make_radar_plot(f'ndeter_{tool}', ndeter, tool, results)
-        make_radar_plot(f'all_{tool}', ndeter + deter, tool, results)
+        make_radar_plot(f'radar_deter_{tool}', deter, tool, results, ext)
+        make_radar_plot(f'radar_ndeter_{tool}', ndeter, tool, results, ext)
+        make_radar_plot(f'radar_all_{tool}', ndeter + deter, tool, results, ext)
 
     # Bar plots with all tools
-    make_plot("ext_all", used_toolnames)
+    make_plot("cat_ext_all", used_toolnames, ext)
 
     # Individual plots for each tools
     for tool in used_toolnames:
         print (f' --- Bar plots {displayed_name[tool]}')
-        make_plot(f"ext_{tool}", [tool])
+        make_plot(f"cat_ext_{tool}", [tool], ext)
 
     plt.close('all')
     os.chdir(here)
@@ -1058,6 +1063,9 @@ parser.add_argument('-t', '--timeout', metavar='int', default=300, type=int,
 
 parser.add_argument('-b', metavar='batch', default='1/1',
                     help="Limits the test executions to the batch #N out of M batches (Syntax: 'N/M'). To get 3 runners, use 1/3 2/3 3/3")
+
+parser.add_argument('-f', metavar='format', default='pdf',
+                    help="Format of output images [pdf, svg, png, ...] (only for 'plots' command)")
 
 args = parser.parse_args()
 rootdir = os.path.dirname(os.path.abspath(__file__))
@@ -1109,13 +1117,17 @@ elif args.c == 'html':
         toolnames=['itac', 'simgrid','must', 'smpi','smpivg', 'aislinn', 'civl', 'isp', 'mpisv', 'parcoach']
     else:
         toolnames=arg_tools
+    # Build SVG plots
+    if plots_loaded:
+        cmd_plots(rootdir, toolnames=toolnames, ext="svg")
+    # Build HTML page
     cmd_html(rootdir, toolnames=toolnames)
 elif args.c == 'plots':
     if not plots_loaded:
         print("[MBI] Error: Dependancies ('numpy' or 'matplotlib') are not available!")
         exit(-1)
     extract_all_todo(args.b)
-    cmd_plots(rootdir, toolnames=['itac', 'simgrid','must', 'smpi','smpivg', 'aislinn', 'civl', 'isp', 'mpisv', 'parcoach', 'hermes'])
+    cmd_plots(rootdir, toolnames=['itac', 'simgrid','must', 'smpi','smpivg', 'aislinn', 'civl', 'isp', 'mpisv', 'parcoach', 'hermes'], ext=args.f)
 else:
     print(f"Invalid command '{args.c}'. Please choose one of 'all', 'generate', 'build', 'run', 'html' 'latex' or 'plots'")
     sys.exit(1)
