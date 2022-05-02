@@ -399,7 +399,7 @@ iframe {
       # Add generate radar plots
       if plots_loaded:
           for toolname in used_toolnames:
-              outHTML.write(f'<img src="plots/radar_all_{toolname}.svg" \>')
+              outHTML.write(f'<img src="plots/radar_all_{toolname}.svg" alt="Radar plot for all error type for the {displayed_name[toolname]} tool."\>')
 
       outHTML.write(f"</body></html>\n")
 
