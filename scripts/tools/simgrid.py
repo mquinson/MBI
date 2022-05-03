@@ -17,6 +17,7 @@ class Tool(AbstractTool):
         os.chdir(rootdir)
         # Get a GIT checkout. Either create it, or refresh it
         if os.path.exists("tools/simgrid/.git"):
+            subprocess.run("git config --global --add safe.directory /MBI/tools/simgrid", shell=True, check=True)
             subprocess.run("cd tools/simgrid && git pull &&  cd ../..", shell=True, check=True)
         else:
             subprocess.run("rm -rf tools/simgrid && git clone --depth=1 https://github.com/simgrid/simgrid.git tools/simgrid", shell=True, check=True)
