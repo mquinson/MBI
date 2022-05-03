@@ -147,7 +147,7 @@ for s in send + isend:
         replace['dest2'] = '2'
         replace['src3'] = '(rank - 1)'
         replace['dest3'] = '((rank + 1) % nprocs)'
-        replace['fini1c'] = fini[r]("1")
+        replace['fini1c'] = fini[s]("1")
         replace['fini2c'] = fini[r]("2")
         replace['operation1c'] = operation[s]("1") + ' /* MBIERROR3 */'
         replace['operation2c'] = operation[r]("2")
