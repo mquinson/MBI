@@ -13,6 +13,16 @@ class Tool(AbstractTool):
         here = os.getcwd()
         os.chdir(rootdir)
 
+        with open(f"{rootdir}/compile_commands.json", "w") as out:
+            out.write("""[
+  {
+    \"directory\": \"/MBI/\",
+    \"command\": \"mpicc /MBI/gencodes/*.c -I/usr/include/x86_64-linux-gnu/mpich/\",
+    \"file\": \"/MBI/gencodes/*.c\"
+  }
+]
+""")
+
         subprocess.run("clang-tidy-11 --list-checks", shell=True, check=True)
 
         os.chdir(here)
@@ -39,9 +49,8 @@ class Tool(AbstractTool):
         with open(f'{cachefile}.txt' if os.path.exists(f'{cachefile}.txt') else f'logs/mpi-checker/{cachefile}.txt', 'r') as infile:
             output = infile.read()
 
-        if re.search('error:', output) or re.search('warning:', output):
-            if re.search('MPI', output):
-                return 'mpierr'
-            return 'error'
+        if (re.search('no matching nonblocking call', output)
+            or re.search('no matching wait', output)):
+            return 'REQUEST_LIFECYCLE'
 
         return 'OK'
