@@ -53,4 +53,8 @@ class Tool(AbstractTool):
             or re.search('no matching wait', output)):
             return 'REQUEST_LIFECYCLE'
 
+        if (re.search('error:', output)
+            or re.search('warning:', output)):
+            return 'error'
+
         return 'OK'
