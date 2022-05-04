@@ -337,10 +337,19 @@ iframe {
             results[toolname][res_category].append(f"{test_id} expected {test['detail']}, outcome: {diagnostic}")
             outHTML.write(f"<td align='center'><a href='logs/{toolname}/{test_id}.txt' target='MBI_details'><img title='{displayed_name[toolname]} {diagnostic} (returned {outcome})' src='img/{res_category}.svg' width='24' /></a> ({outcome})")
             extra=None
+
+            report = []
+            for root, dirs, files in os.walk(f"logs/{toolname}/{test_id}"):
+                if "index.html" in files:
+                    report.append(os.path.join(root, "index.html"))
+
+            if len(report) > 0:
+                extra = 'logs/' + report[0].split('logs/')[1]
             if os.path.exists(f'logs/{toolname}/{test_id}.html'):
                 extra=f'logs/{toolname}/{test_id}.html'
             if os.path.exists(f'logs/{toolname}/{test_id}-klee-out'): # MPI-SV
                 extra=f'logs/{toolname}/{test_id}-klee-out'
+
             if extra is not None:
                 outHTML.write(f"&nbsp;<a href='{extra}' target='MBI_details'><img title='more info' src='img/html.svg' height='24' /></a>")
             outHTML.write("</td>")
@@ -1114,7 +1123,7 @@ elif args.c == 'latex':
 elif args.c == 'html':
     extract_all_todo(args.b)
     if args.x == 'mpirun':
-        toolnames=['itac', 'simgrid','must', 'smpi','smpivg', 'aislinn', 'civl', 'isp', 'mpisv', 'parcoach']
+        toolnames=['itac', 'simgrid','must', 'smpi','smpivg', 'aislinn', 'civl', 'isp', 'mpisv', 'parcoach', 'mpi-checker']
     else:
         toolnames=arg_tools
     # Build SVG plots

@@ -30,7 +30,12 @@ RUN apt-get update --fix-missing && \
     apt-get autoremove -yq && \
     apt-get clean -yq
 
+# MPI-Checker dependencies
+RUN pip3 install scan-build
+
+# Plots dependencies
 RUN pip3 install numpy matplotlib
+
 # RUN pip3 install drawSvg
 COPY . /MBI
 
