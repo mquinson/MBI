@@ -25,7 +25,7 @@ BEGIN_MPI_FEATURES
 END_MPI_FEATURES
 
 BEGIN_MBI_TESTS
-  $ mpirun -np 4 ${EXE}
+  $ mpirun -np 3 ${EXE}
   | @{outcome}@
   | @{errormsg}@
 END_MBI_TESTS
@@ -49,8 +49,8 @@ int main(int argc, char **argv) {
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   printf("Hello from rank %d \\n", rank);
 
-  if (nprocs < 4)
-    printf("MBI ERROR: This test needs at least 4 processes to produce a bug!\\n");
+  if (nprocs < 3)
+    printf("MBI ERROR: This test needs at least 3 processes to produce a bug!\\n");
 
   MPI_Comm newcom = MPI_COMM_WORLD;
   MPI_Datatype type = MPI_INT;
@@ -67,7 +67,7 @@ int main(int argc, char **argv) {
   @{comment_fence}@MPI_Win_fence(0, win);
 
   if (rank == 0) {
-    int target=1;
+    int target=1, dest=2;
 
     @{comment_lock}@MPI_Win_lock(MPI_LOCK_EXCLUSIVE, 1, 0, win);
     @{operation1}@
@@ -76,7 +76,7 @@ int main(int argc, char **argv) {
 
     @{fini2}@
   }else if (rank == 2){
-    int dest=1;
+    int src=0;
     @{operation3}@
     @{fini3}@
   }
