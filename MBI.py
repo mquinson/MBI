@@ -872,6 +872,110 @@ def cmd_latex(rootdir, toolnames):
 
         outfile.write(f"\\end{{tabular}}\n")
 
+
+    with open(f'{rootdir}/latex/nondeterministic-results-summary.tex', 'w') as outfile:
+        outfile.write('\\setlength\\tabcolsep{2pt}\n')
+        outfile.write('\\begin{tabular}{|l|*{3}{c|}|*{6}{c|}|*{2}{c|}}\\hline\n')
+        outfile.write('  \\multirow{2}{*}{ \\textbf{Tool}} &  \\multicolumn{3}{c||}{Errors} &\\multicolumn{6}{c||}{Results}&\\multicolumn{2}{c|}{Overall}\\\\\\cline{2-12}\n')
+        outfile.write('& \\textbf{CE}&\\textbf{TO}&\\textbf{RE}  &\\textbf{TP}&\\textbf{CTP}&\\textbf{FN}&\\textbf{FP}&\\textbf{CFP}&\\textbf{TN}  &\\textbf{accuracy\\textsuperscript{+}}&\\textbf{accuracy\\textsuperscript{-}}\\\\\\hline \n')
+
+        best = {
+            'TP':0, 'TN':0, 'CTP':0, 'CFP':999999, 'FP':999999, 'FN':9999999,
+            'CE':999999, 'TO':999999, 'RE':999999, 'O':999999,
+            'accp':0, 'accm':0
+        }
+
+        total = {'OK': 0, 'Error': 0}
+        ext_results = {}
+        for toolname in used_toolnames:
+            files_results = categorize_all_files(tools[toolname], toolname, todo)
+            ext_results[toolname] = {
+                'TP':[], 'TN':[], 'CTP':[], 'CFP':[], 'FP':[], 'FN':[],
+                'CE':[], 'TO':[], 'RE':[], 'O':[],
+                'accp':0, 'accm':0,
+                'total':{'OK':0, 'Error':0}
+            }
+
+            for file in files_results:
+                ext_results[toolname][files_results[file]['result']].append(file)
+
+                if files_results[file]['expected'] == 'OK':
+                    ext_results[toolname]['total']['OK'] += 1
+                else:
+                    ext_results[toolname]['total']['Error'] += 1
+
+            total = ext_results[toolname]['total']['Error'] + ext_results[toolname]['total']['OK']
+            accp = round((len(ext_results[toolname]['TP']) + len(ext_results[toolname]['TN']) + len(ext_results[toolname]['CTP'])) / total, 2)
+            accm = round((len(ext_results[toolname]['TP']) + len(ext_results[toolname]['TN'])) / total, 2)
+
+            ext_results[toolname]['accp'] = accp
+            ext_results[toolname]['accm'] = accm
+
+            for metric in best:
+                if metric in ['accp', 'accm']:
+                    if best[metric] < ext_results[toolname][metric]:
+                        best[metric] = ext_results[toolname][metric]
+                elif metric in ['CFP', 'FP', 'FN', 'CE', 'TO', 'RE', 'O']:
+                    if best[metric] > len(ext_results[toolname][metric]):
+                        best[metric] = len(ext_results[toolname][metric])
+                else:
+                    if best[metric] < len(ext_results[toolname][metric]):
+                        best[metric] = len(ext_results[toolname][metric])
+
+        for toolname in used_toolnames:
+            TP = str(len(ext_results[toolname]['TP'])) if len(ext_results[toolname]['TP']) != best['TP'] else f"{{\\bf  {len(ext_results[toolname]['TP'])} }}"
+            TN = str(len(ext_results[toolname]['TN'])) if len(ext_results[toolname]['TN']) != best['TN'] else f"{{\\bf  {len(ext_results[toolname]['TN'])} }}"
+            CTP = str(len(ext_results[toolname]['CTP'])) if len(ext_results[toolname]['CTP']) != best['CTP'] else f"{{\\bf  {len(ext_results[toolname]['CTP'])} }}"
+            CFP = str(len(ext_results[toolname]['CFP'])) if len(ext_results[toolname]['CFP']) != best['CFP'] else f"{{\\bf  {len(ext_results[toolname]['CFP'])} }}"
+            FP = str(len(ext_results[toolname]['FP'])) if len(ext_results[toolname]['FP']) != best['FP'] else f"{{\\bf  {len(ext_results[toolname]['FP'])} }}"
+            FN = str(len(ext_results[toolname]['FN'])) if len(ext_results[toolname]['FN']) != best['FN'] else f"{{\\bf  {len(ext_results[toolname]['FN'])} }}"
+            CE = str(len(ext_results[toolname]['CE'])) if len(ext_results[toolname]['CE']) != best['CE'] else f"{{\\bf  {len(ext_results[toolname]['CE'])} }}"
+            TO = str(len(ext_results[toolname]['TO'])) if len(ext_results[toolname]['TO']) != best['TO'] else f"{{\\bf  {len(ext_results[toolname]['TO'])} }}"
+            RE = str(len(ext_results[toolname]['RE'])) if len(ext_results[toolname]['RE']) != best['RE'] else f"{{\\bf  {len(ext_results[toolname]['RE'])} }}"
+            O = str(len(ext_results[toolname]['O'])) if len(ext_results[toolname]['O']) != best['O'] else f"{{\\bf  {len(ext_results[toolname]['O'])} }}"
+
+            accp = str(ext_results[toolname]['accp']) if ext_results[toolname]['accp'] < best['accp'] else f"{{\\bf  {ext_results[toolname]['accp']} }}"
+            accm = str(ext_results[toolname]['accm']) if ext_results[toolname]['accm'] < best['accm'] else f"{{\\bf  {ext_results[toolname]['accm']} }}"
+
+            outfile.write(f'{displayed_name[toolname]} & {CE} & {TO} & {RE} &')
+            outfile.write(f"{TP} & {CTP} & {FN} & {FP} & {CFP} & {TN} & ")
+            outfile.write(f"{accp} & {accm} \\\\\\hline\n")
+
+
+        outfile.write('\\textit{Ideal tool}&\\textit{0}&\\textit{0}&\\textit{0}&')
+        outfile.write(f"\\textit{{{ext_results[used_toolnames[0]]['total']['Error']}}} & \\textit{{0}} & \\textit{{0}} & \\textit{{0}} & \\textit{{0}} & \\textit{{{ext_results[used_toolnames[0]]['total']['OK']}}} & ")
+        outfile.write("\\textit{1}&\\textit{1} \\\\\\hline\n")
+
+        outfile.write('\\end{tabular}\n')
+        outfile.write('\\setlength\\tabcolsep{6pt}\n')
+
+    # possible_details
+    with open(f'{rootdir}/latex/files-count.tex', 'w') as outfile:
+        files_results = categorize_all_files(tools[used_toolnames[0]], used_toolnames[0], todo)
+
+        error_types = {}
+        for error in error_scope:
+            error_types[error] = 0
+
+        for f in files_results:
+            error_types[possible_details[files_results[f]['detail']]] += 1
+
+        outfile.write("\\begin{tabular}{|l|c|}\n")
+        outfile.write("  \\hline\n")
+        outfile.write("  \\textbf{Error type} & \\textbf{Number of code}\\\\\n")
+        outfile.write("  \\hline\n")
+        for et in error_types:
+            if et in ['BLocalConcurrency', 'DRace', 'DGlobalConcurrency',
+                      'EBufferingHazard', 'InputHazard']:
+                outfile.write(f"  \\textbf{{{displayed_name[et]}}} & \\textbf{{{error_types[et]}}}\\\\\n")
+            else:
+                outfile.write(f"  \\textit{{{displayed_name[et]}}} & {error_types[et]}\\\\\n")
+
+        outfile.write("  \\hline\n")
+        outfile.write(f"  \\textbf{{Total}} & {len(files_results)}\\\\\n")
+        outfile.write("  \\hline\n")
+        outfile.write("\\end{tabular}\n")
+
     os.chdir(here)
 
 
@@ -919,7 +1023,7 @@ def make_radar_plot(name, errors, toolname, results, ext):
     plt.close('all')
 
 def make_plot(name, toolnames, ext):
-    res_type = ["TP", "CTP", "FN", "FP", "CFP", "TN", "NC"]
+    res_type = ["TP", "CTP", "FN", "FP", "CFP", "TN", "CE", "RE", "TO", "O"]
     res = {}
 
     for tool in toolnames:
@@ -931,7 +1035,7 @@ def make_plot(name, toolnames, ext):
         results = categorize_all_files(tools[toolname], toolname, todo)
         # print(results)
         for r in results:
-            id = results[r]['results']
+            id = results[r]['result']
             res[toolname][id] += 1
 
     fig, ax = plt.subplots()
@@ -1119,7 +1223,7 @@ elif args.c == 'run':
 elif args.c == 'latex':
     extract_all_todo(args.b)
     # 'smpi','smpivg' are not shown in the paper
-    cmd_latex(rootdir, toolnames=['aislinn', 'civl', 'isp','itac', 'simgrid','mpisv', 'must', 'parcoach'])
+    cmd_latex(rootdir, toolnames=['aislinn', 'civl', 'isp','itac', 'simgrid','mpisv', 'must', 'parcoach', 'mpi-checker'])
 elif args.c == 'html':
     extract_all_todo(args.b)
     if args.x == 'mpirun':
@@ -1136,7 +1240,7 @@ elif args.c == 'plots':
         print("[MBI] Error: Dependancies ('numpy' or 'matplotlib') are not available!")
         exit(-1)
     extract_all_todo(args.b)
-    cmd_plots(rootdir, toolnames=['itac', 'simgrid','must', 'smpi','smpivg', 'aislinn', 'civl', 'isp', 'mpisv', 'parcoach', 'hermes'], ext=args.f)
+    cmd_plots(rootdir, toolnames=['itac', 'simgrid','must', 'smpi','smpivg', 'aislinn', 'civl', 'isp', 'mpisv', 'parcoach', 'hermes', 'mpi-checker'], ext=args.f)
 else:
     print(f"Invalid command '{args.c}'. Please choose one of 'all', 'generate', 'build', 'run', 'html' 'latex' or 'plots'")
     sys.exit(1)

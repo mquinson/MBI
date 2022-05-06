@@ -42,14 +42,23 @@
 %\end{table*}
 
 %  \begin{sidewaystable}
-%    \input{results-per-category-landscape.tex}    
+%    \input{results-per-category-landscape.tex}
 %    \caption{Results of each tool per error category.}
 %  \end{sidewaystable}
-  
+
+\begin{table*}
+\centering
+%%\resizebox{\linewidth}{!}{
+\input{../../mbi2/latex/files-count.tex}
+%%}
+\vspace{0.5pt}
+\caption{Number of tests by errors types}
+\end{table*}
+
 \begin{table*}
   \hspace{-2em}
     \resizebox{1.05\textwidth}{!}{
-    \input{results-per-category-portrait.tex}    
+    \input{results-per-category-portrait.tex}
     }
     \caption{Results of each tool per error category.}
 \end{table*}
@@ -72,7 +81,7 @@
 %  }
     \caption{Metrics of each tool.}
 \end{table*}
-    
+
 \begin{table*}[h]
   \begin{center}
     \begin{tabular}{|c|l|}\hline
@@ -81,7 +90,7 @@
       Timeout (TO) & Timeout (limit: 300s).\\\hline
       Runtime Error (RE) & Tool failure during the evaluation of this code.\\\hline\hline
       True Positive (TP)&Error correctly detected.\\\hline
-      False Negative (FN)&Error missed.\\\hline 
+      False Negative (FN)&Error missed.\\\hline
       False Positive (FP)&Correct code reported as faulty.\\\hline
       True Negative (TN) &Correct code reported as such.\\\hline\hline
       \textbf{Metric}&\textbf{Definition and meaning}\\\hline
@@ -92,11 +101,11 @@
       Precision& \multirow{1.3}{*}{Potential confidence when a code is reported as correct. $P=\frac{TP}{TP+FP}$}\\[4pt]\hline
       F1 Score&\multirow{1.3}{*}{Overall bug-finding quality. $F1=\frac{2 \times P \times R}{P+R}$}\\[4pt]\hline
       Overall accuracy&\multirow{1.3}{*}{Proportion of correct diagnostics over all tests. $A=\frac{TP+TN}{CE+RE+TO+TP+FP+TN+FN}$}\\[4pt]\hline
-    % Recall: TP / ( TP + FN) 
-% Specificity: 
+    % Recall: TP / ( TP + FN)
+% Specificity:
 % Precision: TP / ( TP + FP)
 % Accuracy: (TP+TN) / (TP + FP + TN+ FN)
-% F1 Score: 
+% F1 Score:
     \end{tabular}
     \caption{Results, Metrics and Abbreviations used in the Tool Evaluation. Metrics do not account for codes leading to a tool error.}
   \end{center}
@@ -107,6 +116,13 @@
 \resizebox{\linewidth}{!}{
 \input{results-timings.tex}}
 \caption{Timings.}
+\end{table*}
+
+\begin{table*}
+\centering
+\resizebox{\linewidth}{!}{
+\input{nondeterministic-results-summary.tex}}
+\caption{Results with non deterministic classification for each tool.}
 \end{table*}
 
 %\input{Data/features.tex}
