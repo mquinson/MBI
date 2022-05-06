@@ -1038,29 +1038,39 @@ def make_plot(name, toolnames, ext):
             id = results[r]['result']
             res[toolname][id] += 1
 
+    def res_sort(toolname):
+        return res[toolname]['TP'] # + res[toolname]['TN']
+
+    toolnames.sort(key=res_sort, reverse=True)
+
     fig, ax = plt.subplots()
     x = np.arange(len(toolnames))     # the label locations
-    width = 1 / (len(res_type) + 1.0) # the width of the bars
+    width = 1.0                       # the width of the bars
     fig.subplots_adjust(wspace=0.15, hspace=0.6, top=0.90, bottom=0.20)
 
     ax.set_ylabel("Number of tests")
 
     offset = 0
+    prev_data = np.zeros(len(toolnames))
+
     for t in res_type:
         data = []
 
         for toolname in toolnames:
             data.append(res[toolname][t])
 
-        l = plt.bar(x + (offset * width) + (width / 2) - (len(res_type) * width / 2),
-                    data, width, alpha=0.75, label=displayed_name[t])
+        if prev_data is None:
+            l = plt.bar(x, data, width, alpha=0.75, label=displayed_name[t])
+        else:
+            l = plt.bar(x, data, width, alpha=0.75, label=displayed_name[t],
+                        bottom=prev_data)
 
-        if len(toolnames) == 1:
-            ax.bar_label(l, padding=1.5)
+        # if len(toolnames) == 1:
+        #     ax.bar_label(l, padding=-1.5)
 
-        offset += 1
+        prev_data += data
 
-    rotation = 45 if len(toolnames) > 1 else 0
+    rotation = -45 if len(toolnames) > 1 else 0
     plt.xticks(rotation=rotation)
 
     ax.set_xticks(x)
@@ -1071,7 +1081,7 @@ def make_plot(name, toolnames, ext):
 
     fig.tight_layout()
 
-    plt.legend(prop={'size': 8})
+    plt.legend(prop={'size': 7})
     plt.savefig(f"plots/{name}.{ext}")
 
 def cmd_plots(rootdir, toolnames, ext="pdf"):
