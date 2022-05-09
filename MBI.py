@@ -966,7 +966,6 @@ def cmd_latex(rootdir, toolnames):
         for t in todo:
             error_types_tests[possible_details[t['detail']]] += 1
 
-
         outfile.write("\\begin{tabular}{|l|c|c|}\n")
         outfile.write("  \\hline\n")
         outfile.write("  \\textbf{Error category} & \\textbf{Number of codes} & \\textbf{Number of tests}\\\\\n")

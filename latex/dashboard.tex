@@ -114,34 +114,7 @@
 
 \begin{table*}[h]
   \begin{center}
-    \begin{tabular}{|c|l|}\hline
-      \textbf{Result}&\textbf{Meaning}\\\hline
-      Compilation Error (CE) &The code uses a feature not supported by the tool.\\\hline
-      Timeout (TO) & Timeout (limit: 300s).\\\hline
-      Runtime Error (RE) & Tool failure during the evaluation of this code.\\\hline\hline
-      True Positive (TP)&Error correctly detected for each exection.\\\hline
-      Can be True Positive (\textbf{CTP})&Error correctly detected for some execution.\\\hline
-      False Negative (FN)&Error missed for each exection.\\\hline
-      Can be False Positive (\textbf{CFP})&Correct code reported as faulty for some exection.\\\hline
-      False Positive (FP)&Correct code reported as faulty for each exection.\\\hline
-      True Negative (TN) &Correct code reported as such for each exection.\\\hline\hline
-      \textbf{Metric}&\textbf{Definition and meaning}\\\hline
-      %% {Coverage}&\multirow{1.3}{*}{{Ability to compile codes. $Cov=1-\frac{CE}{total}$}}\\[4pt]\hline
-      %% {Conclusiveness}&\multirow{1.3}{*}{{Ability to draw a diagnostic on codes. $Cc=1-\frac{CE+RE+TO}{total}$}}  \\[4pt]\hline
-      %% Specificity&\multirow{1.3}{*}{Ability to not find errors in correct codes.  $S=\frac{TN}{TN + FP}$}\\[4pt]\hline
-      %% Recall&\multirow{1.3}{*}{Ability to find existing errors. $R=\frac{TP}{TP+FN}$}\\[4pt]\hline
-      %% Precision& \multirow{1.3}{*}{Potential confidence when a code is reported as correct. $P=\frac{TP}{TP+FP}$}\\[4pt]\hline
-      %% F1 Score&\multirow{1.3}{*}{Overall bug-finding quality. $F1=\frac{2 \times P \times R}{P+R}$}\\[4pt]\hline
-      %% Overall accuracy&\multirow{1.3}{*}{Proportion of correct diagnostics over all tests. $A=\frac{TP+TN}{total}$}\\[4pt]\hline
-      Overall accuracy\textsuperscript{+}&\multirow{1.3}{*}{Proportion of correct diagnostics over all tests. $A^+=\frac{TP+TN+CTP}{total}$}\\[4pt]\hline
-      Overall accuracy\textsuperscript{-}&\multirow{1.3}{*}{Proportion of correct diagnostics over all tests. $A^-=\frac{TP+TN}{total}$}\\[4pt]\hline
-
-    % Recall: TP / ( TP + FN)
-% Specificity:
-% Precision: TP / ( TP + FP)
-% Accuracy: (TP+TN) / (TP + FP + TN+ FN)
-% F1 Score:
-    \end{tabular}
+    \input{metrics-nd.tex}
     \caption{Results, Metrics and Abbreviations used in the Tool Evaluation with classification for non deterministic executions. Metrics do not account for codes leading to a tool error.}
   \end{center}
 \end{table*}
