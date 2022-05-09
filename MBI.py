@@ -580,7 +580,7 @@ def cmd_latex(rootdir, toolnames):
     with open(f'{rootdir}/latex/results-per-category-portrait.tex', 'w') as outfile:
         outfile.write('\\setlength\\tabcolsep{1.5pt} % default value: 6pt\n')
         # To split the table in two lines, do this: for errors in [['FOK','AInvalidParam','BResLeak','BReqLifecycle','BLocalConcurrency'], ['CMatch','DRace','DMatch','DGlobalConcurrency','EBufferingHazard']]:
-        for errors in [['FOK','AInvalidParam','BResLeak','BReqLifecycle','BLocalConcurrency', 'CMatch','DRace','DMatch','DGlobalConcurrency','InputHazard']]:
+        for errors in [['FOK','AInvalidParam','BResLeak','BReqLifecycle','BLocalConcurrency', 'CMatch','DRace','DMatch','DGlobalConcurrency','InputHazard','EBufferingHazard']]:
             outfile.write("\\begin{tabular}{|l@{}|*{"+str(len(errors)-1)+"}{c|c|c|c||} c|c|c|c|}\n") # last column not in multiplier (len-1 used) to not have || at the end
             outfile.write(f"\\cline{{2-{len(errors)*4+1}}}\n")
             # First title line: error categories
@@ -957,6 +957,7 @@ def cmd_latex(rootdir, toolnames):
         for error in error_scope:
             error_types[error] = 0
 
+        # Count number of code by expected type of results
         for f in files_results:
             error_types[possible_details[files_results[f]['detail']]] += 1
 
@@ -1233,7 +1234,7 @@ elif args.c == 'run':
 elif args.c == 'latex':
     extract_all_todo(args.b)
     # 'smpi','smpivg' are not shown in the paper
-    cmd_latex(rootdir, toolnames=['aislinn', 'civl', 'isp','itac', 'simgrid','mpisv', 'must', 'parcoach', 'mpi-checker'])
+    cmd_latex(rootdir, toolnames=['aislinn', 'civl', 'isp','itac', 'simgrid','mpisv', 'must', 'hermes', 'parcoach', 'mpi-checker'])
 elif args.c == 'html':
     extract_all_todo(args.b)
     if args.x == 'mpirun':
