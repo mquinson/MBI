@@ -47,15 +47,6 @@
 %  \end{sidewaystable}
 
 \begin{table*}
-\centering
-%%\resizebox{\linewidth}{!}{
-\input{../../mbi2/latex/files-count.tex}
-%%}
-\vspace{0.5pt}
-\caption{Number of codes and tests by errors category.}
-\end{table*}
-
-\begin{table*}
   \hspace{-2em}
     \resizebox{1.05\textwidth}{!}{
     \input{results-per-category-portrait.tex}
@@ -128,9 +119,26 @@
 
 \begin{table*}
 \centering
+%%\resizebox{\linewidth}{!}{
+\input{../../mbi2/latex/files-count.tex}
+%%}
+\vspace{0.5pt}
+\caption{Number of codes and tests by errors category.}
+\end{table*}
+
+\begin{table*}
+\centering
 \resizebox{\linewidth}{!}{
 \input{nondeterministic-results-summary.tex}}
 \caption{Results with non deterministic classification for each tool.}
+\end{table*}
+
+\begin{table*}
+  \hspace{-2em}
+    \resizebox{1.05\textwidth}{!}{
+    \input{nd-results-per-category-portrait.tex}
+    }
+    \caption{Results of each tool per error category.}
 \end{table*}
 
 %\input{Data/features.tex}

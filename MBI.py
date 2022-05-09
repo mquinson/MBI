@@ -949,7 +949,6 @@ def cmd_latex(rootdir, toolnames):
         outfile.write('\\end{tabular}\n')
         outfile.write('\\setlength\\tabcolsep{6pt}\n')
 
-    # possible_details
     with open(f'{rootdir}/latex/files-count.tex', 'w') as outfile:
         files_results = categorize_all_files(tools[used_toolnames[0]], used_toolnames[0], todo)
 
@@ -981,6 +980,128 @@ def cmd_latex(rootdir, toolnames):
         outfile.write(f"  \\textbf{{Total}} & {len(files_results)} & {len(todo)}\\\\\n")
         outfile.write("  \\hline\n")
         outfile.write("\\end{tabular}\n")
+
+    with open(f'{rootdir}/latex/nd-results-per-category-portrait.tex', 'w') as outfile:
+        # files_results = categorize_all_files(tools[used_toolnames[0]], used_toolnames[0], todo)
+        ext_results = {}
+        best = {}
+
+        # Put FOK at the first position
+        category = ['FOK']
+        last = ''
+        for e in error_scope:
+            if e != 'FOK':
+                category.append(e)
+                last = e
+
+            best[e] = {
+                'TP':0, 'TN':0, 'CTP':0, 'CFP':99999, 'FP':99999, 'FN':99999,
+                'E':99999
+            }
+
+        for toolname in used_toolnames:
+            ext_results[toolname] = {}
+
+            files_results = categorize_all_files(tools[toolname], toolname, todo)
+            for error in category:
+                ext_results[toolname][error] = {
+                    'TP':[], 'TN':[], 'CTP':[], 'CFP':[], 'FP':[], 'FN':[],
+                    'CE':[], 'TO':[], 'RE':[], 'O':[]
+                }
+
+                for f in files_results:
+                    if possible_details[files_results[f]['detail']] == error:
+                        ext_results[toolname][error][files_results[f]['result']].append(f)
+
+            for error in category:
+                err = (len(ext_results[toolname][error]['CE'])
+                       + len(ext_results[toolname][error]['TO'])
+                       + len(ext_results[toolname][error]['RE'])
+                       + len(ext_results[toolname][error]['O']))
+
+                if best[error]['E'] > err:
+                    best[error]['E'] = err
+
+                for res in ['CFP', 'FP', 'FN']:
+                    if best[error][res] > len(ext_results[toolname][error][res]):
+                        best[error][res] = len(ext_results[toolname][error][res])
+
+                for res in ['TP', 'CTP', 'FN']:
+                    if best[error][res] < len(ext_results[toolname][error][res]):
+                        best[error][res] = len(ext_results[toolname][error][res])
+
+
+        outfile.write("\\setlength\\tabcolsep{1.5pt}\n")
+        outfile.write(f"\\begin{{tabular}}{{|l|*{{{len(category)-1}}}{{c|c|c|c||}} c|c|c|c|}}\n")
+        outfile.write("\\cline{2-45}\n")
+
+        outfile.write("  \\multicolumn{1}{c|}{}")
+        for error in category:
+            if error == last:
+                outfile.write(f" & \\multicolumn{{4}}{{c|}}")
+            else:
+                outfile.write(f" & \\multicolumn{{4}}{{c||}}")
+
+            outfile.write(f"{{\it {displayed_name[error].split()[0]}}}")
+
+        outfile.write("\\\\\n")
+
+        outfile.write("  \\multicolumn{1}{c|}{}")
+        for error in category:
+            if error == last:
+                outfile.write(f" & \\multicolumn{{4}}{{c|}}")
+            else:
+                outfile.write(f" & \\multicolumn{{4}}{{c||}}")
+
+            outfile.write(f"{{\it {displayed_name[error].split()[1]}}}")
+
+        outfile.write("\\\\\n")
+        outfile.write("\\cline{2-45}\n")
+
+        outfile.write("  \\multicolumn{1}{c|}{}")
+        for error in category:
+            outfile.write(" & \\rotatebox{90}{Error}")
+            if error == "FOK":
+                outfile.write(" & \\rotatebox{90}{True Negative}")
+                outfile.write(" & \\rotatebox{90}{Can be False Positive}")
+                outfile.write(" & \\rotatebox{90}{False Positive}")
+            else:
+                outfile.write(" & \\rotatebox{90}{True Positive}")
+                outfile.write(" & \\rotatebox{90}{Can be True Positive}")
+                outfile.write(" & \\rotatebox{90}{False Negatif}")
+
+        outfile.write("\\\\\\hline\n")
+
+        for toolname in used_toolnames:
+            outfile.write(f"{displayed_name[toolname]}")
+
+            for error in category:
+                disp_err = (len(ext_results[toolname][error]['CE'])
+                            + len(ext_results[toolname][error]['TO'])
+                            + len(ext_results[toolname][error]['RE'])
+                            + len(ext_results[toolname][error]['O']))
+
+                if disp_err == best[error]['E']:
+                    outfile.write(f"& {{\\bf {disp_err}}}")
+                else:
+                    outfile.write(f"& {disp_err}")
+
+                format_if_best = lambda res : f" & {{\\bf {len(ext_results[toolname][error][res])}}}" if best[error][res] == len(ext_results[toolname][error][res]) else f" & {len(ext_results[toolname][error][res])}"
+
+                if error == "FOK":
+                    outfile.write(format_if_best('TN'))
+                    outfile.write(format_if_best('CFP'))
+                    outfile.write(format_if_best('FP'))
+                else:
+                    outfile.write(format_if_best('TP'))
+                    outfile.write(format_if_best('CTP'))
+                    outfile.write(format_if_best('FN'))
+
+            outfile.write("\\\\\\hline\n")
+
+
+        outfile.write("\\end{tabular}\n")
+        outfile.write("\\setlength\\tabcolsep{6pt}")
 
     os.chdir(here)
 
