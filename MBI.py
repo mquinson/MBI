@@ -954,26 +954,32 @@ def cmd_latex(rootdir, toolnames):
         files_results = categorize_all_files(tools[used_toolnames[0]], used_toolnames[0], todo)
 
         error_types = {}
+        error_types_tests = {}
         for error in error_scope:
             error_types[error] = 0
+            error_types_tests[error] = 0
 
         # Count number of code by expected type of results
         for f in files_results:
             error_types[possible_details[files_results[f]['detail']]] += 1
 
-        outfile.write("\\begin{tabular}{|l|c|}\n")
+        for t in todo:
+            error_types_tests[possible_details[t['detail']]] += 1
+
+
+        outfile.write("\\begin{tabular}{|l|c|c|}\n")
         outfile.write("  \\hline\n")
-        outfile.write("  \\textbf{Error type} & \\textbf{Number of code}\\\\\n")
+        outfile.write("  \\textbf{Error category} & \\textbf{Number of codes} & \\textbf{Number of tests}\\\\\n")
         outfile.write("  \\hline\n")
         for et in error_types:
             if et in ['BLocalConcurrency', 'DRace', 'DGlobalConcurrency',
                       'EBufferingHazard', 'InputHazard']:
-                outfile.write(f"  \\textbf{{{displayed_name[et]}}} & \\textbf{{{error_types[et]}}}\\\\\n")
+                outfile.write(f"  \\textbf{{{displayed_name[et]}}} & \\textbf{{{error_types[et]}}}& \\textbf{{{error_types_tests[et]}}} \\\\\n")
             else:
-                outfile.write(f"  \\textit{{{displayed_name[et]}}} & {error_types[et]}\\\\\n")
+                outfile.write(f"  \\textit{{{displayed_name[et]}}} & {error_types[et]} & {error_types_tests[et]}\\\\\n")
 
         outfile.write("  \\hline\n")
-        outfile.write(f"  \\textbf{{Total}} & {len(files_results)}\\\\\n")
+        outfile.write(f"  \\textbf{{Total}} & {len(files_results)} & {len(todo)}\\\\\n")
         outfile.write("  \\hline\n")
         outfile.write("\\end{tabular}\n")
 
