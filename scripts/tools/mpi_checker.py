@@ -42,18 +42,23 @@ class Tool(AbstractTool):
         if not (os.path.exists(f'{cachefile}.txt') or os.path.exists(f'logs/mpi-checker/{cachefile}.txt')):
             return 'failure'
 
+        # Read text report
         with open(f'{cachefile}.txt' if os.path.exists(f'{cachefile}.txt') else f'logs/mpi-checker/{cachefile}.txt', 'r') as infile:
             output = infile.read()
 
         # with open(f'{cachefile}.yaml' if os.path.exists(f'{cachefile}.yaml') else f'logs/mpi-checker/{cachefile}.yaml', 'r') as infile:
         #     output = infile.read()
 
-        # Request lifecycle errors
         if re.search('no matching wait', output):
             return 'Missing wait'
 
         if re.search('no matching nonblocking call', output):
             return 'Unmatched wait'
+
+        # Non catched errors
+        if (re.search('error:', output)
+            or re.search('warning:', output)):
+            return 'failure'
 
         # Read HTML report
         report = []
@@ -74,12 +79,22 @@ class Tool(AbstractTool):
             if re.search('MPI Error', output):
                 return 'mpierror'
 
-        # Non catched errors
-        if (re.search('error:', output)
-            or re.search('warning:', output)):
-            return 'failure'
-
         # if re.search('warning', output):
         #     return 'SUPPRESSED_WARNING'
 
         return 'OK'
+
+    def is_correct_diagnostic(self, test_id, res_category, expected, detail):
+        if res_category != 'TRUE_POS':
+            return True
+
+        out = self.parse(test_id)
+
+        if out == 'Missing wait' and detail != 'MissingWait':
+            return False
+
+        if (out in ['Missing wait', 'Unmatched wait'] and
+            possible_details[detail] != "BReqLifecycle"):
+            return False
+
+        return True

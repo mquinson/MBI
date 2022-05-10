@@ -17,7 +17,7 @@ class Tool(AbstractTool):
             subprocess.run("ln -s $(which clang) /usr/lib/llvm-9/bin/clang", shell=True, check=True)
 
         here = os.getcwd() # Save where we were
-        # Get a GIT checkout. 
+        # Get a GIT checkout.
         subprocess.run("rm -rf /tmp/parcoach && git clone --depth=1 https://github.com/parcoach/parcoach.git /tmp/parcoach", shell=True, check=True)
         # Go to where we want to install it, and build it out-of-tree (we're in the docker)
         subprocess.run("mkdir -p /MBI-builds/parcoach", shell=True, check=True)
@@ -65,3 +65,10 @@ class Tool(AbstractTool):
             return 'UNIMPLEMENTED'
 
         return 'deadlock'
+
+    def is_correct_diagnostic(self, test_id, res_category, expected, detail):
+        # PARCOACH detect only call ordering errors
+        if possible_details[detail] != "DMatch" and res_category == 'TRUE_POS':
+            return False
+
+        return True

@@ -180,6 +180,13 @@ class AbstractTool:
         """Read the result of a previous run from the cache, and compute the test outcome"""
         return 'failure'
 
+    def is_correct_diagnostic(self, test_id, res_category, expected, detail):
+        """
+        Return True if the tool diagnostic correspond to the expected
+        error details.
+        """
+        return True
+
 # Associate all possible detailed outcome to a given error scope. Scopes must be sorted alphabetically.
 possible_details = {
     # scope limited to one call
@@ -430,12 +437,14 @@ def categorize_extended(results, expected, detail):
 
     return result
 
-def categorize_all_files(tool, toolname, tests):
+def categorize_all_files(tool, toolname, tests, check_diagnostic=True):
     res = {}
     results = {}
     # elapsed = {}
     expected = {}
     detail = {}
+
+    bad_diagnostic = 0
 
     for test in tests:
         if test['filename'] not in results:
@@ -450,10 +459,18 @@ def categorize_all_files(tool, toolname, tests):
         test_id = f"{binary}_{ID}"
 
         (res_category, elapsed, diagnostic, outcome) = categorize(tool=tool, toolname=toolname, test_id=test_id, expected=test['expect'], autoclean=False)
+
+        if check_diagnostic:
+            if not tool.is_correct_diagnostic(test_id, res_category, test['expect'], test['detail']):
+                bad_diagnostic += 1
+                res_category = 'FALSE_NEG'
+
         results[test['filename']].append(res_category)
         # elapsed[test['filename']].append(str(elapsed))
         expected[test['filename']].append(test['expect'])
         detail[test['filename']].append(test['detail'])
+
+    print(f'{displayed_name[toolname]} : {bad_diagnostic} bad diagnostic(s)')
 
     # Check data consistence
     for f in expected:
