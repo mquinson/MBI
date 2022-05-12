@@ -911,6 +911,7 @@ def cmd_latex(rootdir, toolnames):
             ext_results[toolname]['accp'] = accp
             ext_results[toolname]['accm'] = accm
 
+            # Compute best results
             for metric in best:
                 if metric in ['accp', 'accm']:
                     if best[metric] < ext_results[toolname][metric]:
@@ -923,16 +924,18 @@ def cmd_latex(rootdir, toolnames):
                         best[metric] = len(ext_results[toolname][metric])
 
         for toolname in used_toolnames:
-            TP = str(len(ext_results[toolname]['TP'])) if len(ext_results[toolname]['TP']) != best['TP'] else f"{{\\bf  {len(ext_results[toolname]['TP'])} }}"
-            TN = str(len(ext_results[toolname]['TN'])) if len(ext_results[toolname]['TN']) != best['TN'] else f"{{\\bf  {len(ext_results[toolname]['TN'])} }}"
-            CTP = str(len(ext_results[toolname]['CTP'])) if len(ext_results[toolname]['CTP']) != best['CTP'] else f"{{\\bf  {len(ext_results[toolname]['CTP'])} }}"
-            CFP = str(len(ext_results[toolname]['CFP'])) if len(ext_results[toolname]['CFP']) != best['CFP'] else f"{{\\bf  {len(ext_results[toolname]['CFP'])} }}"
-            FP = str(len(ext_results[toolname]['FP'])) if len(ext_results[toolname]['FP']) != best['FP'] else f"{{\\bf  {len(ext_results[toolname]['FP'])} }}"
-            FN = str(len(ext_results[toolname]['FN'])) if len(ext_results[toolname]['FN']) != best['FN'] else f"{{\\bf  {len(ext_results[toolname]['FN'])} }}"
-            CE = str(len(ext_results[toolname]['CE'])) if len(ext_results[toolname]['CE']) != best['CE'] else f"{{\\bf  {len(ext_results[toolname]['CE'])} }}"
-            TO = str(len(ext_results[toolname]['TO'])) if len(ext_results[toolname]['TO']) != best['TO'] else f"{{\\bf  {len(ext_results[toolname]['TO'])} }}"
-            RE = str(len(ext_results[toolname]['RE'])) if len(ext_results[toolname]['RE']) != best['RE'] else f"{{\\bf  {len(ext_results[toolname]['RE'])} }}"
-            O = str(len(ext_results[toolname]['O'])) if len(ext_results[toolname]['O']) != best['O'] else f"{{\\bf  {len(ext_results[toolname]['O'])} }}"
+            format_if_best = lambda res : f" {{\\bf {len(ext_results[toolname][res])}}}" if best[res] == len(ext_results[toolname][res]) else f" {len(ext_results[toolname][res])}"
+
+            TP = format_if_best('TP')
+            TN = format_if_best('TN')
+            CTP = format_if_best('CTP')
+            CFP = format_if_best('CFP')
+            FP = format_if_best('FP')
+            FN = format_if_best('FN')
+            CE = format_if_best('CE')
+            TO = format_if_best('TO')
+            RE = format_if_best('RE')
+            O = format_if_best('O')
 
             accp = str(ext_results[toolname]['accp']) if ext_results[toolname]['accp'] < best['accp'] else f"{{\\bf  {ext_results[toolname]['accp']} }}"
             accm = str(ext_results[toolname]['accm']) if ext_results[toolname]['accm'] < best['accm'] else f"{{\\bf  {ext_results[toolname]['accm']} }}"
@@ -1026,14 +1029,14 @@ def cmd_latex(rootdir, toolnames):
                     if best[error][res] > len(ext_results[toolname][error][res]):
                         best[error][res] = len(ext_results[toolname][error][res])
 
-                for res in ['TP', 'CTP', 'FN']:
+                for res in ['TP', 'CTP', 'TN']:
                     if best[error][res] < len(ext_results[toolname][error][res]):
                         best[error][res] = len(ext_results[toolname][error][res])
 
 
         outfile.write("\\setlength\\tabcolsep{1.5pt}\n")
         outfile.write(f"\\begin{{tabular}}{{|l|*{{{len(category)-1}}}{{c|c|c|c||}} c|c|c|c|}}\n")
-        outfile.write("\\cline{2-45}\n")
+        outfile.write(f"\\cline{{2- {(len(category) * 4) + 1} }}\n")
 
         outfile.write("  \\multicolumn{1}{c|}{}")
         for error in category:
@@ -1056,7 +1059,7 @@ def cmd_latex(rootdir, toolnames):
             outfile.write(f"{{\it {displayed_name[error].split()[1]}}}")
 
         outfile.write("\\\\\n")
-        outfile.write("\\cline{2-45}\n")
+        outfile.write(f"\\cline{{2- {(len(category) * 4) + 1} }}\n")
 
         outfile.write("  \\multicolumn{1}{c|}{}")
         for error in category:
@@ -1102,6 +1105,75 @@ def cmd_latex(rootdir, toolnames):
 
         outfile.write("\\end{tabular}\n")
         outfile.write("\\setlength\\tabcolsep{6pt}")
+
+
+    with open(f'{rootdir}/latex/reclassified-result.tex', 'w') as outfile:
+        reclassified = {}
+
+        category = ['FOK']
+        last = ''
+        for e in error_scope:
+            if e != 'FOK':
+                category.append(e)
+                last = e
+        category.append('total')
+
+        for toolname in used_toolnames:
+            reclassified[toolname] = {}
+
+            for e in category:
+                reclassified[toolname][e] = []
+
+            for test in todo:
+                binary=re.sub('\.c', '', os.path.basename(test['filename']))
+                ID=test['id']
+                test_id = f"{binary}_{ID}"
+
+                (res_category, elapsed, diagnostic, outcome) = categorize(tool=tools[toolname], toolname=toolname, test_id=test_id, expected=test['expect'], autoclean=False)
+
+                if not tools[toolname].is_correct_diagnostic(test_id, res_category, test['expect'], test['detail']):
+                    reclassified[toolname][possible_details[test['detail']]].append(test_id)
+                    reclassified[toolname]['total'].append(test_id)
+
+        outfile.write("\\begin{tabular}{|l|")
+        for e in category:
+            outfile.write("c|")
+        outfile.write("}\n")
+        outfile.write("  \\hline\n")
+
+        # Column title
+        outfile.write("  ")
+        for e in category:
+            if e != 'total':
+                outfile.write(f" &\\textit{{ {displayed_name[e].split()[0]} }}")
+            else:
+                outfile.write(" & ")
+
+        outfile.write("  \\\\\n")
+
+        outfile.write("  \\textbf{Tools}")
+        for e in category:
+            if e != 'total':
+                outfile.write(f" &\\textit{{ {displayed_name[e].split()[1]} }}")
+            else:
+                outfile.write(" & \\textbf{Total}")
+
+        outfile.write("\\\\\n")
+        outfile.write("  \\hline\n")
+
+        # Results
+        for toolname in used_toolnames:
+            outfile.write(f"  {displayed_name[toolname]}")
+            for e in category:
+                res = len(reclassified[toolname][e])
+                if res > 0:
+                    outfile.write(f" & \\textbf{{ {res} }}")
+                else:
+                    outfile.write(f" & {res}")
+
+            outfile.write("  \\\\\\hline\n")
+
+        outfile.write("\\end{tabular}\n")
 
     os.chdir(here)
 
@@ -1253,9 +1325,14 @@ def cmd_plots(rootdir, toolnames, ext="pdf"):
         ID=test['id']
         test_id = f"{binary}_{ID}"
         expected=test['expect']
+        detail=test['detail']
 
         for toolname in used_toolnames:
             (res_category, elapsed, diagnostic, outcome) = categorize(tool=tools[toolname], toolname=toolname, test_id=test_id, expected=expected)
+
+            if not tools[toolname].is_correct_diagnostic(test_id, res_category, expected, detail):
+                res_category = 'FALSE_NEG'
+
             error = possible_details[test['detail']]
             results[error][toolname][res_category].append(test_id)
             results['total'][toolname][res_category].append(test_id)
