@@ -104,3 +104,33 @@ class Tool(AbstractTool):
         print(output)
         print ("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
         return 'other'
+
+    def is_correct_diagnostic(self, test_id, res_category, expected, detail):
+        if res_category != 'TRUE_POS':
+            return True
+
+        possible_output = {
+            'AInvalidParam' :    ['mpierr', 'deadlock'],
+            'BResLeak' :         ['mpierr', 'deadlock', 'resleak'],
+            'BReqLifecycle' :    ['mpierr', 'deadlock', 'resleak'],
+            'BEpochLifecycle' :  ['mpierr', 'deadlock', 'resleak'],
+            # 'BLocalConcurrency' :  ['mpierr'],
+            'CMatch' :           ['mpierr', 'deadlock'],
+            'DRace' :            ['mpierr', 'deadlock', 'MBI_MSG_RACE'],
+            'DMatch' :           ['mpierr', 'deadlock', 'Collective mismatch'],
+            # 'DGlobalConcurrency' : ['mpierr'],
+            'EBufferingHazard' : ['mpierr', 'deadlock'],
+            # 'InputHazard' : [],
+            # 'FOK' : []
+        }
+
+        if possible_details[detail] not in possible_output:
+            return True
+
+        out = self.parse(test_id)
+
+        if out not in possible_output[possible_details[detail]]:
+            print(f'{test_id} : {possible_details[detail]} ({detail}) : {out}')
+            return False
+
+        return True
