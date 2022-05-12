@@ -68,7 +68,13 @@ class Tool(AbstractTool):
 
     def is_correct_diagnostic(self, test_id, res_category, expected, detail):
         # PARCOACH detect only call ordering errors
-        if possible_details[detail] != "DMatch" and res_category == 'TRUE_POS':
-            return False
+        if res_category != 'TRUE_POS':
+            return True
 
-        return True
+        if possible_details[detail] == "DMatch":
+            return True
+
+        if possible_details[detail] == "InputHazard":
+            return True
+
+        return False
