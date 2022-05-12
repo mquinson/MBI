@@ -57,6 +57,7 @@ int main(int argc, char **argv) {
 
   @{init1}@
   @{init2}@
+
   if (rank == 0) {
     @{operation1}@ /* MBIERROR1 */
     @{fini1}@
@@ -64,6 +65,9 @@ int main(int argc, char **argv) {
     @{operation2}@ /* MBIERROR2 */
     @{fini2}@
   }
+
+  @{free1}@
+  @{free2}@
 
   MPI_Finalize();
   printf("Rank %d finished normally\\n", rank);
@@ -85,6 +89,8 @@ for p in send + ssend + bsend + recv + irecv + isend:
     patterns['init2'] = '' #init[p2]("2")
     patterns['fini1'] = fini[p]("1")
     patterns['fini2'] = '' #fini[p2]("2")
+    patterns['free1'] = free[p]("1")
+    patterns['free2'] = '' #free[p]("2")
     patterns['operation1'] = operation[p]("1")
     patterns['operation2'] = '' #operation[p2]("2")
     patterns['change_cond'] = 'rank == 1'
@@ -105,6 +111,7 @@ for p in send + ssend + bsend + recv + irecv + isend:
     replace['errormsg'] = 'P2P mismatch. @{p}@ at @{filename}@:@{line:MBIERROR1}@ and @{p}@ at @{filename}@:@{line:MBIERROR2}@ are not matched.'
     replace['operation2'] = operation[p]("1")
     replace['fini2'] = fini[p]("1")
+    patterns['free2'] = free[p]("2")
     make_file(template, f'CallOrdering_{p}_{p}_nok.c', replace)
 
 for s in send + isend + ssend + bsend:
@@ -120,6 +127,8 @@ for s in send + isend + ssend + bsend:
         patterns['init2'] = init[r]("2")
         patterns['fini1'] = fini[s]("1")
         patterns['fini2'] = fini[r]("2")
+        patterns['free1'] = free[s]("1")
+        patterns['free2'] = free[r]("2")
         patterns['operation1'] = operation[s]("1")
         patterns['operation2'] = operation[r]("2")
         patterns['change_cond'] = '(rank == 1) && (its_raining)'
@@ -133,4 +142,3 @@ for s in send + isend + ssend + bsend:
         replace['operation1'] =  operation[s]("1")
         replace['operation2'] = operation[r]("2")
         make_file(template, f'CallOrdering_{r}_{s}_nok.c', replace)
-
