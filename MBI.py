@@ -1176,8 +1176,11 @@ def cmd_latex(rootdir, toolnames):
 
         outfile.write("\\end{tabular}\n")
 
-    # Generate error count by features
-    generate_errors(get_C_files_from_dir(f"{rootdir}/gencodes/"), f"{rootdir}/latex/errors.tex")
+
+    files = get_C_files_from_dir(f"{rootdir}/gencodes/")
+
+    generate_errors(files, f"{rootdir}/latex/errors.tex")
+    generate_labels(files, f"{rootdir}/latex/labels.tex")
 
     os.chdir(here)
 

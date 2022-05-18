@@ -131,3 +131,65 @@ def generate_errors(files, outfile):
         output.write('\\hline\n')
 
         output.write('\\end{tabular}\n')
+
+
+def generate_labels(files, outfile):
+    files_per_expected = parse_files_per_expected(files)
+
+    # Get the data
+    OK = {'total':0}
+    Error = {'total':0}
+    for feat in possible_features:
+        OK[feat] = 0
+        Error[feat] = 0
+    seen = []
+    for detail in possible_details:
+        category = possible_details[detail]
+        for (file,test) in files_per_expected[category]:
+            if not file in seen:
+                seen.append(file)
+                (features,  _) = parse_file_features(file)
+                if detail == 'OK':
+                    OK['total'] += 1
+                    for feat in features:
+                        OK[feat] += 1
+                else:
+                    Error['total'] += 1
+                    for feat in features:
+                        Error[feat] += 1
+            else:
+                print(f"Ignore duplicate {file} while counting files per label.")
+
+    # Produce the output
+    with open(outfile, 'w') as output:
+        output.write('\\begin{tabular}{|l| l | l | c | c |}\\hline\n')
+        output.write('\\multicolumn{2}{|c|}{ \\textbf{MPI}} & \\multirow{2}{*}{\\textbf{Description}} & \\multicolumn{2}{c|}{\\textbf{Number of codes using the label}} \\\\')
+        output.write('\\multicolumn{2}{|c|}{ \\textbf{Feature Label}} &  & \\# Incorrect codes & \\# Correct codes \\\\ \\hline\n')
+
+        output.write("\\parbox[t]{4mm}{\\multirow{3}{*}{\\R{P2P}}} & base calls & Use of blocking point-to-point communication)")
+        output.write(f" & {Error['P2P!basic']} & {OK['P2P!basic']} \\\\ \n")
+        output.write("& nonblocking & Use of  nonblocking point-to-point communication")
+        output.write(f" & {Error['P2P!nonblocking']} & {OK['P2P!nonblocking']} \\\\ \n")
+#        output.write(f" &  116 &  19 \\\\ \n")
+        output.write("& persistent & Use of point-to-point persistent communications")
+        output.write(f" & {Error['P2P!persistent']} & {OK['P2P!persistent']} \\\\ \\hline \n")
+#        output.write(f" &  45 &  8 \\\\ \\hline \n")
+        output.write("\\parbox[t]{2mm}{\\multirow{3}{*}{\\R{COLL}}} & base calls & Use of blocking collective communication")
+        output.write(f" & {Error['COLL!basic']} & {OK['COLL!basic']} \\\\ \n")
+#        output.write(f" &  312 &  202 \\\\ \n")
+        output.write("& nonblocking & Use of nonblocking collective communication")
+        output.write(f" & {Error['COLL!nonblocking']} & {OK['COLL!nonblocking']} \\\\ \n")
+#        output.write(f" &  129 &   114 \\\\ \n")
+        output.write("& tools & Use of resource function (e.g.,  communicators, datatypes)")
+        output.write(f" & {Error['COLL!tools']} & {OK['COLL!tools']} \\\\ \\hline \n")
+#        output.write(f" &  94 &  23 \\\\ \\hline \n")
+        output.write("\\multicolumn{2}{|c|}{RMA} & Use of Remote Memory Access")
+        output.write(f" & {Error['RMA']} & {OK['RMA']} \\\\ \\hline \n")
+#        output.write(f" &  30 &  3 \\\\ \\hline \n")
+        output.write("\\end{tabular}\n")
+
+
+    # def show_counts(categories):
+    #     count = get_counts(categories)
+    #     output.write(f"{count['P2P!basic']}&{count['P2P!nonblocking']}&{count['P2P!persistent']}&")
+    #     output.write(f"{count['COLL!basic']}&{count['COLL!nonblocking']}&{count['COLL!tools']} & {count['RMA']} & {count['total']} \\\\")
