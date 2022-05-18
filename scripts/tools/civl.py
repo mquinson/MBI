@@ -33,7 +33,7 @@ class Tool(AbstractTool):
 
         execcmd = re.sub("mpirun", "java -jar /MBI-builds/civl.jar verify", execcmd)
         execcmd = re.sub('-np ', "-input_mpi_nprocs=", execcmd)
-        execcmd = re.sub('\${EXE}', filename, execcmd)
+        execcmd = re.sub('\${EXE}.*', filename, execcmd)
         execcmd = re.sub('\$zero_buffer', "", execcmd)
         execcmd = re.sub('\$infty_buffer', "", execcmd)
 
