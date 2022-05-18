@@ -19,6 +19,7 @@ import multiprocessing as mp
 sys.path.append(f'{os.path.dirname(os.path.abspath(__file__))}/scripts')
 
 from MBIutils import *
+from LaTeXutils import *
 
 # Plots need big dependancy like numpy and matplotlib, so just ignore
 # the import if dependencies are not available.
@@ -408,7 +409,7 @@ iframe {
       # Add generate radar plots
       if plots_loaded:
           for toolname in used_toolnames:
-              outHTML.write(f'<img src="plots/radar_all_{toolname}.svg" alt="Radar plot for all error type for the {displayed_name[toolname]} tool."\>')
+              outHTML.write(f'<img src="plots/ext_radar_all_{toolname}.svg" alt="Radar plot for all error type for the {displayed_name[toolname]} tool."\>')
 
       outHTML.write(f"</body></html>\n")
 
@@ -1060,11 +1061,11 @@ def cmd_latex(rootdir, toolnames):
 
             outfile.write("  \\multicolumn{1}{c|}{}")
             for error in category:
-                outfile.write(" & \\rotatebox{90}{Error}")
+                outfile.write(" & \\rotatebox{90}{Errors}")
                 if error == "FOK":
-                    outfile.write(" & \\rotatebox{90}{True Negative}")
-                    outfile.write(" & \\rotatebox{90}{Can be False Positive}")
-                    outfile.write(" & \\rotatebox{90}{False Positive}")
+                    outfile.write(" & \\rotatebox{90}{True {\\bf Negative}}")
+                    outfile.write(" & \\rotatebox{90}{Can be {\\bf False} Positive}")
+                    outfile.write(" & \\rotatebox{90}{False {\\bf Positive}}")
                 else:
                     outfile.write(" & \\rotatebox{90}{True Positive}")
                     outfile.write(" & \\rotatebox{90}{Can be True Positive}")
@@ -1175,6 +1176,9 @@ def cmd_latex(rootdir, toolnames):
 
         outfile.write("\\end{tabular}\n")
 
+    # Generate error count by features
+    generate_errors(get_C_files_from_dir(f"{rootdir}/gencodes/"), f"{rootdir}/latex/errors.tex")
+
     os.chdir(here)
 
 
@@ -1214,20 +1218,108 @@ def make_radar_plot(name, errors, toolname, results, ext):
                  horizontalalignment='center', verticalalignment='center')
 
     ax.plot(theta, data, color=colors[0])
-    ax.fill(theta, data, facecolor=colors[0], alpha=0.25, label='_nolegend_')
+    ax.fill(theta, data, facecolor=colors[0], alpha=0.4, label='_nolegend_')
     ax.set_varlabels(spoke_labels)
     ax.set_ylim(0,1)
 
     plt.savefig(f'plots/{name}.{ext}')
     plt.close('all')
 
-def make_plot(name, toolnames, ext):
+def make_radar_plot_ext(name, errors, toolname, results, ext):
+    TP = 'TRUE_POS'
+    TN = 'TRUE_NEG'
+    res_type = ["TP", "TN", "CTP", "CFP", "FN", "FP", "CE", "RE", "TO", "O"]
+    colors = ['b', 'r', '#202020']
+
+    N = len(errors)
+    data = []
+    data_p = []
+    data_m = []
+    spoke_labels = []
+    ext_results = {}
+
+    fresults = categorize_all_files(tools[toolname], toolname, todo)
+    for error in errors:
+        ext_results[error] = {
+            'TP':[], 'TN':[], 'CTP':[], 'CFP':[], 'FP':[], 'FN':[],
+            'CE':[], 'TO':[], 'RE':[], 'O':[],
+            'accp':0, 'accm':0,
+            'total':{'OK':0, 'Error':0}
+        }
+
+    for f in fresults:
+        # Get type of error
+        error = possible_details[fresults[f]['detail']]
+
+        if error not in errors:
+            continue
+
+        # Add f in right list
+        ext_results[error][fresults[f]['result']].append(f)
+
+        if fresults[f]['expected'] == 'OK':
+            ext_results[error]['total']['OK'] += 1
+        else:
+            ext_results[error]['total']['Error'] += 1
+
+    # Compute metrics
+    for error in errors:
+        # Accuracy
+        score = 0.0
+        if len(results['total'][toolname][TP]) != 0:
+            total = 0.0
+            for r in ['failure', 'timeout', 'unimplemented', 'other',
+                      'TRUE_NEG', 'TRUE_POS', 'FALSE_NEG', 'FALSE_POS']:
+                total += len(results[error][toolname][r])
+            if total != 0:
+                score = ((len(results[error][toolname][TP]) + len(results[error][toolname][TN])) / total)
+
+        data.append(score)
+
+        # A+ and A-
+        total = ext_results[error]['total']['Error'] + ext_results[error]['total']['OK']
+        accp = round((len(ext_results[error]['TP']) + len(ext_results[error]['TN']) + len(ext_results[error]['CTP'])) / total, 2)
+        accm = round((len(ext_results[error]['TP']) + len(ext_results[error]['TN'])) / total, 2)
+
+        ext_results[error]['accp'] = accp
+        ext_results[error]['accm'] = accm
+
+        data_p.append(ext_results[error]['accp'])
+        data_m.append(ext_results[error]['accm'])
+        spoke_labels.append(displayed_name[error])
+
+    # Radar plot
+    theta = radar_factory(N, frame='polygon')
+    fig, ax = plt.subplots(subplot_kw=dict(projection='radar'))
+    fig.subplots_adjust(wspace=0.15, hspace=0.6, top=0.85, bottom=0.10)
+    ax.set_rgrids([0.2, 0.4, 0.6, 0.8])
+    ax.set_title(displayed_name[toolname], weight='bold', size='medium', position=(0.5, 1.1),
+                 horizontalalignment='center', verticalalignment='center')
+
+    ax.plot(theta, data_p, color=colors[0], alpha=1, label='Overall Accuracy +')
+    ax.fill(theta, data_p, facecolor=colors[0], alpha=0.4)
+
+    ax.plot(theta, data_m, color=colors[1], alpha=0.5, label='Overall Accuracy -')
+    ax.fill(theta, data_m, facecolor=colors[1], alpha=0.2)
+
+    ax.plot(theta, data, color=colors[2], alpha=1, label='Overall Accuracy')
+    #ax.fill(theta, data, facecolor=colors[2], alpha=0.4, label='Overall Accuracy')
+
+    legend = ax.legend(loc=(0.8, .99), labelspacing=0.1, fontsize='small')
+
+    ax.set_varlabels(spoke_labels)
+    ax.set_ylim(0,1)
+
+    plt.savefig(f'plots/ext_{name}.{ext}')
+    plt.close('all')
+
+def make_plot(name, toolnames, ext, black_list=[]):
     res_type = ["TP", "TN", "CTP", "CFP", "FN", "FP", "CE", "RE", "TO", "O"]
     colors = [
         '#4D5AAF', # TP
         '#2ca02c', # TN
-        '#ff7f0e', # CTP
-        '#9467bd', # CFP
+        '#9467bd', # CTP
+        '#ff7f0e', # CFP
         '#8c564b', # FN
         '#d62728', # FP
         '#4f4c4c', # CE
@@ -1247,6 +1339,10 @@ def make_plot(name, toolnames, ext):
         # print(results)
         for r in results:
             id = results[r]['result']
+
+            if possible_details[results[r]['detail']] in black_list:
+                continue
+
             res[toolname][id] += 1
 
     def res_sort(toolname):
@@ -1362,8 +1458,8 @@ def cmd_plots(rootdir, toolnames, ext="pdf"):
                 results['error'][toolname][res_category].append(test_id)
                 timing['error'][toolname].append(float(elapsed))
 
-    deter = ['AInvalidParam', 'BResLeak', 'DMatch', 'CMatch', 'BReqLifecycle']
-    ndeter = ['DRace', 'EBufferingHazard', 'DGlobalConcurrency', 'BLocalConcurrency', 'InputHazard']
+    deter = ['AInvalidParam', 'BResLeak', 'DMatch', 'CMatch', 'BReqLifecycle', 'BEpochLifecycle']
+    ndeter = ['BLocalConcurrency', 'DGlobalConcurrency', 'DRace', 'EBufferingHazard', 'InputHazard']
 
     # Radar plots
     for tool in used_toolnames:
@@ -1371,9 +1467,13 @@ def cmd_plots(rootdir, toolnames, ext="pdf"):
         make_radar_plot(f'radar_deter_{tool}', deter, tool, results, ext)
         make_radar_plot(f'radar_ndeter_{tool}', ndeter, tool, results, ext)
         make_radar_plot(f'radar_all_{tool}', ndeter + deter, tool, results, ext)
+        make_radar_plot_ext(f'radar_all_{tool}', ndeter + deter, tool, results, ext)
 
     # Bar plots with all tools
     make_plot("cat_ext_all", used_toolnames, ext)
+
+    # Bar plots with all tools but without determinist errors
+    make_plot("cat_ndeter_ext_all", used_toolnames, ext, black_list=deter+['FOK'])
 
     # Individual plots for each tools
     for tool in used_toolnames:
