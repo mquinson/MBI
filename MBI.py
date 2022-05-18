@@ -1181,6 +1181,7 @@ def cmd_latex(rootdir, toolnames):
 
     generate_errors(files, f"{rootdir}/latex/errors.tex")
     generate_labels(files, f"{rootdir}/latex/labels.tex")
+    generate_features(files, f"{rootdir}/latex/features.tex")
 
     os.chdir(here)
 
@@ -1489,7 +1490,6 @@ def cmd_plots(rootdir, toolnames, ext="pdf"):
 ########################
 # Main script argument parsing
 ########################
-
 
 parser = argparse.ArgumentParser(
     description='This runner intends to provide a bridge from a MPI compiler/executor + a test written with MPI bugs collection header and the actual result compared to the expected.')

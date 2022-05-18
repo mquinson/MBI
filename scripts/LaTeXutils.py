@@ -6,6 +6,13 @@ from MBIutils import *
 possible_features=['P2P!basic', 'P2P!nonblocking', 'P2P!persistent', 'COLL!basic', 'COLL!nonblocking', 'COLL!persistent', 'COLL!tools', 'RMA']
 possible_characterization=["Lacking", "Yes"]
 
+feat_to_color = {'P2P!basic':'viridis0', 'P2P!nonblocking':'viridis1', 'P2P!persistent':'viridis3',
+    'RMA':'viridis10',
+    "COLL!basic":'viridis15', "COLL!nonblocking":'viridis16', "COLL!tools":'viridis17'}
+feat_to_bgcolor = {'P2P!basic':'white', 'P2P!nonblocking':'white', 'P2P!persistent':'white',
+    'RMA':'black',
+    "COLL!basic":'black', "COLL!nonblocking":'black', "COLL!tools":'black'}
+
 def parse_file_features(file):
     """Takes a filename and returns a tuple (correct, lacking) of lists of features"""
     correct = []
@@ -193,3 +200,67 @@ def generate_labels(files, outfile):
     #     count = get_counts(categories)
     #     output.write(f"{count['P2P!basic']}&{count['P2P!nonblocking']}&{count['P2P!persistent']}&")
     #     output.write(f"{count['COLL!basic']}&{count['COLL!nonblocking']}&{count['COLL!tools']} & {count['RMA']} & {count['total']} \\\\")
+
+def generate_features(files, outfile):
+    lineheight = 0.4
+    feat_width = 0.7
+    cell_width = feat_width * 3
+    cell_per_line = 10
+    files_per_expected = parse_files_per_expected(files)
+
+    line = 800
+    with open(outfile, 'w') as output:
+        output.write("\\resizebox{\\linewidth}{!}{\\begin{tikzpicture}\n")
+        categories = []
+        for expected in possible_details:
+            if not possible_details[expected] in categories:
+                categories.append(possible_details[expected])
+        for expected in sorted(categories):
+            output.write(f" \\draw({cell_width*cell_per_line/2},{line*lineheight}) node {{\\large{{{displayed_name[expected]}}}}};\n")
+            line -= 1
+            cell = 0 # Position of this file on the line
+            # Draw the boxes
+            initial_line = line
+            for (file,test) in files_per_expected[expected]:
+                (features, _) = parse_file_features(file)
+                file = f'{filename_to_binary(file)}\\#{test}'
+                output.write(f" \\draw ({cell*cell_width-(0.4*feat_width)}, {(line+0.4)*lineheight}) rectangle ({cell*cell_width+(3.45*feat_width)}, {(line-0.4)*lineheight});\n")
+                xpos = 0
+#                for feat in incorrect_feat:
+#                    output.write(f"  \\draw [fill={feat_to_color[feat]}] ({cell*cell_width + xpos-(0.4*feat_width)}, {(line-0.4)*lineheight}) rectangle ({cell*cell_width + xpos + (0.45*feat_width)}, {(line+0.4)*lineheight});\n")
+#                    xpos += feat_width
+                for feat in features:
+                    output.write(f"  \\draw [fill={feat_to_color[feat]}] ({cell*cell_width + xpos-(0.4*feat_width)}, {(line-0.4)*lineheight}) rectangle ({cell*cell_width + xpos + (0.45*feat_width)}, {(line+0.4)*lineheight});\n")
+                    xpos += feat_width
+                if cell+1 == cell_per_line:
+                    cell = 0
+                    line -= 1
+                    if line < 0:
+                        raise Exception("Too much lines. Please increase the initial value of line")
+                else :
+                    cell += 1
+
+            # Put the texts (must come after all boxes for the tooltip to not be hidden behind)
+            cell = 0
+            line = initial_line
+            for (file,test) in files_per_expected[expected]:
+                (features,  _) = parse_file_features(file)
+                file = f'{filename_to_binary(file)}\\#{test}'
+                xpos = 0
+#                for feat in incorrect_feat:
+#                    output.write(f"  \\draw ({cell*cell_width + xpos}, {line*lineheight}) node {{\\scriptsize{{\\tooltip****[{feat_to_bgcolor[feat]}]{{\\sout{{{feat}}}}}{{{file} -- incorrect: {feat}}}}}}};\n")
+#                    xpos += feat_width
+                for feat in features:
+#                    output.write(f"  \\draw ({cell*cell_width + xpos}, {line*lineheight}) node {{\\scriptsize{{\\tooltip****[{feat_to_bgcolor[feat]}]{{{feat}}}{{{file} -- correct: {feat}}}}}}};\n")
+                    output.write(f"  \\draw ({cell*cell_width + xpos}, {line*lineheight}) node {{\\scriptsize{{\\color{{{feat_to_bgcolor[feat]}}}{{{displayed_name[feat]}}}}}}};\n")
+                    xpos += feat_width
+                if cell+1 == cell_per_line:
+                    cell = 0
+                    line -= 1
+                    if line < 0:
+                        raise Exception("Too much lines. Please increase the initial value of line")
+                else :
+                    cell += 1
+            if cell != 0: # we did not output anything on the new line, no need to go further
+                line -= 1
+        output.write("\\end{tikzpicture}}\n")
