@@ -254,6 +254,11 @@ displayed_name = {
     "TO":"Timeout",
     "O":"Other",
 
+    "OK":"Correct diagnostic",
+    "COK":"Can be correct diagnostic",
+    "NOK":"Uncorrect diagnostic",
+    "SE":"Errors",
+
     'P2P!basic':'P2P', 'P2P!nonblocking':'iP2P', 'P2P!persistent':'pP2P',
     'COLL!basic':'Coll', 'COLL!nonblocking':'iColl', 'COLL!tools':'Coll+',
     'RMA':'RMA',

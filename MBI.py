@@ -1233,7 +1233,7 @@ def make_radar_plot_ext(name, errors, toolname, results, ext):
     TP = 'TRUE_POS'
     TN = 'TRUE_NEG'
     res_type = ["TP", "TN", "CTP", "CFP", "FN", "FP", "CE", "RE", "TO", "O"]
-    colors = ['b', 'r', '#202020']
+    colors = ['#2ca02c', '#d62728', '#4D5AAF']
 
     N = len(errors)
     data = []
@@ -1301,13 +1301,13 @@ def make_radar_plot_ext(name, errors, toolname, results, ext):
                  horizontalalignment='center', verticalalignment='center')
 
     ax.plot(theta, data_p, color=colors[0], alpha=1, label='Overall Accuracy +')
-    ax.fill(theta, data_p, facecolor=colors[0], alpha=0.4)
+    # ax.fill(theta, data_p, facecolor=colors[0], alpha=0.4)
 
-    ax.plot(theta, data_m, color=colors[1], alpha=0.5, label='Overall Accuracy -')
-    ax.fill(theta, data_m, facecolor=colors[1], alpha=0.2)
+    ax.plot(theta, data_m, color=colors[1], alpha=1, label='Overall Accuracy -')
+    # ax.fill(theta, data_m, facecolor=colors[1], alpha=0.2)
 
     ax.plot(theta, data, color=colors[2], alpha=1, label='Overall Accuracy')
-    #ax.fill(theta, data, facecolor=colors[2], alpha=0.4, label='Overall Accuracy')
+    ax.fill(theta, data, facecolor=colors[2], alpha=0.4, label='Overall Accuracy')
 
     legend = ax.legend(loc=(0.8, .99), labelspacing=0.1, fontsize='small')
 
@@ -1317,8 +1317,9 @@ def make_radar_plot_ext(name, errors, toolname, results, ext):
     plt.savefig(f'plots/ext_{name}.{ext}')
     plt.close('all')
 
-def make_plot(name, toolnames, ext, black_list=[]):
+def make_plot(name, toolnames, ext, black_list=[], merge=False):
     res_type = ["TP", "TN", "CTP", "CFP", "FN", "FP", "CE", "RE", "TO", "O"]
+    res = {}
     colors = [
         '#4D5AAF', # TP
         '#2ca02c', # TN
@@ -1326,23 +1327,48 @@ def make_plot(name, toolnames, ext, black_list=[]):
         '#ff7f0e', # CFP
         '#8c564b', # FN
         '#d62728', # FP
-        '#4f4c4c', # CE
-        '#605d5d', # RE
-        '#726f6f', # TO
-        '#838181'  # O
+        '#4f4c4c', # SE (CE)
+        # '#605d5d', # RE
+        # '#726f6f', # TO
+        # '#838181'  # O
     ]
-    res = {}
+
+    # Modify colors for merged version
+    if merge:
+        colors = [
+            '#4D5AAF', # OK
+            '#9467bd', # COK
+            '#d62728', # NOK
+            '#4f4c4c', # SE
+        ]
+
+    merged_res_type = {
+        "TP" :"TP" if not merge else "OK",
+        "TN" :"TN" if not merge else "OK",
+        "CTP":"CTP" if not merge else "COK",
+        "CFP":"CFP" if not merge else "COK",
+        "FN" :"FN" if not merge else "NOK",
+        "FP" :"FP" if not merge else "NOK",
+        "CE" :"SE",
+        "RE" :"SE",
+        "TO" :"SE",
+        "O"  :"SE"
+    }
+    res_type_short = ["TP", "TN", "CTP", "CFP", "FN", "FP", "SE"]
+
+    if merge:
+        res_type_short = ["OK", "COK", "NOK", "SE"]
 
     for tool in toolnames:
         res[tool] = {}
         for r in res_type:
-            res[tool][r] = 0
+            res[tool][merged_res_type[r]] = 0
 
     for toolname in toolnames:
         results = categorize_all_files(tools[toolname], toolname, todo)
         # print(results)
         for r in results:
-            id = results[r]['result']
+            id = merged_res_type[results[r]['result']]
 
             if possible_details[results[r]['detail']] in black_list:
                 continue
@@ -1350,9 +1376,10 @@ def make_plot(name, toolnames, ext, black_list=[]):
             res[toolname][id] += 1
 
     def res_sort(toolname):
-        return round(res[toolname]['TP']
-                     + res[toolname]['TN']
-                     + (0.5 * res[toolname]['CTP']))
+        if not merge:
+            return res[toolname]['TP'] + res[toolname]['TN']
+        else:
+            return res[toolname]['OK'] + res[toolname]['COK']
 
     toolnames.sort(key=res_sort, reverse=True)
 
@@ -1367,17 +1394,18 @@ def make_plot(name, toolnames, ext, black_list=[]):
     prev_data = np.zeros(len(toolnames))
 
     ind = 0
-    for t in res_type:
+    for t in res_type_short:
+        id = t
         data = []
 
         for toolname in toolnames:
-            data.append(res[toolname][t])
+            data.append(res[toolname][id])
 
         if prev_data is None:
-            l = plt.bar(x, data, width, alpha=0.75, label=displayed_name[t],
+            l = plt.bar(x, data, width, alpha=0.75, label=displayed_name[id],
                         color=colors[ind])
         else:
-            l = plt.bar(x, data, width, alpha=0.75, label=displayed_name[t],
+            l = plt.bar(x, data, width, alpha=0.75, label=displayed_name[id],
                         bottom=prev_data, color=colors[ind])
 
         # if len(toolnames) == 1:
@@ -1475,14 +1503,18 @@ def cmd_plots(rootdir, toolnames, ext="pdf"):
 
     # Bar plots with all tools
     make_plot("cat_ext_all", used_toolnames, ext)
+    make_plot("cat_ext_all_2", used_toolnames, ext, merge=True)
 
     # Bar plots with all tools but without determinist errors
     make_plot("cat_ndeter_ext_all", used_toolnames, ext, black_list=deter+['FOK'])
+    make_plot("cat_ndeter_ext_all_2", used_toolnames, ext, black_list=deter+['FOK'], merge=True)
+
 
     # Individual plots for each tools
     for tool in used_toolnames:
         print (f' --- Bar plots {displayed_name[tool]}')
         make_plot(f"cat_ext_{tool}", [tool], ext)
+        make_plot(f"cat_ext_{tool}_2", [tool], ext, merge=True)
 
     plt.close('all')
     os.chdir(here)
