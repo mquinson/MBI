@@ -298,8 +298,7 @@ def parse_one_code(filename):
                         raise ValueError(
                             f"\n{filename}:{line_num}: MBI parse error: Detailled outcome {detail} is not one of the allowed ones.")
 
-                if possible_details[detail] in ['BLocalConcurrency', 'DRace',
-                                                'DGlobalConcurrency', 'EBufferingHazard']:
+                if possible_details[detail] in ['BLocalConcurrency', 'DRace', 'DGlobalConcurrency']:
                     for i in [0,1,2,3,4]:
                         test = {'filename': filename, 'id': test_num, 'cmd': cmd, 'expect': expect, 'detail': detail}
                         res.append(test.copy())
