@@ -1288,8 +1288,12 @@ def make_radar_plot_ext(name, errors, toolname, results, ext):
         ext_results[error]['accp'] = accp
         ext_results[error]['accm'] = accm
 
-        data_p.append(ext_results[error]['accp'])
-        data_m.append(ext_results[error]['accm'])
+        if error in ['DRace', 'EBufferingHazard', 'InputHazard']:
+            data_p.append(ext_results[error]['accp'])
+            data_m.append(ext_results[error]['accm'])
+        else:
+            data_p.append(0)
+            data_m.append(0)
         spoke_labels.append(displayed_name[error])
 
     # Radar plot
@@ -1300,14 +1304,17 @@ def make_radar_plot_ext(name, errors, toolname, results, ext):
     ax.set_title(displayed_name[toolname], weight='bold', size='medium', position=(0.5, 1.1),
                  horizontalalignment='center', verticalalignment='center')
 
-    ax.plot(theta, data_p, color=colors[0], alpha=1, label='Overall Accuracy +')
+    ax.plot(theta, data_p, color=colors[0], alpha=1, linestyle='dashed',
+            label='Overall Accuracy +')
     # ax.fill(theta, data_p, facecolor=colors[0], alpha=0.4)
 
-    ax.plot(theta, data_m, color=colors[1], alpha=1, label='Overall Accuracy -')
+    ax.plot(theta, data_m, color=colors[1], alpha=1, linestyle='dashed',
+            label='Overall Accuracy -')
     # ax.fill(theta, data_m, facecolor=colors[1], alpha=0.2)
 
-    ax.plot(theta, data, color=colors[2], alpha=1, label='Overall Accuracy')
-    ax.fill(theta, data, facecolor=colors[2], alpha=0.4, label='Overall Accuracy')
+    # ax.plot(theta, data, color=colors[2], alpha=1, label='Overall Accuracy')
+    ax.fill(theta, data, facecolor=colors[2], alpha=0.4,
+            label='Overall Accuracy')
 
     legend = ax.legend(loc=(0.8, .99), labelspacing=0.1, fontsize='small')
 
