@@ -985,7 +985,12 @@ def cmd_latex(rootdir, toolnames):
         outfile.write("  \\hline\n")
         outfile.write("\\end{tabular}\n")
 
-    def resultsPerCategory(suffix, category=['FOK', 'BLocalConcurrency', 'DRace', 'DGlobalConcurrency', 'EBufferingHazard', 'InputHazard']):
+    def resultsPerCategory(suffix, hazard=False):
+        category = ['FOK', 'AInvalidParam', 'BResLeak', 'DMatch', 'CMatch', 'BReqLifecycle', 'BEpochLifecycle']
+        if hazard:
+            category = ['BLocalConcurrency', 'DGlobalConcurrency', 'DRace', 'EBufferingHazard', 'InputHazard']
+
+
         with open(f'{rootdir}/latex/nd-results-per-category-portrait-{suffix}.tex', 'w') as outfile:
             # files_results = categorize_all_files(tools[used_toolnames[0]], used_toolnames[0], todo)
             ext_results = {}
@@ -997,7 +1002,8 @@ def cmd_latex(rootdir, toolnames):
                 last = e
                 best[e] = {
                     'TP':0, 'TN':0, 'CTP':0, 'CFP':99999, 'FP':99999, 'FN':99999,
-                    'E':99999
+                    'E':99999,
+                    'accp':0, 'accm':0
                 }
 
             for toolname in used_toolnames:
@@ -1007,12 +1013,22 @@ def cmd_latex(rootdir, toolnames):
                 for error in category:
                     ext_results[toolname][error] = {
                         'TP':[], 'TN':[], 'CTP':[], 'CFP':[], 'FP':[], 'FN':[],
-                        'CE':[], 'TO':[], 'RE':[], 'O':[]
+                        'CE':[], 'TO':[], 'RE':[], 'O':[],
+                        'accp':0, 'accm':0,
+                        'total':0
                     }
 
                     for f in files_results:
                         if possible_details[files_results[f]['detail']] == error:
                             ext_results[toolname][error][files_results[f]['result']].append(f)
+                            ext_results[toolname][error]['total'] += 1
+
+                    total = ext_results[toolname][error]['total']
+                    accp = round((len(ext_results[toolname][error]['TP']) + len(ext_results[toolname][error]['TN']) + len(ext_results[toolname][error]['CTP'])) / total, 2)
+                    accm = round((len(ext_results[toolname][error]['TP']) + len(ext_results[toolname][error]['TN'])) / total, 2)
+
+                    ext_results[toolname][error]['accp'] = accp
+                    ext_results[toolname][error]['accm'] = accm
 
                 for error in category:
                     err = (len(ext_results[toolname][error]['CE'])
@@ -1031,17 +1047,23 @@ def cmd_latex(rootdir, toolnames):
                         if best[error][res] < len(ext_results[toolname][error][res]):
                             best[error][res] = len(ext_results[toolname][error][res])
 
+                    for res in ['accp', 'accm']:
+                        if best[error][res] < ext_results[toolname][error][res]:
+                            best[error][res] = ext_results[toolname][error][res]
+
+            ncol = 5 if not hazard else 6
+            align = 'c|c|c|c|c|' if not hazard else 'c|c|c|c|c|c|'
 
             outfile.write("\\setlength\\tabcolsep{1.5pt}\n")
-            outfile.write(f"\\begin{{tabular}}{{|l|*{{{len(category)-1}}}{{c|c|c|c||}} c|c|c|c|}}\n")
-            outfile.write(f"\\cline{{2- {(len(category) * 4) + 1} }}\n")
+            outfile.write(f"\\begin{{tabular}}{{|l|*{{{len(category)-1}}}{{ {align} |}} {align}}}\n")
+            outfile.write(f"\\cline{{2- {(len(category) * ncol) + 1} }}\n")
 
             outfile.write("  \\multicolumn{1}{c|}{}")
             for error in category:
                 if error == last:
-                    outfile.write(f" & \\multicolumn{{4}}{{c|}}")
+                    outfile.write(f" & \\multicolumn{{{ncol}}}{{c|}}")
                 else:
-                    outfile.write(f" & \\multicolumn{{4}}{{c||}}")
+                    outfile.write(f" & \\multicolumn{{{ncol}}}{{c||}}")
 
                 outfile.write(f"{{\it {displayed_name[error].split()[0]}}}")
 
@@ -1050,14 +1072,14 @@ def cmd_latex(rootdir, toolnames):
             outfile.write("  \\multicolumn{1}{c|}{}")
             for error in category:
                 if error == last:
-                    outfile.write(f" & \\multicolumn{{4}}{{c|}}")
+                    outfile.write(f" & \\multicolumn{{{ncol}}}{{c|}}")
                 else:
-                    outfile.write(f" & \\multicolumn{{4}}{{c||}}")
+                    outfile.write(f" & \\multicolumn{{{ncol}}}{{c||}}")
 
                 outfile.write(f"{{\it {displayed_name[error].split()[1]}}}")
 
             outfile.write("\\\\\n")
-            outfile.write(f"\\cline{{2- {(len(category) * 4) + 1} }}\n")
+            outfile.write(f"\\cline{{2- {(len(category) * ncol) + 1} }}\n")
 
             outfile.write("  \\multicolumn{1}{c|}{}")
             for error in category:
@@ -1070,6 +1092,12 @@ def cmd_latex(rootdir, toolnames):
                     outfile.write(" & \\rotatebox{90}{True Positive}")
                     outfile.write(" & \\rotatebox{90}{Can be True Positive}")
                     outfile.write(" & \\rotatebox{90}{False Negatif}")
+
+                if hazard:
+                    outfile.write(" & \\rotatebox{90}{Accuracy\\textsuperscript{+}}")
+                    outfile.write(" & \\rotatebox{90}{Accuracy\\textsuperscript{-}}")
+                else:
+                    outfile.write(" & \\rotatebox{90}{Accuracy}")
 
             outfile.write("\\\\\\hline\n")
 
@@ -1089,6 +1117,8 @@ def cmd_latex(rootdir, toolnames):
 
                     format_if_best = lambda res : f" & {{\\bf {len(ext_results[toolname][error][res])}}}" if best[error][res] == len(ext_results[toolname][error][res]) else f" & {len(ext_results[toolname][error][res])}"
 
+                    format_if_best_2 = lambda res : f" & {{\\bf {ext_results[toolname][error][res]}}}" if best[error][res] == ext_results[toolname][error][res] else f" & {ext_results[toolname][error][res]}"
+
                     if error == "FOK":
                         outfile.write(format_if_best('TN'))
                         outfile.write(format_if_best('CFP'))
@@ -1098,14 +1128,20 @@ def cmd_latex(rootdir, toolnames):
                         outfile.write(format_if_best('CTP'))
                         outfile.write(format_if_best('FN'))
 
+                    if hazard:
+                        outfile.write(format_if_best_2('accp'))
+                        outfile.write(format_if_best_2('accm'))
+                    else:
+                        outfile.write(format_if_best_2('accp'))
+
                 outfile.write("\\\\\\hline\n")
 
 
             outfile.write("\\end{tabular}\n")
             outfile.write("\\setlength\\tabcolsep{6pt}")
 
-    resultsPerCategory('short')
-    resultsPerCategory('all', category=error_scope)
+    resultsPerCategory('deter', hazard=False)
+    resultsPerCategory('ndeter', hazard=True)
 
 
     with open(f'{rootdir}/latex/reclassified-result.tex', 'w') as outfile:
