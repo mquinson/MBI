@@ -47,7 +47,7 @@ int main(int argc, char **argv) {
   if (numProcs < 2)
     printf("MBI ERROR: This test needs at least 2 processes to produce a bug!\\n");
 
-  int *winbuf = malloc(N * sizeof(int));
+  int *winbuf = (int *)malloc(N * sizeof(int));
 
   MPI_Win win;
   MPI_Win_create(winbuf, N * sizeof(int), 1, MPI_INFO_NULL, MPI_COMM_WORLD, &win);

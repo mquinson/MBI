@@ -40,7 +40,7 @@ END_MBI_TESTS
 int main(int argc, char **argv) {
   int nprocs = -1, rank = -1;
   MPI_Win win;
-  int *winbuf = malloc(N * sizeof(int)); // Window buffer
+  int *winbuf = (int *)malloc(N * sizeof(int)); // Window buffer
   int target=1;
 
   MPI_Init(&argc, &argv);

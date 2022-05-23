@@ -107,11 +107,11 @@ for b in ['missing', 'null',  'malloc', 'bufferSize']:
         replace['bufferalloc'] = 'buffer = NULL; /* MBIERROR1 */'
         replace['longdesc'] = 'Use NULL buffer in window creation.'
     elif b == 'bufferSize':
-        replace['bufferalloc'] = 'buffer = malloc((N/2) * sizeof(int)); /* MBIERROR1 */'
+        replace['bufferalloc'] = 'buffer = (int *)malloc((N/2) * sizeof(int)); /* MBIERROR1 */'
         replace['bufferfree'] = 'free(buffer);'
         replace['longdesc'] = 'Unmatched size of buffer in window creation.'
     else:
-        replace['bufferalloc'] = 'buffer = malloc(N * sizeof(int));'
+        replace['bufferalloc'] = 'buffer = (int *)malloc(N * sizeof(int));'
         replace['bufferfree'] = 'free(buffer);'
         replace['longdesc'] = 'Correct initialized buffer in window creation.'
         replace['outcome'] = 'OK'

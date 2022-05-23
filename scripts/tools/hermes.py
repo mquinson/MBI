@@ -36,7 +36,7 @@ class Tool(AbstractTool):
             return
         with open('compile_commands.json', 'w') as outfile:
             outfile.write("[{")
-            outfile.write(f'  "command": "/usr/bin/cxx -c -I/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi -I/MBI-builds/hermes/clangTool/ -I/usr/lib/x86_64-linux-gnu/openmpi/include -I/usr/lib/x86_64-linux-gnu/mpich/include -I/MBI-builds/hermes/clangTool/clang+llvm-3.8.0-x86_64-linux-gnu-debian8/lib/clang/3.8.0/include/ -I/usr/include/linux/ -pthread source.c",\n')
+            outfile.write(f'  "command": "/usr/bin/cxx -c -I/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi -I/MBI-builds/hermes/clangTool/ -I/usr/lib/x86_64-linux-gnu/openmpi/include -I/usr/lib/x86_64-linux-gnu/mpich/include -I/MBI-builds/hermes/clangTool/clang+llvm-3.8.0-x86_64-linux-gnu-debian8/lib/clang/3.8.0/include/ -I/usr/include/linux/ -fpermissive -pthread source.c",\n')
             outfile.write(f'          "directory": "{self.rootdir}/logs/hermes",\n')
             outfile.write(f'          "file": "{self.rootdir}/logs/hermes/source.c"\n')
             outfile.write('}]')
@@ -84,11 +84,26 @@ class Tool(AbstractTool):
         if re.search('Detected a DEADLOCK in interleaving', output):
             return 'deadlock'
 
+
         # Inherited from ISP
         if re.search('Rank [0-9]: WARNING: Waited on non-existant request in', output):
             return 'mpierr'
         if re.search('Rank [0-9]: Invalid rank in MPI_.*? at ',output):
-            return 'mpierr'
+            return 'invalid rank'
+        # Invalid argument/tag/datatype/etc.
+        if re.search('Fatal error in P?MPI_.*?: Invalid', output):
+            if re.search('Invalid argument', output):
+                return 'invalid argument'
+            if re.search('Invalid communicator', output):
+                return 'invalid communicator'
+            if re.search('Invalid datatype', output):
+                return 'invalid datatype'
+            if re.search('Invalid MPI_Op', output):
+                return 'invalid mpi operator'
+            if re.search('Invalid tag', output):
+                return 'invalid tag'
+            else:
+                return 'mpierr'
         if re.search('Fatal error in PMPI', output):
             return 'mpierr'
         if re.search('Fatal error in MPI', output):

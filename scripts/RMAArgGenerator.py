@@ -44,7 +44,7 @@ int main(int argc, char **argv) {
   MPI_Comm_size(MPI_COMM_WORLD, &numProcs);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-  int *winbuf = malloc(N * sizeof(int));
+  int *winbuf = (int *)malloc(N * sizeof(int));
 
   MPI_Win win;
   MPI_Win_create(&winbuf, N * sizeof(int), 1, MPI_INFO_NULL, MPI_COMM_WORLD, &win);
@@ -107,4 +107,3 @@ for e in epoch:
         replace['change_arg'] = 'MPI_Type_contiguous (2, MPI_INT, &type); MPI_Type_commit(&type);MPI_Type_free(&type); /* MBIERROR2 */'
         replace['errormsg'] = 'Invalid Datatype in @{p}@ at @{filename}@:@{line:MBIERROR}@'
         make_file(template, f'InvalidParam_DatatypeCond_{e}_{p}_nok.c', replace)
-
