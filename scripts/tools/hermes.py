@@ -23,8 +23,10 @@ class Tool(AbstractTool):
         os.chdir(f"/MBI-builds/hermes")
         subprocess.run("cd clangTool/ && make -j$(nproc) clangTool", shell=True, check=True)
         subprocess.run("autoreconf --install", shell=True, check=True)
-        subprocess.run(f"./configure --disable-gui --enable-optional-ample-set-fix --with-mpi-inc-dir=/usr/lib/x86_64-linux-gnu/mpich/include CXXFLAGS='-fPIC' LDFLAGS='-lz3'", shell=True, check=True)
+        subprocess.run(f"./configure --disable-gui --prefix='/MBI-builds/hermes/' --enable-optional-ample-set-fix --with-mpi-inc-dir=/usr/lib/x86_64-linux-gnu/mpich/include CXXFLAGS='-fPIC' LDFLAGS='-lz3'", shell=True, check=True)
         subprocess.run("make -j$(nproc)", shell=True, check=True)
+        subprocess.run("make -j$(nproc) install", shell=True, check=True)
+
         # Back to our previous directory
         os.chdir(here)
 
@@ -34,12 +36,13 @@ class Tool(AbstractTool):
             return
         with open('compile_commands.json', 'w') as outfile:
             outfile.write("[{")
-            outfile.write(f'  "command": "/usr/bin/cxx -c -I/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi -I/MBI-builds/hermes/clangTool/ -I/usr/lib/x86_64-linux-gnu/openmpi/include -I/usr/lib/x86_64-linux-gnu/mpich/include -I/MBI-builds/hermes/clangTool/clang+llvm-3.8.0-x86_64-linux-gnu-debian8/lib/clang/3.8.0/include/ -pthread source.c",\n')
+            outfile.write(f'  "command": "/usr/bin/cxx -c -I/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi -I/MBI-builds/hermes/clangTool/ -I/usr/lib/x86_64-linux-gnu/openmpi/include -I/usr/lib/x86_64-linux-gnu/mpich/include -I/MBI-builds/hermes/clangTool/clang+llvm-3.8.0-x86_64-linux-gnu-debian8/lib/clang/3.8.0/include/ -I/usr/include/linux/ -pthread source.c",\n')
             outfile.write(f'          "directory": "{self.rootdir}/logs/hermes",\n')
             outfile.write(f'          "file": "{self.rootdir}/logs/hermes/source.c"\n')
             outfile.write('}]')
 
     def run(self, execcmd, filename, binary, id, timeout, batchinfo):
+        os.environ['PATH'] = f"{os.environ['PATH']}:/MBI-builds/hermes/bin/"
         cachefile = f'{binary}_{id}'
 
         execcmd = re.sub("mpirun", "isp.exe", execcmd)
@@ -51,7 +54,7 @@ class Tool(AbstractTool):
         self.run_cmd(
             buildcmd=f"cp {filename} source.c &&"
                      +"/MBI-builds/hermes/clangTool/clangTool source.c &&"
-                     +f"ispcxx -I/MBI-builds/hermes/clangTool/ -o {binary} i_source.c /MBI-builds/hermes/clangTool/GenerateAssumes.cpp /MBI-builds/hermes/clangTool/IfInfo.cpp /MBI/tools/hermes/profiler/Client.c",
+                     +f"ispcxx -I/MBI-builds/hermes/clangTool/ -o {binary} i_source.c /MBI-builds/hermes/clangTool/GenerateAssumes.cpp /MBI-builds/hermes/clangTool/IfInfo.cpp /MBI-builds/hermes/profiler/Client.c",
             execcmd=execcmd,
             cachefile=cachefile,
             filename=filename,
@@ -96,6 +99,10 @@ class Tool(AbstractTool):
             return 'failure'
         if re.search('Command killed by signal 15, elapsed time: 300', output):
             return 'timeout'
+
+        if re.search('1 warning generated', output):
+            if not re.search('implicitly declaring', output):
+                return 'other'
 
         print (f">>>>[ INCONCLUSIVE ]>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> (hermes/{cachefile})")
         print(output)
