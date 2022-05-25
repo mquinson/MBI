@@ -1129,10 +1129,10 @@ def cmd_latex(rootdir, toolnames):
                         outfile.write(format_if_best('FN'))
 
                     if hazard:
-                        outfile.write(format_if_best_2('accp'))
-                        outfile.write(format_if_best_2('accm'))
+                        outfile.write(format_if_best_2('accp').replace('.0', ''))
+                        outfile.write(format_if_best_2('accm').replace('.0', ''))
                     else:
-                        outfile.write(format_if_best_2('accp'))
+                        outfile.write(format_if_best_2('accp').replace('.0', ''))
 
                 outfile.write("\\\\\\hline\n")
 
@@ -1272,9 +1272,16 @@ def make_radar_plot_ext(name, errors, toolname, results, ext):
     colors = ['#2ca02c', '#d62728', '#4D5AAF']
 
     N = len(errors)
+
     data = []
     data_p = []
     data_m = []
+
+    # Dummy data for fillbetween
+    data_x = []
+    data_y = []
+    data_0 = []
+
     spoke_labels = []
     ext_results = {}
 
@@ -1316,6 +1323,8 @@ def make_radar_plot_ext(name, errors, toolname, results, ext):
 
         data.append(score)
 
+        data_0.append(0)
+
         # A+ and A-
         total = ext_results[error]['total']['Error'] + ext_results[error]['total']['OK']
         accp = round((len(ext_results[error]['TP']) + len(ext_results[error]['TN']) + len(ext_results[error]['CTP'])) / total, 2)
@@ -1324,12 +1333,19 @@ def make_radar_plot_ext(name, errors, toolname, results, ext):
         ext_results[error]['accp'] = accp
         ext_results[error]['accm'] = accm
 
-        if error in ['DRace', 'EBufferingHazard', 'InputHazard']:
+        if error in ['DRace', 'EBufferingHazard', 'InputHazard', 'BLocalConcurrency', 'DGlobalConcurrency']:
             data_p.append(ext_results[error]['accp'])
             data_m.append(ext_results[error]['accm'])
+
+            data_x.append(ext_results[error]['accp'])
+            data_y.append(ext_results[error]['accm'])
         else:
             data_p.append(0)
             data_m.append(0)
+
+            data_x.append(score)
+            data_y.append(score)
+
         spoke_labels.append(displayed_name[error])
 
     # Radar plot
@@ -1340,17 +1356,26 @@ def make_radar_plot_ext(name, errors, toolname, results, ext):
     ax.set_title(displayed_name[toolname], weight='bold', size='medium', position=(0.5, 1.1),
                  horizontalalignment='center', verticalalignment='center')
 
+    # ax.plot(theta, data, color=colors[2], alpha=1, label='Overall Accuracy')
+    ax.plot(theta, data, color=colors[2], alpha=1)
+    ax.fill(theta, data, facecolor=colors[2], alpha=0.6,
+            label='Overall Accuracy'# , hatch="o"
+    )
+
     ax.plot(theta, data_p, color=colors[0], alpha=1, linestyle='dashed',
-            label='Overall Accuracy +')
+            label='Overall Accuracy$^+$')
     # ax.fill(theta, data_p, facecolor=colors[0], alpha=0.4)
 
-    ax.plot(theta, data_m, color=colors[1], alpha=1, linestyle='dashed',
-            label='Overall Accuracy -')
+    ax.plot(theta, data_m, color=colors[1], alpha=1, linestyle='dotted',
+            label='Overall Accuracy$^-$')
     # ax.fill(theta, data_m, facecolor=colors[1], alpha=0.2)
 
-    # ax.plot(theta, data, color=colors[2], alpha=1, label='Overall Accuracy')
-    ax.fill(theta, data, facecolor=colors[2], alpha=0.4,
-            label='Overall Accuracy')
+    # ax.fill_between(theta, data_0, data_y, facecolor=colors[2], alpha=0.4)
+    ax.fill_between(theta, data_y, data, facecolor=colors[1], alpha=0.4# , hatch="\\"
+    )
+    ax.fill_between(theta, data, data_x, facecolor=colors[0], alpha=0.4# , hatch="/"
+    )
+
 
     legend = ax.legend(loc=(0.8, .99), labelspacing=0.1, fontsize='small')
 
@@ -1376,14 +1401,17 @@ def make_plot(name, toolnames, ext, black_list=[], merge=False):
         # '#838181'  # O
     ]
 
+    patterns = ["\\","o","","","O","/","x"]
+
     # Modify colors for merged version
     if merge:
         colors = [
             '#4D5AAF', # OK
             '#9467bd', # COK
             '#d62728', # NOK
-            '#4f4c4c', # SE
+            '#605d5d', # SE
         ]
+        patterns = ["\\","","/","x"]
 
     merged_res_type = {
         "TP" :"TP" if not merge else "OK",
@@ -1426,7 +1454,8 @@ def make_plot(name, toolnames, ext, black_list=[], merge=False):
 
     toolnames.sort(key=res_sort, reverse=True)
 
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(16,12))
+    # fig, ax = plt.subplots()
     x = np.arange(len(toolnames))     # the label locations
     width = 1.0                       # the width of the bars
     fig.subplots_adjust(wspace=0.15, hspace=0.6, top=0.90, bottom=0.20)
@@ -1444,12 +1473,8 @@ def make_plot(name, toolnames, ext, black_list=[], merge=False):
         for toolname in toolnames:
             data.append(res[toolname][id])
 
-        if prev_data is None:
-            l = plt.bar(x, data, width, alpha=0.75, label=displayed_name[id],
-                        color=colors[ind])
-        else:
-            l = plt.bar(x, data, width, alpha=0.75, label=displayed_name[id],
-                        bottom=prev_data, color=colors[ind])
+        l = plt.bar(x, data, width, alpha=0.75, label=displayed_name[id],
+                    bottom=prev_data, color=colors[ind], hatch=patterns[ind])
 
         # if len(toolnames) == 1:
         #     ax.bar_label(l, padding=-1.5)
@@ -1468,7 +1493,8 @@ def make_plot(name, toolnames, ext, black_list=[], merge=False):
 
     fig.tight_layout()
 
-    plt.legend(prop={'size': 7})
+    plt.legend(prop={'size': 22})
+    plt.rcParams.update({'font.size':22})
     plt.savefig(f"plots/{name}.{ext}")
 
 def cmd_plots(rootdir, toolnames, ext="pdf"):
@@ -1534,15 +1560,15 @@ def cmd_plots(rootdir, toolnames, ext="pdf"):
                 timing['error'][toolname].append(float(elapsed))
 
     deter = ['AInvalidParam', 'BResLeak', 'DMatch', 'CMatch', 'BReqLifecycle', 'BEpochLifecycle']
-    ndeter = ['BLocalConcurrency', 'DGlobalConcurrency', 'DRace', 'EBufferingHazard', 'InputHazard']
+    ndeter = ['DGlobalConcurrency', 'BLocalConcurrency', 'DRace', 'EBufferingHazard', 'InputHazard']
 
     # Radar plots
     for tool in used_toolnames:
         print (f' --- Radar plots {displayed_name[tool]}')
         make_radar_plot(f'radar_deter_{tool}', deter, tool, results, ext)
         make_radar_plot(f'radar_ndeter_{tool}', ndeter, tool, results, ext)
-        make_radar_plot(f'radar_all_{tool}', ndeter + deter, tool, results, ext)
-        make_radar_plot_ext(f'radar_all_{tool}', ndeter + deter, tool, results, ext)
+        make_radar_plot(f'radar_all_{tool}', deter + ndeter, tool, results, ext)
+        make_radar_plot_ext(f'radar_all_{tool}', deter + ndeter, tool, results, ext)
 
     # Bar plots with all tools
     make_plot("cat_ext_all", used_toolnames, ext)
@@ -1636,7 +1662,7 @@ elif args.c == 'latex':
 elif args.c == 'html':
     extract_all_todo(args.b)
     if args.x == 'mpirun':
-        toolnames=['itac', 'simgrid','must', 'smpi', 'smpivg', 'aislinn', 'civl', 'isp', 'mpisv', 'parcoach', 'mpi-checker']
+        toolnames=['itac', 'simgrid','must', 'smpi', 'smpivg', 'aislinn', 'civl', 'isp', 'mpisv', 'parcoach', 'hermes', 'mpi-checker']
     else:
         toolnames=arg_tools
     # Build SVG plots
