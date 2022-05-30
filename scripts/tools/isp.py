@@ -76,7 +76,8 @@ class Tool(AbstractTool):
         if re.search('MBI_MSG_RACE', output):
             return 'MBI_MSG_RACE'
 
-        if re.search('resource leaks detected', output):
+        if (re.search('resource leaks detected', output) and
+            not re.search('No resource leaks detected', output)):
             return 'resleak'
 
         if re.search("Attempting to use an MPI routine after finalizing MPI", output):
@@ -86,10 +87,27 @@ class Tool(AbstractTool):
             return 'mpierr'
         if re.search('Rank [0-9]: Invalid rank in MPI_.*? at ',output):
             return 'mpierr'
+        # Invalid argument/tag/datatype/etc.
+        if re.search('Fatal error in P?MPI_.*?: Invalid', output):
+            if re.search('Invalid argument', output):
+                return 'invalid argument'
+            if re.search('Invalid communicator', output):
+                return 'invalid communicator'
+            if re.search('Invalid datatype', output):
+                return 'invalid datatype'
+            if re.search('Invalid MPI_Op', output):
+                return 'invalid mpi operator'
+            if re.search('Invalid tag', output):
+                return 'invalid tag'
+            else:
+                return 'mpierr'
         if re.search('Fatal error in PMPI', output):
             return 'mpierr'
         if re.search('Fatal error in MPI', output):
             return 'mpierr'
+
+        if re.search('Assertion failed', output):
+            return 'failure'
 
         if re.search('ISP detected no deadlocks', output):
             return 'OK'

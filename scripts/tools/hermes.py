@@ -84,8 +84,11 @@ class Tool(AbstractTool):
         if re.search('Detected a DEADLOCK in interleaving', output):
             return 'deadlock'
 
-
         # Inherited from ISP
+        if (re.search('resource leaks detected', output) and
+            not re.search('No resource leaks detected', output)):
+            return 'resleak'
+
         if re.search('Rank [0-9]: WARNING: Waited on non-existant request in', output):
             return 'mpierr'
         if re.search('Rank [0-9]: Invalid rank in MPI_.*? at ',output):
@@ -115,9 +118,24 @@ class Tool(AbstractTool):
         if re.search('Command killed by signal 15, elapsed time: 300', output):
             return 'timeout'
 
+        if re.search('Assertion failed', output):
+            return 'failure'
+
+        if re.search('Segmentation fault', output):
+            return 'segfault'
+
         if re.search('1 warning generated', output):
             if not re.search('implicitly declaring', output):
                 return 'other'
+
+        if re.search('Command return code: 22', output):
+            return 'failure'
+
+        if re.search('Command return code: 0', output):
+            return 'OK'
+
+        if re.search('No resource leaks detected', output):
+            return 'OK'
 
         print (f">>>>[ INCONCLUSIVE ]>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> (hermes/{cachefile})")
         print(output)
