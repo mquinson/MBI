@@ -1418,7 +1418,6 @@ def make_plot(name, toolnames, ext, black_list=[], merge=False):
         # '#726f6f', # TO
         # '#838181'  # O
     ]
-
     patterns = ["\\","o","","","O","/","x"]
 
     # Modify colors for merged version

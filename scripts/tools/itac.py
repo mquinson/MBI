@@ -59,6 +59,9 @@ class Tool(AbstractTool):
         with open(f'{cachefile}.txt' if os.path.exists(f'{cachefile}.txt') else f'logs/itac/{cachefile}.txt', 'r') as infile:
             output = infile.read()
 
+        if re.search('mpiicc: not found', output):
+            return 'failure'
+
         if re.search('Compilation of .*? raised an error \(retcode: ', output):
             return 'UNIMPLEMENTED'
 
