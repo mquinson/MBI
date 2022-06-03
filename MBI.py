@@ -1136,6 +1136,19 @@ def cmd_latex(rootdir, toolnames):
 
                 outfile.write("\\\\\\hline\n")
 
+            outfile.write("\\textit{Ideal tools}")
+
+            for error in category:
+                outfile.write(" & \\textit{0}")
+                outfile.write(f" & \\textit{{ {ext_results[toolname][error]['total']} }}")
+                outfile.write(" & \\textit{0}")
+                outfile.write(" & \\textit{0}")
+                outfile.write(" & \\textit{1}")
+                if hazard:
+                    outfile.write(" & \\textit{1}")
+
+            outfile.write("\\\\\\hline\n")
+
 
             outfile.write("\\end{tabular}\n")
             outfile.write("\\setlength\\tabcolsep{6pt}")
@@ -1350,34 +1363,39 @@ def make_radar_plot_ext(name, errors, toolname, results, ext):
 
     # Radar plot
     theta = radar_factory(N, frame='polygon')
-    fig, ax = plt.subplots(subplot_kw=dict(projection='radar'))
+    fig, ax = plt.subplots(subplot_kw=dict(projection='radar')# , figsize=(16,12)
+    )
     fig.subplots_adjust(wspace=0.15, hspace=0.6, top=0.85, bottom=0.10)
     ax.set_rgrids([0.2, 0.4, 0.6, 0.8])
     ax.set_title(displayed_name[toolname], weight='bold', size='medium', position=(0.5, 1.1),
                  horizontalalignment='center', verticalalignment='center')
+    # plt.legend(prop={'size': 22})
+    # plt.rcParams.update({'font.size':22})
 
     # ax.plot(theta, data, color=colors[2], alpha=1, label='Overall Accuracy')
-    ax.plot(theta, data, color=colors[2], alpha=1)
     ax.fill(theta, data, facecolor=colors[2], alpha=0.6,
-            label='Overall Accuracy'# , hatch="o"
+            label='Always detected', hatch="/"
     )
 
     ax.plot(theta, data_p, color=colors[0], alpha=1, linestyle='dashed',
-            label='Overall Accuracy$^+$')
+            # label='Overall Accuracy$^+$'
+    )
     # ax.fill(theta, data_p, facecolor=colors[0], alpha=0.4)
 
     ax.plot(theta, data_m, color=colors[1], alpha=1, linestyle='dotted',
-            label='Overall Accuracy$^-$')
+            # label='Overall Accuracy$^-$'
+    )
     # ax.fill(theta, data_m, facecolor=colors[1], alpha=0.2)
 
     # ax.fill_between(theta, data_0, data_y, facecolor=colors[2], alpha=0.4)
-    ax.fill_between(theta, data_y, data, facecolor=colors[1], alpha=0.4# , hatch="\\"
-    )
-    ax.fill_between(theta, data, data_x, facecolor=colors[0], alpha=0.4# , hatch="/"
-    )
+    # ax.fill_between(theta, data_y, data, facecolor=colors[1], alpha=0.4,
+    #                 label='', hatch="x")
+    ax.fill_between(theta, data, data_x, facecolor=colors[0], alpha=0.4,
+                    label='Can be detected', hatch="\\")
 
+    ax.plot(theta, data, color=colors[2], alpha=1)
 
-    legend = ax.legend(loc=(0.8, .99), labelspacing=0.1, fontsize='small')
+    legend = ax.legend(loc=(0.8, .99), labelspacing=0.1, fontsize='10')
 
     ax.set_varlabels(spoke_labels)
     ax.set_ylim(0,1)
@@ -1544,8 +1562,8 @@ def cmd_plots(rootdir, toolnames, ext="pdf"):
         for toolname in used_toolnames:
             (res_category, elapsed, diagnostic, outcome) = categorize(tool=tools[toolname], toolname=toolname, test_id=test_id, expected=expected)
 
-            if not tools[toolname].is_correct_diagnostic(test_id, res_category, expected, detail):
-                res_category = 'FALSE_NEG'
+            # if not tools[toolname].is_correct_diagnostic(test_id, res_category, expected, detail):
+            #     res_category = 'FALSE_NEG'
 
             error = possible_details[test['detail']]
             results[error][toolname][res_category].append(test_id)

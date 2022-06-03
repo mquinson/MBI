@@ -468,10 +468,10 @@ def categorize_all_files(tool, toolname, tests, check_diagnostic=True):
 
         (res_category, elapsed, diagnostic, outcome) = categorize(tool=tool, toolname=toolname, test_id=test_id, expected=test['expect'], autoclean=False)
 
-        if check_diagnostic:
-            if not tool.is_correct_diagnostic(test_id, res_category, test['expect'], test['detail']):
-                bad_diagnostic += 1
-                res_category = 'FALSE_NEG'
+        # if check_diagnostic:
+        #     if not tool.is_correct_diagnostic(test_id, res_category, test['expect'], test['detail']):
+        #         bad_diagnostic += 1
+        #         res_category = 'FALSE_NEG'
 
         results[test['filename']].append(res_category)
         # elapsed[test['filename']].append(str(elapsed))
