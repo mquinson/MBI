@@ -1428,7 +1428,7 @@ def make_plot(name, toolnames, ext, black_list=[], merge=False):
             '#d62728', # NOK
             '#605d5d', # SE
         ]
-        patterns = ["\\","","/","x"]
+        patterns = ["\\","x","/",""]
 
     merged_res_type = {
         "TP" :"TP" if not merge else "OK",
@@ -1692,7 +1692,7 @@ elif args.c == 'plots':
         print("[MBI] Error: Dependancies ('numpy' or 'matplotlib') are not available!")
         exit(-1)
     extract_all_todo(args.b)
-    cmd_plots(rootdir, toolnames=['itac', 'simgrid','must', 'smpi','smpivg', 'aislinn', 'civl', 'isp', 'mpisv', 'parcoach', 'hermes', 'mpi-checker'], ext=args.f)
+    cmd_plots(rootdir, toolnames=['itac', 'simgrid', 'must', 'aislinn', 'civl', 'isp', 'mpisv', 'parcoach', 'hermes', 'mpi-checker'], ext=args.f)
 else:
     print(f"Invalid command '{args.c}'. Please choose one of 'all', 'generate', 'build', 'run', 'html' 'latex' or 'plots'")
     sys.exit(1)
