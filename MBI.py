@@ -1282,7 +1282,8 @@ def make_radar_plot_ext(name, errors, toolname, results, ext):
     TP = 'TRUE_POS'
     TN = 'TRUE_NEG'
     res_type = ["TP", "TN", "CTP", "CFP", "FN", "FP", "CE", "RE", "TO", "O"]
-    colors = ['#2ca02c', '#d62728', '#4D5AAF']
+    # colors = ['#2ca02c', '#d62728', '#4D5AAF']
+    colors = ['#ADB5BD', '#212529', '#495057']
 
     N = len(errors)
 
@@ -1357,7 +1358,7 @@ def make_radar_plot_ext(name, errors, toolname, results, ext):
             data_m.append(0)
 
             data_x.append(score)
-            data_y.append(score)
+            data_y.append(0)
 
         spoke_labels.append(displayed_name[error])
 
@@ -1372,9 +1373,10 @@ def make_radar_plot_ext(name, errors, toolname, results, ext):
     # plt.legend(prop={'size': 22})
     # plt.rcParams.update({'font.size':22})
 
+
     # ax.plot(theta, data, color=colors[2], alpha=1, label='Overall Accuracy')
     ax.fill(theta, data, facecolor=colors[2], alpha=0.6,
-            label='Always detected', hatch="/"
+            label='Accuracy', hatch="/"
     )
 
     ax.plot(theta, data_p, color=colors[0], alpha=1, linestyle='dashed',
@@ -1383,15 +1385,18 @@ def make_radar_plot_ext(name, errors, toolname, results, ext):
     # ax.fill(theta, data_p, facecolor=colors[0], alpha=0.4)
 
     ax.plot(theta, data_m, color=colors[1], alpha=1, linestyle='dotted',
-            # label='Overall Accuracy$^-$'
+            #label='Always detected'
     )
     # ax.fill(theta, data_m, facecolor=colors[1], alpha=0.2)
 
     # ax.fill_between(theta, data_0, data_y, facecolor=colors[2], alpha=0.4)
     # ax.fill_between(theta, data_y, data, facecolor=colors[1], alpha=0.4,
-    #                 label='', hatch="x")
-    ax.fill_between(theta, data, data_x, facecolor=colors[0], alpha=0.4,
+    #                 label='Accuracy', hatch="/")
+    ax.fill_between(theta, data, data_x, facecolor=colors[0], alpha=0.6,
                     label='Can be detected', hatch="\\")
+
+    ax.fill_between(theta, data_0, data_y, facecolor=colors[1], alpha=0.6,
+                    label='Always detected', hatch="\\")
 
     ax.plot(theta, data, color=colors[2], alpha=1)
 
@@ -1407,13 +1412,13 @@ def make_plot(name, toolnames, ext, black_list=[], merge=False):
     res_type = ["TP", "TN", "CTP", "CFP", "FN", "FP", "CE", "RE", "TO", "O"]
     res = {}
     colors = [
-        '#4D5AAF', # TP
-        '#2ca02c', # TN
-        '#9467bd', # CTP
-        '#ff7f0e', # CFP
-        '#8c564b', # FN
-        '#d62728', # FP
-        '#4f4c4c', # SE (CE)
+        '#DEE2E6', # '#4D5AAF', # TP
+        '#CED4DA', # '#2ca02c', # TN
+        '#ADB5BD', # '#9467bd', # CTP
+        '#6C757D', # '#ff7f0e', # CFP
+        '#495057', # '#8c564b', # FN
+        '#343A40', # '#d62728', # FP
+        '#212529', # '#4f4c4c', # SE (CE)
         # '#605d5d', # RE
         # '#726f6f', # TO
         # '#838181'  # O
@@ -1423,10 +1428,10 @@ def make_plot(name, toolnames, ext, black_list=[], merge=False):
     # Modify colors for merged version
     if merge:
         colors = [
-            '#4D5AAF', # OK
-            '#9467bd', # COK
-            '#d62728', # NOK
-            '#605d5d', # SE
+            '#DEE2E6', # '#4D5AAF', # OK
+            '#ADB5BD', # '#9467bd', # COK
+            '#495057', # '#d62728', # NOK
+            '#212529', # '#605d5d', # SE
         ]
         patterns = ["\\","x","/",""]
 
