@@ -881,8 +881,8 @@ def cmd_latex(rootdir, toolnames):
         outfile.write('& \\textbf{CE}&\\textbf{TO}&\\textbf{RE}  &\\textbf{TP}&\\textbf{CTP}&\\textbf{FN}&\\textbf{FP}&\\textbf{CFP}&\\textbf{TN}  &\\textbf{accuracy\\textsuperscript{+}}&\\textbf{accuracy\\textsuperscript{-}}\\\\\\hline \n')
 
         best = {
-            'TP':0, 'TN':0, 'CTP':0, 'CFP':999999, 'FP':999999, 'FN':9999999,
-            'CE':999999, 'TO':999999, 'RE':999999, 'O':999999,
+            'STP':0, 'STN':0, 'CTP':0, 'CFP':999999, 'SFP':999999, 'SFN':9999999,
+            'CE':999999, 'TO':999999, 'RE':999999, 'O':999999, 'SE':999999,
             'accp':0, 'accm':0
         }
 
@@ -891,8 +891,8 @@ def cmd_latex(rootdir, toolnames):
         for toolname in used_toolnames:
             files_results = categorize_all_files(tools[toolname], toolname, todo)
             ext_results[toolname] = {
-                'TP':[], 'TN':[], 'CTP':[], 'CFP':[], 'FP':[], 'FN':[],
-                'CE':[], 'TO':[], 'RE':[], 'O':[],
+                'STP':[], 'STN':[], 'CTP':[], 'CFP':[], 'SFP':[], 'SFN':[],
+                'CE':[], 'TO':[], 'RE':[], 'O':[], 'SE':[],
                 'accp':0, 'accm':0,
                 'total':{'OK':0, 'Error':0}
             }
@@ -906,8 +906,8 @@ def cmd_latex(rootdir, toolnames):
                     ext_results[toolname]['total']['Error'] += 1
 
             total = ext_results[toolname]['total']['Error'] + ext_results[toolname]['total']['OK']
-            accp = round((len(ext_results[toolname]['TP']) + len(ext_results[toolname]['TN']) + len(ext_results[toolname]['CTP'])) / total, 2)
-            accm = round((len(ext_results[toolname]['TP']) + len(ext_results[toolname]['TN'])) / total, 2)
+            accp = round((len(ext_results[toolname]['STP']) + len(ext_results[toolname]['STN']) + len(ext_results[toolname]['CTP'])) / total, 2)
+            accm = round((len(ext_results[toolname]['STP']) + len(ext_results[toolname]['STN'])) / total, 2)
 
             ext_results[toolname]['accp'] = accp
             ext_results[toolname]['accm'] = accm
@@ -917,7 +917,7 @@ def cmd_latex(rootdir, toolnames):
                 if metric in ['accp', 'accm']:
                     if best[metric] < ext_results[toolname][metric]:
                         best[metric] = ext_results[toolname][metric]
-                elif metric in ['CFP', 'FP', 'FN', 'CE', 'TO', 'RE', 'O']:
+                elif metric in ['CFP', 'SFP', 'SFN', 'CE', 'TO', 'RE', 'O', 'SE']:
                     if best[metric] > len(ext_results[toolname][metric]):
                         best[metric] = len(ext_results[toolname][metric])
                 else:
@@ -927,16 +927,17 @@ def cmd_latex(rootdir, toolnames):
         for toolname in used_toolnames:
             format_if_best = lambda res : f" {{\\bf {len(ext_results[toolname][res])}}}" if best[res] == len(ext_results[toolname][res]) else f" {len(ext_results[toolname][res])}"
 
-            TP = format_if_best('TP')
-            TN = format_if_best('TN')
+            TP = format_if_best('STP')
+            TN = format_if_best('STN')
             CTP = format_if_best('CTP')
             CFP = format_if_best('CFP')
-            FP = format_if_best('FP')
-            FN = format_if_best('FN')
+            FP = format_if_best('SFP')
+            FN = format_if_best('SFN')
             CE = format_if_best('CE')
             TO = format_if_best('TO')
             RE = format_if_best('RE')
             O = format_if_best('O')
+            SE = format_if_best('SE')
 
             accp = str(ext_results[toolname]['accp']) if ext_results[toolname]['accp'] < best['accp'] else f"{{\\bf  {ext_results[toolname]['accp']} }}"
             accm = str(ext_results[toolname]['accm']) if ext_results[toolname]['accm'] < best['accm'] else f"{{\\bf  {ext_results[toolname]['accm']} }}"
@@ -1001,8 +1002,8 @@ def cmd_latex(rootdir, toolnames):
             for e in category:
                 last = e
                 best[e] = {
-                    'TP':0, 'TN':0, 'CTP':0, 'CFP':99999, 'FP':99999, 'FN':99999,
-                    'E':99999,
+                    'STP':0, 'STN':0, 'CTP':0, 'CFP':99999, 'SFP':99999, 'SFN':99999,
+                    'SE':99999,
                     'accp':0, 'accm':0
                 }
 
@@ -1012,8 +1013,8 @@ def cmd_latex(rootdir, toolnames):
                 files_results = categorize_all_files(tools[toolname], toolname, todo)
                 for error in category:
                     ext_results[toolname][error] = {
-                        'TP':[], 'TN':[], 'CTP':[], 'CFP':[], 'FP':[], 'FN':[],
-                        'CE':[], 'TO':[], 'RE':[], 'O':[],
+                        'STP':[], 'STN':[], 'CTP':[], 'CFP':[], 'SFP':[], 'SFN':[],
+                        'CE':[], 'TO':[], 'RE':[], 'O':[], 'SE':[],
                         'accp':0, 'accm':0,
                         'total':0
                     }
@@ -1024,8 +1025,8 @@ def cmd_latex(rootdir, toolnames):
                             ext_results[toolname][error]['total'] += 1
 
                     total = ext_results[toolname][error]['total']
-                    accp = round((len(ext_results[toolname][error]['TP']) + len(ext_results[toolname][error]['TN']) + len(ext_results[toolname][error]['CTP'])) / total, 2)
-                    accm = round((len(ext_results[toolname][error]['TP']) + len(ext_results[toolname][error]['TN'])) / total, 2)
+                    accp = round((len(ext_results[toolname][error]['STP']) + len(ext_results[toolname][error]['STN']) + len(ext_results[toolname][error]['CTP'])) / total, 2)
+                    accm = round((len(ext_results[toolname][error]['STP']) + len(ext_results[toolname][error]['STN'])) / total, 2)
 
                     ext_results[toolname][error]['accp'] = accp
                     ext_results[toolname][error]['accm'] = accm
@@ -1034,16 +1035,17 @@ def cmd_latex(rootdir, toolnames):
                     err = (len(ext_results[toolname][error]['CE'])
                            + len(ext_results[toolname][error]['TO'])
                            + len(ext_results[toolname][error]['RE'])
-                           + len(ext_results[toolname][error]['O']))
+                           + len(ext_results[toolname][error]['O'])
+                           + len(ext_results[toolname][error]['SE']))
 
-                    if best[error]['E'] > err:
-                        best[error]['E'] = err
+                    if best[error]['SE'] > err:
+                        best[error]['SE'] = err
 
-                    for res in ['CFP', 'FP', 'FN']:
+                    for res in ['CFP', 'SFP', 'SFN']:
                         if best[error][res] > len(ext_results[toolname][error][res]):
                             best[error][res] = len(ext_results[toolname][error][res])
 
-                    for res in ['TP', 'CTP', 'TN']:
+                    for res in ['STP', 'CTP', 'STN']:
                         if best[error][res] < len(ext_results[toolname][error][res]):
                             best[error][res] = len(ext_results[toolname][error][res])
 
@@ -1051,8 +1053,8 @@ def cmd_latex(rootdir, toolnames):
                         if best[error][res] < ext_results[toolname][error][res]:
                             best[error][res] = ext_results[toolname][error][res]
 
-            ncol = 5 if not hazard else 6
-            align = 'c|c|c|c|c|' if not hazard else 'c|c|c|c|c|c|'
+            ncol = 4 if not hazard else 6
+            align = 'c|c|c|c|' if not hazard else 'c|c|c|c|c|c|'
 
             outfile.write("\\setlength\\tabcolsep{1.5pt}\n")
             outfile.write(f"\\begin{{tabular}}{{|l|*{{{len(category)-1}}}{{ {align} |}} {align}}}\n")
@@ -1083,15 +1085,17 @@ def cmd_latex(rootdir, toolnames):
 
             outfile.write("  \\multicolumn{1}{c|}{}")
             for error in category:
-                outfile.write(" & \\rotatebox{90}{Errors}")
+                outfile.write(" & \\rotatebox{90}{SE}")
                 if error == "FOK":
-                    outfile.write(" & \\rotatebox{90}{True {\\bf Negative}}")
-                    outfile.write(" & \\rotatebox{90}{Can be {\\bf False} Positive}")
-                    outfile.write(" & \\rotatebox{90}{False {\\bf Positive}}")
+                    outfile.write(" & \\rotatebox{90}{{\\bf STN}}")
+                    if hazard:
+                        outfile.write(" & \\rotatebox{90}{{\\bf CFP}}")
+                    outfile.write(" & \\rotatebox{90}{{\\bf SFP}}")
                 else:
-                    outfile.write(" & \\rotatebox{90}{True Positive}")
-                    outfile.write(" & \\rotatebox{90}{Can be True Positive}")
-                    outfile.write(" & \\rotatebox{90}{False Negatif}")
+                    outfile.write(" & \\rotatebox{90}{STP}")
+                    if hazard:
+                        outfile.write(" & \\rotatebox{90}{CTP}")
+                    outfile.write(" & \\rotatebox{90}{SFN}")
 
                 if hazard:
                     outfile.write(" & \\rotatebox{90}{Accuracy\\textsuperscript{+}}")
@@ -1108,9 +1112,10 @@ def cmd_latex(rootdir, toolnames):
                     disp_err = (len(ext_results[toolname][error]['CE'])
                                 + len(ext_results[toolname][error]['TO'])
                                 + len(ext_results[toolname][error]['RE'])
-                                + len(ext_results[toolname][error]['O']))
+                                + len(ext_results[toolname][error]['O'])
+                                + len(ext_results[toolname][error]['SE']))
 
-                    if disp_err == best[error]['E']:
+                    if disp_err == best[error]['SE']:
                         outfile.write(f"& {{\\bf {disp_err}}}")
                     else:
                         outfile.write(f"& {disp_err}")
@@ -1120,13 +1125,15 @@ def cmd_latex(rootdir, toolnames):
                     format_if_best_2 = lambda res : f" & {{\\bf {ext_results[toolname][error][res]}}}" if best[error][res] == ext_results[toolname][error][res] else f" & {ext_results[toolname][error][res]}"
 
                     if error == "FOK":
-                        outfile.write(format_if_best('TN'))
-                        outfile.write(format_if_best('CFP'))
-                        outfile.write(format_if_best('FP'))
+                        outfile.write(format_if_best('STN'))
+                        if hazard:
+                            outfile.write(format_if_best('CFP'))
+                        outfile.write(format_if_best('SFP'))
                     else:
-                        outfile.write(format_if_best('TP'))
-                        outfile.write(format_if_best('CTP'))
-                        outfile.write(format_if_best('FN'))
+                        outfile.write(format_if_best('STP'))
+                        if hazard:
+                            outfile.write(format_if_best('CTP'))
+                        outfile.write(format_if_best('SFN'))
 
                     if hazard:
                         outfile.write(format_if_best_2('accp').replace('.0', ''))
@@ -1141,7 +1148,8 @@ def cmd_latex(rootdir, toolnames):
             for error in category:
                 outfile.write(" & \\textit{0}")
                 outfile.write(f" & \\textit{{ {ext_results[toolname][error]['total']} }}")
-                outfile.write(" & \\textit{0}")
+                if hazard:
+                    outfile.write(" & \\textit{0}")
                 outfile.write(" & \\textit{0}")
                 outfile.write(" & \\textit{1}")
                 if hazard:
@@ -1260,14 +1268,15 @@ def make_radar_plot(name, errors, toolname, results, ext):
                 score = ((len(results[error][toolname][TP]) + len(results[error][toolname][TN])) / total)
         # print (f'     +++ Result {error}: {len(results[error][toolname][TP])} ({score})')
         data.append(score)
-        spoke_labels.append(displayed_name[error])
+        spoke_labels.append(' \n '.join(displayed_name[error].split()))
 
     # Radar plot
     theta = radar_factory(N, frame='polygon')
     fig, ax = plt.subplots(subplot_kw=dict(projection='radar'))
     fig.subplots_adjust(wspace=0.15, hspace=0.6, top=0.85, bottom=0.10)
     ax.set_rgrids([0.2, 0.4, 0.6, 0.8])
-    ax.set_title(displayed_name[toolname], weight='bold', size='medium', position=(0.5, 1.1),
+    ax.set_title(displayed_name[toolname],
+                 weight='bold', size='medium', position=(0.5, 1.1),
                  horizontalalignment='center', verticalalignment='center')
 
     ax.plot(theta, data, color=colors[0])
@@ -1281,7 +1290,7 @@ def make_radar_plot(name, errors, toolname, results, ext):
 def make_radar_plot_ext(name, errors, toolname, results, ext):
     TP = 'TRUE_POS'
     TN = 'TRUE_NEG'
-    res_type = ["TP", "TN", "CTP", "CFP", "FN", "FP", "CE", "RE", "TO", "O"]
+    res_type = ["STP", "STN", "CTP", "CFP", "SFN", "SFP", "SE", "CE", "RE", "TO", "O"]
     # colors = ['#2ca02c', '#d62728', '#4D5AAF']
     colors = ['#ADB5BD', '#212529', '#495057']
 
@@ -1302,8 +1311,8 @@ def make_radar_plot_ext(name, errors, toolname, results, ext):
     fresults = categorize_all_files(tools[toolname], toolname, todo)
     for error in errors:
         ext_results[error] = {
-            'TP':[], 'TN':[], 'CTP':[], 'CFP':[], 'FP':[], 'FN':[],
-            'CE':[], 'TO':[], 'RE':[], 'O':[],
+            'STP':[], 'STN':[], 'CTP':[], 'CFP':[], 'SFP':[], 'SFN':[],
+            'CE':[], 'TO':[], 'RE':[], 'O':[], "SE":[],
             'accp':0, 'accm':0,
             'total':{'OK':0, 'Error':0}
         }
@@ -1341,8 +1350,8 @@ def make_radar_plot_ext(name, errors, toolname, results, ext):
 
         # A+ and A-
         total = ext_results[error]['total']['Error'] + ext_results[error]['total']['OK']
-        accp = round((len(ext_results[error]['TP']) + len(ext_results[error]['TN']) + len(ext_results[error]['CTP'])) / total, 2)
-        accm = round((len(ext_results[error]['TP']) + len(ext_results[error]['TN'])) / total, 2)
+        accp = round((len(ext_results[error]['STP']) + len(ext_results[error]['STN']) + len(ext_results[error]['CTP'])) / total, 2)
+        accm = round((len(ext_results[error]['STP']) + len(ext_results[error]['STN'])) / total, 2)
 
         ext_results[error]['accp'] = accp
         ext_results[error]['accm'] = accm
@@ -1360,7 +1369,8 @@ def make_radar_plot_ext(name, errors, toolname, results, ext):
             data_x.append(score)
             data_y.append(0)
 
-        spoke_labels.append(displayed_name[error])
+        spoke_labels.append(' \n '.join(displayed_name[error].split()))
+        # spoke_labels.append(displayed_name[error])
 
     # Radar plot
     theta = radar_factory(N, frame='polygon')
@@ -1368,7 +1378,8 @@ def make_radar_plot_ext(name, errors, toolname, results, ext):
     )
     fig.subplots_adjust(wspace=0.15, hspace=0.6, top=0.85, bottom=0.10)
     ax.set_rgrids([0.2, 0.4, 0.6, 0.8])
-    ax.set_title(displayed_name[toolname], weight='bold', size='medium', position=(0.5, 1.1),
+    ax.set_title(displayed_name[toolname],
+                 weight='bold', size='medium', position=(0.5, 1.1),
                  horizontalalignment='center', verticalalignment='center')
     # plt.legend(prop={'size': 22})
     # plt.rcParams.update({'font.size':22})
@@ -1409,7 +1420,7 @@ def make_radar_plot_ext(name, errors, toolname, results, ext):
     plt.close('all')
 
 def make_plot(name, toolnames, ext, black_list=[], merge=False):
-    res_type = ["TP", "TN", "CTP", "CFP", "FN", "FP", "CE", "RE", "TO", "O"]
+    res_type = ["STP", "STN", "CTP", "CFP", "SFN", "SFP", "CE", "RE", "TO", "O", "SE"]
     res = {}
     colors = [
         '#DEE2E6', # '#4D5AAF', # TP
@@ -1436,18 +1447,19 @@ def make_plot(name, toolnames, ext, black_list=[], merge=False):
         patterns = ["\\","x","/",""]
 
     merged_res_type = {
-        "TP" :"TP" if not merge else "OK",
-        "TN" :"TN" if not merge else "OK",
-        "CTP":"CTP" if not merge else "COK",
-        "CFP":"CFP" if not merge else "COK",
-        "FN" :"FN" if not merge else "NOK",
-        "FP" :"FP" if not merge else "NOK",
-        "CE" :"SE",
-        "RE" :"SE",
-        "TO" :"SE",
-        "O"  :"SE"
+        "STP" :"STP" if not merge else "OK",
+        "STN" :"STN" if not merge else "OK",
+        "CTP" :"CTP" if not merge else "COK",
+        "CFP" :"CFP" if not merge else "COK",
+        "SFN" :"SFN" if not merge else "NOK",
+        "SFP" :"SFP" if not merge else "NOK",
+        "SE"  :"SE",
+        "CE"  :"SE",
+        "RE"  :"SE",
+        "TO"  :"SE",
+        "O"   :"SE"
     }
-    res_type_short = ["TP", "TN", "CTP", "CFP", "FN", "FP", "SE"]
+    res_type_short = ["STP", "STN", "CTP", "CFP", "SFN", "SFP", "SE"]
 
     if merge:
         res_type_short = ["OK", "COK", "NOK", "SE"]
@@ -1470,7 +1482,7 @@ def make_plot(name, toolnames, ext, black_list=[], merge=False):
 
     def res_sort(toolname):
         if not merge:
-            return res[toolname]['TP'] + res[toolname]['TN']
+            return res[toolname]['STP'] + res[toolname]['STN']
         else:
             return res[toolname]['OK'] + res[toolname]['COK']
 
@@ -1602,10 +1614,10 @@ def cmd_plots(rootdir, toolnames, ext="pdf"):
 
 
     # Individual plots for each tools
-    for tool in used_toolnames:
-        print (f' --- Bar plots {displayed_name[tool]}')
-        make_plot(f"cat_ext_{tool}", [tool], ext)
-        make_plot(f"cat_ext_{tool}_2", [tool], ext, merge=True)
+    # for tool in used_toolnames:
+    #     print (f' --- Bar plots {displayed_name[tool]}')
+    #     make_plot(f"cat_ext_{tool}", [tool], ext)
+    #     make_plot(f"cat_ext_{tool}_2", [tool], ext, merge=True)
 
     plt.close('all')
     os.chdir(here)

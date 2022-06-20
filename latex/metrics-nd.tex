@@ -1,14 +1,12 @@
 \begin{tabular}{|c|l|}\hline
   \textbf{Result}&\textbf{Meaning}\\\hline
-  Compilation Error (CE) &The code uses a feature not supported by the tool.\\\hline
-  Timeout (TO) & Timeout (limit: 300s).\\\hline
-  Runtime Error (RE) & Tool failure during the evaluation of this code.\\\hline\hline
-  True Positive (TP)&Error correctly detected for each exection.\\\hline
+  Systematic Error (SE) & Each tests are unimplemented feature, runtime error or timeout.\\\hline\hline
+  Systematic True Positive (STP)&Error correctly detected for each exection.\\\hline
   Can be True Positive (\textbf{CTP})&Error correctly detected for some execution.\\\hline
-  False Negative (FN)&Error missed for each exection.\\\hline
+  Systematic False Negative (SFN)&Error missed for each exection.\\\hline
   Can be False Positive (\textbf{CFP})&Correct code reported as faulty for some exection.\\\hline
-  False Positive (FP)&Correct code reported as faulty for each exection.\\\hline
-  True Negative (TN) &Correct code reported as such for each exection.\\\hline\hline
+  Systematic False Positive (SFP)&Correct code reported as faulty for each exection.\\\hline
+  Systematic True Negative (STN) &Correct code reported as such for each exection.\\\hline\hline
   \textbf{Metric}&\textbf{Definition and meaning}\\\hline
   %% {Coverage}&\multirow{1.3}{*}{{Ability to compile codes. $Cov=1-\frac{CE}{total}$}}\\[4pt]\hline
   %% {Conclusiveness}&\multirow{1.3}{*}{{Ability to draw a diagnostic on codes. $Cc=1-\frac{CE+RE+TO}{total}$}}  \\[4pt]\hline

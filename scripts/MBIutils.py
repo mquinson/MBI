@@ -243,12 +243,13 @@ displayed_name = {
 
     'aislinn':'Aislinn','civl':'CIVL','hermes':'Hermes', 'isp':'ISP','itac':'ITAC', 'simgrid':'Mc SimGrid', 'smpi':'SMPI','smpivg':'SMPI+VG', 'mpisv':'MPI-SV', 'must':'MUST', 'parcoach':'PARCOACH', 'mpi-checker':'MPI-Checker',
 
-    "TP":"True Positive",
+    "STP":"Systematic True Positive",
     "CTP":"Can be True Positive",
-    "FN":"False Negative",
-    "FP":"False Positive",
+    "SFN":"Systematic False Negative",
+    "SFP":"Systematic False Positive",
     "CFP":"Can be False Positive",
-    "TN":"True Negative",
+    "STN":"Systematic True Negative",
+    "SE":"Systematic Error",
     "CE":"Compilation Error",
     "RE":"Runtime Error",
     "TO":"Timeout",
@@ -412,9 +413,9 @@ def categorize_extended(results, expected, detail):
 
     if expected == 'OK':
         if TN != 0 and FP+O+CE+TO+RE == 0: # All execution is True neg
-            result['result'] = 'TN'
+            result['result'] = 'STN'
         elif FP != 0 and TN+O+CE+TO+RE == 0: # All exection is False pos
-            result['result'] = 'FP'
+            result['result'] = 'SFP'
         elif O+CE+TO+RE != 0 and TN+FP == 0: # All exection is other
             if CE != 0 and O+TO+RE == 0:
                 result['result'] = 'CE'
@@ -423,14 +424,14 @@ def categorize_extended(results, expected, detail):
             elif RE != 0 and O+TO+CE == 0:
                 result['result'] = 'RE'
             else:
-                result['result'] = 'O'
+                result['result'] = 'SE'
         else:                   # Some exection is False pos
             result['result'] = 'CFP'
     else:
         if TP != 0 and FN+O+CE+TO+RE == 0: # All execution is True pos
-            result['result'] = 'TP'
+            result['result'] = 'STP'
         elif FN != 0 and TP+O+CE+TO+RE == 0: # All exection is False neg
-            result['result'] = 'FN'
+            result['result'] = 'SFN'
         elif O+CE+TO+RE != 0 and TP+FN == 0: # All exection is other
             if CE != 0 and O+TO+RE == 0:
                 result['result'] = 'CE'
@@ -439,7 +440,7 @@ def categorize_extended(results, expected, detail):
             elif RE != 0 and O+TO+CE == 0:
                 result['result'] = 'RE'
             else:
-                result['result'] = 'O'
+                result['result'] = 'SE'
         else:                   # Some exection is True pos
             result['result'] = 'CTP'
 
