@@ -45,7 +45,7 @@ import tools.aislinn
 import tools.mpi_checker
 
 tools = {'aislinn': tools.aislinn.Tool(), 'civl': tools.civl.Tool(), 'hermes': tools.hermes.Tool(), 'isp': tools.isp.Tool(), 'itac': tools.itac.Tool(), 'mpisv': tools.mpisv.Tool(),
-         'must': tools.must.V17(),'must18': tools.must.V18(), 'simgrid': tools.simgrid.Tool(), 'smpi':tools.smpi.Tool(),'smpivg':tools.smpivg.Tool(), 'parcoach': tools.parcoach.Tool(), 'mpi-checker': tools.mpi_checker.Tool()}
+         'must': tools.must.V17(),'must18': tools.must.V18(), 'simgrid': tools.simgrid.Tool(), 'simgrid-previous': tools.simgrid.Previous(), 'smpi':tools.smpi.Tool(),'smpivg':tools.smpivg.Tool(), 'parcoach': tools.parcoach.Tool(), 'mpi-checker': tools.mpi_checker.Tool()}
 
 # Some scripts may fail if error messages get translated
 os.environ["LC_ALL"] = "C"
@@ -1143,7 +1143,7 @@ def cmd_latex(rootdir, toolnames):
 
                 outfile.write("\\\\\\hline\n")
 
-            outfile.write("\\textit{Ideal tools}")
+            outfile.write("\\textit{Ideal tool}")
 
             for error in category:
                 outfile.write(" & \\textit{0}")
@@ -1439,10 +1439,14 @@ def make_plot(name, toolnames, ext, black_list=[], merge=False):
     # Modify colors for merged version
     if merge:
         colors = [
-            '#DEE2E6', # '#4D5AAF', # OK
-            '#ADB5BD', # '#9467bd', # COK
-            '#495057', # '#d62728', # NOK
-            '#212529', # '#605d5d', # SE
+            # '#DEE2E6',
+            '#4D5AAF', # OK
+            # '#ADB5BD',
+            '#9467bd', # COK
+            # '#495057',
+            '#d62728', # NOK
+            # '#212529',
+            '#605d5d', # SE
         ]
         patterns = ["\\","x","/",""]
 
@@ -1692,7 +1696,7 @@ elif args.c == 'run':
 elif args.c == 'latex':
     extract_all_todo(args.b)
     # 'smpi','smpivg' are not shown in the paper
-    cmd_latex(rootdir, toolnames=['aislinn', 'civl', 'isp','itac', 'simgrid', 'mpisv', 'must', 'hermes', 'parcoach', 'mpi-checker'])
+    cmd_latex(rootdir, toolnames=['aislinn', 'civl', 'isp','itac', 'simgrid', 'mpisv', 'must', 'hermes', 'parcoach', 'mpi-checker', 'simgrid-previous'])
 elif args.c == 'html':
     extract_all_todo(args.b)
     if args.x == 'mpirun':
@@ -1709,7 +1713,7 @@ elif args.c == 'plots':
         print("[MBI] Error: Dependancies ('numpy' or 'matplotlib') are not available!")
         exit(-1)
     extract_all_todo(args.b)
-    cmd_plots(rootdir, toolnames=['itac', 'simgrid', 'must', 'aislinn', 'civl', 'isp', 'mpisv', 'parcoach', 'hermes', 'mpi-checker'], ext=args.f)
+    cmd_plots(rootdir, toolnames=['itac', 'simgrid', 'must', 'aislinn', 'civl', 'isp', 'mpisv', 'parcoach', 'hermes', 'mpi-checker', 'simgrid-previous'], ext=args.f)
 else:
     print(f"Invalid command '{args.c}'. Please choose one of 'all', 'generate', 'build', 'run', 'html' 'latex' or 'plots'")
     sys.exit(1)

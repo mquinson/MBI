@@ -6,6 +6,11 @@ import os
 from MBIutils import *
 
 class Tool(AbstractTool):
+    name_ext = ""
+    version = ""
+    exe_path = ""
+    exec_cfg = "--cfg=smpi/finalization-barrier:on --cfg=smpi/list-leaks:10 --cfg=model-check/max-depth:10000 --cfg=smpi/pedantic:true"
+
     def identify(self):
         return "SimGrid wrapper"
 
@@ -48,13 +53,13 @@ class Tool(AbstractTool):
                 outfile.write(' <cluster id="acme" prefix="node-" radical="0-99" suffix="" speed="1Gf" bw="125MBps" lat="50us"/>\n')
                 outfile.write('</platform>\n')
 
-        execcmd = execcmd.replace("mpirun", "smpirun -wrapper simgrid-mc -platform ./cluster.xml -analyze --cfg=smpi/finalization-barrier:on --cfg=smpi/list-leaks:10 --cfg=model-check/max-depth:10000 --cfg=smpi/pedantic:true")
+        execcmd = execcmd.replace(f"mpirun", f"{self.exe_path}smpirun -wrapper {self.exe_path}simgrid-mc -platform ./cluster.xml -analyze {self.exec_cfg}")
         execcmd = execcmd.replace('${EXE}', binary)
         execcmd = execcmd.replace('$zero_buffer', "--cfg=smpi/buffering:zero")
         execcmd = execcmd.replace('$infty_buffer', "--cfg=smpi/buffering:infty")
 
         self.run_cmd(
-            buildcmd=f"smpicc {filename} -trace-call-location -g -Wl,-znorelro -Wl,-znoseparate-code -o {binary}",
+            buildcmd=f"{self.exe_path}smpicc {filename} -trace-call-location -g -Wl,-znorelro -Wl,-znoseparate-code -o {binary}",
             execcmd=execcmd,
             cachefile=cachefile,
             filename=filename,
@@ -67,12 +72,12 @@ class Tool(AbstractTool):
         subprocess.run("rm -f smpitmp-* core", shell=True, check=True)
 
     def parse(self, cachefile):
-        if os.path.exists(f'{cachefile}.timeout') or os.path.exists(f'logs/simgrid/{cachefile}.timeout'):
+        if os.path.exists(f'{cachefile}.timeout') or os.path.exists(f'logs/simgrid{self.name_ext}/{cachefile}.timeout'):
             return 'timeout'
-        if not (os.path.exists(f'{cachefile}.txt') or os.path.exists(f'logs/simgrid/{cachefile}.txt')):
+        if not (os.path.exists(f'{cachefile}.txt') or os.path.exists(f'logs/simgrid{self.name_ext}/{cachefile}.txt')):
             return 'failure'
 
-        with open(f'{cachefile}.txt' if os.path.exists(f'{cachefile}.txt') else f'logs/simgrid/{cachefile}.txt', 'r') as infile:
+        with open(f'{cachefile}.txt' if os.path.exists(f'{cachefile}.txt') else f'logs/simgrid{self.name_ext}/{cachefile}.txt', 'r') as infile:
             output = infile.read()
 
         if re.search('Compilation of .*? raised an error \(retcode: ', output):
@@ -97,10 +102,10 @@ class Tool(AbstractTool):
             return 'failure'
         if re.search('Probable memory leaks in your code: SMPI detected', output):
             return 'resleak'
-        if re.search('DFS exploration ended.', output):
+        if re.search('DFS exploration ended.', output) or re.search('No property violation found.', output):
             return 'OK'
 
-        print (f">>>>[ INCONCLUSIVE ]>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> (simgrid/{cachefile})")
+        print (f">>>>[ INCONCLUSIVE ]>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> (simgrid{self.name_ext}/{cachefile})")
         print(output)
         print ("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
         return 'other'
@@ -134,3 +139,34 @@ class Tool(AbstractTool):
             return False
 
         return True
+
+
+class Previous(Tool):
+    name_ext = "-previous"
+    version = "v3.27"
+    exe_path = "/alt/bin/"
+    exec_cfg = "--cfg=smpi/list-leaks:10 --cfg=model-check/max-depth:10000"
+
+    def identify(self):
+        return f"SimGrid {self.version} wrapper"
+
+    def build(self, rootdir, cached=True):
+        if cached and os.path.exists(f'/alt/bin/simgrid-mc-{self.version}'):
+            return
+
+        here = os.getcwd() # Save where we were
+        os.chdir(rootdir)
+        # Get a GIT checkout. Either create it, or refresh it
+        if os.path.exists(f"tools/simgrid-{self.version}/.git"):
+            subprocess.run(f"git config --global --add safe.directory /MBI/tools/simgrid-{self.version}", shell=True, check=True)
+            subprocess.run(f"cd tools/simgrid-{self.version} && git pull &&  cd ../..", shell=True, check=True)
+        else:
+            subprocess.run(f"rm -rf tools/simgrid-{self.version} && git clone --depth=1 https://github.com/simgrid/simgrid.git tools/simgrid-{self.version} --branch {self.version}", shell=True, check=True)
+
+        # Build and install it
+        os.chdir(f"tools/simgrid-{self.version}")
+        subprocess.run(f"cmake -DCMAKE_INSTALL_PREFIX=/alt -Denable_model-checking=ON .", shell=True, check=True)
+        subprocess.run("make -j$(nproc) install VERBOSE=1", shell=True, check=True)
+
+        # Back to our previous directory
+        os.chdir(here)
