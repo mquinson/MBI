@@ -1291,8 +1291,8 @@ def make_radar_plot_ext(name, errors, toolname, results, ext):
     TP = 'TRUE_POS'
     TN = 'TRUE_NEG'
     res_type = ["STP", "STN", "CTP", "CFP", "SFN", "SFP", "SE", "CE", "RE", "TO", "O"]
-    # colors = ['#2ca02c', '#d62728', '#4D5AAF']
-    colors = ['#ADB5BD', '#212529', '#495057']
+    colors = ['#2ca02c', '#d62728', '#4D5AAF']
+    #colors = ['#ADB5BD', '#212529', '#495057']
 
     N = len(errors)
 
@@ -1423,13 +1423,20 @@ def make_plot(name, toolnames, ext, black_list=[], merge=False):
     res_type = ["STP", "STN", "CTP", "CFP", "SFN", "SFP", "CE", "RE", "TO", "O", "SE"]
     res = {}
     colors = [
-        '#DEE2E6', # '#4D5AAF', # TP
-        '#CED4DA', # '#2ca02c', # TN
-        '#ADB5BD', # '#9467bd', # CTP
-        '#6C757D', # '#ff7f0e', # CFP
-        '#495057', # '#8c564b', # FN
-        '#343A40', # '#d62728', # FP
-        '#212529', # '#4f4c4c', # SE (CE)
+        # '#DEE2E6',
+        '#4D5AAF', # TP
+        # '#CED4DA',
+        '#2ca02c', # TN
+        # '#ADB5BD',
+        '#9467bd', # CTP
+        # '#6C757D',
+        '#ff7f0e', # CFP
+        # '#495057',
+        '#8c564b', # FN
+        # '#343A40',
+        '#d62728', # FP
+        # '#212529',
+        '#4f4c4c', # SE (CE)
         # '#605d5d', # RE
         # '#726f6f', # TO
         # '#838181'  # O
@@ -1696,7 +1703,7 @@ elif args.c == 'run':
 elif args.c == 'latex':
     extract_all_todo(args.b)
     # 'smpi','smpivg' are not shown in the paper
-    cmd_latex(rootdir, toolnames=['aislinn', 'civl', 'isp','itac', 'simgrid', 'mpisv', 'must', 'hermes', 'parcoach', 'mpi-checker', 'simgrid-previous'])
+    cmd_latex(rootdir, toolnames=['aislinn', 'civl', 'isp','itac', 'simgrid', 'mpisv', 'must', 'hermes', 'parcoach', 'mpi-checker'])
 elif args.c == 'html':
     extract_all_todo(args.b)
     if args.x == 'mpirun':
@@ -1713,7 +1720,7 @@ elif args.c == 'plots':
         print("[MBI] Error: Dependancies ('numpy' or 'matplotlib') are not available!")
         exit(-1)
     extract_all_todo(args.b)
-    cmd_plots(rootdir, toolnames=['itac', 'simgrid', 'must', 'aislinn', 'civl', 'isp', 'mpisv', 'parcoach', 'hermes', 'mpi-checker', 'simgrid-previous'], ext=args.f)
+    cmd_plots(rootdir, toolnames=['itac', 'simgrid', 'must', 'aislinn', 'civl', 'isp', 'mpisv', 'parcoach', 'hermes', 'mpi-checker'], ext=args.f)
 else:
     print(f"Invalid command '{args.c}'. Please choose one of 'all', 'generate', 'build', 'run', 'html' 'latex' or 'plots'")
     sys.exit(1)

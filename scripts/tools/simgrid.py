@@ -151,7 +151,7 @@ class Previous(Tool):
         return f"SimGrid {self.version} wrapper"
 
     def build(self, rootdir, cached=True):
-        if cached and os.path.exists(f'/alt/bin/simgrid-mc-{self.version}'):
+        if cached and os.path.exists('/alt/bin/simgrid-mc'):
             return
 
         here = os.getcwd() # Save where we were
