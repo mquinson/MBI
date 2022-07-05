@@ -82,6 +82,9 @@ class Tool(AbstractTool):
         if re.search('Command killed by signal 15, elapsed time: 300', output):
             return 'timeout'
 
+        if re.search('ERROR: Giving up now...', output):
+            return 'failure'
+
         print (f">>>>[ INCONCLUSIVE ]>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> (itac/{cachefile})")
         print(output)
         print ("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")

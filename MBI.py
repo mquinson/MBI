@@ -876,15 +876,21 @@ def cmd_latex(rootdir, toolnames):
 
     with open(f'{rootdir}/latex/nondeterministic-results-summary.tex', 'w') as outfile:
         outfile.write('\\setlength\\tabcolsep{2pt}\n')
-        outfile.write('\\begin{tabular}{|l|*{4}{c|}|*{6}{c|}|*{2}{c|}}\\hline\n')
-        outfile.write('  \\multirow{2}{*}{ \\textbf{Tool}} &  \\multicolumn{4}{c||}{Errors} &\\multicolumn{6}{c||}{Results}&\\multicolumn{2}{c|}{Overall}\\\\\\cline{2-13}\n')
-        outfile.write('& \\textbf{CE}&\\textbf{TO}&\\textbf{RE}&\\textbf{SE}  &\\textbf{STP}&\\textbf{CTP}&\\textbf{SFN}&\\textbf{SFP}&\\textbf{CFP}&\\textbf{STN}  &\\textbf{Accuracy\\textsuperscript{+}}&\\textbf{Accuracy\\textsuperscript{-}}\\\\\\hline \n')
+        outfile.write('\\begin{tabular}{|l|*{1}{c|}|*{6}{c|}|*{2}{c|}}\\hline\n')
+        outfile.write('  \\multirow{2}{*}{ \\textbf{Tool}} &  \\multicolumn{1}{c||}{Errors} &\\multicolumn{6}{c||}{Results}&\\multicolumn{2}{c|}{Overall}\\\\\\cline{2-10}\n')
+        outfile.write('&\\textbf{SE}  &\\textbf{STP}&\\textbf{CTP}&\\textbf{SFN}&\\textbf{SFP}&\\textbf{CFP}&\\textbf{STN}  &\\textbf{Accuracy\\textsuperscript{+}}&\\textbf{Accuracy\\textsuperscript{-}}\\\\\\hline \n')
 
         best = {
             'STP':0, 'STN':0, 'CTP':0, 'CFP':999999, 'SFP':999999, 'SFN':9999999,
             'CE':999999, 'TO':999999, 'RE':999999, 'O':999999, 'SE':999999,
             'accp':0, 'accm':0
         }
+
+        def merge_cat(x):
+            if x not in ['CE', 'TO', 'RE']:
+                return x
+            else:
+                return 'SE'
 
         total = {'OK': 0, 'Error': 0}
         ext_results = {}
@@ -898,7 +904,7 @@ def cmd_latex(rootdir, toolnames):
             }
 
             for file in files_results:
-                ext_results[toolname][files_results[file]['result']].append(file)
+                ext_results[toolname][merge_cat(files_results[file]['result'])].append(file)
 
                 if files_results[file]['expected'] == 'OK':
                     ext_results[toolname]['total']['OK'] += 1
@@ -942,12 +948,12 @@ def cmd_latex(rootdir, toolnames):
             accp = str(ext_results[toolname]['accp']) if ext_results[toolname]['accp'] < best['accp'] else f"{{\\bf  {ext_results[toolname]['accp']} }}"
             accm = str(ext_results[toolname]['accm']) if ext_results[toolname]['accm'] < best['accm'] else f"{{\\bf  {ext_results[toolname]['accm']} }}"
 
-            outfile.write(f'{displayed_name[toolname]} & {CE} & {TO} & {RE} & {SE} &')
+            outfile.write(f'{displayed_name[toolname]} & {SE} &')
             outfile.write(f"{TP} & {CTP} & {FN} & {FP} & {CFP} & {TN} & ")
             outfile.write(f"{accp} & {accm} \\\\\\hline\n")
 
 
-        outfile.write('\\textit{Ideal tool}&\\textit{0}&\\textit{0}&\\textit{0}&\\textit{0}&')
+        outfile.write('\\textit{Ideal tool}&\\textit{0}&')
         outfile.write(f"\\textit{{{ext_results[used_toolnames[0]]['total']['Error']}}} & \\textit{{0}} & \\textit{{0}} & \\textit{{0}} & \\textit{{0}} & \\textit{{{ext_results[used_toolnames[0]]['total']['OK']}}} & ")
         outfile.write("\\textit{1}&\\textit{1} \\\\\\hline\n")
 
