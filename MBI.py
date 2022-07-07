@@ -1128,7 +1128,7 @@ def cmd_latex(rootdir, toolnames):
 
                     format_if_best = lambda res : f" & {{\\bf {len(ext_results[toolname][error][res])}}}" if best[error][res] == len(ext_results[toolname][error][res]) else f" & {len(ext_results[toolname][error][res])}"
 
-                    format_if_best_2 = lambda res : f" & {{\\bf {ext_results[toolname][error][res]}}}" if best[error][res] == ext_results[toolname][error][res] else f" & {ext_results[toolname][error][res]}"
+                    format_if_best_2 = lambda res : f" & {{\\bf {1 if ext_results[toolname][error][res] >= 1.0 else 0 if ext_results[toolname][error][res] <= 0.0 else ext_results[toolname][error][res]} }}" if best[error][res] == ext_results[toolname][error][res] else f" & {1 if ext_results[toolname][error][res] >= 1.0 else 0 if ext_results[toolname][error][res] <= 0.0 else ext_results[toolname][error][res]}"
 
                     if error == "FOK":
                         outfile.write(format_if_best('STN'))
@@ -1142,10 +1142,10 @@ def cmd_latex(rootdir, toolnames):
                         outfile.write(format_if_best('SFN'))
 
                     if hazard:
-                        outfile.write(format_if_best_2('accp').replace('.0', ''))
-                        outfile.write(format_if_best_2('accm').replace('.0', ''))
+                        outfile.write(format_if_best_2('accp'))
+                        outfile.write(format_if_best_2('accm'))
                     else:
-                        outfile.write(format_if_best_2('accp').replace('.0', ''))
+                        outfile.write(format_if_best_2('accp'))
 
                 outfile.write("\\\\\\hline\n")
 
