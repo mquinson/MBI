@@ -142,7 +142,7 @@ class Tool(AbstractTool):
 
 
 class v3_27(Tool):
-    name_ext = "-v3_27"
+    name_ext = "-3.27"
     version = "v3.27"
     install_path = f"/alt-v3_27"
     exec_cfg = "--cfg=smpi/list-leaks:10 --cfg=model-check/max-depth:10000"
@@ -172,19 +172,25 @@ class v3_27(Tool):
         os.chdir(here)
 
 class v3_28(v3_27):
-    name_ext = "-v3_28"
+    name_ext = "-3.28"
     version = "v3.28"
     install_path = f"/alt-v3_28"
-    exec_cfg = "--cfg=smpi/finalization-barrier:on --cfg=smpi/list-leaks:10 --cfg=model-check/max-depth:10000"
+    exec_cfg = "--cfg=smpi/finalization-barrier:on --cfg=smpi/list-leaks:10 --cfg=model-check/max-depth:10000 --cfg=smpi/pedantic:true"
 
 class v3_29(v3_28):
-    name_ext = "-v3_29"
+    name_ext = "-3.29"
     version = "v3.29"
     install_path = f"/alt-v3_29"
-    exec_cfg = "--cfg=smpi/finalization-barrier:on  --cfg=smpi/list-leaks:10 --cfg=model-check/max-depth:10000"
+    exec_cfg = "--cfg=smpi/finalization-barrier:on  --cfg=smpi/list-leaks:10 --cfg=model-check/max-depth:10000 --cfg=smpi/pedantic:true"
 
 class v3_30(v3_29):
-    name_ext = "-v3_30"
+    name_ext = "-3.30"
     version = "v3.30"
     install_path = f"/alt-v3_30"
-    exec_cfg = "--cfg=smpi/finalization-barrier:on --cfg=smpi/list-leaks:10 --cfg=model-check/max-depth:10000"
+    exec_cfg = "--cfg=smpi/finalization-barrier:on --cfg=smpi/list-leaks:10 --cfg=model-check/max-depth:10000 --cfg=smpi/pedantic:true"
+
+class v3_31(v3_30):
+    name_ext = "-3.31"
+    version = "v3.31"
+    install_path = f"/alt-v3_31"
+    exec_cfg = "--cfg=smpi/finalization-barrier:on --cfg=smpi/list-leaks:10 --cfg=model-check/max-depth:10000 --cfg=smpi/pedantic:true"
