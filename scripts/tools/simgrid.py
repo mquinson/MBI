@@ -8,7 +8,7 @@ from MBIutils import *
 class Tool(AbstractTool):
     name_ext = ""
     version = ""
-    exe_path = ""
+    install_path = ""
     exec_cfg = "--cfg=smpi/finalization-barrier:on --cfg=smpi/list-leaks:10 --cfg=model-check/max-depth:10000 --cfg=smpi/pedantic:true"
 
     def identify(self):
@@ -53,13 +53,13 @@ class Tool(AbstractTool):
                 outfile.write(' <cluster id="acme" prefix="node-" radical="0-99" suffix="" speed="1Gf" bw="125MBps" lat="50us"/>\n')
                 outfile.write('</platform>\n')
 
-        execcmd = execcmd.replace(f"mpirun", f"{self.exe_path}smpirun -wrapper {self.exe_path}simgrid-mc -platform ./cluster.xml -analyze {self.exec_cfg}")
+        execcmd = execcmd.replace(f"mpirun", f"{self.install_path}/bin/smpirun -wrapper {self.install_path}/bin/simgrid-mc -platform ./cluster.xml -analyze {self.exec_cfg}")
         execcmd = execcmd.replace('${EXE}', binary)
         execcmd = execcmd.replace('$zero_buffer', "--cfg=smpi/buffering:zero")
         execcmd = execcmd.replace('$infty_buffer', "--cfg=smpi/buffering:infty")
 
         self.run_cmd(
-            buildcmd=f"{self.exe_path}smpicc {filename} -trace-call-location -g -Wl,-znorelro -Wl,-znoseparate-code -o {binary}",
+            buildcmd=f"{self.install_path}/bin/smpicc {filename} -trace-call-location -g -Wl,-znorelro -Wl,-znoseparate-code -o {binary}",
             execcmd=execcmd,
             cachefile=cachefile,
             filename=filename,
@@ -141,17 +141,17 @@ class Tool(AbstractTool):
         return True
 
 
-class Previous(Tool):
-    name_ext = "-previous"
+class v3_27(Tool):
+    name_ext = "-v3_27"
     version = "v3.27"
-    exe_path = "/alt/bin/"
+    install_path = f"/alt-v3_27"
     exec_cfg = "--cfg=smpi/list-leaks:10 --cfg=model-check/max-depth:10000"
 
     def identify(self):
         return f"SimGrid {self.version} wrapper"
 
     def build(self, rootdir, cached=True):
-        if cached and os.path.exists('/alt/bin/simgrid-mc'):
+        if cached and os.path.exists(f'{self.install_path}/bin/simgrid-mc'):
             return
 
         here = os.getcwd() # Save where we were
@@ -165,8 +165,26 @@ class Previous(Tool):
 
         # Build and install it
         os.chdir(f"tools/simgrid-{self.version}")
-        subprocess.run(f"cmake -DCMAKE_INSTALL_PREFIX=/alt -Denable_model-checking=ON .", shell=True, check=True)
+        subprocess.run(f"cmake -DCMAKE_INSTALL_PREFIX={self.install_path} -Denable_model-checking=ON .", shell=True, check=True)
         subprocess.run("make -j$(nproc) install VERBOSE=1", shell=True, check=True)
 
         # Back to our previous directory
         os.chdir(here)
+
+class v3_28(v3_27):
+    name_ext = "-v3_28"
+    version = "v3.28"
+    install_path = f"/alt-v3_28"
+    exec_cfg = "--cfg=smpi/finalization-barrier:on --cfg=smpi/list-leaks:10 --cfg=model-check/max-depth:10000"
+
+class v3_29(v3_28):
+    name_ext = "-v3_29"
+    version = "v3.29"
+    install_path = f"/alt-v3_29"
+    exec_cfg = "--cfg=smpi/finalization-barrier:on  --cfg=smpi/list-leaks:10 --cfg=model-check/max-depth:10000"
+
+class v3_30(v3_29):
+    name_ext = "-v3_30"
+    version = "v3.30"
+    install_path = f"/alt-v3_30"
+    exec_cfg = "--cfg=smpi/finalization-barrier:on --cfg=smpi/list-leaks:10 --cfg=model-check/max-depth:10000"

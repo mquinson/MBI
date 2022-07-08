@@ -241,7 +241,11 @@ displayed_name = {
     'InputHazard':'Input Hazard',
     'FOK':"Correct execution",
 
-    'aislinn':'Aislinn','civl':'CIVL','hermes':'Hermes', 'isp':'ISP','itac':'ITAC', 'simgrid':'Mc SimGrid', 'simgrid-previous':'Mc SimGrid v3.27', 'smpi':'SMPI','smpivg':'SMPI+VG', 'mpisv':'MPI-SV', 'must':'MUST', 'parcoach':'PARCOACH', 'mpi-checker':'MPI-Checker',
+    'aislinn':'Aislinn','civl':'CIVL','hermes':'Hermes', 'isp':'ISP','itac':'ITAC', 'simgrid':'Mc SimGrid', 'smpi':'SMPI','smpivg':'SMPI+VG', 'mpisv':'MPI-SV', 'must':'MUST', 'parcoach':'PARCOACH', 'mpi-checker':'MPI-Checker',
+    'simgrid-3.27':'Mc SimGrid v3.27',
+    'simgrid-3.28':'Mc SimGrid v3.28',
+    'simgrid-3.29':'Mc SimGrid v3.29',
+    'simgrid-3.30':'Mc SimGrid v3.30',
 
     "STP":"Systematic True Positive",
     "CTP":"Can be True Positive",
