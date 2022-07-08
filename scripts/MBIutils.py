@@ -246,6 +246,7 @@ displayed_name = {
     'simgrid-3.28':'Mc SimGrid v3.28',
     'simgrid-3.29':'Mc SimGrid v3.29',
     'simgrid-3.30':'Mc SimGrid v3.30',
+    'simgrid-3.31':'Mc SimGrid v3.31',
 
     "STP":"Systematic True Positive",
     "CTP":"Can be True Positive",

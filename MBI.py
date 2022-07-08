@@ -1728,7 +1728,12 @@ elif args.c == 'plots':
         print("[MBI] Error: Dependancies ('numpy' or 'matplotlib') are not available!")
         exit(-1)
     extract_all_todo(args.b)
-    cmd_plots(rootdir, toolnames=['itac', 'simgrid', 'must', 'aislinn', 'civl', 'isp', 'mpisv', 'parcoach', 'hermes', 'mpi-checker'], ext=args.f)
+    if args.x == 'mpirun':
+        toolnames=['itac', 'simgrid', 'must', 'aislinn', 'civl', 'isp', 'mpisv', 'parcoach', 'hermes', 'mpi-checker']
+    else:
+        toolnames=arg_tools
+
+    cmd_plots(rootdir, toolnames=toolnames, ext=args.f)
 else:
     print(f"Invalid command '{args.c}'. Please choose one of 'all', 'generate', 'build', 'run', 'html' 'latex' or 'plots'")
     sys.exit(1)
