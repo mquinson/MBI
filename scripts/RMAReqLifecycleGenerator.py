@@ -1,7 +1,7 @@
 #! /usr/bin/python3
 import os
 import sys
-from generator_utils import *
+import generator_utils as gen
 
 template = """// @{generatedby}@
 /* ///////////////////////// The MPI Bugs Initiative ////////////////////////
@@ -80,8 +80,8 @@ int main(int argc, char **argv) {
 """
 
 
-for e1 in epoch:
-    for p in rma:
+for e1 in gen.epoch:
+    for p in gen.rma:
         patterns = {}
         patterns = {'e1': e1, 'p': p}
         patterns['origin'] = "MPI-Corrbench"
@@ -89,43 +89,43 @@ for e1 in epoch:
         patterns['rmafeature'] = 'Yes'
         patterns['p'] = p
         patterns['e1'] = e1
-        patterns['epoch'] = epoch[e1]("1")
-        patterns['finEpoch'] = finEpoch[e1]("1")
+        patterns['epoch'] = gen.epoch[e1]("1")
+        patterns['finEpoch'] = gen.finEpoch[e1]("1")
         patterns['epoch2'] = ""
         patterns['finEpoch2'] = ""
-        patterns['init'] = init[p]("1")
-        patterns['operation'] = operation[p]("1")
+        patterns['init'] = gen.init[p]("1")
+        patterns['operation'] = gen.operation[p]("1")
 
         # Generate a code correct
-        replace = patterns
+        replace = patterns.copy()
         replace['shortdesc'] = 'Correct code'
         replace['longdesc'] = 'Correct code'
         replace['outcome'] = 'OK'
         replace['errormsg'] = 'OK'
-        make_file(template, f'EpochLifecycle_RMA_{e1}_{p}_ok.c', replace)
+        gen.make_file(template, f'EpochLifecycle_RMA_{e1}_{p}_ok.c', replace)
 
         # Generate a code with missing open epoch
-        replace = patterns
+        replace = patterns.copy()
         replace['shortdesc'] = f"Request lifecycle, missing open {e1} epoch"
         replace['longdesc'] = f"Request lifecycle, missing open {e1} epoch"
         replace['outcome'] = 'ERROR: MissingEpoch'
         replace['errormsg'] = '@{e1}@ at @{filename}@:@{line:MBIERROR}@ has missing'
-        replace['epoch'] = f"/* MBIERROR MISSING: {epoch[e1]('1')} */"
-        make_file(template, f'EpochLifecycle_RMA_MissingOpen_{e1}_{p}_nok.c', replace)
+        replace['epoch'] = f"/* MBIERROR MISSING: {gen.epoch[e1]('1')} */"
+        gen.make_file(template, f'EpochLifecycle_RMA_MissingOpen_{e1}_{p}_nok.c', replace)
 
         # Generate a code with missing close epoch
-        replace = patterns
+        replace = patterns.copy()
         replace['shortdesc'] = f"Request lifecycle, missing close {e1} epoch"
         replace['longdesc'] = f"Request lifecycle, missing close {e1} epoch"
         replace['outcome'] = 'ERROR: MissingEpoch'
         replace['errormsg'] = '@{e1}@ at @{filename}@:@{line:MBIERROR}@ has missing'
-        replace['epoch'] = epoch[e1]("1")
-        replace['finEpoch'] = f"/* MBIERROR MISSING: {finEpoch[e1]('1')} */"
-        make_file(template, f'EpochLifecycle_RMA_MissingClose_{e1}_{p}_nok.c', replace)
+        replace['epoch'] = gen.epoch[e1]("1")
+        replace['finEpoch'] = f"/* MBIERROR MISSING: {gen.finEpoch[e1]('1')} */"
+        gen.make_file(template, f'EpochLifecycle_RMA_MissingClose_{e1}_{p}_nok.c', replace)
 
-for e1 in epoch:
-    for e2 in epoch:
-        for p in rma:
+for e1 in gen.epoch:
+    for e2 in gen.epoch:
+        for p in gen.rma:
             patterns = {}
             patterns = {'e1': e1, 'e2': e2, 'p': p}
             patterns['origin'] = "MPI-Corrbench"
@@ -134,17 +134,17 @@ for e1 in epoch:
             patterns['p'] = p
             patterns['e1'] = e1
             patterns['e2'] = e2
-            patterns['epoch'] = epoch[e1]("1")
-            patterns['finEpoch'] = finEpoch[e1]("1")
-            patterns['epoch2'] = epoch[e2]("1") + " /* MBIERROR */"
-            patterns['finEpoch2'] = finEpoch[e2]("1") + " /* MBIERROR */"
-            patterns['init'] = init[p]("1")
-            patterns['operation'] = operation[p]("1")
+            patterns['epoch'] = gen.epoch[e1]("1")
+            patterns['finEpoch'] = gen.finEpoch[e1]("1")
+            patterns['epoch2'] = gen.epoch[e2]("1") + " /* MBIERROR */"
+            patterns['finEpoch2'] = gen.finEpoch[e2]("1") + " /* MBIERROR */"
+            patterns['init'] = gen.init[p]("1")
+            patterns['operation'] = gen.operation[p]("1")
 
             # Generate a code with epoch into an epoch
-            replace = patterns
+            replace = patterns.copy()
             replace['shortdesc'] = f"Request lifecycle, {e2} epoch into {e1} epoch"
             replace['longdesc'] = f"Request lifecycle, {e2} epoch into {e1} epoch"
             replace['outcome'] = 'ERROR: DoubleEpoch'
             replace['errormsg'] = '@{e2}@ at @{filename}@:@{line:MBIERROR}@ has in an other epoch'
-            make_file(template, f'EpochLifecycle_RMA_doubleEpoch_{e1}_{e2}_{p}_nok.c', replace)
+            gen.make_file(template, f'EpochLifecycle_RMA_doubleEpoch_{e1}_{e2}_{p}_nok.c', replace)

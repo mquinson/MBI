@@ -7,7 +7,7 @@ import os
 import re
 
 # Collectives
-coll = ['MPI_Barrier','MPI_Bcast', 'MPI_Reduce', 'MPI_Gather', 'MPI_Scatter', 'MPI_Scan', 'MPI_Exscan', 'MPI_Allgather', 'MPI_Allreduce', 'MPI_Allgatherv', 'MPI_Alltoall', 'MPI_Alltoallv']
+coll = ['MPI_Barrier', 'MPI_Bcast', 'MPI_Reduce', 'MPI_Gather', 'MPI_Scatter', 'MPI_Scan', 'MPI_Exscan', 'MPI_Allgather', 'MPI_Allreduce', 'MPI_Allgatherv', 'MPI_Alltoall', 'MPI_Alltoallv']
 icoll = ['MPI_Ibcast', 'MPI_Ireduce', 'MPI_Igather', 'MPI_Iscatter', 'MPI_Iscan', 'MPI_Iexscan', 'MPI_Iallgather', 'MPI_Iallreduce', 'MPI_Iallgatherv', 'MPI_Ialltoall', 'MPI_Ialltoallv']
 barrier = ['MPI_Barrier']
 ibarrier = ['MPI_Ibarrier']
@@ -21,7 +21,7 @@ tcoll4color = ['MPI_Comm_split']
 tcoll4topo = ['MPI_Cart_get']
 
 # P2P
-allsend = ['MPI_Send', 'MPI_Isend', 'MPI_Ssend', 'MPI_Bsend','MPI_Send_init']
+allsend = ['MPI_Send', 'MPI_Isend', 'MPI_Ssend', 'MPI_Bsend', 'MPI_Send_init']
 allrecv = ['MPI_Recv', 'MPI_Irecv', 'MPI_Recv_init']
 send = ['MPI_Send']
 ssend = ['MPI_Ssend']
@@ -88,7 +88,7 @@ fini['MPI_Gather'] = lambda n: ""
 free['MPI_Gather'] = lambda n: ""
 write['MPI_Gather'] = lambda n: ""
 
-init['MPI_Scatter'] = lambda n: f"int val{n}, buf{n}[buff_size];"
+init['MPI_Scatter'] = lambda n: f"int val{n}, buf{n}[buff_size];\n  memset(buf{n}, 0, sizeof(int)*buff_size);"
 start['MPI_Scatter'] = lambda n: ""
 operation['MPI_Scatter'] = lambda n: f"MPI_Scatter(&buf{n}, 1, type, &val{n}, 1, type, root, newcom);"
 fini['MPI_Scatter'] = lambda n: ""
@@ -257,7 +257,7 @@ write['MPI_Ialltoallv'] = lambda n: f"rbuf{n}[0]++;"
 
 ### COLL:tools
 
-init['MPI_Comm_split'] = lambda n: f'MPI_Comm com[size]; color = rank % 2; int key = 1;'
+init['MPI_Comm_split'] = lambda n: 'MPI_Comm com[size]; int color = rank % 2; int key = 1;'
 start['MPI_Comm_split'] = lambda n: ""
 operation['MPI_Comm_split'] = lambda n: 'MPI_Comm_split(MPI_COMM_WORLD,color,key, &com[j]);'
 error['MPI_Comm_split'] = 'CommunicatorLeak'
@@ -267,7 +267,7 @@ free['MPI_Comm_split'] = lambda n: ""
 
 init['MPI_Cart_get'] = lambda n: ""
 start['MPI_Cart_get'] = lambda n: ""
-operation['MPI_Cart_get'] = lambda n: f'MPI_Cart_get(newcom, 2, dims, periods, coords);'
+operation['MPI_Cart_get'] = lambda n: 'MPI_Cart_get(newcom, 2, dims, periods, coords);'
 write['MPI_Cart_get'] = lambda n: ""
 fini['MPI_Cart_get'] = lambda n: ""
 free['MPI_Cart_get'] = lambda n: ""
@@ -297,7 +297,7 @@ error['MPI_Comm_create'] = 'CommunicatorLeak'
 fini['MPI_Comm_create'] = lambda n: "MPI_Comm_free(&com[j]);"
 free['MPI_Comm_create'] = lambda n: ""
 
-init['MPI_Comm_dup'] = lambda n: f'MPI_Comm com[size];'
+init['MPI_Comm_dup'] = lambda n: 'MPI_Comm com[size];'
 operation['MPI_Comm_dup'] = lambda n: 'MPI_Comm_dup(MPI_COMM_WORLD, &com[j]);'
 error['MPI_Comm_dup'] = 'CommunicatorLeak'
 fini['MPI_Comm_dup'] = lambda n: "MPI_Comm_free(&com[j]);"
@@ -348,7 +348,7 @@ write['MPI_Recv'] = lambda n: ""
 
 init['MPI_Probe'] = lambda n: ""
 start['MPI_Probe'] = lambda n: ""
-operation['MPI_Probe'] = lambda n: f'MPI_Probe(src, 0, newcom, &sta);'
+operation['MPI_Probe'] = lambda n: 'MPI_Probe(src, 0, newcom, &sta);'
 fini['MPI_Probe'] = lambda n: ""
 free['MPI_Probe'] = lambda n: ""
 write['MPI_Probe'] = lambda n: ""
@@ -395,12 +395,12 @@ write['MPI_Recv_init'] = lambda n: f'buf{n}++;'
 
 ### RMA
 
-epoch['MPI_Win_fence'] =lambda n: 'MPI_Win_fence(0, win);'
-finEpoch['MPI_Win_fence'] =lambda n: 'MPI_Win_fence(0, win);'
-epoch['MPI_Win_lock'] =lambda n: 'MPI_Win_lock(MPI_LOCK_SHARED, target, 0, win);'
-finEpoch['MPI_Win_lock'] =lambda n: 'MPI_Win_unlock(target, win);'
-epoch['MPI_Win_lock_all'] =lambda n: 'MPI_Win_lock_all(0,win);'
-finEpoch['MPI_Win_lock_all'] =lambda n: 'MPI_Win_unlock_all(win);'
+epoch['MPI_Win_fence'] = lambda n: 'MPI_Win_fence(0, win);'
+finEpoch['MPI_Win_fence'] = lambda n: 'MPI_Win_fence(0, win);'
+epoch['MPI_Win_lock'] = lambda n: 'MPI_Win_lock(MPI_LOCK_SHARED, target, 0, win);'
+finEpoch['MPI_Win_lock'] = lambda n: 'MPI_Win_unlock(target, win);'
+epoch['MPI_Win_lock_all'] = lambda n: 'MPI_Win_lock_all(0,win);'
+finEpoch['MPI_Win_lock_all'] = lambda n: 'MPI_Win_unlock_all(win);'
 
 init['MPI_Put'] = lambda n: f'int localbuf{n}[N] = {{12345}};'
 operation['MPI_Put'] = lambda n: f'MPI_Put(&localbuf{n}, N, MPI_INT, target, 0, N, type, win);'
@@ -441,33 +441,33 @@ def make_file(template, filename, replace):
     filename = filename.replace("_MPI_", "_")
     replace['filename'] = filename
     # Replace all variables that don't have a ':' in their name
-    while re.search("@\{[^@:]*\}@", output):
-        m = re.search("@\{([^@:]*)\}@", output)
+    while re.search(r'@\{[^@:]*\}@', output):
+        m = re.search(r'@\{([^@:]*)\}@', output)
         target = m.group(1)
         #print(f"Replace @{{{target}}}@")
         if target in replace.keys():
-            output = re.sub(f'@\{{{target}\}}@', replace[target], output)
+            output = re.sub(fr'@\{{{target}\}}@', replace[target], output)
             #print(f"Replace {target} -> {replace[target]}")
         else:
             raise ValueError(f"Variable {target} used in template, but not defined.")
     # Now replace all variables with a ':' in their name: line targets are like that, and we don't want to resolve them before the others change the lines
-    while re.search("@\{([^:@]*):([^@]*)\}@", output):
-        m = re.search("@\{([^:@]*):([^@]*)\}@", output)
+    while re.search(r'@\{([^:@]*):([^@]*)\}@', output):
+        m = re.search(r'@\{([^:@]*):([^@]*)\}@', output)
         (kind, target) = (m.group(1), m.group(2))
         if kind == 'line':
             replace = f'{find_line(output, target, filename)}'
             #print(f"Replace @{{line:{target}}}@ with '{replace}'")
-            output = re.sub(f'@\{{line:{target}\}}@', replace, output)
+            output = re.sub(fr'@\{{line:{target}\}}@', replace, output)
         else:
             raise ValueError(f"Unknown variable kind: {kind}:{target}")
 
     if os.path.exists(filename):
         with open(filename, 'r') as file:
             prev = file.read().split('\n')[0]
-            prev = re.sub('^.*?scripts/','scripts/', prev)
+            prev = re.sub('^.*?scripts/', 'scripts/', prev)
             prev = re.sub('. DO NOT EDIT.', '', prev)
         now = output.split('\n')[0]
-        now = re.sub('^.*?scripts/','scripts/', now)
+        now = re.sub('^.*?scripts/', 'scripts/', now)
         now = re.sub('. DO NOT EDIT.', '', now)
 
         print(f'WARNING: overwriting {filename}. Previously generated by: {prev}; regenerated by {now}')
