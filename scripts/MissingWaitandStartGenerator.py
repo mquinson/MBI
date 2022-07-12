@@ -34,6 +34,7 @@ END_MBI_TESTS
 #include <mpi.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 
 int main(int argc, char **argv) {

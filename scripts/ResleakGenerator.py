@@ -37,6 +37,7 @@ END_MBI_TESTS
 
 #include <mpi.h>
 #include <stdio.h>
+#include <string.h>
 
 #define ITERATIONS 100
 #define PARAM_PER_ITERATION 3
