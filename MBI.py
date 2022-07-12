@@ -1392,21 +1392,11 @@ def make_radar_plot_ext(name, errors, toolname, results, ext):
     # plt.legend(prop={'size': 22})
     # plt.rcParams.update({'font.size':22})
 
-
-    # ax.plot(theta, data, color=colors[2], alpha=1, label='Overall Accuracy')
     ax.fill(theta, data, facecolor=colors[2], alpha=0.6,
             label='Accuracy', hatch="/"
     )
 
-    ax.plot(theta, data_p, color=colors[0], alpha=1, linestyle='dashed',
-            # label='Overall Accuracy$^+$'
-    )
-    # ax.fill(theta, data_p, facecolor=colors[0], alpha=0.4)
-
-    ax.plot(theta, data_m, color=colors[1], alpha=1, linestyle='dotted',
-            #label='Always detected'
-    )
-    # ax.fill(theta, data_m, facecolor=colors[1], alpha=0.2)
+    ax.plot(theta, data, color=colors[2], alpha=1)
 
     # ax.fill_between(theta, data_0, data_y, facecolor=colors[2], alpha=0.4)
     # ax.fill_between(theta, data_y, data, facecolor=colors[1], alpha=0.4,
@@ -1417,7 +1407,18 @@ def make_radar_plot_ext(name, errors, toolname, results, ext):
     ax.fill_between(theta, data_0, data_y, facecolor=colors[1], alpha=0.6,
                     label='Always detected', hatch="\\")
 
-    ax.plot(theta, data, color=colors[2], alpha=1)
+    # ax.plot(theta, data, color=colors[2], alpha=1, label='Overall Accuracy')
+
+    ax.plot(theta, data_p, color=colors[0], alpha=1, linestyle='dashed',
+            # label='Overall Accuracy$^+$'
+    )
+    # ax.fill(theta, data_p, facecolor=colors[0], alpha=0.4)
+
+    ax.plot(theta, data_m, color=colors[1], alpha=1, #linestyle='dotted',
+            #label='Always detected'
+    )
+    # ax.fill(theta, data_m, facecolor=colors[1], alpha=0.2)
+
 
     legend = ax.legend(loc=(0.8, .99), labelspacing=0.1, fontsize='10')
 
