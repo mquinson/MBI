@@ -99,6 +99,12 @@ class Tool(AbstractTool):
         if re.search('kind: MPI_ERROR, certainty: MAYBE', output) or re.search('kind: MPI_ERROR, certainty: PROVEABLE', output):
             return 'MPI_ERROR'
 
+        if re.search('ASSERTION_VIOLATION', output):
+            return 'ASSERTION_VIOLATION'
+
+        if re.search('OUT_OF_BOUNDS', output):
+            return 'OUT_OF_BOUNDS'
+
         if re.search('This feature is not yet implemented', output):
             return 'UNIMPLEMENTED'
         if re.search('doesn.t have a definition', output):
