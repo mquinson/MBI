@@ -1,5 +1,7 @@
 import re
 import os
+import distutils.spawn
+
 from MBIutils import *
 
 class Tool(AbstractTool):
@@ -11,6 +13,7 @@ class Tool(AbstractTool):
 
     def setup(self):
         if not os.path.exists("environment.txt"):
+            print("Installing ITAC...\n")
             subprocess.run("apt update && apt install wget", shell=True, check=True)
             subprocess.run("wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB -O- | apt-key add -", shell=True, check=True)
             subprocess.run("echo 'deb https://apt.repos.intel.com/oneapi all main' > /etc/apt/sources.list.d/oneAPI.list", shell=True, check=True)
@@ -25,6 +28,11 @@ class Tool(AbstractTool):
                         raise Exception(f"Parse error while trying to integrating the Intel environment: {line}")
                     # print(f"os.environ[{m.group(1)}]={m.group(2)}")
                     os.environ[m.group(1)] = m.group(2)
+
+        if (not distutils.spawn.find_executable("mpiicc")):
+            # mpiicc still not usable. Maybe that's the environment.txt from a previous run. Try again to install the tools
+            os.unlink("environment.txt")
+            self.setup()
 
     def run(self, execcmd, filename, binary, id, timeout, batchinfo):
         cachefile = f'{binary}_{id}'
