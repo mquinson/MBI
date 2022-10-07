@@ -102,7 +102,7 @@ for p1 in gen.send + gen.isend + gen.psend:
         patterns['change_com2'] = ""
 
         replace = patterns.copy()
-        replace['origin'] = "MPI-Corrbench"
+        replace['origin'] = "inspired from MPI-Corrbench"
         replace['shortdesc'] = 'Point to point @{p2}@ has an invalid communicator'
         replace['longdesc'] = 'MPI_COMM_NULL used in point to point @{p2}@'
         replace['outcome'] = 'ERROR: InvalidCommunicator'
