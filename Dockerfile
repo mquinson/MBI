@@ -15,7 +15,8 @@
 #      docker image tag mquinson/mbi registry.gitlab.inria.fr/quinson/mbi2
 #      docker login registry.gitlab.inria.fr
 #      docker push registry.gitlab.inria.fr/quinson/mbi2
-FROM ubuntu:20.04
+#FROM ubuntu:20.04
+FROM debian:11
 USER root
 RUN apt-get update
 RUN apt-get -y -qq install software-properties-common
