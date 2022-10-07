@@ -134,7 +134,7 @@ class V17(AbstractTool):
 
 class V18(V17):
     def identify(self):
-        return "MUST v1.7.2 wrapper"
+        return "MUST v1.8.1-rc1 wrapper"
 
     def ensure_image(self):
         AbstractTool.ensure_image(self, "-x must18")
@@ -147,13 +147,13 @@ class V18(V17):
 
         # Build it
         here = os.getcwd() # Save where we were
-        if not os.path.exists((f"{rootdir}/tools/MUST-v1.8-preview.tar.gz")):
-            subprocess.run(f"cd {rootdir}/tools; wget https://hpc.rwth-aachen.de/must/files/MUST-v1.8-preview.tar.gz", shell=True, check=True)
+        if not os.path.exists((f"{rootdir}/tools/MUST-v1.8.0-rc1.tar.gz")):
+            subprocess.run(f"cd {rootdir}/tools; wget https://hpc.rwth-aachen.de/must/files/MUST-v1.8.0-rc1.tar.gz", shell=True, check=True)
         subprocess.run(f"rm -rf /tmp/build-must ; mkdir /tmp/build-must", shell=True, check=True)
         os.chdir("/tmp/build-must")
-        subprocess.run(f"tar xfz {rootdir}/tools/MUST-v1.8-preview.tar.gz", shell=True, check=True)
+        subprocess.run(f"tar xfz {rootdir}/tools/MUST-v1.8.0-rc1.tar.gz", shell=True, check=True)
 
-        subprocess.run(f"CC=$(which clang) CXX=$(which clang++) OMPI_CC=$(which clang) OMPI_CXX=$(which clang++) FC=$(which gfortran) cmake MUST-v1.8-preview -DCMAKE_INSTALL_PREFIX=/MBI-builds/MUST18 -DCMAKE_BUILD_TYPE=Release", shell=True, check=True)
+        subprocess.run(f"CC=$(which clang) CXX=$(which clang++) OMPI_CC=$(which clang) OMPI_CXX=$(which clang++) FC=$(which gfortran) cmake MUST-v1.8.0-rc1 -DCMAKE_INSTALL_PREFIX=/MBI-builds/MUST18 -DCMAKE_BUILD_TYPE=Release", shell=True, check=True)
         subprocess.run(f"make -j$(nproc) install VERBOSE=1", shell=True, check=True)
         subprocess.run(f"make -j$(nproc) install-prebuilds VERBOSE=1", shell=True, check=True)
 

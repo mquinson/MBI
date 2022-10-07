@@ -18,9 +18,9 @@
 #FROM ubuntu:20.04
 FROM debian:11
 USER root
-RUN apt-get update
-RUN apt-get -y -qq install software-properties-common
-RUN add-apt-repository ppa:ubuntu-toolchain-r/test
+#RUN apt-get update
+#RUN apt-get -y -qq install software-properties-common
+#RUN add-apt-repository ppa:ubuntu-toolchain-r/test
 RUN apt-get update --fix-missing && \
     apt-get -y -qq install autoconf automake autotools-dev build-essential clang clang-tools cmake cvc4 \
                            gcc-10 git mpich libboost-dev libcairo2 libdw-dev libboost-stacktrace-dev\
@@ -41,4 +41,5 @@ RUN pip3 install numpy matplotlib
 COPY . /MBI
 
 # Rebuild all tools
-RUN cd /MBI ; ./MBI.py -c generate ; rm -rf builds ; ./MBI.py -c build -x civl,hermes,isp,must,parcoach,simgrid; rm -rf /tmp/*
+RUN cd /MBI ; ./MBI.py -c generate ; rm -rf builds ; ./MBI.py -c build -x civl,hermes,isp,must,must18,parcoach,simgrid; rm -rf /tmp/*
+# ,simgrid-3.27,simgrid-3.28,simgrid-3.29,simgrid-3.30,simgrid-3.31,simgrid-3.32
