@@ -1,7 +1,7 @@
 import re
 import os
 import tempfile
-import shutils
+import shutil
 from MBIutils import *
 
 def must_filter(line, process):
