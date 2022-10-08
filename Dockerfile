@@ -41,5 +41,4 @@ RUN pip3 install numpy matplotlib
 COPY . /MBI
 
 # Rebuild all tools
-RUN cd /MBI ; ./MBI.py -c generate ; rm -rf builds ; ./MBI.py -c build -x civl,hermes,isp,must,must18,parcoach,simgrid; rm -rf /tmp/*
-# ,simgrid-3.27,simgrid-3.28,simgrid-3.29,simgrid-3.30,simgrid-3.31,simgrid-3.32
+RUN cd /MBI ; ./MBI.py -c generate ; rm -rf builds ; ./MBI.py -c build -x civl,hermes,isp,must,must18,parcoach,simgrid,simgrid-3.27,simgrid-3.28,simgrid-3.29,simgrid-3.30,simgrid-3.31,simgrid-3.32; rm -rf /tmp/*

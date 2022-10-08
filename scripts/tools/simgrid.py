@@ -29,7 +29,7 @@ class Tool(AbstractTool):
 
         # Build and install it
         os.chdir("tools/simgrid")
-        subprocess.run(f"cmake -DCMAKE_INSTALL_PREFIX=/usr -Denable_model-checking=ON .", shell=True, check=True)
+        subprocess.run(f"cmake -DCMAKE_INSTALL_PREFIX=/usr -Denable_compile_optimizations=ON -Denable_model-checking=ON .", shell=True, check=True)
         subprocess.run("make -j$(nproc) install VERBOSE=1", shell=True, check=True)
 
         # Back to our previous directory
@@ -144,7 +144,7 @@ class Tool(AbstractTool):
 class v3_27(Tool):
     name_ext = "-3.27"
     version = "v3.27"
-    install_path = f"/alt-v3_27"
+    install_path = f"/sg-v3_27"
     exec_cfg = "--cfg=smpi/list-leaks:10 --cfg=model-check/max-depth:10000"
 
     def identify(self):
@@ -165,7 +165,7 @@ class v3_27(Tool):
 
         # Build and install it
         os.chdir(f"tools/simgrid-{self.version}")
-        subprocess.run(f"cmake -DCMAKE_INSTALL_PREFIX={self.install_path} -Denable_model-checking=ON .", shell=True, check=True)
+        subprocess.run(f"cmake -DCMAKE_INSTALL_PREFIX={self.install_path} -Denable_compile_optimizations=ON -Denable_model-checking=ON .", shell=True, check=True)
         subprocess.run("make -j$(nproc) install VERBOSE=1", shell=True, check=True)
 
         # Back to our previous directory
@@ -174,23 +174,29 @@ class v3_27(Tool):
 class v3_28(v3_27):
     name_ext = "-3.28"
     version = "v3.28"
-    install_path = f"/alt-v3_28"
+    install_path = f"/sg-v3_28"
     exec_cfg = "--cfg=smpi/finalization-barrier:on --cfg=smpi/list-leaks:10 --cfg=model-check/max-depth:10000 --cfg=smpi/pedantic:true"
 
-class v3_29(v3_28):
+class v3_29(v3_27):
     name_ext = "-3.29"
     version = "v3.29"
-    install_path = f"/alt-v3_29"
+    install_path = f"/sg-v3_29"
     exec_cfg = "--cfg=smpi/finalization-barrier:on  --cfg=smpi/list-leaks:10 --cfg=model-check/max-depth:10000 --cfg=smpi/pedantic:true"
 
-class v3_30(v3_29):
+class v3_30(v3_27):
     name_ext = "-3.30"
     version = "v3.30"
-    install_path = f"/alt-v3_30"
+    install_path = f"/sg-v3_30"
     exec_cfg = "--cfg=smpi/finalization-barrier:on --cfg=smpi/list-leaks:10 --cfg=model-check/max-depth:10000 --cfg=smpi/pedantic:true"
 
-class v3_31(v3_30):
+class v3_31(v3_27):
     name_ext = "-3.31"
     version = "v3.31"
-    install_path = f"/alt-v3_31"
+    install_path = f"/sg-v3_31"
+    exec_cfg = "--cfg=smpi/finalization-barrier:on --cfg=smpi/list-leaks:10 --cfg=model-check/max-depth:10000 --cfg=smpi/pedantic:true"
+
+class v3_32(v3_27):
+    name_ext = "-3.32"
+    version = "v3.32"
+    install_path = f"/sg-v3_32"
     exec_cfg = "--cfg=smpi/finalization-barrier:on --cfg=smpi/list-leaks:10 --cfg=model-check/max-depth:10000 --cfg=smpi/pedantic:true"
