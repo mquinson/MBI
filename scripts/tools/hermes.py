@@ -1,6 +1,8 @@
 import re
 import os
 import sys
+import tempfile
+import shutil
 from MBIutils import *
 
 class Tool(AbstractTool):
@@ -51,22 +53,24 @@ class Tool(AbstractTool):
         execcmd = re.sub('\$zero_buffer', "-b", execcmd)
         execcmd = re.sub('\$infty_buffer', "-g", execcmd)
 
-        self.run_cmd(
-            buildcmd=f"cp {filename} source.c &&"
-                     +"/MBI-builds/hermes/clangTool/clangTool source.c &&"
-                     +f"ispcxx -I/MBI-builds/hermes/clangTool/ -o {binary} i_source.c /MBI-builds/hermes/clangTool/GenerateAssumes.cpp /MBI-builds/hermes/clangTool/IfInfo.cpp /MBI-builds/hermes/profiler/Client.c",
-            execcmd=execcmd,
-            cachefile=cachefile,
-            filename=filename,
-            binary=binary,
-            timeout=timeout,
-            batchinfo=batchinfo)
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            self.run_cmd(
+               buildcmd=f"cp {filename} source.c &&"
+                       +"/MBI-builds/hermes/clangTool/clangTool source.c &&"
+                       +f"ispcxx -I/MBI-builds/hermes/clangTool/ -o {tmpdirname}/{binary} i_source.c /MBI-builds/hermes/clangTool/GenerateAssumes.cpp /MBI-builds/hermes/clangTool/IfInfo.cpp /MBI-builds/hermes/profiler/Client.c",
+               execcmd=execcmd,
+               cachefile=cachefile,
+               filename=filename,
+               binary=binary,
+               timeout=timeout,
+               cwd=tmpdirname,
+               batchinfo=batchinfo)
 
-        if os.path.exists("./report.html"):
-            os.rename("./report.html", f"{binary}_{id}.html")
+            if os.path.exists(f"{tmpdirname}/report.html"):
+               os.rename(f"{tmpdirname}/report.html", f"{binary}_{id}.html")
 
-        subprocess.run("rm -f core vgcore.*", shell=True, check=True) # Save disk space ASAP
-        subprocess.run("find -type f -a -executable | xargs rm -f", shell=True, check=True)
+#        subprocess.run("rm -f core vgcore.*", shell=True, check=True) # Save disk space ASAP
+#        subprocess.run("find -type f -a -executable | xargs rm -f", shell=True, check=True)
 
     def parse(self, cachefile):
         if os.path.exists(f'{cachefile}.timeout') or os.path.exists(f'logs/hermes/{cachefile}.timeout'):
