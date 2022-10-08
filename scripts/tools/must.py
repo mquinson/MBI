@@ -1,5 +1,6 @@
 import re
 import os
+import tempfile
 from MBIutils import *
 
 def must_filter(line, process):
@@ -48,28 +49,27 @@ class V17(AbstractTool):
     def run(self, execcmd, filename, binary, id, timeout, batchinfo):
         cachefile = f'{binary}_{id}'
 
+        subprocess.run("killall -9 mpirun 2>/dev/null", shell=True)
+
         execcmd = re.sub("mpirun", "mustrun --must:distributed", execcmd)
         execcmd = re.sub('\${EXE}', f'./{binary}', execcmd)
         execcmd = re.sub('\$zero_buffer', "", execcmd)
         execcmd = re.sub('\$infty_buffer', "", execcmd)
 
-        subprocess.run("killall -9 mpirun 2>/dev/null", shell=True)
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            ran = self.run_cmd(
+                    buildcmd=f"mpicc {filename} -o {tmpdirname}/{binary}",
+                    execcmd=execcmd,
+                    cachefile=cachefile,
+                    filename=filename,
+                    binary=binary,
+                    timeout=timeout,
+                    batchinfo=batchinfo,
+                    cwd=tmpdirname,
+                    read_line_lambda=must_filter)
 
-        ran = self.run_cmd(
-            buildcmd=f"mpicc {filename} -o {binary}",
-            execcmd=execcmd,
-            cachefile=cachefile,
-            filename=filename,
-            binary=binary,
-            timeout=timeout,
-            batchinfo=batchinfo,
-            read_line_lambda=must_filter)
-
-        if os.path.isfile("./MUST_Output.html"):
-            os.rename(f"./MUST_Output.html", f"{cachefile}.html")
-
-        if ran: # cleanup if that test was ran
-            subprocess.run(f"rm -rf must_temp core {binary}", shell=True, check=True)
+            if os.path.isfile(f"{tmpdirname}/MUST_Output.html"):
+                os.rename(f"{tmpdirname}/MUST_Output.html", f"{cachefile}.html")
 
     def teardown(self):
         subprocess.run("find -type f -a -executable | xargs rm -f", shell=True, check=True) # Remove generated (binary files)

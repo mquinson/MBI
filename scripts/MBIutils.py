@@ -43,7 +43,7 @@ class AbstractTool:
         """Compile that test code and anaylse it with the Tool if needed (a cache system should be used)"""
         # pass
 
-    def run_cmd(self, buildcmd, execcmd, cachefile, filename, binary, timeout, batchinfo, read_line_lambda=None):
+    def run_cmd(self, buildcmd, execcmd, cachefile, filename, binary, timeout, batchinfo, cwd=None, read_line_lambda=None):
         """
         Runs the test on need. Returns True if the test was ran, and False if it was cached. This method SHOULD NOT be overloaded, change things in run()
 
@@ -55,6 +55,7 @@ class AbstractTool:
          - filename is the source file containing the code
          - binary the file name in which to compile the code
          - batchinfo: something like "1/1" to say that this run is the only batch (see -b parameter of MBI.py)
+         - cwd: directory in which the command must be run (or None if it's not to be changed from current working directory)
          - read_line_lambda: a lambda to which each line of the tool output is feed ASAP. It allows MUST to interrupt the execution when a deadlock is reported.
         """
 
@@ -96,12 +97,12 @@ class AbstractTool:
                     outfile.write(output)
                 return True
 
-        output += f"\n\nExecuting the command\n $ {execcmd}\n"
+        output += f"\n\nExecuting the command (cwd: {cwd})\n $ {execcmd}\n"
         for line in (output.split('\n')):
             print(f"| {line}", file=sys.stderr)
 
         # We run the subprocess and parse its output line by line, so that we can kill it as soon as it detects a timeout
-        process = subprocess.Popen(shlex.split(execcmd), stdout=subprocess.PIPE,
+        process = subprocess.Popen(shlex.split(execcmd), cwd=cwd, stdout=subprocess.PIPE,
                                    stderr=subprocess.STDOUT, preexec_fn=os.setsid)
         poll_obj = select.poll()
         poll_obj.register(process.stdout, select.POLLIN)
