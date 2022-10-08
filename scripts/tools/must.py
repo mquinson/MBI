@@ -70,7 +70,7 @@ class V17(AbstractTool):
                     read_line_lambda=must_filter)
 
             if os.path.isfile(f"{tmpdirname}/MUST_Output.html"):
-                shutils.copyfile(f"{tmpdirname}/MUST_Output.html", f"{cachefile}.html")
+                shutil.copyfile(f"{tmpdirname}/MUST_Output.html", f"{cachefile}.html")
 
     def teardown(self):
         subprocess.run("find -type f -a -executable | xargs rm -f", shell=True, check=True) # Remove generated (binary files)
