@@ -8,7 +8,7 @@ from MBIutils import *
 class Tool(AbstractTool):
     name_ext = ""
     version = ""
-    install_path = ""
+    install_path = "/usr"
     exec_cfg = "--cfg=smpi/finalization-barrier:on --cfg=smpi/list-leaks:10 --cfg=model-check/max-depth:10000 --cfg=smpi/pedantic:true"
 
     def identify(self):
