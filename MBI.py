@@ -39,12 +39,18 @@ import tools.must
 import tools.mpisv
 import tools.hermes
 import tools.isp
-import tools.itac
+itac_loaded=False
+try:
+    import tools.itac
+    itac_loaded=True
+except ImportError:
+    print("[MBI] Warning: ITAC module cannot be loaded because of an ImportError (that's OK if you did not plan to use it).")
 import tools.civl
 import tools.aislinn
 import tools.mpi_checker
 
-tools = {'aislinn': tools.aislinn.Tool(), 'civl': tools.civl.Tool(), 'hermes': tools.hermes.Tool(), 'isp': tools.isp.Tool(), 'itac': tools.itac.Tool(), 'mpisv': tools.mpisv.Tool(),
+tools = {'aislinn': tools.aislinn.Tool(), 'civl': tools.civl.Tool(), 'hermes': tools.hermes.Tool(), 'isp': tools.isp.Tool(), 'mpisv': tools.mpisv.Tool(),
+         'itac': tools.itac.Tool() if itac_loaded else None,
          'must': tools.must.V17(),'must18': tools.must.V18(),
          'simgrid': tools.simgrid.Tool(), 'simgrid-3.27': tools.simgrid.v3_27(), 'simgrid-3.28': tools.simgrid.v3_28(), 'simgrid-3.29': tools.simgrid.v3_29(), 'simgrid-3.30': tools.simgrid.v3_30(),'simgrid-3.31': tools.simgrid.v3_31(),
          'smpi':tools.smpi.Tool(),'smpivg':tools.smpivg.Tool(), 'parcoach': tools.parcoach.Tool(), 'mpi-checker': tools.mpi_checker.Tool()}
