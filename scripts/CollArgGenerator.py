@@ -34,7 +34,6 @@ END_MBI_TESTS
 #include <mpi.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 #define buff_size 128
 
@@ -42,7 +41,8 @@ int main(int argc, char **argv) {
   int nprocs = -1;
   int rank = -1;
   int root = 0;
-  int size = 1, j=0, color=0;
+  int size = 1;
+  int j=0;
 
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
