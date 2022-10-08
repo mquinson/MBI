@@ -96,6 +96,8 @@ def extract_all_todo(batch):
     filename = sorted(filenames)
     for filename in filenames[min_rank:max_rank]:
         todo = todo + parse_one_code(filename)
+    if pos == runner_count: # The last runner starts from the end of the array to ease dynamically splitting
+        todo = reversed(todo)
 
 ########################
 # cmd_gencodes(): what to do when '-c generate' is used (Generating the codes)
