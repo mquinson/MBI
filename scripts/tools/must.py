@@ -160,5 +160,5 @@ class V18(V17):
         # Back to our previous directory
         os.chdir(here)
 
-    def setup(self, rootdir):
+    def setup(self):
         os.environ['PATH'] = os.environ['PATH'] + ":/MBI-builds/MUST18/bin/"
