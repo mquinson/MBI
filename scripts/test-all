@@ -16,14 +16,14 @@ cmd_run() {
     docker run -it --rm --name MIB --volume $(pwd):/MBI mpi-bugs-initiative /MBI/MBI.py -c generate
 
     docker run -it --rm --name MIB --volume $(pwd):/MBI mpi-bugs-initiative /MBI/MBI.py -x parcoach -c run $@
-    docker run -it --rm --name MIB --volume $(pwd):/MBI mpi-bugs-initiative /MBI//MBI.py -x simgrid -c run $@
+    docker run -it --rm --name MIB --volume $(pwd):/MBI mpi-bugs-initiative /MBI/MBI.py -x simgrid -c run $@
     docker run -it --rm --name MIB --volume $(pwd):/MBI mpi-bugs-initiative /MBI/MBI.py -x isp -c run $@
     docker run -it --rm --name MIB --volume $(pwd):/MBI mpi-bugs-initiative /MBI/MBI.py -x smpi -c run $@
     docker run -it --rm --name MIB --volume $(pwd):/MBI mpi-bugs-initiative /MBI/MBI.py -x smpivg -c run $@
     docker run -it --rm --name MIB --volume $(pwd):/MBI ubuntu:18.04 /MBI/scripts/ensure_python3 /MBI/MBI.py -x aislinn -c run $@
     docker run -it --rm --name MIB --volume $(pwd):/MBI mpi-bugs-initiative /MBI/MBI.py -x civl -c run $@
-    docker run -it --rm --name MIB --volume $(pwd):/MBI mpisv/mpi-sv /MBI/scripts/ensure_python3 /MBI/MBI.py -x mpisv -c run $@
-    docker run -it --rm --name MIB --volume $(pwd):/MBI mpi-bugs-initiative /MBI/MBI.py -x itac -c run $@
+    docker run -it --rm --name MIB --volume $(pwd):/MBI --shm-size=512m mpisv/mpi-sv /MBI/scripts/ensure_python3 /MBI/MBI.py -x mpisv -c run $@
+    docker run -it --rm --name MIB --volume $(pwd):/MBI --shm-size=512m mpi-bugs-initiative /MBI/MBI.py -x itac -c run $@
     docker run -it --rm --name MIB --volume $(pwd):/MBI mpi-bugs-initiative /MBI/MBI.py -x must -c run $@
     docker run -it --rm --name MIB --volume $(pwd):/MBI mpi-bugs-initiative /MBI/MBI.py -x hermes
 }
