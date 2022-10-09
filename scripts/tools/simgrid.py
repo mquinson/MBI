@@ -53,19 +53,21 @@ class Tool(AbstractTool):
                 outfile.write(' <cluster id="acme" prefix="node-" radical="0-99" suffix="" speed="1Gf" bw="125MBps" lat="50us"/>\n')
                 outfile.write('</platform>\n')
 
-        execcmd = execcmd.replace(f"mpirun", f"{self.install_path}/bin/smpirun -wrapper {self.install_path}/bin/simgrid-mc -platform ./cluster.xml -analyze {self.exec_cfg}")
+        execcmd = execcmd.replace(f"mpirun", f"{self.install_path}/bin/smpirun -wrapper {self.install_path}/bin/simgrid-mc -platform ../cluster.xml -analyze {self.exec_cfg}")
         execcmd = execcmd.replace('${EXE}', binary)
         execcmd = execcmd.replace('$zero_buffer', "--cfg=smpi/buffering:zero")
         execcmd = execcmd.replace('$infty_buffer', "--cfg=smpi/buffering:infty")
 
-        self.run_cmd(
-            buildcmd=f"{self.install_path}/bin/smpicc {filename} -trace-call-location -g -Wl,-znorelro -Wl,-znoseparate-code -o {binary}",
-            execcmd=execcmd,
-            cachefile=cachefile,
-            filename=filename,
-            binary=binary,
-            timeout=timeout,
-            batchinfo=batchinfo)
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            self.run_cmd(
+                buildcmd=f"{self.install_path}/bin/smpicc {filename} -trace-call-location -g -Wl,-znorelro -Wl,-znoseparate-code -o {tmpdirname}/{binary}",
+                execcmd=execcmd,
+                cachefile=cachefile,
+                filename=filename,
+                binary=binary,
+                timeout=timeout,
+                cwd=tmpdirname,
+                batchinfo=batchinfo)
 
     def teardown(self):
         subprocess.run("find -type f -a -executable | xargs rm -f", shell=True, check=True) # Remove generated cruft (binary files)
