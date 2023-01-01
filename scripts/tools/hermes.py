@@ -18,11 +18,11 @@ class Tool(AbstractTool):
         print(f"Building Hermes. Files exist: {os.path.exists('/MBI-builds/hermes/bin/ispcc')}, {os.path.exists('/MBI-builds/hermes/clangTool/clangTool')}")
 
         # Get a GIT checkout. Either create it, or refresh it
-        subprocess.run(f"rm -rf /MBI-builds/hermes && mkdir -p /MBI-builds && git clone --depth=1 https://github.com/DhritiKhanna/Hermes.git /MBI-builds/hermes", shell=True, check=True)
+        subprocess.run(f"rm -rf /MBI-builds/hermes && mkdir -p /MBI-builds && git clone --depth=1 https://github.com/DhritiKhanna/Hermes.git /tmp/hermes", shell=True, check=True)
 
         # Build it
         here = os.getcwd() # Save where we were
-        os.chdir(f"/MBI-builds/hermes")
+        os.chdir(f"/tmp/hermes")
         subprocess.run("cd clangTool/ && make -j$(nproc) clangTool", shell=True, check=True)
         subprocess.run("autoreconf --install", shell=True, check=True)
         subprocess.run(f"./configure --disable-gui --prefix='/MBI-builds/hermes/' --enable-optional-ample-set-fix --with-mpi-inc-dir=/usr/lib/x86_64-linux-gnu/mpich/include CXXFLAGS='-fPIC' LDFLAGS='-lz3'", shell=True, check=True)
