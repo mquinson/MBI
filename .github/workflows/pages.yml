@@ -35,7 +35,7 @@ jobs:
       - name: install 7zr 
         run: apt install p7zip
       - name: Unpack the log file
-        run: 7zr x -so logs*.7z | tar xf -
+        run: 7zr x -so logs*.7z | (cd /MBI ; tar xf -)
       - name: Generate the test codes 
         run: /MBI/MBI.py -c generate
       - name: Build the html page
