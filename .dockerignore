@@ -3,6 +3,7 @@ gencodes
 tools
 builds
 NOSAVE
+nosave
 *.log
 *.html
 *.tex
