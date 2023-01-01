@@ -51,7 +51,7 @@ import tools.mpi_checker
 
 tools = {'aislinn': tools.aislinn.Tool(), 'civl': tools.civl.Tool(), 'hermes': tools.hermes.Tool(), 'isp': tools.isp.Tool(), 'mpisv': tools.mpisv.Tool(),
          'itac': tools.itac.Tool() if itac_loaded else None,
-         'must': tools.must.V17(),'must18': tools.must.V18(),
+         'must': tools.must.V18(), #'must17': tools.must.V17(), # This one is deprecated, and no RC release right now
          'simgrid': tools.simgrid.Tool(), 'simgrid-3.27': tools.simgrid.v3_27(), 'simgrid-3.28': tools.simgrid.v3_28(), 'simgrid-3.29': tools.simgrid.v3_29(), 'simgrid-3.30': tools.simgrid.v3_30(),'simgrid-3.31': tools.simgrid.v3_31(),'simgrid-3.32': tools.simgrid.v3_32(),
          'smpi':tools.smpi.Tool(),'smpivg':tools.smpivg.Tool(), 'parcoach': tools.parcoach.Tool(), 'mpi-checker': tools.mpi_checker.Tool()}
 
