@@ -40,7 +40,7 @@ class Tool(AbstractTool):
             else:
                 subprocess.run(f"rm -rf /MBI-builds/aislinn; mkdir -p /MBI-builds", shell=True, check=True)
                 subprocess.run(f"git clone --depth=1 https://github.com/spirali/aislinn.git /MBI-builds/aislinn", shell=True, check=True)
-            subprocess.run(f"cp -r {self.rootdir}/tools/aislinn-valgrind-312 /MBI-builds/aislinn/valgrind", shell=True, check=True)
+                subprocess.run(f"git clone --recursive https://github.com/spirali/aislinn-valgrind /MBI-builds/aislinn/valgrind", shell=True, check=True)
 
             # Build it
             here = os.getcwd() # Save where we were
