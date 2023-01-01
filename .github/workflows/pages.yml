@@ -32,6 +32,8 @@ jobs:
         uses: actions/checkout@v3
       - name: Setup Pages
         uses: actions/configure-pages@v2
+      - name: install 7zr 
+        run: apt install p7zip
       - name: Unpack the log file
         run: 7zr x -so logs*.7z | tar xf -
       - name: Generate the test codes 
