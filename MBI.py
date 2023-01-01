@@ -105,17 +105,17 @@ def extract_all_todo(batch):
 
 
 def cmd_gencodes():
-    if os.path.exists("/MBI/scripts/CollArgGenerator.py"):  # Docker run
+    if os.path.exists("/MBI/scripts/generators/CollArgGenerator.py"):  # Docker run
         print("Docker run")
-        generators = glob.glob("/MBI/scripts/*Generator.py")
+        generators = glob.glob("/MBI/scripts/generators/*Generator.py")
         dir = "/MBI/gencodes"
-    elif os.path.exists("../../scripts/CollArgGenerator.py"):  # Local run, from logs dir
+    elif os.path.exists("../../scripts/generators/CollArgGenerator.py"):  # Local run, from logs dir
         print("Local run, from tools' logs dir")
-        generators = glob.glob(f"{os.getcwd()}/../../scripts/*Generator.py")
+        generators = glob.glob(f"{os.getcwd()}/../../scripts/generators/*Generator.py")
         dir = "../../gencodes/"
-    elif os.path.exists("scripts/CollArgGenerator.py"):  # Local run, from main dir
+    elif os.path.exists("scripts/generators/CollArgGenerator.py"):  # Local run, from main dir
         print("Local run, from MBI main dir")
-        generators = glob.glob(f"{os.getcwd()}/scripts/*Generator.py")
+        generators = glob.glob(f"{os.getcwd()}/scripts/generators/*Generator.py")
         dir = "gencodes/"
     else:
         raise Exception("Cannot find the codes' generators. Please report that bug.")
