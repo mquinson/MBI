@@ -1,6 +1,7 @@
 *~
 gencodes/
 builds/
+tools/
 logs
 *.tex
 *.log
