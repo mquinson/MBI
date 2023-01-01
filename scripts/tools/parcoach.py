@@ -13,8 +13,8 @@ class Tool(AbstractTool):
         if cached and os.path.exists(f"/MBI-builds/parcoach/src/aSSA/aSSA.so"):
             print("No need to rebuild ParCoach.")
             return
-        if not os.path.exists("/usr/lib/llvm-9/bin/clang"):
-            subprocess.run("ln -s $(which clang) /usr/lib/llvm-9/bin/clang", shell=True, check=True)
+        if not os.path.exists("/usr/lib/llvm-15/bin/clang"):
+            subprocess.run("ln -s $(which clang) /usr/lib/llvm-15/bin/clang", shell=True, check=True)
 
         here = os.getcwd() # Save where we were
         # Get a GIT checkout.
@@ -22,7 +22,7 @@ class Tool(AbstractTool):
         # Go to where we want to install it, and build it out-of-tree (we're in the docker)
         subprocess.run("mkdir -p /MBI-builds/parcoach", shell=True, check=True)
         os.chdir('/MBI-builds/parcoach')
-        subprocess.run(f"cmake /tmp/parcoach -DCMAKE_C_COMPILER=clang -DLLVM_DIR={rootdir}/tools/Parcoach/llvm-project/build", shell=True, check=True)
+        subprocess.run(f"cmake /tmp/parcoach -DCMAKE_C_COMPILER=clang-15 -DCMAKE_CXX_COMPILER=clang++-15 -DLLVM_DIR={rootdir}/tools/Parcoach/llvm-project/build", shell=True, check=True)
         subprocess.run("make -j$(nproc) VERBOSE=1", shell=True, check=True)
         subprocess.run("rm -rf /tmp/parcoach", shell=True, check=True)
 
