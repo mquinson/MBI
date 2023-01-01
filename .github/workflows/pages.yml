@@ -42,12 +42,11 @@ jobs:
         run:  |
           /MBI/MBI.py -c html
           mkdir _site/
-          mv /MBI/gencodes /MBI/logs /MBI/*html _site/
+          mv /MBI/gencodes /MBI/logs /MBI/img /MBI/*html _site/
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
-          # Upload entire repository
-          path: '.'
+          path: '_site'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v1
