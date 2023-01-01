@@ -38,11 +38,11 @@ jobs:
         run: 7zr x -so logs*.7z | tar xf -
       - name: Generate the test codes 
         run: /MBI/MBI.py -c generate
-      - name: Build the html page w
+      - name: Build the html page
         run:  |
           /MBI/MBI.py -c html
           mkdir _site/
-          mv gencodes logs *html _site/
+          mv /MBI/gencodes /MBI/logs /MBI/*html _site/
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
