@@ -29,10 +29,10 @@ class Tool(AbstractTool):
             return
         subprocess.run("touch /tmp/aislinn.configured", shell=True, check=True)
 
-        subprocess.run("apt-get install -y gcc python2.7 python-jinja2", shell=True, check=True)
+        subprocess.run("apt-get install -y --force-yes gcc python2.7 python-jinja2", shell=True, check=True)
         if not os.path.exists(f"/MBI-builds/aislinn/bin/aislinn-cc"):
             print("XX Building aislinn")
-            subprocess.run("apt-get update && apt-get install -y gcc python3.8 autotools-dev automake build-essential git", shell=True, check=True)
+            subprocess.run("apt-get update && apt-get install -y --force-yes gcc python3.8 autotools-dev automake build-essential git", shell=True, check=True)
 
             # Get a GIT checkout. Either create it, or refresh it
             if os.path.exists("/MBI-builds/aislinn/.git"):
@@ -40,11 +40,25 @@ class Tool(AbstractTool):
             else:
                 subprocess.run(f"rm -rf /MBI-builds/aislinn; mkdir -p /MBI-builds", shell=True, check=True)
                 subprocess.run(f"git clone --depth=1 https://github.com/spirali/aislinn.git /MBI-builds/aislinn", shell=True, check=True)
-                subprocess.run(f"git clone --recursive https://github.com/spirali/aislinn-valgrind /MBI-builds/aislinn/valgrind", shell=True, check=True)
+                subprocess.run(f"git clone --depth=1 --recursive https://github.com/spirali/aislinn-valgrind /MBI-builds/aislinn/valgrind", shell=True, check=True)
 
             # Build it
             here = os.getcwd() # Save where we were
             os.chdir(f"/MBI-builds/aislinn/valgrind")
+            with open('patchfile', 'w') as outfile:
+                outfile.write("--- a/configure.ac\n")
+                outfile.write("+++ b/configure.ac\n")
+                outfile.write("@@ -160,7 +160,7 @@\n")
+                outfile.write("      icc-1[[3-9]].*)\n")
+                outfile.write(" \tAC_MSG_RESULT([ok (ICC version ${gcc_version})])\n")
+                outfile.write(" \t;;\n")
+                outfile.write("-     notclang-[[3-9]].*|notclang-[[1-9][0-9]]*)\n")
+                outfile.write("+     notclang-[[3-9]]*|notclang-[[1-9][0-9]]*)\n")
+                outfile.write(" \tAC_MSG_RESULT([ok (${gcc_version})])\n")
+                outfile.write(" \t;;\n")
+                outfile.write("      clang-2.9|clang-[[3-9]].*|clang-[[1-9][0-9]]*)\n")
+            subprocess.run("patch -p1 < patchfile", shell=True, check=True)
+
             subprocess.run("sh autogen.sh && ./configure && make -j$(nproc)", shell=True, check=True)
 
             os.chdir(f"/MBI-builds/aislinn")

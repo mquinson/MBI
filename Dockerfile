@@ -47,19 +47,19 @@ RUN apt-get -y install default-jdk-headless wget   gcc mpich libmpich-dev lsof &
 RUN apt-get -y install wget default-jre-headless cvc4 z3 && \
     /MBI/MBI.py -c build -x civl && \
     apt-get -y remove wget && \
-    apt-get autoremove -yq && apt-get clean -yq && rm -rf /tmp/*
+    apt-get autoremove -y && apt-get clean -y && rm -rf /tmp/*
 
 # Building Hermes
 RUN apt-get -y install autoconf automake autotools-dev libz3-dev git  libz3-4 libtinfo-dev libtool mpich libmpich-dev && \
     /MBI/MBI.py -c build -x hermes && \
     apt-get -y remove autoconf automake autotools-dev libz3-dev git && \
-    apt-get autoremove -yq && apt-get clean -yq && rm -rf /tmp/*
+    apt-get autoremove -y && apt-get clean -y && rm -rf /tmp/*
 
 # Building MUST
-RUN apt-get -y install cmake gfortran wget git   openmpi-bin libopenmpi-dev libdw-dev libxml2-dev && \
+RUN apt-get -y install cmake wget git   gfortran openmpi-bin libopenmpi-dev libdw-dev libxml2-dev && \
     /MBI/MBI.py -c build -x must && \
-    apt-get -y remove cmake gfortran wget git && \
-    apt-get autoremove -yq && apt-get clean -yq && rm -rf /tmp/*
+    apt-get -y remove cmake wget git && \
+    apt-get autoremove -y && apt-get clean -y && rm -rf /tmp/*
 
 # Building SimGrid
 RUN /MBI/MBI.py -c build -x simgrid && rm -rf /tmp/*
@@ -72,5 +72,5 @@ RUN apt-get -y install cmake git   clang-15 clang++-15 clang-format openmpi-bin 
     ln -s /usr/bin/clang++-15 /usr/bin/clang++ && \
     /MBI/MBI.py -c build -x parcoach && \
     apt-get -y remove cmake git && \
-    apt-get autoremove -yq && apt-get clean -yq && rm -rf /tmp/*
+    apt-get autoremove -y && apt-get clean -y && rm -rf /tmp/*
 

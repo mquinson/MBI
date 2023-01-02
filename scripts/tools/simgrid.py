@@ -38,7 +38,7 @@ class Tool(AbstractTool):
         subprocess.run("rm -rf /tmp/simgrid", shell=True, check=True)
 
         # Remove the build-deps
-        subprocess.run("apt-get -y remove cmake gfortran libboost-dev libunwind-dev git", shell=True, check=True)
+        subprocess.run("apt-get -y remove cmake libboost-dev libunwind-dev git", shell=True, check=True)
         subprocess.run("apt-get autoremove -yq && apt-get clean -yq", shell=True, check=True)
 
 
@@ -180,7 +180,7 @@ class v3_27(Tool):
         os.chdir(here)
 
         # Remove the build-deps
-        subprocess.run("apt-get -y remove cmake gfortran libboost-dev libunwind-dev git", shell=True, check=True)
+        subprocess.run("apt-get -y remove cmake libboost-dev libunwind-dev git", shell=True, check=True)
         subprocess.run("apt-get autoremove -yq && apt-get clean -yq", shell=True, check=True)
 
 class v3_28(v3_27):

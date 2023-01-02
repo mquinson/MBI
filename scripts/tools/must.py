@@ -49,6 +49,8 @@ class V18(AbstractTool):
         os.environ['PATH'] = os.environ['PATH'] + ":/MBI-builds/MUST18/bin/"
         os.environ['OMPI_ALLOW_RUN_AS_ROOT'] = "1"
         os.environ['OMPI_ALLOW_RUN_AS_ROOT_CONFIRM'] = "1"
+        subprocess.run("update-alternatives --set mpi /usr/bin/mpicc.openmpi", shell=True, check=True)
+        subprocess.run("update-alternatives --set mpirun /usr/bin/mpirun.openmpi", shell=True, check=True)
 
     def run(self, execcmd, filename, binary, id, timeout, batchinfo):
         cachefile = f'{binary}_{id}'

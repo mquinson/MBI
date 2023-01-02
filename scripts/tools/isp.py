@@ -30,6 +30,8 @@ class Tool(AbstractTool):
 
     def setup(self):
         os.environ['PATH'] = f"{os.environ['PATH']}:/MBI-builds/ISP/bin/"
+        subprocess.run("update-alternatives --set mpi /usr/bin/mpicc.mpich", shell=True, check=True)
+        subprocess.run("update-alternatives --set mpirun /usr/bin/mpirun.mpich", shell=True, check=True)
 
     def run(self, execcmd, filename, binary, id, timeout, batchinfo):
         cachefile = f'{binary}_{id}'

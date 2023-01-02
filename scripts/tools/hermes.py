@@ -43,6 +43,8 @@ class Tool(AbstractTool):
             outfile.write(f'          "directory": "{self.rootdir}/logs/hermes",\n')
             outfile.write(f'          "file": "{self.rootdir}/logs/hermes/source.c"\n')
             outfile.write('}]')
+        subprocess.run("update-alternatives --set mpi /usr/bin/mpicc.mpich", shell=True, check=True)
+        subprocess.run("update-alternatives --set mpirun /usr/bin/mpirun.mpich", shell=True, check=True)
 
     def run(self, execcmd, filename, binary, id, timeout, batchinfo):
         os.environ['PATH'] = f"{os.environ['PATH']}:/MBI-builds/hermes/bin/"
