@@ -47,6 +47,8 @@ class V18(AbstractTool):
 
     def setup(self):
         os.environ['PATH'] = os.environ['PATH'] + ":/MBI-builds/MUST18/bin/"
+        os.environ['OMPI_ALLOW_RUN_AS_ROOT'] = "1"
+        os.environ['OMPI_ALLOW_RUN_AS_ROOT_CONFIRM'] = "1"
 
     def run(self, execcmd, filename, binary, id, timeout, batchinfo):
         cachefile = f'{binary}_{id}'

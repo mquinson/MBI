@@ -24,6 +24,7 @@ class Tool(AbstractTool):
         here = os.getcwd() # Save where we were
         os.chdir(f"/tmp/hermes")
         subprocess.run("cd clangTool/ && make -j$(nproc) clangTool", shell=True, check=True)
+        subprocess.run("cp -r clangTool/ /MBI-builds/hermes", shell=True, check=True)
         subprocess.run("autoreconf --install", shell=True, check=True)
         subprocess.run(f"./configure --disable-gui --prefix='/MBI-builds/hermes/' --enable-optional-ample-set-fix --with-mpi-inc-dir=/usr/lib/x86_64-linux-gnu/mpich/include CXXFLAGS='-fPIC' LDFLAGS='-lz3'", shell=True, check=True)
         subprocess.run("make -j$(nproc)", shell=True, check=True)

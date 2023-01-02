@@ -21,10 +21,10 @@ FROM debian:testing
 USER root
 #RUN apt-get update
 RUN apt-get update --fix-missing && \
-    apt-get install -y p7zip p7zip-full apt-transport-https ca-certificates python-is-python3 python3-pip && \
+    apt-get install -y p7zip p7zip-full apt-transport-https ca-certificates python-is-python3 python3-pip valgrind && \
     update-ca-certificates && \
     apt-get autoremove -yq && apt-get clean -yq && \
-    rm -rf /MBI/builds
+    rm -rf /MBI/builds /MBI-builds
 
 # MPI-Checker dependencies
 RUN pip3 install scan-build
@@ -38,7 +38,7 @@ COPY . /MBI
 # Building ISP
 # build error with openmpi:
 # /usr/lib/x86_64-linux-gnu/openmpi/include/mpi.h:338:73: error: static assertion failed: MPI_Type_extent was removed in MPI-3.0.  Use MPI_Type_get_extent instead.
-RUN apt-get -y install default-jdk-headless wget   gcc mpich lsof && \
+RUN apt-get -y install default-jdk-headless wget   gcc mpich libmpich-dev lsof && \
     /MBI/MBI.py -c build -x isp && \
     apt-get -y remove default-jdk-headless wget && \
     apt-get autoremove -yq && apt-get clean -yq && rm -rf /tmp/*
@@ -50,7 +50,7 @@ RUN apt-get -y install wget default-jre-headless cvc4 z3 && \
     apt-get autoremove -yq && apt-get clean -yq && rm -rf /tmp/*
 
 # Building Hermes
-RUN apt-get -y install autoconf automake autotools-dev libz3-dev git  libz3-4 libtinfo-dev libtool mpich && \
+RUN apt-get -y install autoconf automake autotools-dev libz3-dev git  libz3-4 libtinfo-dev libtool mpich libmpich-dev && \
     /MBI/MBI.py -c build -x hermes && \
     apt-get -y remove autoconf automake autotools-dev libz3-dev git && \
     apt-get autoremove -yq && apt-get clean -yq && rm -rf /tmp/*

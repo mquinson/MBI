@@ -3,6 +3,7 @@
 
 import re
 import os
+import tempfile
 from MBIutils import *
 
 class Tool(AbstractTool):
@@ -46,19 +47,19 @@ class Tool(AbstractTool):
 
     def setup(self):
         os.environ['VERBOSE'] = '1'
-
-    def run(self, execcmd, filename, binary, id, timeout, batchinfo):
-        cachefile = f'{binary}_{id}'
-
-        if not os.path.exists("cluster.xml"):
-            with open('cluster.xml', 'w') as outfile:
+        if not os.path.exists("/MBI/cluster.xml"):
+            with open('/MBI/cluster.xml', 'w') as outfile:
                 outfile.write("<?xml version='1.0'?>\n")
                 outfile.write("<!DOCTYPE platform SYSTEM \"https://simgrid.org/simgrid.dtd\">\n")
                 outfile.write('<platform version="4.1">\n')
                 outfile.write(' <cluster id="acme" prefix="node-" radical="0-99" suffix="" speed="1Gf" bw="125MBps" lat="50us"/>\n')
                 outfile.write('</platform>\n')
 
-        execcmd = execcmd.replace(f"mpirun", f"{self.install_path}/bin/smpirun -wrapper {self.install_path}/bin/simgrid-mc -platform ../cluster.xml -analyze {self.exec_cfg}")
+
+    def run(self, execcmd, filename, binary, id, timeout, batchinfo):
+        cachefile = f'{binary}_{id}'
+
+        execcmd = execcmd.replace(f"mpirun", f"{self.install_path}/bin/smpirun -wrapper {self.install_path}/bin/simgrid-mc -platform /MBI/cluster.xml -analyze {self.exec_cfg}")
         execcmd = execcmd.replace('${EXE}', binary)
         execcmd = execcmd.replace('$zero_buffer', "--cfg=smpi/buffering:zero")
         execcmd = execcmd.replace('$infty_buffer', "--cfg=smpi/buffering:infty")
