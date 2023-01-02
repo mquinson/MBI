@@ -20,17 +20,26 @@ class Tool(AbstractTool):
 
         here = os.getcwd() # Save where we were
         os.chdir(rootdir)
+
+        # Install the dependencies
+        subprocess.run("apt-get -y install cmake gfortran libboost-dev libunwind-dev git   openmpi-bin libunwind8 libopenmpi-dev libdw-dev", shell=True, check=True)
+
         # Get a GIT checkout
-        subprocess.run("rm -rf tools/simgrid && git clone --depth=1 https://github.com/simgrid/simgrid.git tools/simgrid", shell=True, check=True)
+        subprocess.run("rm -rf /tmp/simgrid && git clone --depth=1 https://github.com/simgrid/simgrid.git /tmp/simgrid", shell=True, check=True)
 
         # Build and install it
-        os.chdir("tools/simgrid")
+        os.chdir("/tmp/simgrid")
         subprocess.run(f"cmake -DCMAKE_INSTALL_PREFIX=/usr -Denable_compile_optimizations=ON -Denable_model-checking=ON .", shell=True, check=True)
         subprocess.run("make -j$(nproc) install VERBOSE=1", shell=True, check=True)
 
         # Back to our previous directory
         os.chdir(here)
-        subprocess.run("rm -rf tools/simgrid", shell=True, check=True)
+        subprocess.run("rm -rf /tmp/simgrid", shell=True, check=True)
+
+        # Remove the build-deps
+        subprocess.run("apt-get -y remove cmake gfortran libboost-dev libunwind-dev git", shell=True, check=True)
+        subprocess.run("apt-get autoremove -yq && apt-get clean -yq", shell=True, check=True)
+
 
     def ensure_image(self):
         AbstractTool.ensure_image(self, "-x simgrid")
@@ -154,20 +163,24 @@ class v3_27(Tool):
 
         here = os.getcwd() # Save where we were
         os.chdir(rootdir)
-        # Get a GIT checkout. Either create it, or refresh it
-        if os.path.exists(f"tools/simgrid-{self.version}/.git"):
-            subprocess.run(f"git config --global --add safe.directory /MBI/tools/simgrid-{self.version}", shell=True, check=True)
-            subprocess.run(f"cd tools/simgrid-{self.version} && git pull &&  cd ../..", shell=True, check=True)
-        else:
-            subprocess.run(f"rm -rf tools/simgrid-{self.version} && git clone --depth=1 https://github.com/simgrid/simgrid.git tools/simgrid-{self.version} --branch {self.version}", shell=True, check=True)
+
+        # Install the dependencies
+        subprocess.run("apt-get -y install cmake gfortran libboost-dev libunwind-dev git   openmpi-bin libunwind8 libopenmpi-dev libdw-dev", shell=True, check=True)
+        
+        # Get a GIT checkout
+        subprocess.run(f"rm -rf /tmp/simgrid-{self.version} && git clone --depth=1 https://github.com/simgrid/simgrid.git /tmp/simgrid-{self.version} --branch {self.version}", shell=True, check=True)
 
         # Build and install it
-        os.chdir(f"tools/simgrid-{self.version}")
+        os.chdir(f"/tmp/simgrid-{self.version}")
         subprocess.run(f"cmake -DCMAKE_INSTALL_PREFIX={self.install_path} -Denable_compile_optimizations=ON -Denable_model-checking=ON .", shell=True, check=True)
         subprocess.run("make -j$(nproc) install VERBOSE=1", shell=True, check=True)
 
         # Back to our previous directory
         os.chdir(here)
+
+        # Remove the build-deps
+        subprocess.run("apt-get -y remove cmake gfortran libboost-dev libunwind-dev git", shell=True, check=True)
+        subprocess.run("apt-get autoremove -yq && apt-get clean -yq", shell=True, check=True)
 
 class v3_28(v3_27):
     name_ext = "-3.28"

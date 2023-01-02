@@ -4,7 +4,7 @@ from MBIutils import *
 
 class Tool(AbstractTool):
     def identify(self):
-        return "ISP wrapper"
+        return "ISP 0.3.1 wrapper"
 
     def ensure_image(self):
         AbstractTool.ensure_image(self, "-x isp")
